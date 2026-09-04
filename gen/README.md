@@ -27,3 +27,10 @@ their rows inside the plan because the spec's set-operation examples are about t
 
 `probe/reverify.sh` runs all of the generators; `GenCases` alone covers only its own part of the
 corpus.
+
+`make_manifest.sh` runs each generator into a directory of its own and turns the result into
+`../derived-schema/manifest.json`: per case, the generator that writes it, the line that generator
+prints for it, and its expectation. The pairing of a printed line to a case is spelled out in
+`make_manifest.py` rather than guessed, and the script fails if one case is left without a line. The
+only hand-written input is `sources.json`, the issue a case came from — add to it when a case's
+origin is known.

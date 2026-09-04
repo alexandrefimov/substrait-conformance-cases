@@ -1,0 +1,18 @@
+{
+ "aggregate_grouping_field_shared_by_sets": {
+  "note": "A field grouped on by both sets is one output column, not two.",
+  "source": "substrait-java#1161"
+ },
+ "aggregate_grouping_sets_declared_order": {
+  "note": "The aggregate declares field 2 before field 0; the declared order is the output order.",
+  "source": "substrait-java#1161"
+ },
+ "ctas_keeps_declared_schema": {
+  "note": "A CTAS declares the schema of the table it creates; it is not the schema of its input.",
+  "source": "substrait-java#1181"
+ },
+ "virtual_table_emit_mapping": {
+  "note": "A virtual table carrying an emit mapping returns only the columns the mapping names.",
+  "source": "substrait-java#1189"
+ }
+}

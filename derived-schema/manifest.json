@@ -1,43 +1,1729 @@
 [
-  {
-    "case": "virtual_table_emit_mapping",
-    "plan": "virtual_table_emit_mapping.json",
-    "source": "substrait-java#1189",
-    "note": "A virtual table carrying an emit mapping returns only the columns the mapping names.",
-    "assertion": "output_schema",
-    "expected": "Struct{nullable=false, fields=[Str{nullable=false}]}",
-    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=false}]}",
-    "output_names": ["col2"]
-  },
-  {
-    "case": "aggregate_grouping_sets_declared_order",
-    "plan": "aggregate_grouping_sets_declared_order.json",
-    "source": "substrait-java#1161",
-    "note": "The aggregate declares field 2 before field 0; the declared order is the output order.",
-    "assertion": "output_schema",
-    "expected": "Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}",
-    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}",
-    "output_names": ["c", "a"]
-  },
-  {
-    "case": "aggregate_grouping_field_shared_by_sets",
-    "plan": "aggregate_grouping_field_shared_by_sets.json",
-    "source": "substrait-java#1161",
-    "note": "A field grouped on by both sets is one output column, not two.",
-    "assertion": "output_schema",
-    "expected": "Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}",
-    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}",
-    "output_names": ["c", "a"]
-  },
-  {
-    "case": "ctas_keeps_declared_schema",
-    "plan": "ctas_keeps_declared_schema.json",
-    "source": "substrait-java#1181",
-    "note": "A CTAS declares the schema of the table it creates; it is not the schema of its input.",
-    "assertion": "declared_table_schema",
-    "expected": "NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I32{nullable=true}]}, names=[total, doubled]}",
-    "derived_output_schema": "Struct{nullable=false, fields=[I32{nullable=true}, I32{nullable=true}]}",
-    "output_names": ["total", "doubled"],
-    "caveat": "The spec says a write's input schema must match table_schema; this case has them differ on purpose, so whether the plan is valid at all is an open question for the thread."
+ {
+  "case": "aggregate_grouping_field_shared_by_sets",
+  "plan": "aggregate_grouping_field_shared_by_sets.json",
+  "binary": "aggregate_grouping_field_shared_by_sets.bin",
+  "generator": "GenCases",
+  "note": "A field grouped on by both sets is one output column, not two.",
+  "source": "substrait-java#1161",
+  "expectation": {
+   "schema": [
+    [
+     "str",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "Aggregate: only fields absent from some grouping set become nullable"
   }
+ },
+ {
+  "case": "aggregate_grouping_sets_declared_order",
+  "plan": "aggregate_grouping_sets_declared_order.json",
+  "binary": "aggregate_grouping_sets_declared_order.bin",
+  "generator": "GenCases",
+  "note": "The aggregate declares field 2 before field 0; the declared order is the output order.",
+  "source": "substrait-java#1161",
+  "expectation": {
+   "schema": [
+    [
+     "str",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable"
+  }
+ },
+ {
+  "case": "control_join_without_relcommon",
+  "plan": "control_join_without_relcommon.json",
+  "binary": "control_join_without_relcommon.bin",
+  "generator": "GenControl",
+  "note": "control_join_without_relcommon  the same join without the optional RelCommon",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "inner join without RelCommon: inputs concatenated, nullability unchanged"
+  }
+ },
+ {
+  "case": "control_passthrough_rn",
+  "plan": "control_passthrough_rn.json",
+  "binary": "control_passthrough_rn.bin",
+  "generator": "GenControl",
+  "note": "control_passthrough_rn  table t_rn is declared (required, nullable), no operations",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "ctas_keeps_declared_schema",
+  "plan": "ctas_keeps_declared_schema.json",
+  "binary": "ctas_keeps_declared_schema.bin",
+  "generator": "GenCases",
+  "note": "A CTAS declares the schema of the table it creates; it is not the schema of its input.",
+  "source": "substrait-java#1181",
+  "expectation": {
+   "none": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
+   "because": "the spec says the plan is invalid"
+  }
+ },
+ {
+  "case": "decimal_add",
+  "plan": "decimal_add.json",
+  "binary": "decimal_add.bin",
+  "generator": "GenDecimal",
+  "note": "add  dec(10,2) add dec(5,1) -> spec: DECIMAL(11,2)",
+  "expectation": {
+   "schema": [
+    [
+     "dec(11,2)",
+     false
+    ]
+   ],
+   "from": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  }
+ },
+ {
+  "case": "decimal_add_overflow",
+  "plan": "decimal_add_overflow.json",
+  "binary": "decimal_add_overflow.bin",
+  "generator": "GenDecimal",
+  "note": "add_overflow  dec(38,10) add dec(38,10) -> spec: DECIMAL(38,9)",
+  "expectation": {
+   "schema": [
+    [
+     "dec(38,9)",
+     false
+    ]
+   ],
+   "from": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  }
+ },
+ {
+  "case": "decimal_divide",
+  "plan": "decimal_divide.json",
+  "binary": "decimal_divide.bin",
+  "generator": "GenDecimal",
+  "note": "divide  dec(10,2) divide dec(5,1) -> spec: DECIMAL(21,8)",
+  "expectation": {
+   "schema": [
+    [
+     "dec(21,8)",
+     false
+    ]
+   ],
+   "from": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  }
+ },
+ {
+  "case": "decimal_multiply",
+  "plan": "decimal_multiply.json",
+  "binary": "decimal_multiply.bin",
+  "generator": "GenDecimal",
+  "note": "multiply  dec(10,2) multiply dec(5,1) -> spec: DECIMAL(16,3)",
+  "expectation": {
+   "schema": [
+    [
+     "dec(16,3)",
+     false
+    ]
+   ],
+   "from": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  }
+ },
+ {
+  "case": "decimal_multiply_overflow",
+  "plan": "decimal_multiply_overflow.json",
+  "binary": "decimal_multiply_overflow.bin",
+  "generator": "GenDecimal",
+  "note": "multiply_overflow  dec(38,10) multiply dec(38,10) -> spec: DECIMAL(38,6)",
+  "expectation": {
+   "schema": [
+    [
+     "dec(38,6)",
+     false
+    ]
+   ],
+   "from": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  }
+ },
+ {
+  "case": "emit_aggregate",
+  "plan": "emit_aggregate.json",
+  "binary": "emit_aggregate.bin",
+  "generator": "GenEmit",
+  "note": "aggregate  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_fetch",
+  "plan": "emit_fetch.json",
+  "binary": "emit_fetch.bin",
+  "generator": "GenEmit",
+  "note": "fetch  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_filter",
+  "plan": "emit_filter.json",
+  "binary": "emit_filter.bin",
+  "generator": "GenEmit",
+  "note": "filter  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_join",
+  "plan": "emit_join.json",
+  "binary": "emit_join.bin",
+  "generator": "GenEmit",
+  "note": "join  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_project",
+  "plan": "emit_project.json",
+  "binary": "emit_project.bin",
+  "generator": "GenEmit",
+  "note": "project  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_read",
+  "plan": "emit_read.json",
+  "binary": "emit_read.bin",
+  "generator": "GenEmit",
+  "note": "read  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "emit_sort",
+  "plan": "emit_sort.json",
+  "binary": "emit_sort.bin",
+  "generator": "GenEmit",
+  "note": "sort  expected [bool, i64], row (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "join_inner",
+  "plan": "join_inner.json",
+  "binary": "join_inner.bin",
+  "generator": "GenJoins",
+  "note": "true  INNER",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_left",
+  "plan": "join_left.json",
+  "binary": "join_left.bin",
+  "generator": "GenJoins",
+  "note": "true  LEFT",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_left_anti",
+  "plan": "join_left_anti.json",
+  "binary": "join_left_anti.bin",
+  "generator": "GenJoins",
+  "note": "true  LEFT_ANTI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_left_mark",
+  "plan": "join_left_mark.json",
+  "binary": "join_left_mark.bin",
+  "generator": "GenJoins",
+  "note": "true  LEFT_MARK",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_left_semi",
+  "plan": "join_left_semi.json",
+  "binary": "join_left_semi.bin",
+  "generator": "GenJoins",
+  "note": "true  LEFT_SEMI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_left_single",
+  "plan": "join_left_single.json",
+  "binary": "join_left_single.bin",
+  "generator": "GenJoins",
+  "note": "true  LEFT_SINGLE",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_outer",
+  "plan": "join_outer.json",
+  "binary": "join_outer.bin",
+  "generator": "GenJoins",
+  "note": "true  OUTER",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_right",
+  "plan": "join_right.json",
+  "binary": "join_right.bin",
+  "generator": "GenJoins",
+  "note": "true  RIGHT",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_right_anti",
+  "plan": "join_right_anti.json",
+  "binary": "join_right_anti.bin",
+  "generator": "GenJoins",
+  "note": "true  RIGHT_ANTI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_right_mark",
+  "plan": "join_right_mark.json",
+  "binary": "join_right_mark.bin",
+  "generator": "GenJoins",
+  "note": "true  RIGHT_MARK",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_right_semi",
+  "plan": "join_right_semi.json",
+  "binary": "join_right_semi.bin",
+  "generator": "GenJoins",
+  "note": "true  RIGHT_SEMI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "join_right_single",
+  "plan": "join_right_single.json",
+  "binary": "join_right_single.bin",
+  "generator": "GenJoins",
+  "note": "true  RIGHT_SINGLE",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_inner",
+  "plan": "joineq_inner.json",
+  "binary": "joineq_inner.bin",
+  "generator": "GenJoins",
+  "note": "equality INNER",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_left",
+  "plan": "joineq_left.json",
+  "binary": "joineq_left.bin",
+  "generator": "GenJoins",
+  "note": "equality LEFT",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_left_anti",
+  "plan": "joineq_left_anti.json",
+  "binary": "joineq_left_anti.bin",
+  "generator": "GenJoins",
+  "note": "equality LEFT_ANTI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_left_mark",
+  "plan": "joineq_left_mark.json",
+  "binary": "joineq_left_mark.bin",
+  "generator": "GenJoins",
+  "note": "equality LEFT_MARK",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_left_semi",
+  "plan": "joineq_left_semi.json",
+  "binary": "joineq_left_semi.bin",
+  "generator": "GenJoins",
+  "note": "equality LEFT_SEMI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_left_single",
+  "plan": "joineq_left_single.json",
+  "binary": "joineq_left_single.bin",
+  "generator": "GenJoins",
+  "note": "equality LEFT_SINGLE",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_outer",
+  "plan": "joineq_outer.json",
+  "binary": "joineq_outer.bin",
+  "generator": "GenJoins",
+  "note": "equality OUTER",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_right",
+  "plan": "joineq_right.json",
+  "binary": "joineq_right.bin",
+  "generator": "GenJoins",
+  "note": "equality RIGHT",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_right_anti",
+  "plan": "joineq_right_anti.json",
+  "binary": "joineq_right_anti.bin",
+  "generator": "GenJoins",
+  "note": "equality RIGHT_ANTI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_right_mark",
+  "plan": "joineq_right_mark.json",
+  "binary": "joineq_right_mark.bin",
+  "generator": "GenJoins",
+  "note": "equality RIGHT_MARK",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_right_semi",
+  "plan": "joineq_right_semi.json",
+  "binary": "joineq_right_semi.bin",
+  "generator": "GenJoins",
+  "note": "equality RIGHT_SEMI",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "joineq_right_single",
+  "plan": "joineq_right_single.json",
+  "binary": "joineq_right_single.bin",
+  "generator": "GenJoins",
+  "note": "equality RIGHT_SINGLE",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "narrowing_count",
+  "plan": "narrowing_count.json",
+  "binary": "narrowing_count.bin",
+  "generator": "GenNarrowing",
+  "note": "count  the plan declares i64 required over a nullable input",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "the declared return of count: i64 required"
+  }
+ },
+ {
+  "case": "narrowing_is_not_null",
+  "plan": "narrowing_is_not_null.json",
+  "binary": "narrowing_is_not_null.bin",
+  "generator": "GenNarrowing",
+  "note": "is_not_null  the plan declares boolean required",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ]
+   ],
+   "from": "is_not_null returns a required boolean"
+  }
+ },
+ {
+  "case": "narrowing_is_null",
+  "plan": "narrowing_is_null.json",
+  "binary": "narrowing_is_null.bin",
+  "generator": "GenNarrowing",
+  "note": "is_null  the plan declares boolean required",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ]
+   ],
+   "from": "is_null returns a required boolean"
+  }
+ },
+ {
+  "case": "phase_final",
+  "plan": "phase_final.json",
+  "binary": "phase_final.bin",
+  "generator": "GenPhase",
+  "note": "final  phase INITIAL_TO_RESULT, the spec expects i64?",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the declared return of avg:i64 in functions_arithmetic.yaml"
+  }
+ },
+ {
+  "case": "phase_intermediate",
+  "plan": "phase_intermediate.json",
+  "binary": "phase_intermediate.bin",
+  "generator": "GenPhase",
+  "note": "intermediate  phase INITIAL_TO_INTERMEDIATE, the spec expects STRUCT<i64,i64>",
+  "expectation": {
+   "schema": [
+    [
+     "struct(i64,i64)",
+     false
+    ]
+   ],
+   "from": "functions_arithmetic.yaml: avg:i64, intermediate: STRUCT<i64,i64>"
+  }
+ },
+ {
+  "case": "precision_timestamp_p00",
+  "plan": "precision_timestamp_p00.json",
+  "binary": "precision_timestamp_p00.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p00  (precision=0)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(0)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p01",
+  "plan": "precision_timestamp_p01.json",
+  "binary": "precision_timestamp_p01.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p01  (precision=1)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(1)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p02",
+  "plan": "precision_timestamp_p02.json",
+  "binary": "precision_timestamp_p02.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p02  (precision=2)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(2)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p03",
+  "plan": "precision_timestamp_p03.json",
+  "binary": "precision_timestamp_p03.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p03  (precision=3)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(3)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p04",
+  "plan": "precision_timestamp_p04.json",
+  "binary": "precision_timestamp_p04.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p04  (precision=4)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(4)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p06",
+  "plan": "precision_timestamp_p06.json",
+  "binary": "precision_timestamp_p06.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p06  (precision=6)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(6)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p07",
+  "plan": "precision_timestamp_p07.json",
+  "binary": "precision_timestamp_p07.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p07  (precision=7)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(7)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p09",
+  "plan": "precision_timestamp_p09.json",
+  "binary": "precision_timestamp_p09.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p09  (precision=9)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(9)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "precision_timestamp_p12",
+  "plan": "precision_timestamp_p12.json",
+  "binary": "precision_timestamp_p12.bin",
+  "generator": "GenDisputed",
+  "note": "precision_timestamp_p12  (precision=12)",
+  "expectation": {
+   "schema": [
+    [
+     "precision_timestamp(12)",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "read_projection_mask",
+  "plan": "read_projection_mask.json",
+  "binary": "read_projection_mask.bin",
+  "generator": "GenProjection",
+  "note": "read_projection_mask  the mask selects fields [2, 0], expecting [bool, i64] / (true, 10)",
+  "expectation": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "Read / Direct Output Order: the schema after projection is applied"
+  }
+ },
+ {
+  "case": "setdata_intersection_multiset",
+  "plan": "setdata_intersection_multiset.json",
+  "binary": "setdata_intersection_multiset.bin",
+  "generator": "GenSetData",
+  "note": "INTERSECTION_MULTISET  p=[1, 2, 3, 4] s1=[2, 3] s2=[3, 4] -> the spec expects [3]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_intersection_multiset_all",
+  "plan": "setdata_intersection_multiset_all.json",
+  "binary": "setdata_intersection_multiset_all.bin",
+  "generator": "GenSetData",
+  "note": "INTERSECTION_MULTISET_ALL  p=[1, 2, 2, 3, 3, 3, 4] s1=[1, 2, 3, 3, 5] s2=[2, 3, 3, 6] -> the spec expects [2, 3, 3]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_intersection_primary",
+  "plan": "setdata_intersection_primary.json",
+  "binary": "setdata_intersection_primary.bin",
+  "generator": "GenSetData",
+  "note": "INTERSECTION_PRIMARY  p=[1, 2, 2, 3, 3, 3, 4] s1=[1, 2, 3, 5] s2=[2, 3, 6] -> the spec expects [1, 2, 3]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_minus_multiset",
+  "plan": "setdata_minus_multiset.json",
+  "binary": "setdata_minus_multiset.bin",
+  "generator": "GenSetData",
+  "note": "MINUS_MULTISET  p=[1, 2, 3, 4] s1=[1, 2] s2=[1, 2, 3] -> the spec expects [3, 4]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_minus_primary",
+  "plan": "setdata_minus_primary.json",
+  "binary": "setdata_minus_primary.bin",
+  "generator": "GenSetData",
+  "note": "MINUS_PRIMARY  p=[1, 2, 2, 3, 3, 3, 4] s1=[1, 2] s2=[3] -> the spec expects [4]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_minus_primary_all",
+  "plan": "setdata_minus_primary_all.json",
+  "binary": "setdata_minus_primary_all.bin",
+  "generator": "GenSetData",
+  "note": "MINUS_PRIMARY_ALL  p=[1, 2, 2, 3, 3, 3, 3] s1=[1, 2, 3, 4] s2=[3] -> the spec expects [2, 3, 3]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_union_all",
+  "plan": "setdata_union_all.json",
+  "binary": "setdata_union_all.bin",
+  "generator": "GenSetData",
+  "note": "UNION_ALL  p=[1, 2, 2, 3, 3, 3, 4] s1=[2, 3, 5] s2=[1, 6] -> the spec expects [1, 2, 2, 3, 3, 3, 4, 2, 3, 5, 1, 6]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setdata_union_distinct",
+  "plan": "setdata_union_distinct.json",
+  "binary": "setdata_union_distinct.bin",
+  "generator": "GenSetData",
+  "note": "UNION_DISTINCT  p=[1, 2, 2, 3, 3, 3, 4] s1=[2, 3, 5] s2=[1, 6] -> the spec expects [1, 2, 3, 4, 5, 6]",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "one required i64 column on every input"
+  }
+ },
+ {
+  "case": "setop_intersection_multiset",
+  "plan": "setop_intersection_multiset.json",
+  "binary": "setop_intersection_multiset.bin",
+  "generator": "GenSetOps",
+  "note": "INTERSECTION_MULTISET  the spec expects RRRRRRRN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_intersection_multiset_all",
+  "plan": "setop_intersection_multiset_all.json",
+  "binary": "setop_intersection_multiset_all.bin",
+  "generator": "GenSetOps",
+  "note": "INTERSECTION_MULTISET_ALL  the spec expects RRRRRRRN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_intersection_primary",
+  "plan": "setop_intersection_primary.json",
+  "binary": "setop_intersection_primary.bin",
+  "generator": "GenSetOps",
+  "note": "INTERSECTION_PRIMARY  the spec expects RRRRRNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_minus_multiset",
+  "plan": "setop_minus_multiset.json",
+  "binary": "setop_minus_multiset.bin",
+  "generator": "GenSetOps",
+  "note": "MINUS_MULTISET  the spec expects RRRRNNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_minus_primary",
+  "plan": "setop_minus_primary.json",
+  "binary": "setop_minus_primary.bin",
+  "generator": "GenSetOps",
+  "note": "MINUS_PRIMARY  the spec expects RRRRNNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_minus_primary_all",
+  "plan": "setop_minus_primary_all.json",
+  "binary": "setop_minus_primary_all.bin",
+  "generator": "GenSetOps",
+  "note": "MINUS_PRIMARY_ALL  the spec expects RRRRNNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_union_all",
+  "plan": "setop_union_all.json",
+  "binary": "setop_union_all.bin",
+  "generator": "GenSetOps",
+  "note": "UNION_ALL  the spec expects RNNNNNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "setop_union_distinct",
+  "plan": "setop_union_distinct.json",
+  "binary": "setop_union_distinct.bin",
+  "generator": "GenSetOps",
+  "note": "UNION_DISTINCT  the spec expects RNNNNNNN",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the Output Type Derivation Examples table in the spec"
+  }
+ },
+ {
+  "case": "stringlen_declared",
+  "plan": "stringlen_declared.json",
+  "binary": "stringlen_declared.bin",
+  "generator": "GenStringLen",
+  "note": "stringlen_declared  varchar(10), fixed_char(5), fixed_binary(4), string",
+  "expectation": {
+   "schema": [
+    [
+     "vchar(10)",
+     false
+    ],
+    [
+     "fchar(5)",
+     false
+    ],
+    [
+     "fbin(4)",
+     false
+    ],
+    [
+     "str",
+     false
+    ]
+   ],
+   "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "virtual_table_emit_mapping",
+  "plan": "virtual_table_emit_mapping.json",
+  "binary": "virtual_table_emit_mapping.bin",
+  "generator": "GenCases",
+  "note": "A virtual table carrying an emit mapping returns only the columns the mapping names.",
+  "source": "substrait-java#1189",
+  "expectation": {
+   "schema": [
+    [
+     "str",
+     false
+    ]
+   ],
+   "from": "RelCommon.emit over a virtual table: the listed order of direct outputs"
+  }
+ },
+ {
+  "case": "virtual_table_literal_type_differs_from_schema",
+  "plan": "virtual_table_literal_type_differs_from_schema.json",
+  "binary": "virtual_table_literal_type_differs_from_schema.bin",
+  "generator": "GenDisputed",
+  "note": "virtual_table_literal_type_differs_from_schema  (base_schema declares i32, the literal is i8)",
+  "expectation": {
+   "none": "same",
+   "because": "the spec is silent"
+  }
+ },
+ {
+  "case": "virtual_table_row_null_in_required_column",
+  "plan": "virtual_table_row_null_in_required_column.json",
+  "binary": "virtual_table_row_null_in_required_column.bin",
+  "generator": "GenDisputed",
+  "note": "virtual_table_row_null_in_required_column  (base_schema declares i32, the value is null)",
+  "expectation": {
+   "none": "the spec does not say which type wins, the row's or the schema's",
+   "because": "the spec is silent"
+  }
+ },
+ {
+  "case": "virtual_table_row_nullable_in_required_column",
+  "plan": "virtual_table_row_nullable_in_required_column.json",
+  "binary": "virtual_table_row_nullable_in_required_column.bin",
+  "generator": "GenDisputed",
+  "note": "virtual_table_row_nullable_in_required_column  (base_schema declares i32, the literal is i32?)",
+  "expectation": {
+   "none": "same",
+   "because": "the spec is silent"
+  }
+ },
+ {
+  "case": "virtual_table_row_required_in_nullable_column",
+  "plan": "virtual_table_row_required_in_nullable_column.json",
+  "binary": "virtual_table_row_required_in_nullable_column.bin",
+  "generator": "GenDisputed",
+  "note": "virtual_table_row_required_in_nullable_column  (base_schema declares i32?, the literal is i32)",
+  "expectation": {
+   "none": "same",
+   "because": "the spec is silent"
+  }
+ }
 ]

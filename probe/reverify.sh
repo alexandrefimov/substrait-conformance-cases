@@ -150,6 +150,24 @@ else
   fi
 fi
 
+# The manifest says, per case, which generator writes it and what that generator calls it. It is
+# built from the generators rather than kept by hand, so it is checked the way the corpus is: rebuilt
+# into a temporary file and compared, replaced only under UPDATE_CORPUS=1.
+MAN="$(mktemp)"
+if bash "$GEN/make_manifest.sh" "$MAN" >/dev/null 2>&1; then
+  if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
+    cp "$MAN" "$CASES/manifest.json"
+    echo "manifest updated from the fresh generation (UPDATE_CORPUS=1)"
+  elif cmp -s "$MAN" "$CASES/manifest.json"; then
+    echo "the manifest matches the saved one"
+  else
+    fail "the manifest drifted from the saved one; sync it with UPDATE_CORPUS=1"
+  fi
+else
+  fail "could not rebuild the manifest"
+fi
+rm -f "$MAN"
+
 # Every ##### block must carry a verdict. Counting blocks is not enough: a block without a
 # verdict is a case silently lost.
 check_blocks() { # <file> <expected> <name> <verdict-regexp>

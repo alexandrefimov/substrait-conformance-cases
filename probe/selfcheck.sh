@@ -167,6 +167,44 @@ raise SystemExit(bad)
 PY
 
 echo
+echo "### the manifest agrees with the corpus and with the expectations"
+python3 - <<'MANPY' || FAILED=1
+import glob, json, os
+
+# The manifest is rebuilt from the generators by gen/make_manifest.sh, which needs a substrait-java
+# checkout. What can be checked here without one is that it still describes this corpus and these
+# expectations, which is what goes stale first.
+man = json.load(open("derived-schema/manifest.json", encoding="utf-8"))
+exp = json.load(open("expected.json", encoding="utf-8"))
+corpus = {os.path.basename(f)[:-5] for f in glob.glob("derived-schema/*.json")
+          if not f.endswith("manifest.json")}
+bad = 0
+named = {e["case"] for e in man}
+if named != corpus:
+    print("FAILED: the manifest does not cover the corpus: missing %s, extra %s"
+          % (sorted(corpus - named)[:4], sorted(named - corpus)[:4]))
+    bad = 1
+for e in man:
+    for field in ("plan", "binary", "generator", "note", "expectation"):
+        if not e.get(field):
+            print("FAILED: %s: the manifest entry has no %s" % (e["case"], field)); bad = 1
+    for field, suffix in (("plan", ".json"), ("binary", ".bin")):
+        if e.get(field) and not os.path.exists(os.path.join("derived-schema", e[field])):
+            print("FAILED: %s: %s does not exist" % (e["case"], e[field])); bad = 1
+    want = exp["expected"].get(e["case"])
+    got = e.get("expectation", {})
+    if want and got.get("schema") != want["schema"]:
+        print("FAILED: %s: the manifest schema differs from expected.json" % e["case"]); bad = 1
+    if not want and "schema" in got:
+        print("FAILED: %s: the manifest carries a schema the expectations do not" % e["case"]); bad = 1
+if not bad:
+    with_source = sum(1 for e in man if "source" in e)
+    print("ok      %d entries, %d naming a source issue, all expectations matching expected.json"
+          % (len(man), with_source))
+raise SystemExit(bad)
+MANPY
+
+echo
 echo "### syntax"
 SYNTAX=0
 for f in probe/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done
