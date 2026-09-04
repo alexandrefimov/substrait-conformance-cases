@@ -90,6 +90,62 @@ raise SystemExit(bad)
 PY
 
 echo
+echo "### the swap table agrees with LIE.txt"
+python3 - <<'LIEPY' || FAILED=1
+import io, json, re, sys
+
+# The README's second table says how many answers move when the declared output_type is swapped.
+# LIE.txt is the per-case run behind it, so the counts can be derived from the file rather than
+# trusted. "Moved" is follows plus changed: both mean the answer depends on the declaration, and the
+# difference between them is only whether it matched the swap exactly.
+MOVED = {"follows", "changed"}
+lines = io.open("LIE.txt", encoding="utf-8").read().splitlines()
+head = next(i for i, l in enumerate(lines) if l.startswith("case "))
+names = lines[head].split()[1:]
+verdicts = {n: {} for n in names}
+for line in lines[head + 1:]:
+    if not line.strip() or not line[0].isalnum():
+        break
+    cells = re.findall(r"\S+(?: \S+)?(?=\s{2,}|$)", line.rstrip())
+    case, cells = cells[0], cells[1:]
+    for n, v in zip(names, cells):
+        verdicts[n][case] = v.strip()
+
+have = set(json.load(open("expected.json", encoding="utf-8"))["expected"])
+LABEL = {"JAVA": "substrait-java", "PYTHON": "substrait-python",
+         "VALIDATOR": "substrait-validator", "DUCKDB": "DuckDB"}
+counts = {}
+for col, label in LABEL.items():
+    moved = [c for c, v in verdicts.get(col, {}).items() if v in MOVED]
+    counts[label] = (len(moved), len([c for c in moved if c in have]))
+
+readme, inside = {}, False
+for line in io.open("README.md", encoding="utf-8"):
+    if line.strip().startswith("| | answers that move |"):
+        inside = True
+        continue
+    if inside:
+        m = re.match(r"^\|\s*([A-Za-z/-]+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|", line)
+        if m:
+            readme[m.group(1).strip()] = (int(m.group(2)), int(m.group(3)))
+        elif not line.startswith("|"):
+            inside = False
+bad = 0
+if not readme:
+    print("FAILED: no swap table found in README.md")
+    bad = 1
+for label, got in sorted(counts.items()):
+    want = readme.get(label)
+    if want is None:
+        print("FAILED: %s: no row in the README swap table" % label); bad = 1
+    elif want != got:
+        print("FAILED: %s: README says %s, LIE.txt gives %s" % (label, want, got)); bad = 1
+    else:
+        print("ok      %-20s moved %d, of them with an expectation %d" % (label, got[0], got[1]))
+raise SystemExit(bad)
+LIEPY
+
+echo
 echo "### the corpus is whole"
 python3 - <<'PY' || FAILED=1
 import json, os, sys
