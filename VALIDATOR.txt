@@ -1,0 +1,80 @@
+VALIDATOR: column from run 2026-09-04T09:23
+
+aggregate_grouping_field_shared_by_sets        [i32, unresolved]
+aggregate_grouping_sets_declared_order         [i32, unresolved]
+control_join_without_relcommon                 [i64, i64?, i64?, i64]
+control_passthrough_rn                         [c0:i64, c1:i64?]
+ctas_keeps_declared_schema                     —
+decimal_add_overflow                           [dec(38,9)]
+decimal_add                                    [dec(11,2)]
+decimal_divide                                 [dec(21,8)]
+decimal_multiply_overflow                      [dec(38,6)]
+decimal_multiply                               [dec(16,3)]
+emit_aggregate                                 [unresolved, unresolved]
+emit_fetch                                     [bool, i64]
+emit_filter                                    [bool, i64]
+emit_join                                      [bool, i64]
+emit_project                                   [bool, i64]
+emit_read                                      [bool, i64]
+emit_sort                                      [bool, i64]
+join_inner                                     [i64, i64?, i64?, i64]
+join_left_anti                                 [i64, i64?]
+join_left_mark                                 [i64, i64?, i64?, i64]
+join_left_semi                                 [i64, i64?]
+join_left_single                               [i64, i64?, i64?, i64?]
+join_left                                      [i64, i64?, i64?, i64?]
+join_outer                                     [i64?, i64?, i64?, i64?]
+join_right_anti                                [i64, i64?, i64?, i64]
+join_right_mark                                [i64, i64?, i64?, i64]
+join_right_semi                                [i64, i64?, i64?, i64]
+join_right_single                              [i64, i64?, i64?, i64]
+join_right                                     [i64?, i64?, i64?, i64]
+joineq_inner                                   [i64, i64?, i64?, i64]
+joineq_left_anti                               [i64, i64?]
+joineq_left_mark                               [i64, i64?, i64?, i64]
+joineq_left_semi                               [i64, i64?]
+joineq_left_single                             [i64, i64?, i64?, i64?]
+joineq_left                                    [i64, i64?, i64?, i64?]
+joineq_outer                                   [i64?, i64?, i64?, i64?]
+joineq_right_anti                              [i64, i64?, i64?, i64]
+joineq_right_mark                              [i64, i64?, i64?, i64]
+joineq_right_semi                              [i64, i64?, i64?, i64]
+joineq_right_single                            [i64, i64?, i64?, i64]
+joineq_right                                   [i64?, i64?, i64?, i64]
+narrowing_count                                [i64]
+narrowing_is_not_null                          [bool]
+narrowing_is_null                              [bool]
+phase_final                                    [i64?]
+phase_intermediate                             [[i64, i64]]
+precision_timestamp_p00                        [c:unresolved]
+precision_timestamp_p01                        [c:unresolved]
+precision_timestamp_p02                        [c:unresolved]
+precision_timestamp_p03                        [c:unresolved]
+precision_timestamp_p04                        [c:unresolved]
+precision_timestamp_p06                        [c:unresolved]
+precision_timestamp_p07                        [c:unresolved]
+precision_timestamp_p09                        [c:unresolved]
+precision_timestamp_p12                        [c:unresolved]
+read_projection_mask                           [bool, i64]
+setdata_intersection_multiset_all              i64
+setdata_intersection_multiset                  i64
+setdata_intersection_primary                   i64
+setdata_minus_multiset                         i64
+setdata_minus_primary_all                      i64
+setdata_minus_primary                          i64
+setdata_union_all                              i64
+setdata_union_distinct                         i64
+setop_intersection_multiset_all                [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_intersection_multiset                    [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_intersection_primary                     [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_minus_multiset                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_minus_primary_all                        [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_minus_primary                            [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_union_all                                [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_union_distinct                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
+virtual_table_emit_mapping                     [unresolved]
+virtual_table_literal_type_differs_from_schema i8
+virtual_table_row_null_in_required_column      i32?
+virtual_table_row_nullable_in_required_column  i32?
+virtual_table_row_required_in_nullable_column  i32

@@ -1,0 +1,80 @@
+JAVA: column from run 2026-09-04T09:23
+
+aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
+aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}
+control_join_without_relcommon                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+control_passthrough_rn                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+ctas_keeps_declared_schema                     Struct{nullable=false, fields=[I32{nullable=true}, I32{nullable=true}]}
+decimal_add_overflow                           Struct{nullable=false, fields=[Decimal{nullable=false, scale=9, precision=38}]}
+decimal_add                                    Struct{nullable=false, fields=[Decimal{nullable=false, scale=2, precision=11}]}
+decimal_divide                                 Struct{nullable=false, fields=[Decimal{nullable=false, scale=8, precision=21}]}
+decimal_multiply_overflow                      Struct{nullable=false, fields=[Decimal{nullable=false, scale=6, precision=38}]}
+decimal_multiply                               Struct{nullable=false, fields=[Decimal{nullable=false, scale=3, precision=16}]}
+emit_aggregate                                 Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_fetch                                     Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_filter                                    Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_join                                      Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_project                                   Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_read                                      Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+emit_sort                                      Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+join_inner                                     Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+join_left_anti                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+join_left_mark                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, Bool{nullable=true}]}
+join_left_semi                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+join_left_single                               Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+join_left                                      Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+join_outer                                     Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+join_right_anti                                Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
+join_right_mark                                Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}, Bool{nullable=true}]}
+join_right_semi                                Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
+join_right_single                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+join_right                                     Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+joineq_inner                                   Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+joineq_left_anti                               Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+joineq_left_mark                               Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, Bool{nullable=true}]}
+joineq_left_semi                               Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+joineq_left_single                             Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+joineq_left                                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+joineq_outer                                   Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+joineq_right_anti                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
+joineq_right_mark                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}, Bool{nullable=true}]}
+joineq_right_semi                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
+joineq_right_single                            Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+joineq_right                                   Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+narrowing_count                                Struct{nullable=false, fields=[I64{nullable=false}]}
+narrowing_is_not_null                          Struct{nullable=false, fields=[Bool{nullable=false}]}
+narrowing_is_null                              Struct{nullable=false, fields=[Bool{nullable=false}]}
+phase_final                                    Struct{nullable=false, fields=[I64{nullable=true}]}
+phase_intermediate                             Struct{nullable=false, fields=[Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}]}]}
+precision_timestamp_p00                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=0}]}
+precision_timestamp_p01                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=1}]}
+precision_timestamp_p02                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=2}]}
+precision_timestamp_p03                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=3}]}
+precision_timestamp_p04                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=4}]}
+precision_timestamp_p06                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=6}]}
+precision_timestamp_p07                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=7}]}
+precision_timestamp_p09                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=9}]}
+precision_timestamp_p12                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=12}]}
+read_projection_mask                           Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+setdata_intersection_multiset_all              Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_intersection_multiset                  Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_intersection_primary                   Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_minus_multiset                         Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_minus_primary_all                      Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_minus_primary                          Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_union_all                              Struct{nullable=false, fields=[I64{nullable=false}]}
+setdata_union_distinct                         Struct{nullable=false, fields=[I64{nullable=false}]}
+setop_intersection_multiset_all                Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}]}
+setop_intersection_multiset                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}]}
+setop_intersection_primary                     Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+setop_minus_multiset                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+setop_minus_primary_all                        Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+setop_minus_primary                            Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+setop_union_all                                Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+setop_union_distinct                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+stringlen_declared                             Struct{nullable=false, fields=[VarChar{nullable=false, length=10}, FixedChar{nullable=false, length=5}, FixedBinary{nullable=false, length=4}, Str{nullable=false}]}
+virtual_table_emit_mapping                     Struct{nullable=false, fields=[Str{nullable=false}]}
+virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullab
+virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullab
+virtual_table_row_nullable_in_required_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullab
+virtual_table_row_required_in_nullable_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=false}) does not match schema field type (I32{nulla

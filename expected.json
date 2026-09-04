@@ -1,0 +1,1250 @@
+{
+ "disputed": {
+  "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
+  "virtual_table_literal_type_differs_from_schema": "same",
+  "virtual_table_row_null_in_required_column": "the spec does not say which type wins, the row's or the schema's",
+  "virtual_table_row_nullable_in_required_column": "same",
+  "virtual_table_row_required_in_nullable_column": "same"
+ },
+ "expected": {
+  "aggregate_grouping_field_shared_by_sets": {
+   "schema": [
+    [
+     "str",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "Aggregate: only fields absent from some grouping set become nullable"
+  },
+  "aggregate_grouping_sets_declared_order": {
+   "schema": [
+    [
+     "str",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable"
+  },
+  "control_join_without_relcommon": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "inner join without RelCommon: inputs concatenated, nullability unchanged"
+  },
+  "control_passthrough_rn": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "decimal_add": {
+   "schema": [
+    [
+     "dec(11,2)",
+     false
+    ]
+   ],
+   "source": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  },
+  "decimal_add_overflow": {
+   "schema": [
+    [
+     "dec(38,9)",
+     false
+    ]
+   ],
+   "source": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  },
+  "decimal_divide": {
+   "schema": [
+    [
+     "dec(21,8)",
+     false
+    ]
+   ],
+   "source": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  },
+  "decimal_multiply": {
+   "schema": [
+    [
+     "dec(16,3)",
+     false
+    ]
+   ],
+   "source": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  },
+  "decimal_multiply_overflow": {
+   "schema": [
+    [
+     "dec(38,6)",
+     false
+    ]
+   ],
+   "source": "the functions_arithmetic_decimal.yaml formula, computed in expected.py"
+  },
+  "emit_aggregate": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_fetch": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_filter": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_join": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_project": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_read": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "emit_sort": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit: the listed order of direct outputs"
+  },
+  "join_inner": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_left": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_left_anti": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_left_mark": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_left_semi": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_left_single": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_outer": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_right": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_right_anti": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_right_mark": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_right_semi": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "join_right_single": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_inner": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_left": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_left_anti": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_left_mark": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_left_semi": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_left_single": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_outer": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_right": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_right_anti": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_right_mark": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_right_semi": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "joineq_right_single": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the spec rules for join types and Direct Output Order"
+  },
+  "narrowing_count": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "the declared return of count: i64 required"
+  },
+  "narrowing_is_not_null": {
+   "schema": [
+    [
+     "bool",
+     false
+    ]
+   ],
+   "source": "is_not_null returns a required boolean"
+  },
+  "narrowing_is_null": {
+   "schema": [
+    [
+     "bool",
+     false
+    ]
+   ],
+   "source": "is_null returns a required boolean"
+  },
+  "phase_final": {
+   "schema": [
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the declared return of avg:i64 in functions_arithmetic.yaml"
+  },
+  "phase_intermediate": {
+   "schema": [
+    [
+     "struct(i64,i64)",
+     false
+    ]
+   ],
+   "source": "functions_arithmetic.yaml: avg:i64, intermediate: STRUCT<i64,i64>"
+  },
+  "precision_timestamp_p00": {
+   "schema": [
+    [
+     "precision_timestamp(0)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p01": {
+   "schema": [
+    [
+     "precision_timestamp(1)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p02": {
+   "schema": [
+    [
+     "precision_timestamp(2)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p03": {
+   "schema": [
+    [
+     "precision_timestamp(3)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p04": {
+   "schema": [
+    [
+     "precision_timestamp(4)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p06": {
+   "schema": [
+    [
+     "precision_timestamp(6)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p07": {
+   "schema": [
+    [
+     "precision_timestamp(7)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p09": {
+   "schema": [
+    [
+     "precision_timestamp(9)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "precision_timestamp_p12": {
+   "schema": [
+    [
+     "precision_timestamp(12)",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "read_projection_mask": {
+   "schema": [
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "Read / Direct Output Order: the schema after projection is applied"
+  },
+  "setdata_intersection_multiset": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_intersection_multiset_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_intersection_primary": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_minus_multiset": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_minus_primary": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_minus_primary_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_union_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setdata_union_distinct": {
+   "schema": [
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "one required i64 column on every input"
+  },
+  "setop_intersection_multiset": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_intersection_multiset_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_intersection_primary": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_minus_multiset": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_minus_primary": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_minus_primary_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_union_all": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "setop_union_distinct": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the Output Type Derivation Examples table in the spec"
+  },
+  "stringlen_declared": {
+   "schema": [
+    [
+     "vchar(10)",
+     false
+    ],
+    [
+     "fchar(5)",
+     false
+    ],
+    [
+     "fbin(4)",
+     false
+    ],
+    [
+     "str",
+     false
+    ]
+   ],
+   "source": "a read with no operations: the schema is base_schema"
+  },
+  "virtual_table_emit_mapping": {
+   "schema": [
+    [
+     "str",
+     false
+    ]
+   ],
+   "source": "RelCommon.emit over a virtual table: the listed order of direct outputs"
+  }
+ },
+ "rows": {
+  "setdata_intersection_multiset": {
+   "rows": [
+    3
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_intersection_multiset_all": {
+   "rows": [
+    2,
+    3,
+    3
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_intersection_primary": {
+   "rows": [
+    1,
+    2,
+    3
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_minus_multiset": {
+   "rows": [
+    3,
+    4
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_minus_primary": {
+   "rows": [
+    4
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_minus_primary_all": {
+   "rows": [
+    2,
+    3,
+    3
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_union_all": {
+   "rows": [
+    1,
+    1,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    4,
+    5,
+    6
+   ],
+   "source": "the example the spec prints for this operation"
+  },
+  "setdata_union_distinct": {
+   "rows": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "source": "the example the spec prints for this operation"
+  }
+ },
+ "spec_says_invalid": [
+  "ctas_keeps_declared_schema"
+ ],
+ "spec_silent": [
+  "virtual_table_literal_type_differs_from_schema",
+  "virtual_table_row_null_in_required_column",
+  "virtual_table_row_nullable_in_required_column",
+  "virtual_table_row_required_in_nullable_column"
+ ]
+}

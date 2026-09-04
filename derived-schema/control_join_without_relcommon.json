@@ -1,0 +1,73 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "join": {
+          "left": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_rn"]
+              }
+            }
+          },
+          "right": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_nr"]
+              }
+            }
+          },
+          "expression": {
+            "literal": {
+              "boolean": true
+            }
+          },
+          "type": "JOIN_TYPE_INNER"
+        }
+      },
+      "names": ["a", "b", "c", "d"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

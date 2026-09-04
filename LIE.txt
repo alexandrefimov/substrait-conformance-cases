@@ -1,0 +1,27 @@
+Who notices the declared type having been swapped for a false one. 2026-09-03
+Swapped corpus: probe/make_lied_corpus.py (decimal -> dec(20,2), i64 -> i32, i32 -> i64);
+only arithmetic and aggregates are swapped - 8 cases out of the 75 the corpus held then.
+
+  follows    - the answer went with the swap (the declaration was copied)
+  held       - the answer did not change (the type was derived independently)
+  NOTICED    - an error only on the swapped plan (nobody)
+  both fail  - the case is unsupported either way
+
+This table was taken over the participant set below. probe/lie_matrix.sh re-runs the same
+measurement over the participants whose probes run locally from one command, which is a
+different set: DuckDB in place of Spark and Gluten. The rows they share agree.
+
+case                              substrait-java      substrait-python    substrait-validator Spark               Gluten/Velox        
+ctas_keeps_declared_schema        follows             both fail           held                held                both fail           
+decimal_add                       follows             follows             follows             held                follows             
+decimal_add_overflow              follows             follows             follows             held                follows             
+decimal_divide                    follows             follows             follows             held                follows             
+decimal_multiply                  follows             follows             follows             held                follows             
+decimal_multiply_overflow         follows             follows             follows             held                follows             
+narrowing_count                   follows             follows             follows             both fail           both fail           
+phase_final                       follows             follows             follows             both fail           follows             
+
+Isthmus: the TypeObserver notices the swap on all eight
+(for example: declared DECIMAL(20, 2), Calcite derived DECIMAL(11, 2)),
+but it compares against what Calcite derives, not against the spec: on the unswapped corpus
+it reports divergences on the same four decimal cases.

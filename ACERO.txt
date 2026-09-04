@@ -1,0 +1,81 @@
+ACERO: column from run 2026-09-04T09:23
+Carries nullability (the probe prints f.nullable); it is compared alongside the types.
+
+aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
+aggregate_grouping_sets_declared_order         ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
+control_join_without_relcommon                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+control_passthrough_rn                         [c0:int64, c1:int64?]
+ctas_keeps_declared_schema                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debugproto     write {   named_table {     names: "dst1"   }   table_schema {
+decimal_add_overflow                           ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 39
+decimal_add                                    [r:decimal128(11, 2)?]
+decimal_divide                                 [r:decimal128(16, 7)?]
+decimal_multiply_overflow                      ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 77
+decimal_multiply                               [r:decimal128(16, 3)?]
+emit_aggregate                                 ERROR: signal/exit 139
+emit_fetch                                     [k0:bool?, k1:int64?]
+emit_filter                                    [k0:bool?, k1:int64?]
+emit_join                                      ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+emit_project                                   [k0:bool?, k1:int64?]
+emit_read                                      [k0:bool?, k1:int64?]
+emit_sort                                      [k0:bool?, k1:int64?]
+join_inner                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_left_anti                                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_left_mark                                 ERROR: ArrowInvalid: Unsupported join type
+join_left_semi                                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_left_single                               ERROR: ArrowInvalid: Unsupported join type
+join_left                                      ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_outer                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_right_anti                                ERROR: ArrowInvalid: Unsupported join type
+join_right_mark                                ERROR: ArrowInvalid: Unsupported join type
+join_right_semi                                ERROR: ArrowInvalid: Unsupported join type
+join_right_single                              ERROR: ArrowInvalid: Unsupported join type
+join_right                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+joineq_inner                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+joineq_left_anti                               ERROR: ArrowInvalid: attempted to rename schema with 4 fields but only 2 new names were given
+joineq_left_mark                               ERROR: ArrowInvalid: Unsupported join type
+joineq_left_semi                               ERROR: ArrowInvalid: attempted to rename schema with 4 fields but only 2 new names were given
+joineq_left_single                             ERROR: ArrowInvalid: Unsupported join type
+joineq_left                                    [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+joineq_outer                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+joineq_right_anti                              ERROR: ArrowInvalid: Unsupported join type
+joineq_right_mark                              ERROR: ArrowInvalid: Unsupported join type
+joineq_right_semi                              ERROR: ArrowInvalid: Unsupported join type
+joineq_right_single                            ERROR: ArrowInvalid: Unsupported join type
+joineq_right                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+narrowing_count                                [n:int64?]
+narrowing_is_not_null                          [r:bool?]
+narrowing_is_null                              [r:bool?]
+phase_final                                    [r:double?]
+phase_intermediate                             ERROR: ArrowNotImplementedError: Unsupported aggregation phase 'AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE'.  Only INITIAL_TO_RESULT is supported
+precision_timestamp_p00                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+precision_timestamp_p01                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (1)
+precision_timestamp_p02                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (2)
+precision_timestamp_p03                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+precision_timestamp_p04                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (4)
+precision_timestamp_p06                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+precision_timestamp_p07                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (7)
+precision_timestamp_p09                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+precision_timestamp_p12                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (12)
+read_projection_mask                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+setdata_intersection_multiset_all              ERROR: ArrowInvalid: Unknown union type
+setdata_intersection_multiset                  ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
+setdata_intersection_primary                   ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_PRIMARY
+setdata_minus_multiset                         ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_MULTISET
+setdata_minus_primary_all                      ERROR: ArrowInvalid: Unknown union type
+setdata_minus_primary                          ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+setdata_union_all                              ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+setdata_union_distinct                         ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
+setop_intersection_multiset_all                ERROR: ArrowInvalid: Unknown union type
+setop_intersection_multiset                    ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
+setop_intersection_primary                     ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_PRIMARY
+setop_minus_multiset                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_MULTISET
+setop_minus_primary_all                        ERROR: ArrowInvalid: Unknown union type
+setop_minus_primary                            ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+setop_union_all                                ERROR: ArrowInvalid: UnionNode input schemas must all match, first schema was: c0: int64 not null c1: int64 not null c2: int64 not null c3: int64 not null c4: int64 c5: in
+setop_union_distinct                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
+stringlen_declared                             [c0:string, c1:string, c2:binary, c3:string]
+virtual_table_emit_mapping                     ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+virtual_table_literal_type_differs_from_schema ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+virtual_table_row_null_in_required_column      ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+virtual_table_row_nullable_in_required_column  ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+virtual_table_row_required_in_nullable_column  ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles

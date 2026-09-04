@@ -1,0 +1,79 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "aggregate": {
+          "common": {
+            "emit": {
+              "outputMapping": [2, 0]
+            }
+          },
+          "input": {
+            "read": {
+              "baseSchema": {
+                "names": ["c0", "c1", "c2"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "string": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "bool": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_mix"]
+              }
+            }
+          },
+          "groupings": [{
+            "expressionReferences": [0, 1, 2]
+          }],
+          "groupingExpressions": [{
+            "selection": {
+              "directReference": {
+                "structField": {
+                }
+              },
+              "rootReference": {
+              }
+            }
+          }, {
+            "selection": {
+              "directReference": {
+                "structField": {
+                  "field": 1
+                }
+              },
+              "rootReference": {
+              }
+            }
+          }, {
+            "selection": {
+              "directReference": {
+                "structField": {
+                  "field": 2
+                }
+              },
+              "rootReference": {
+              }
+            }
+          }]
+        }
+      },
+      "names": ["k0", "k1"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

@@ -1,0 +1,40 @@
+// Prints the classpath pieces the case generators need, so gen/make_classpath.sh can assemble
+// them without any absolute path being checked in.
+//
+//   ./gradlew -I <this file> -q :core:printCoreCp
+//
+// :core's own runtime classpath is not enough. ANTLR is a `shadowImplementation` dependency
+// (compile-only for consumers, shaded into :core's jar), and the generators additionally need
+// protobuf-java-util — with the gson it pulls in — to write protobuf-JSON, plus guava.
+//
+// protobuf-java-util is resolved at the version of the protobuf-java that :core itself already
+// resolves, not at the version catalog's: :core takes protobuf-java transitively from the
+// substrait-packaging artifact, and those two can sit a release apart. Mixing them changes how
+// JsonFormat prints, which would change the generated cases.
+gradle.afterProject { p ->
+  if (p.path == ':core') {
+    p.tasks.register('printCoreCp') {
+      doLast {
+        def main = p.sourceSets.main.runtimeClasspath.files as List
+        def pb = main.find { it.name ==~ /protobuf-java-\d.*\.jar/ }
+        def coords = []
+        if (pb != null) {
+          coords << ("com.google.protobuf:protobuf-java-util:" +
+                     (pb.name =~ /protobuf-java-(.+)\.jar/)[0][1]).toString()
+        }
+        def catalogs = p.extensions.findByType(org.gradle.api.artifacts.VersionCatalogsExtension)
+        coords << catalogs.named('libs').findLibrary('guava').get().get().toString()
+
+        def deps = coords.collect { p.dependencies.create(it) } as org.gradle.api.artifacts.Dependency[]
+        def extra = p.configurations.detachedConfiguration(deps).resolve() as List
+        def shadow = p.configurations.getByName('shadowImplementation').resolve() as List
+
+        println "MAINCP"
+        println main.join(':')
+        println "EXTRACP"
+        println((shadow + extra).join(':'))
+        println "CPEND"
+      }
+    }
+  }
+}

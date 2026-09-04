@@ -1,0 +1,43 @@
+[
+  {
+    "case": "virtual_table_emit_mapping",
+    "plan": "virtual_table_emit_mapping.json",
+    "source": "substrait-java#1189",
+    "note": "A virtual table carrying an emit mapping returns only the columns the mapping names.",
+    "assertion": "output_schema",
+    "expected": "Struct{nullable=false, fields=[Str{nullable=false}]}",
+    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=false}]}",
+    "output_names": ["col2"]
+  },
+  {
+    "case": "aggregate_grouping_sets_declared_order",
+    "plan": "aggregate_grouping_sets_declared_order.json",
+    "source": "substrait-java#1161",
+    "note": "The aggregate declares field 2 before field 0; the declared order is the output order.",
+    "assertion": "output_schema",
+    "expected": "Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}",
+    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}",
+    "output_names": ["c", "a"]
+  },
+  {
+    "case": "aggregate_grouping_field_shared_by_sets",
+    "plan": "aggregate_grouping_field_shared_by_sets.json",
+    "source": "substrait-java#1161",
+    "note": "A field grouped on by both sets is one output column, not two.",
+    "assertion": "output_schema",
+    "expected": "Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}",
+    "derived_output_schema": "Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}",
+    "output_names": ["c", "a"]
+  },
+  {
+    "case": "ctas_keeps_declared_schema",
+    "plan": "ctas_keeps_declared_schema.json",
+    "source": "substrait-java#1181",
+    "note": "A CTAS declares the schema of the table it creates; it is not the schema of its input.",
+    "assertion": "declared_table_schema",
+    "expected": "NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I32{nullable=true}]}, names=[total, doubled]}",
+    "derived_output_schema": "Struct{nullable=false, fields=[I32{nullable=true}, I32{nullable=true}]}",
+    "output_names": ["total", "doubled"],
+    "caveat": "The spec says a write's input schema must match table_schema; this case has them differ on purpose, so whether the plan is valid at all is an open question for the thread."
+  }
+]

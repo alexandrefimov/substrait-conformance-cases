@@ -1,0 +1,80 @@
+Gluten (Velox) @ f7f5f04, a corpus of 78 cases (74 submitted, 4 not expressible in its proto), 2026-09-03.
+BOUNDARY: carries no nullability; types, arity, column order and rows are checked.
+IMPORTANT: for tables with no data the virtual table is now honestly empty, and Velox derives ROW<>,
+so 19 were accepted rather than the 25 of the earlier variant with a synthetic row.
+Boundaries as before: Velox carries no nullability, and repeats the declared type of a function.
+
+aggregate_grouping_field_shared_by_sets  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: At most one grouping is supported, but got 2.
+aggregate_grouping_sets_declared_order  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: At most one grouping is supported, but got 2.
+control_join_without_relcommon  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+control_passthrough_rn  ROW<>
+ctas_keeps_declared_schema  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Parsing for Substrait type not supported: varchar {   length: 10   nullability: NULLABILITY_NULLABLE } 
+decimal_add  ROW<n1_4:DECIMAL(11, 2)>
+decimal_add_overflow  ROW<n1_4:DECIMAL(38, 9)>
+decimal_divide  ROW<n1_4:DECIMAL(21, 8)>
+decimal_multiply  ROW<n1_4:DECIMAL(16, 3)>
+decimal_multiply_overflow  ROW<n1_4:DECIMAL(38, 6)>
+emit_aggregate  ROW<n0_2:BOOLEAN,n0_0:BIGINT>
+emit_fetch  ROW<n0_0:BIGINT,n0_1:VARCHAR,n0_2:BOOLEAN>
+emit_filter  ROW<n0_2:BOOLEAN,n0_0:BIGINT>
+emit_join  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+emit_project  ROW<n0_2:BOOLEAN,n0_0:BIGINT>
+emit_read  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Emit not supported for ValuesNode and TableScanNode related Substrait plans.
+emit_sort  ROW<n0_0:BIGINT,n0_1:VARCHAR,n0_2:BOOLEAN>
+join_inner  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_left  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_left_anti  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_left_mark  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.join.type): invalid value "JOIN_TYPE_LEFT_MARK" for type type.googleapis.com/substrait.JoinRel.JoinType
+join_left_semi  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_left_single  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 7
+join_outer  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_right  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_right_anti  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 9
+join_right_mark  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.join.type): invalid value "JOIN_TYPE_RIGHT_MARK" for type type.googleapis.com/substrait.JoinRel.JoinType
+join_right_semi  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Unable to parse from join expression: literal {   boolean: true } 
+join_right_single  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 10
+joineq_inner  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_left  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_left_anti  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_left_mark  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.join.type): invalid value "JOIN_TYPE_LEFT_MARK" for type type.googleapis.com/substrait.JoinRel.JoinType
+joineq_left_semi  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_left_single  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 7
+joineq_outer  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_right  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_right_anti  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 9
+joineq_right_mark  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.join.type): invalid value "JOIN_TYPE_RIGHT_MARK" for type type.googleapis.com/substrait.JoinRel.JoinType
+joineq_right_semi  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+joineq_right_single  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Unsupported Join type: 10
+narrowing_count  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+narrowing_is_not_null  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+narrowing_is_null  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Field reference index 0 is out of range for the 0-field row type.
+phase_final  ROW<n1_0:BIGINT>
+phase_intermediate  ROW<n1_0:ROW<col_0:BIGINT,col_1:BIGINT>>
+precision_timestamp_p00  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p01  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p02  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p03  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p04  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p06  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p07  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p09  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+precision_timestamp_p12  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input.read.virtual_table.expressions[0].fields[0].literal) precisionTimestamp: Cannot find field.
+read_projection_mask  ROW<n0_0:BIGINT,n0_1:VARCHAR,n0_2:BOOLEAN>
+setdata_intersection_multiset  ERROR: Unsupported SetRel op: 4
+setdata_intersection_primary  ERROR: Unsupported SetRel op: 3
+setdata_minus_multiset  ERROR: Unsupported SetRel op: 2
+setdata_minus_primary  ERROR: Unsupported SetRel op: 1
+setdata_union_all  ROW<n0_0:BIGINT>
+setdata_union_distinct  ERROR: Unsupported SetRel op: 5
+setop_intersection_multiset  ERROR: Unsupported SetRel op: 4
+setop_intersection_primary  ERROR: Unsupported SetRel op: 3
+setop_minus_multiset  ERROR: Unsupported SetRel op: 2
+setop_minus_primary  ERROR: Unsupported SetRel op: 1
+setop_union_all  ROW<>
+setop_union_distinct  ERROR: Unsupported SetRel op: 5
+stringlen_declared  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Parsing for Substrait type not supported: varchar {   length: 10   nullability: NULLABILITY_REQUIRED } 
+virtual_table_emit_mapping  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: Emit not supported for ValuesNode and TableScanNode related Substrait plans.
+virtual_table_literal_type_differs_from_schema  ERROR: Exception: VeloxUserError Error Source: USER Error Code: INVALID_ARGUMENT Reason: wrong kind! TINYINT != INTEGER
+virtual_table_row_null_in_required_column  ROW<n0_0:INTEGER>
+virtual_table_row_nullable_in_required_column  ROW<n0_0:INTEGER>
+virtual_table_row_required_in_nullable_column  ROW<n0_0:INTEGER>

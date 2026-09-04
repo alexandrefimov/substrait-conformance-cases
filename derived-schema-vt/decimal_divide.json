@@ -1,0 +1,175 @@
+{
+ "extensions": [
+  {
+   "extensionFunction": {
+    "functionAnchor": 7,
+    "name": "divide:dec_dec",
+    "extensionUrnReference": 7
+   }
+  }
+ ],
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "project": {
+      "common": {
+       "emit": {
+        "outputMapping": [
+         4
+        ]
+       }
+      },
+      "input": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1",
+          "c2",
+          "c3"
+         ],
+         "struct": {
+          "types": [
+           {
+            "decimal": {
+             "scale": 2,
+             "precision": 10,
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "decimal": {
+             "scale": 1,
+             "precision": 5,
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "decimal": {
+             "scale": 10,
+             "precision": 38,
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "decimal": {
+             "scale": 10,
+             "precision": 38,
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": [
+          {
+           "fields": [
+            {
+             "literal": {
+              "decimal": {
+               "value": "ZAAAAAAAAAAAAAAAAAAAAA==",
+               "precision": 10,
+               "scale": 2
+              },
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "decimal": {
+               "value": "HgAAAAAAAAAAAAAAAAAAAA==",
+               "precision": 5,
+               "scale": 1
+              },
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "decimal": {
+               "value": "/////z8iigl6xIZaqEw7Sw==",
+               "precision": 38,
+               "scale": 10
+              },
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "decimal": {
+               "value": "/////z8iigl6xIZaqEw7Sw==",
+               "precision": 38,
+               "scale": 10
+              },
+              "nullable": false
+             }
+            }
+           ]
+          }
+         ]
+        }
+       }
+      },
+      "expressions": [
+       {
+        "scalarFunction": {
+         "functionReference": 7,
+         "outputType": {
+          "decimal": {
+           "scale": 8,
+           "precision": 21,
+           "nullability": "NULLABILITY_REQUIRED"
+          }
+         },
+         "arguments": [
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {}
+             },
+             "rootReference": {}
+            }
+           }
+          },
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {
+               "field": 1
+              }
+             },
+             "rootReference": {}
+            }
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    "names": [
+     "r"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ },
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 7,
+   "urn": "extension:io.substrait:functions_arithmetic_decimal"
+  }
+ ]
+}

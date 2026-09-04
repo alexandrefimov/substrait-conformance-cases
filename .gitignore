@@ -1,0 +1,11 @@
+# Generated: every entry is an absolute path into one machine's checkout and Gradle cache.
+# Rebuild with: SUBSTRAIT_JAVA_DIR=<checkout> bash gen/make_classpath.sh
+gen/classpath.txt
+gen/out/
+
+# The probe environment (venvs, the compiled substrait-go probe), built by probe/setup.sh.
+.probe-env/
+
+__pycache__/
+*.pyc
+.DS_Store

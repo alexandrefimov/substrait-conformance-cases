@@ -1,0 +1,39 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "read": {
+          "baseSchema": {
+            "names": ["c"],
+            "struct": {
+              "types": [{
+                "precisionTimestamp": {
+                  "precision": 2,
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              }],
+              "nullability": "NULLABILITY_REQUIRED"
+            }
+          },
+          "virtualTable": {
+            "expressions": [{
+              "fields": [{
+                "literal": {
+                  "precisionTimestamp": {
+                    "precision": 2,
+                    "value": "1234567891"
+                  }
+                }
+              }]
+            }]
+          }
+        }
+      },
+      "names": ["c"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

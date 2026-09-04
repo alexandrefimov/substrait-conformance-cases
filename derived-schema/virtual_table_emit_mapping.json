@@ -1,0 +1,51 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "read": {
+          "common": {
+            "emit": {
+              "outputMapping": [1]
+            }
+          },
+          "baseSchema": {
+            "names": ["col1", "col2"],
+            "struct": {
+              "types": [{
+                "i32": {
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              }, {
+                "string": {
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              }],
+              "nullability": "NULLABILITY_REQUIRED"
+            }
+          },
+          "virtualTable": {
+            "expressions": [{
+              "fields": [{
+                "literal": {
+                  "i32": 2
+                }
+              }, {
+                "literal": {
+                  "string": "a"
+                }
+              }]
+            }]
+          }
+        }
+      },
+      "names": ["col2"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  },
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

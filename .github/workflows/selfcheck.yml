@@ -1,0 +1,18 @@
+# The repository checked against itself: seconds, python3 only, no external checkout.
+# The full sweep over the implementations is probe/reverify.sh, which needs a substrait-java and a
+# DataFusion checkout, several toolchains, and a cluster for the Gluten column. It does not run here.
+name: selfcheck
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  selfcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: bash probe/selfcheck.sh

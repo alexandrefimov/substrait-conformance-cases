@@ -1,0 +1,168 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "set": {
+          "common": {
+            "direct": {
+            }
+          },
+          "inputs": [{
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["s1"]
+              }
+            }
+          }, {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["s2"]
+              }
+            }
+          }, {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["s3"]
+              }
+            }
+          }],
+          "op": "SET_OP_MINUS_PRIMARY_ALL"
+        }
+      },
+      "names": ["c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}
