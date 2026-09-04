@@ -125,14 +125,20 @@ fi
 
 # The saved corpus is replaced only when explicitly asked for. By default the fresh generation is
 # compared against it, and a difference is a report rather than a silent overwrite of the inputs.
+# manifest.json is excluded from the corpus comparison in both directions and from the update:
+# GenCases still writes a four-entry manifest of its own, and in this repository that file belongs to
+# gen/make_manifest.sh, which describes all 78 cases. One file, one writer.
 if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
-  rm -f "$CASES"/*.json "$CASES"/*.bin
-  cp "$STAGE"/*.json "$STAGE"/*.bin "$CASES"/ 2>/dev/null
+  find "$CASES" -maxdepth 1 \( -name '*.json' ! -name manifest.json -o -name '*.bin' \) -delete
+  for f in "$STAGE"/*.json "$STAGE"/*.bin; do
+    [ "$(basename "$f")" = manifest.json ] && continue
+    cp "$f" "$CASES/"
+  done
   echo "corpus updated from the fresh generation (UPDATE_CORPUS=1)"
 else
   DRIFT=0
   for f in "$STAGE"/*.json; do
-    n="$(basename "$f")"
+    n="$(basename "$f")"; [ "$n" = manifest.json ] && continue
     if [ ! -f "$CASES/$n" ]; then echo "  new case, absent from the corpus: $n"; DRIFT=1; continue; fi
     cmp -s "$f" "$CASES/$n" || { echo "  differs from the corpus: $n"; DRIFT=1; }
   done
