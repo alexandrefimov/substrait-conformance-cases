@@ -22,7 +22,8 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 ## What the corpus says
 
-The columns saved here answer the 73 cases that have an expectation like this:
+The columns saved here, taken 2026-09-04 against the versions in `probe/versions.env`, answer the 73
+cases that have an expectation like this:
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
@@ -41,21 +42,38 @@ instead of deriving one, so comparing it against a derived expectation would mea
 *Unsupported* means the implementation rejected the plan, which is a fact about coverage rather than
 a divergence in derivation. *Differed* means the answer disagrees with this repository's reading of
 the spec — some of those have been filed against the implementations and some have not, and the
-corpus does not record which. `python3 probe/check_expected.py JAVA.txt java` prints the first row
-and names the cases behind it; `reverify.sh` does that for every column.
+corpus does not record which. Not every *differed* cell is a defect either: `stringlen_declared`
+differs for DataFusion and DuckDB because neither type system has a string with a length, and the
+per-column boundaries below say where else that applies. `reverify.sh` reproduces the whole table,
+and `probe/check_expected.py <NAME>.txt <format>` reproduces one row and names the cases behind it.
 
-**One caveat.** The zero in the first row is worth less than it looks. Five of those 73 cases are
-decimal arithmetic, and on those substrait-java and substrait-python repeat the `output_type` the
-plan declares — a declaration written by this repository's own generator, from the same
-`functions_arithmetic_decimal.yaml` formula the expectation uses. There the check catches generator
-drift, not consumer behaviour. On the remaining 68 — the set operations, the aggregates, the joins,
-the emit mappings, the predicates — the consumer derives the schema itself, and the check is
-independent.
+**One caveat.** The zero in the first row is worth less than it looks. On some cases the answer is
+not derived at all: the implementation repeats the `output_type` the plan declares, and this
+repository's own generator wrote that declaration from the same rule the expectation uses. There the
+check compares the generator with itself.
 
-`probe/lie_matrix.sh` measures that difference directly: it swaps the declared type for a false one
-and reports which implementations follow the swap. `LIE.txt` is a saved run over substrait-java,
-substrait-python, the validator, Spark and Gluten; on every one of the five decimal cases, all of
-them follow the swap except Spark.
+Which cases those are is measured rather than guessed. `probe/lie_matrix.sh` swaps every declared
+`output_type` for a false one, changes nothing else, and reports whose answer moves with it; an
+answer that moves is an answer that depends on the declaration. `LIE.txt` is a saved run.
+
+| | answers that move | of them with an expectation | expectations left |
+| --- | ---: | ---: | ---: |
+| substrait-java | 10 | 9 | 63, and one it cannot judge |
+| substrait-python | 10 | 10 | 63 |
+| substrait-validator | 10 | 10 | 63 |
+| DuckDB | 0 | 0 | 73 |
+
+For substrait-java the ten are the five decimal cases, the three `narrowing_*` predicates,
+`phase_final` and `ctas_keeps_declared_schema` — the last of which carries no expectation. The case
+it cannot judge is `phase_intermediate`: the swap turns a struct `output_type` into a scalar, which
+leaves three names in `Plan.Root` above one column, and substrait-java then rejects the plan over the
+names rather than over the type.
+
+Two limits on reading that as *derived*. The swap perturbs `output_type` and nothing else, so an
+answer that holds is proven not to be copied **from that field** — it is not thereby proven to be
+derived, because a relation's schema also comes from `ReadRel.base_schema`, which the swap leaves
+alone. And only these four participants were measured; for DataFusion, substrait-go, Acero, Spark,
+Isthmus and Gluten the copy discount is simply not known.
 
 ## Where the expectations come from
 

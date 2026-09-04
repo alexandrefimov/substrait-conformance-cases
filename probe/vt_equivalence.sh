@@ -19,8 +19,13 @@ def load(p):
         if k: d[k] = v.strip()
     return d
 a, b = load(sys.argv[1]), load(sys.argv[2])
+# The whole sets are compared, not their intersection: a case missing from one of the variants used
+# to drop out of the check in silence, so "0 differing" also meant "there was nothing to compare".
+only_a, only_b = sorted(set(a) - set(b)), sorted(set(b) - set(a))
 diff = [k for k in sorted(b) if k in a and a[k] != b[k]]
-print("cases compared:", len(set(a) & set(b)), "| schemas differing:", len(diff))
-for k in diff[:5]: print("  ", k)
-raise SystemExit(1 if diff else 0)
+print("cases compared:", len(set(a) & set(b)), "| schemas differing:", len(diff),
+      "| only in the canonical corpus:", len(only_a), "| only in the virtual-table one:", len(only_b))
+for k in diff[:5]: print("   differs:", k)
+for k in (only_a + only_b)[:5]: print("   unpaired:", k)
+raise SystemExit(1 if (diff or only_a or only_b) else 0)
 PY

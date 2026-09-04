@@ -16,6 +16,7 @@
 #   EXPECT_CASES=<n>            require exactly n generated cases
 #   UPDATE_CORPUS=1             replace the saved corpus with this run's generation
 #   UPDATE_COLUMNS=1            replace the saved columns with this run's
+#   ALLOW_SKIPPED=1             accept a run in which some participant's environment was absent
 set -uo pipefail
 
 # Paths come from where the script sits, not from anything hard-coded: an absolute path to one
@@ -313,6 +314,10 @@ echo; echo "### 9. the Spark side (needs JDK 17)"
 optional_column SPARK line Spark "${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}/bin/java" \
   bash "$PROBE/spark_all.sh" "$CASES"
 
+# expected.json is built here, before both checks. It used to be regenerated below, after the row
+# check, so a change to the expectations was only caught by the next run.
+python3 "$PROBE/expected.py" > "$ROOT/expected.json" || fail "could not build expected.json"
+
 echo; echo "### 10. rows against the examples in the spec"
 # The rows section of expected.json was not read at all before: eight expectations sat in the file
 # and nothing checked them. Rows are the one part of the corpus that does not depend on the
@@ -336,7 +341,6 @@ for pair in "DUCKDB:DUCKDB" "DATAFUSION:DATAFUSION" "ACERO:ACERO"; do
 done
 
 echo; echo "### 10b. schemas against the independent expectations"
-python3 "$PROBE/expected.py" > "$ROOT/expected.json" || fail "could not build expected.json"
 # THIS run's columns ($RUN) are compared, not the saved ones. Otherwise the outcome did not depend
 # on what the sections above produced: a probe that died left the day-before-yesterday's
 # measurement in the comparison.
@@ -358,6 +362,10 @@ for pair in "JAVA:java" "PYTHON:py" "VALIDATOR:py" "DATAFUSION:df" "DUCKDB:duckd
     if ! grep -q "^matched:" "$CHK"; then
       fail "$col: the check did not reach its summary (exit $CHK_RC): $(tail -1 "$CHK")"
     fi
+    # Refusing every case but one is a broken environment, not a property of the participant: a
+    # validator with a broken import used to give 78 "unsupported" and leave the outcome untouched.
+    UNSUP=$(sed -n 's/.*unsupported by the participant: \([0-9]*\).*/\1/p' "$CHK" | tail -1)
+    [ -z "$UNSUP" ] || [ "$UNSUP" -lt "$N_JSON" ] || fail "$col: refused all $N_JSON cases - that looks like a broken probe"
     grep -q "^INCOMPLETE" "$CHK" && fail "$col: the check reported an incomplete column"
     grep -q "unparsed answer" "$CHK" && fail "$col: the check could not parse some answers"
     rm -f "$CHK"
@@ -380,7 +388,12 @@ echo "### 11. the DataFusion checkout after cleanup: $DIRTY changes"
 echo
 RAN=$(ls "$RUN"/*.txt 2>/dev/null | wc -l | tr -d " ")
 echo "columns produced by this run: $RAN"
-[ -z "$SKIPPED_PROBES" ] || echo "skipped (no environment):$SKIPPED_PROBES"
+# A skipped participant is a hole in the measurement, not a detail: a run where half the probes never
+# came up used to end in RESULT all the same. Allowed only under an explicit ALLOW_SKIPPED=1.
+if [ -n "$SKIPPED_PROBES" ]; then
+  echo "skipped (no environment):$SKIPPED_PROBES"
+  [ "${ALLOW_SKIPPED:-0}" = "1" ] || fail "participants were skipped; for a knowingly partial run set ALLOW_SKIPPED=1"
+fi
 # Gluten lives in a cluster and this script does not run it. Saying so out loud is mandatory:
 # otherwise "one command re-checks everything" reads as a claim about it too.
 echo "outside this script: Gluten/Velox (run in a cluster; the GLUTEN.txt column is taken separately)"

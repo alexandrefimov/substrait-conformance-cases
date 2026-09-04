@@ -17,7 +17,12 @@
 # substrait-python, the validator and DuckDB. The saved LIE.txt was taken over a different set
 # (Spark and Gluten in place of DuckDB), so it does not line up with this run row for row; the rows
 # they share agree.
+# On ctas_keeps_declared_schema the validator derives no type in either run. The hand-written column
+# called that "held" rather than "no type derived"; the second wording is the true one, because there
+# is nothing there to compare.
 set -uo pipefail
+FAILED=0
+fail() { echo "FAILED: $*" >&2; FAILED=1; }
 PROBE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$PROBE/.." && pwd)"
 SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
@@ -47,7 +52,8 @@ for i in "${!NAMES[@]}"; do
       VALIDATOR) bash "$PROBE/validator_all.sh" "$src" > "$raw" 2>&1 ;;
       DUCKDB)    bash "$PROBE/duckdb_all.sh" "$src" > "$raw" 2>&1 ;;
     esac
-    python3 "$PROBE/normalize.py" "$raw" "$fmt" "$name $variant" > "$OUT/$name.$variant.txt" 2>/dev/null
+    python3 "$PROBE/normalize.py" "$raw" "$fmt" "$name $variant" > "$OUT/$name.$variant.txt" 2>/dev/null \
+      || fail "$name/$variant: normalization did not yield a whole column"
   done
 done
 
@@ -107,3 +113,5 @@ for c in sorted(x for x in cases if x in touched):
 PY
 echo
 echo "raw runs and columns: $OUT"
+[ "$FAILED" -eq 0 ] || { echo "RESULT: FAILED - the swap matrix cannot be trusted"; exit 1; }
+echo "RESULT: the swap matrix was built over ${#NAMES[@]} participants"

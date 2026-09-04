@@ -1,4 +1,4 @@
-DATAFUSION: column from run 2026-09-04T09:22
+DATAFUSION: column from run 2026-09-04T10:36
 BOUNDARY: Arrow has no string type with a length, so varchar/fixedchar lose it.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]

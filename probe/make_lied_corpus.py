@@ -3,9 +3,9 @@ which measures who notices.
 
     python3 probe/make_lied_corpus.py <input dir> <output dir>
 
-The swap is made only where the declaration would then contradict the function's formula:
-arithmetic and aggregates. Boolean filter predicates are left alone - there anyone would catch the
-disagreement structurally rather than by type.
+Every declared `outputType` this knows how to swap is swapped. Booleans used to be left alone "because
+anyone would catch the disagreement structurally", and that made the measurement of circular agreement
+too small: the cases with predicates never entered the list of implementations that copy.
 """
 import json, os, sys
 
@@ -16,6 +16,10 @@ def lie(t):
     if kind == "i64":
         return {"i32": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
     if kind == "i32":
+        return {"i64": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
+    if kind == "bool":
+        return {"i32": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
+    if kind == "struct":
         return {"i64": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
     return None
 

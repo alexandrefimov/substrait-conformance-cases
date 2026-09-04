@@ -1,0 +1,85 @@
+{
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 1,
+   "urn": "extension:io.substrait:functions_arithmetic"
+  }
+ ],
+ "extensions": [
+  {
+   "extensionFunction": {
+    "functionAnchor": 1,
+    "name": "avg:i64",
+    "extensionUrnReference": 1
+   }
+  }
+ ],
+ "relations": [
+  {
+   "rel": {
+    "aggregate": {
+     "common": {
+      "direct": {}
+     },
+     "input": {
+      "read": {
+       "common": {
+        "direct": {}
+       },
+       "baseSchema": {
+        "names": [
+         "c0"
+        ],
+        "struct": {
+         "types": [
+          {
+           "i64": {
+            "nullability": "NULLABILITY_REQUIRED"
+           }
+          }
+         ],
+         "nullability": "NULLABILITY_REQUIRED"
+        }
+       },
+       "namedTable": {
+        "names": [
+         "t_avg"
+        ]
+       }
+      }
+     },
+     "measures": [
+      {
+       "measure": {
+        "functionReference": 1,
+        "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+        "outputType": {
+         "i64": {
+          "nullability": "NULLABILITY_NULLABLE"
+         }
+        },
+        "invocation": "AGGREGATION_INVOCATION_ALL",
+        "arguments": [
+         {
+          "value": {
+           "selection": {
+            "directReference": {
+             "structField": {}
+            },
+            "rootReference": {}
+           }
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 103,
+  "producer": "case-corpus"
+ }
+}

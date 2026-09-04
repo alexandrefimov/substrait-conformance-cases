@@ -1,27 +1,45 @@
-Who notices the declared type having been swapped for a false one. 2026-09-03
-Swapped corpus: probe/make_lied_corpus.py (decimal -> dec(20,2), i64 -> i32, i32 -> i64);
-only arithmetic and aggregates are swapped - 8 cases out of the 75 the corpus held then.
+Who copies the declared type: probe/lie_matrix.sh, 2026-09-04.
 
-  follows    - the answer went with the swap (the declaration was copied)
-  held       - the answer did not change (the type was derived independently)
-  NOTICED    - an error only on the swapped plan (nobody)
+Every declared output_type in the corpus is swapped for a false one (probe/make_lied_corpus.py:
+decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, struct -> i64) and nothing else about the
+plan changes. 23 of the 78 cases carry an output_type and are therefore touched.
+
+  follows    - the answer matched the swap: the declaration was copied, nothing was derived
+  changed    - the answer moved but not into the swapped type: it still depends on the declaration
+  held       - the answer did not change: not copied from output_type
+  NOTICED    - an error only on the swapped plan
   both fail  - the case is unsupported either way
 
-This table was taken over the participant set below. probe/lie_matrix.sh re-runs the same
-measurement over the participants whose probes run locally from one command, which is a
-different set: DuckDB in place of Spark and Gluten. The rows they share agree.
+The participants here are the ones whose probes run from one command. Spark and Gluten were in an
+earlier hand-made version of this table and are not reproducible by the script, so they are gone.
 
-case                              substrait-java      substrait-python    substrait-validator Spark               Gluten/Velox        
-ctas_keeps_declared_schema        follows             both fail           held                held                both fail           
-decimal_add                       follows             follows             follows             held                follows             
-decimal_add_overflow              follows             follows             follows             held                follows             
-decimal_divide                    follows             follows             follows             held                follows             
-decimal_multiply                  follows             follows             follows             held                follows             
-decimal_multiply_overflow         follows             follows             follows             held                follows             
-narrowing_count                   follows             follows             follows             both fail           both fail           
-phase_final                       follows             follows             follows             both fail           follows             
+case                              JAVA                PYTHON              VALIDATOR           DUCKDB              
+ctas_keeps_declared_schema        follows             both fail           both fail           held                
+decimal_add                       follows             follows             follows             held                
+decimal_add_overflow              follows             follows             follows             both fail           
+decimal_divide                    follows             follows             follows             held                
+decimal_multiply                  follows             follows             follows             held                
+decimal_multiply_overflow         follows             follows             follows             both fail           
+joineq_inner                      held                held                held                held                
+joineq_left                       held                held                held                held                
+joineq_left_anti                  held                held                held                held                
+joineq_left_mark                  held                held                held                held                
+joineq_left_semi                  held                held                held                held                
+joineq_left_single                held                held                held                held                
+joineq_outer                      held                held                held                held                
+joineq_right                      held                held                held                held                
+joineq_right_anti                 held                held                held                held                
+joineq_right_mark                 held                held                held                both fail           
+joineq_right_semi                 held                held                held                held                
+joineq_right_single               held                held                held                both fail           
+narrowing_count                   follows             follows             follows             held                
+narrowing_is_not_null             changed             changed             changed             held                
+narrowing_is_null                 changed             changed             changed             held                
+phase_final                       follows             follows             follows             held                
+phase_intermediate                NOTICED             changed             changed             both fail           
 
-Isthmus: the TypeObserver notices the swap on all eight
-(for example: declared DECIMAL(20, 2), Calcite derived DECIMAL(11, 2)),
-but it compares against what Calcite derives, not against the spec: on the unswapped corpus
-it reports divergences on the same four decimal cases.
+substrait-java, substrait-python and the validator each move on ten cases; DuckDB on none.
+NOTICED appears once and does not mean what it looks like: on phase_intermediate the swap turns a
+struct output_type into a scalar, which leaves three names in Plan.Root above one column, and
+substrait-java rejects the plan over the names rather than over the type. That case is not measured
+by this experiment.

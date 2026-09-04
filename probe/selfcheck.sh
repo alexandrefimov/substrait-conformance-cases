@@ -39,11 +39,26 @@ SUMMARY = re.compile(r"^matched: (\d+), differed: (\d+), unsupported by the part
 
 # The README carries a matched/differed/unsupported table. Nothing else checks those numbers, and a
 # stale one is exactly the kind of lie this corpus exists to catch elsewhere.
-readme = {}
+#
+# The table is found by its own header rather than by row shape: the README holds a second table of
+# three numbers per implementation (how many answers move under a swapped declaration), and reading
+# by shape alone silently took the wrong one.
+HEADER = "| | matched | differed | unsupported |"
+ROW = re.compile(r"^\|\s*([A-Za-z/-]+(?: [A-Za-z]+)?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*$")
+readme, inside = {}, False
 for line in io.open("README.md", encoding="utf-8"):
-    m = re.match(r"^\|\s*([A-Za-z/-]+(?: [A-Za-z]+)?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*$", line)
-    if m:
-        readme[m.group(1).strip()] = tuple(int(m.group(i)) for i in (2, 3, 4))
+    if line.strip() == HEADER:
+        inside = True
+        continue
+    if inside:
+        m = ROW.match(line)
+        if m:
+            readme[m.group(1).strip()] = tuple(int(m.group(i)) for i in (2, 3, 4))
+        elif not line.startswith("|"):
+            inside = False
+if not readme:
+    print("FAILED: no results table found in README.md under %r" % HEADER)
+    raise SystemExit(1)
 
 bad = 0
 for label, col, fmt in COLUMNS:

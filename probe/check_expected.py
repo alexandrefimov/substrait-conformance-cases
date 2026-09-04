@@ -9,12 +9,30 @@ check with a verdict, not only a measurement.
 Cases with no independent expectation are skipped and counted separately: staying silent about them
 is more honest than comparing them with the same implementation's own answer.
 
-THE CAVEAT, without which this check misleads. On the five decimal cases, substrait-java and
-substrait-python agreeing with the expectation is NOT independent evidence: both implementations
-repeat the output_type declared in the plan, and that declaration was written by this project's own
-generator from the same formula. There, this check catches generator drift, not consumer behaviour.
-It is independent on the set operations, on avg and on the predicates, where the consumer derives
-the schema itself.
+THE CAVEAT, without which this check misleads. Some of the agreement is NOT independent evidence:
+the implementation repeats the output_type declared in the plan, and this project's own generator
+wrote that declaration from the same formula, so there the check catches generator drift rather than
+what the consumer derives.
+
+Which cases those are is measured, not guessed: every declared `outputType` is swapped for a false
+one (probe/make_lied_corpus.py) and the answers that move with it are the copied ones. Nothing else
+about the plan changes, so an answer that moves is an answer that depends on the declaration.
+
+For substrait-java ten answers move: the five decimal cases, `narrowing_count`, `narrowing_is_null`,
+`narrowing_is_not_null`, `phase_final` and `ctas_keeps_declared_schema`. The last of those carries no
+expectation. substrait-python and the validator move on ten each, all ten carrying an expectation;
+DuckDB moves on none. An earlier wording said "the five decimal cases" and called the rest
+independent, which understated the circular part by half.
+
+One case the swap cannot judge: on `phase_intermediate` it turns a struct output_type into a scalar,
+which leaves three names in `Plan.Root` above a single column, and substrait-java rejects the plan
+over the names rather than over the type. Neither copied nor derived - not measured. So for
+substrait-java 63 of the 73 expectations are checked against an answer known not to be copied, nine
+are circular, and one is unknown.
+
+Two limits on reading "not copied" as "derived". The swap perturbs output_type and nothing else, so
+a relation schema taken from ReadRel.base_schema is untouched by it. And only substrait-java,
+substrait-python, the validator and DuckDB were measured this way.
 """
 import json, os, re, sys
 
@@ -231,9 +249,17 @@ TYPES_ONLY = {"duckdb"}
 ok = bad = skipped = unparsed = disputed = unsupported = 0
 seen = {}
 unknown = []
+# A column's header is separated from its data by a blank line - that is how normalize.py writes it.
+# The header is cut off structurally rather than by the look of its first word: a boundary line can
+# start with a lowercase letter, and guessing by look took it for a substituted case name.
+in_header = True
 for line in open(path, encoding="utf-8"):
     line = line.rstrip()
-    if not line or line.startswith(("substrait", "Command", "BOUNDARY", "Gluten", "IMPORTANT", "Boundaries")):
+    if in_header:
+        if not line:
+            in_header = False
+        continue
+    if not line:
         continue
     name, _, rest = line.partition(" ")
     name = name.strip()
