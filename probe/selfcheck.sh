@@ -169,7 +169,7 @@ PY
 echo
 echo "### the manifest agrees with the corpus and with the expectations"
 python3 - <<'MANPY' || FAILED=1
-import glob, json, os
+import glob, io, json, os, re
 
 # The manifest is rebuilt from the generators by gen/make_manifest.sh, which needs a substrait-java
 # checkout. What can be checked here without one is that it still describes this corpus and these
@@ -197,8 +197,23 @@ for e in man:
         print("FAILED: %s: the manifest schema differs from expected.json" % e["case"]); bad = 1
     if not want and "schema" in got:
         print("FAILED: %s: the manifest carries a schema the expectations do not" % e["case"]); bad = 1
+# The README states in prose how many cases name a source issue. That number went stale the first
+# time one was added, so it is checked here with the rest.
+WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
+         "nine": 9, "ten": 10}
+with_source = sum(1 for e in man if "source" in e)
+claim = re.search(r"([A-Za-z]+|\d+) cases have one so far", io.open("README.md", encoding="utf-8").read())
+if not claim:
+    print("FAILED: the README no longer says how many cases name a source issue"); bad = 1
+else:
+    said = WORDS.get(claim.group(1).lower(), None)
+    if said is None and claim.group(1).isdigit():
+        said = int(claim.group(1))
+    if said != with_source:
+        print("FAILED: the README says %s cases name a source issue, the manifest has %d"
+              % (claim.group(1), with_source))
+        bad = 1
 if not bad:
-    with_source = sum(1 for e in man if "source" in e)
     print("ok      %d entries, %d naming a source issue, all expectations matching expected.json"
           % (len(man), with_source))
 raise SystemExit(bad)

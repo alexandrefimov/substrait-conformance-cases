@@ -132,7 +132,8 @@ arithmetic — where the rule is written down and can be checked directly.
 generator prints for it, and its expectation with the wording of where that came from. It is built
 by `gen/make_manifest.sh` from the generators themselves, so it cannot drift into saying something
 the corpus does not; the only hand-written part is `gen/sources.json`, which records the issue a case
-came from. Four cases have one so far — that is what is still thin here. A case is added by adding a
+came from. Five cases have one so far — that is what is still thin here, and thin on purpose: an
+entry is added only when the case exercises what the change it names actually changed. A case is added by adding a
 generator to `gen/`; `gen/README.md` says how the corpus is built.
 
 ## Running it

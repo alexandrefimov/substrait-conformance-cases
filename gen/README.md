@@ -32,5 +32,10 @@ corpus.
 `../derived-schema/manifest.json`: per case, the generator that writes it, the line that generator
 prints for it, and its expectation. The pairing of a printed line to a case is spelled out in
 `make_manifest.py` rather than guessed, and the script fails if one case is left without a line. The
-only hand-written input is `sources.json`, the issue a case came from — add to it when a case's
-origin is known.
+only hand-written input is `sources.json`, the issue a case came from.
+
+A case earns an entry there only when it exercises what that change actually changed, checked against
+the change itself rather than against its title. Of eight merged substrait-java fixes read for this,
+one produced a new entry. One of the seven is worth naming: `stringlen_declared` looked like a match
+for the fix that stopped character lengths being capped, and is not one, because that cap sat at
+65536 and the case declares `varchar(10)`. A wrong attribution here is worse than a missing one.
