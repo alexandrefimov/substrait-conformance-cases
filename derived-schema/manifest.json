@@ -1687,7 +1687,9 @@
   "plan": "virtual_table_literal_type_differs_from_schema.json",
   "binary": "virtual_table_literal_type_differs_from_schema.bin",
   "generator": "GenDisputed",
-  "note": "virtual_table_literal_type_differs_from_schema  (base_schema declares i32, the literal is i8)",
+  "note": "A virtual table's row literal may carry a narrower type than the schema field holding it - an i8 literal is a legal member of an i32 row - so which of the two the reader takes is visible.",
+  "source": "substrait-java#1065",
+  "generator_says": "virtual_table_literal_type_differs_from_schema  (base_schema declares i32, the literal is i8)",
   "expectation": {
    "none": "same",
    "because": "the spec is silent"

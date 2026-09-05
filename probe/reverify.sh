@@ -14,7 +14,8 @@
 #   DF_EXPECT=<ref>             if set, require this HEAD in DataFusion
 #   REBUILD_CORE=1              rebuild :core before the run instead of trusting the classpath
 #   EXPECT_CASES=<n>            require exactly n generated cases
-#   UPDATE_CORPUS=1             replace the saved corpus with this run's generation
+#   UPDATE_CORPUS=1             replace the saved corpus, manifest and expected.json with what this
+#                               run generates, instead of reporting the difference
 #   UPDATE_COLUMNS=1            replace the saved columns with this run's
 #   ALLOW_SKIPPED=1             accept a run in which some participant's environment was absent
 set -uo pipefail
@@ -340,7 +341,21 @@ optional_column SPARK line Spark "${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 
 
 # expected.json is built here, before both checks. It used to be regenerated below, after the row
 # check, so a change to the expectations was only caught by the next run.
-python3 "$PROBE/expected.py" > "$ROOT/expected.json" || fail "could not build expected.json"
+#
+# Like the corpus and the manifest, it is rebuilt into a temporary file and compared. It used to be
+# written straight over the saved file on every run, which meant a change to expected.py silently
+# became the new expectation with nothing said about it - and the run then measured against it.
+EXP="$(mktemp)"
+python3 "$PROBE/expected.py" > "$EXP" || fail "could not build expected.json"
+if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
+  cp "$EXP" "$ROOT/expected.json"
+  echo "expected.json updated from probe/expected.py (UPDATE_CORPUS=1)"
+elif cmp -s "$EXP" "$ROOT/expected.json"; then
+  echo "expected.json matches probe/expected.py"
+else
+  fail "expected.json drifted from probe/expected.py; sync it with UPDATE_CORPUS=1"
+fi
+rm -f "$EXP"
 
 echo; echo "### 10. rows against the examples in the spec"
 # The rows section of expected.json was not read at all before: eight expectations sat in the file

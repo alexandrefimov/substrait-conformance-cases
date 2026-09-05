@@ -151,7 +151,8 @@ are built from source and neither is part of `setup.sh`.
 `reverify.sh` regenerates the corpus, runs every participant whose environment is up, compares each
 column against `expected.json` and prints all sides next to each other. It is fail-closed: any
 harness failure gives a non-zero exit and a `FAILED` line, while a single case failing inside an
-engine is not a harness failure but the finding. By default the run only reports; it rewrites the
-saved corpus and columns only under `UPDATE_CORPUS=1` and `UPDATE_COLUMNS=1`.
+engine is not a harness failure but the finding. By default the run only reports: it rebuilds the corpus, the manifest and
+`expected.json` into temporary files and tells you what differs. `UPDATE_CORPUS=1` lets it replace
+those three, `UPDATE_COLUMNS=1` the saved columns, and nothing else writes to the repository.
 
 Apache 2.0.
