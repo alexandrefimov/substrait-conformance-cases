@@ -7,7 +7,10 @@
  "rules": {
   "no-string-with-length": {
    "kind": "boundary",
-   "what": "Neither type system has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared. DuckDB has no fixed-size binary either and returns BLOB for fixedbinary<4>; DataFusion returns FixedSizeBinary(4) and differs only on the two strings."
+   "what": "Neither type system has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared. DuckDB has no fixed-size binary either and returns BLOB for fixedbinary<4>; DataFusion returns FixedSizeBinary(4) and differs only on the two strings.",
+   "check": {
+    "got_matches": "^\\[c0:(Utf8|VARCHAR), c1:(Utf8|VARCHAR), "
+   }
   },
   "duckdb-timestamp-is-microseconds": {
    "kind": "boundary",
@@ -23,21 +26,26 @@
     "got_matches": "unresolved"
    }
   },
-  "emit-mapping-ignored": {
-   "kind": "divergence",
-   "what": "RelCommon.emit names the outputs and their order; the answer is the input's instead. Filed as duckdb-substrait-extension#267."
-  },
   "read-projection-ignored": {
    "kind": "divergence",
-   "what": "ReadRel.projection masks the read's columns before anything else; the answer is the unmasked schema. Filed as substrait-python#264 for substrait-python; substrait-java#1280 is open for Isthmus."
+   "what": "ReadRel.projection masks the read's columns before anything else; the answer is the unmasked schema. Filed as substrait-python#264 for substrait-python; substrait-java#1280 is open for Isthmus.",
+   "check": {
+    "first_input": true
+   }
   },
   "grouping-key-nullability": {
    "kind": "divergence",
-   "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. The answers make all keys required, or all nullable. DataFusion's instance is filed as apache/datafusion#24968."
+   "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. DataFusion makes the key nullable. Filed as apache/datafusion#24968.",
+   "check": {
+    "got_matches": "^\\[c:Utf8\\?, "
+   }
   },
   "decimal-own-derivation": {
    "kind": "divergence",
-   "what": "functions_arithmetic_decimal.yaml fixes precision and scale; these compute their own."
+   "what": "functions_arithmetic_decimal.yaml fixes the precision and scale of the result; these return a decimal and compute their own.",
+   "check": {
+    "all_decimal": true
+   }
   },
   "spark-decimal-result-nullable": {
    "kind": "divergence",
@@ -48,7 +56,10 @@
   },
   "avg-over-integers-returns-float": {
    "kind": "divergence",
-   "what": "functions_arithmetic.yaml declares avg:i64 with return i64?, truncating partial values; the answer is a float. Filed as substrait-io/substrait#1210."
+   "what": "functions_arithmetic.yaml declares avg:i64 with return i64?, truncating partial values; the answer is a float. Filed as substrait-io/substrait#1210.",
+   "check": {
+    "got_matches": "(?i)(float64|double|fp64)"
+   }
   },
   "acero-required-lost-above-a-read": {
    "kind": "divergence",
@@ -59,7 +70,10 @@
   },
   "acero-drops-a-fixed-size-binary": {
    "kind": "divergence",
-   "what": "Arrow has fixed_size_binary and DataFusion returns it for this case; Acero returns binary. The two string lengths in the same case are not expressible in Arrow, so only fixedbinary<4> is a divergence here."
+   "what": "Arrow has fixed_size_binary and DataFusion returns it for this case; Acero returns binary. The two string lengths in the same case are not expressible in Arrow, so only fixedbinary<4> is a divergence here.",
+   "check": {
+    "got_matches": "c2:binary\\b"
+   }
   },
   "duckdb-timestamp-precision-ignored": {
    "kind": "divergence",
@@ -104,6 +118,52 @@
    "check": {
     "inputs_concatenated": {}
    }
+  },
+  "spark-projection-takes-the-leading-columns": {
+   "kind": "divergence",
+   "check": {
+    "first_input": {
+     "leading": true
+    }
+   },
+   "what": "ReadRel.projection names which columns the read returns and in what order. Spark returns as many columns as the mask selects but takes them from the start of the schema, so the count is right and the columns are not."
+  },
+  "duckdb-emit-takes-the-leading-columns": {
+   "kind": "divergence",
+   "check": {
+    "first_input": {
+     "leading": true
+    }
+   },
+   "what": "RelCommon.emit names which columns the relation returns and in what order. These cases select [2, 0] of three columns; DuckDB returns two columns taken from the start of the relation, so the count is right and the columns are not. Filed as duckdb-substrait-extension#267."
+  },
+  "duckdb-emit-names-one-column-and-types-another": {
+   "kind": "divergence",
+   "check": {
+    "got_matches": "^\\[col2:INTEGER\\]$"
+   },
+   "what": "The mapping selects [1] of (col1 i32, col2 string). DuckDB returns one column named col2 with the type of col1, so the name follows the mapping and the type does not."
+  },
+  "validator-aggregate-gives-i32-and-unresolved": {
+   "kind": "divergence",
+   "check": {
+    "got_matches": "^\\[i32, unresolved\\]$"
+   },
+   "what": "The validator answers both aggregate cases with an i32 where a string was grouped on and an unresolved type for the measure, so neither the type nor its nullability follows the plan."
+  },
+  "python-go-aggregate-all-required": {
+   "kind": "divergence",
+   "check": {
+    "no_field_nullable": true
+   },
+   "what": "substrait-python and substrait-go return every column of an aggregate required - the grouping key absent from one of the sets and the measure alike."
+  },
+  "duckdb-decimal-divide-returns-double": {
+   "kind": "divergence",
+   "check": {
+    "got_matches": "^\\[r:DOUBLE\\]$"
+   },
+   "what": "divide:dec is declared to return a decimal; DuckDB returns DOUBLE, so the result is not a decimal of another precision but not a decimal at all."
   }
  },
  "cells": {
@@ -137,14 +197,14 @@
    "stringlen_declared": "no-string-with-length"
   },
   "DUCKDB": {
-   "decimal_divide": "decimal-own-derivation",
+   "decimal_divide": "duckdb-decimal-divide-returns-double",
    "decimal_multiply": "decimal-own-derivation",
-   "emit_aggregate": "emit-mapping-ignored",
-   "emit_fetch": "emit-mapping-ignored",
-   "emit_filter": "emit-mapping-ignored",
-   "emit_join": "emit-mapping-ignored",
-   "emit_read": "emit-mapping-ignored",
-   "emit_sort": "emit-mapping-ignored",
+   "emit_aggregate": "duckdb-emit-takes-the-leading-columns",
+   "emit_fetch": "duckdb-emit-takes-the-leading-columns",
+   "emit_filter": "duckdb-emit-takes-the-leading-columns",
+   "emit_join": "duckdb-emit-takes-the-leading-columns",
+   "emit_read": "duckdb-emit-takes-the-leading-columns",
+   "emit_sort": "duckdb-emit-takes-the-leading-columns",
    "phase_final": "avg-over-integers-returns-float",
    "precision_timestamp_p00": "duckdb-timestamp-precision-ignored",
    "precision_timestamp_p01": "duckdb-timestamp-is-microseconds",
@@ -154,11 +214,11 @@
    "precision_timestamp_p07": "duckdb-timestamp-is-microseconds",
    "precision_timestamp_p09": "duckdb-timestamp-precision-ignored",
    "stringlen_declared": "no-string-with-length",
-   "virtual_table_emit_mapping": "emit-mapping-ignored"
+   "virtual_table_emit_mapping": "duckdb-emit-names-one-column-and-types-another"
   },
   "GO": {
-   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
-   "aggregate_grouping_sets_declared_order": "grouping-key-nullability"
+   "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
+   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required"
   },
   "ISTHMUS": {
    "read_projection_mask": "read-projection-ignored",
@@ -168,8 +228,8 @@
    "setop_minus_primary_all": "isthmus-setop-nullable-if-any-input-is"
   },
   "PYTHON": {
-   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
-   "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
+   "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
+   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required",
    "join_left": "python-join-concatenates-the-inputs",
    "join_left_mark": "python-join-concatenates-the-inputs",
    "join_left_single": "python-join-concatenates-the-inputs",
@@ -192,11 +252,11 @@
    "decimal_divide": "decimal-own-derivation",
    "decimal_multiply": "spark-decimal-result-nullable",
    "decimal_multiply_overflow": "spark-decimal-result-nullable",
-   "read_projection_mask": "read-projection-ignored"
+   "read_projection_mask": "spark-projection-takes-the-leading-columns"
   },
   "VALIDATOR": {
-   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
-   "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
+   "aggregate_grouping_field_shared_by_sets": "validator-aggregate-gives-i32-and-unresolved",
+   "aggregate_grouping_sets_declared_order": "validator-aggregate-gives-i32-and-unresolved",
    "emit_aggregate": "validator-does-not-resolve",
    "join_left_mark": "validator-join-concatenates-the-inputs",
    "join_right_anti": "validator-join-concatenates-the-inputs",

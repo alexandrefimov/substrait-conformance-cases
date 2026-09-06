@@ -10,9 +10,12 @@ that the claim holds. A reason carries that test in its own `check` field:
 
     nullable_only          the answer has the expected types and every field nullable
     got_matches            the raw answer matches this regular expression
+    no_field_nullable      no field of the answer is nullable
+    all_decimal            every field of the answer is a decimal
     inputs_concatenated    the answer is the relation's inputs one after another, with their own
                            nullability; `mark_suffix` allows one trailing boolean
-    first_input            the answer is the first input, types and nullability alike
+    first_input            the answer is the first input, types and nullability alike; `leading`
+                           allows it to stop short, matching only the columns the input starts with
     nullable_if_any_input  the answer has a nullable field wherever any input does
 
 Without any of this the file would drift into describing a measurement that has moved, and would
@@ -86,6 +89,12 @@ def answers(name):
 for rid, r in doc["rules"].items():
     if r["kind"] not in doc["kinds"]:
         fail("rule %s has an unknown kind %r" % (rid, r["kind"]))
+    # Every reason here turned out to be testable once it was stated precisely enough, and the
+    # imprecise ones were where the mistakes were: reasons that held for most of their cells and
+    # described the rest wrongly. So a reason without a test is refused rather than allowed as an
+    # exception - if nothing can be tested about it, it is not yet saying what it observed.
+    if not r.get("check"):
+        fail("rule %s makes no claim a machine can test" % rid)
 
 total = 0
 for col, fmt in COLS:
@@ -123,6 +132,16 @@ for col, fmt in COLS:
             elif not all(n for _, n in got):
                 fail("%s/%s says %s, but not every field of the answer is nullable: %s"
                      % (col, case, said[case], got_raw))
+        if check.get("all_decimal"):
+            got = P[PARSE[fmt]](got_raw)
+            if got is None or not all(t.startswith("dec(") for t, _ in got):
+                fail("%s/%s says %s, but the answer is not a decimal: %s"
+                     % (col, case, said[case], got_raw))
+        if check.get("no_field_nullable"):
+            got = P[PARSE[fmt]](got_raw)
+            if got is None or any(n for _, n in got):
+                fail("%s/%s says %s, but a field of the answer is nullable: %s"
+                     % (col, case, said[case], got_raw))
         if {"inputs_concatenated", "first_input", "nullable_if_any_input"} & set(check):
             try:
                 inputs = case_inputs(case)
@@ -138,6 +157,9 @@ for col, fmt in COLS:
                     got = got[:len(want)]
             elif "first_input" in check:
                 want = inputs[0]
+                if isinstance(check["first_input"], dict) and check["first_input"].get("leading"):
+                    if got and len(got) < len(want):
+                        want = want[:len(got)]
             else:
                 want = [[t, any(one[i][1] for one in inputs)]
                         for i, (t, _) in enumerate(inputs[0])]
@@ -155,7 +177,7 @@ filed = sum(1 for r in doc["rules"].values() if re.search(r"[Ff]iled as", r["wha
 
 # The README puts these counts in prose, where nothing would notice them going stale.
 WORD = {6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
-        14: "fourteen", 17: "seventeen"}
+        14: "fourteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two", 19: "nineteen", 20: "twenty"}
 readme = " ".join(io.open(os.path.join(ROOT, "README.md"), encoding="utf-8").read().split())
 for sentence in ("gives all %d of them a reason and marks %d as something other than"
                  % (total, total - kinds.get("divergence", 0)),

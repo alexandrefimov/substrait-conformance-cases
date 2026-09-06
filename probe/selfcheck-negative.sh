@@ -128,6 +128,27 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['python-join-concatenates-the-inputs']['check'] = {'inputs_concatenated': {}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
+mutate "a reason with no test at all" "makes no claim a machine can test" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+del d['rules']['decimal-own-derivation']['check']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason claiming every column is required" "a field of the answer is nullable" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['grouping-key-nullability']['check'] = {'no_field_nullable': True}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason claiming the answer is a decimal" "the answer is not a decimal" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['duckdb-decimal-divide-returns-double']['check'] = {'all_decimal': True}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "a reason claiming what the answer looks like" "whose answer should match" \
   python3 -c "
 import io, json

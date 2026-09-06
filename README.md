@@ -54,9 +54,11 @@ give are a thin base for anything else.
 *Differed* means the answer disagrees with this repository's reading of the spec — some of those
 have been filed against the implementations and some have not. Not every *differed* cell is a
 defect either. `differed.json` gives all 101 of them a reason and marks 17 as something other than
-a divergence: six are limits of a type system, eleven a type the validator never resolved.
-`reverify.sh` reproduces the whole table, and `probe/check_expected.py results/<NAME>.txt
-<format>` reproduces one row and names the cases behind it.
+a divergence: six are limits of a type system, eleven a type the validator never resolved. Each
+reason states something about the answer that `probe/check_differed.py` tests against the saved
+column, so a reason that describes a participant wrongly fails the check. `reverify.sh` reproduces
+the whole table, and `probe/check_expected.py results/<NAME>.txt <format>` reproduces one row and
+names the cases behind it.
 
 **One caveat.** The zero in the first row is worth less than it looks. On some cases the answer is
 not derived at all: the implementation repeats the `output_type` the plan declares, and this
@@ -116,7 +118,7 @@ What is open, as against corrected:
 - Five of the 78 cases record the issue they came from. For the other 73 the generator that builds a
   case is the only record of what it asserts.
 - `differed.json` says why each cell differs but not which divergences were reported upstream: six
-  of its seventeen reasons name an issue and the rest name none.
+  of its twenty-two reasons name an issue and the rest name none.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
 - The full sweep has run on Linux, in a container on clean Ubuntu 24.04 with every cache empty,
