@@ -26,7 +26,9 @@ their rows inside the plan because the spec's set-operation examples are about t
 `probe/vt_equivalence.sh` checks that it derives the same schemas as the canonical corpus.
 
 `probe/reverify.sh` runs all of the generators; `GenCases` alone covers only its own part of the
-corpus.
+corpus. `Repro186.java` is not one of them: it reproduces a known substrait-java issue about
+converting a `SetRel` whose inputs differ in nullability, and is kept here because it is built from
+the same tables.
 
 `make_manifest.sh` runs each generator into a directory of its own and turns the result into
 `../derived-schema/manifest.json`: per case, the generator that writes it, the line that generator

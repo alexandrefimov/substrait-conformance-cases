@@ -120,7 +120,9 @@ that one goes:
 | `<NAME>.txt` | the saved answers, one file per implementation |
 | `MATRIX.txt` | those columns as one table, built by `probe/matrix.py` |
 | `LIE.txt` | the saved run of `probe/lie_matrix.sh` |
-| `gen/`, `probe/` | the generators and the probes; `probe/reverify.sh` runs everything, `probe/selfcheck.sh` checks the repository against itself |
+| `ISTHMUS-OBSERVE.txt`, `GLUTEN-ROWS.txt` | two saved measurements outside the matrix: what Isthmus's type observer sees, and Gluten over the corpus variant that gives empty tables a synthetic row |
+| `probe/phase-cases/` | three plans showing that DataFusion does not read `AggregateFunction.phase`, with a README of their own |
+| `gen/`, `probe/` | the generators and the probes; `probe/reverify.sh` runs everything, `probe/selfcheck.sh` checks the repository against itself, and `probe/README.md` covers what else is in there — the producer probes and the one-off diagnostics |
 
 The cases are plain `substrait.Plan` protobuf-JSON with no wrapper of any kind, and they declare spec
 0.102. Most are the tests of bugs already fixed in substrait-java, rebuilt with the same builders so

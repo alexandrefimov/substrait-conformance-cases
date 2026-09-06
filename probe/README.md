@@ -37,6 +37,37 @@ Without it the Spark column is skipped with a line saying so.
 Spark and Isthmus need a built `:spark:spark-3.5_2.12` and `:isthmus` in that checkout; `cp.sh`
 resolves their classpaths from Gradle and caches them under the probe environment.
 
+## What else is in here
+
+`reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
+derives. The rest of this directory is not on that path, and none of it is run by CI.
+
+**Producers — what an implementation declares.** A consumer's answer is only half the question; the
+other half is what a producer writes into `output_type` in the first place. `ProducerIsthmus.java`
+and `ProducerSpark.java` print what those two declare when they turn SQL into a plan,
+`duckdb_producer.py` does the same for DuckDB and additionally compares the type it reports directly
+against the type after a `get_substrait_json` / `from_substrait_json` round trip, and
+`datafusion_producer_probe.rs` does it for DataFusion and writes the plans it produced to
+`$SUBSTRAIT_PLANS_OUT`. `SchemaOfBin.java` reads those written plans back through substrait-java, so
+one implementation's declaration can be handed to another. `go-producer/` is a small module printing
+what substrait-go computes as a function's return type from the extension declaration.
+
+**The declared type against the derived one.** `ObserveOf.java` attaches substrait-java's
+`TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
+Calcite derived differently, and how often derivation failed; `ISTHMUS-OBSERVE.txt` is a saved run.
+`decl_vs_derived_lie.py` establishes the same thing for the validator by handing it one case twice,
+once with a false declaration. `IsthmusRoundTrip.java` goes Substrait to Calcite and back, so what
+Isthmus writes into someone else's plan can be compared with what it read.
+
+**One-off diagnostics**, each kept because it is the reproduction behind a filed issue or a decided
+question: `DiagnoseSelfJoin.java` and `ViewVsTable.java` with `min_self_join.json` for a self-join
+through a temporary view; `agg_old_encoding.py`, which rewrites an aggregate into the retired
+`Grouping.grouping_expressions` encoding; `setdata.py`, which collects the `setdata_*` results out of
+a saved `reverify.sh` log; and `phase-cases/`, three plans with a README of their own.
+
+**Helpers.** `isthmus_run.sh` and `spark_run.sh` compile and run one Java probe from this directory
+against the right classpath; `cp.sh` is where those classpaths come from.
+
 ## substrait-validator
 
 The release on PyPI is no use: it is on spec 0.57.1 and does not load these cases. A build from
