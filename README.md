@@ -9,7 +9,11 @@ the corpus through ten implementations. The spec repo already ships function tes
 what a scalar function returns; these are whole plans, and what they check is schema derivation
 across relations.
 
-It is a lab rather than a proposal: the corpus and the harness, kept reproducible.
+It is a lab rather than a proposal: the corpus and the harness, kept reproducible. A case is added
+by adding a generator to `gen/`; a column is retaken by running `probe/reverify.sh` with
+`UPDATE_COLUMNS=1`, which is also what keeps the numbers on this page true, since
+`probe/selfcheck.sh` compares them with the files. If a number here is wrong, that is a bug in this
+repository and worth an issue.
 
 Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 `functions_arithmetic_decimal.yaml` gives `dec(21,8)`, and so do six of the ten:
