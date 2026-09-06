@@ -163,6 +163,9 @@ async fn probe(dir: &str, name: &str) {
     match from_substrait_plan(&ctx.state(), &proto_plan).await {
         Ok(plan) => {
             println!("DATAFUSION ACCEPTED  [{}]", render(&plan));
+            // The column count comes from the plan, not from the first batch: at zero rows there
+            // are no batches at all, and the arity cannot be read off them.
+            let plan_cols = plan.schema().fields().len();
             // Rows matter separately from the schema: a substituted column shows only in a value.
             match ctx.execute_logical_plan(plan).await {
                 Ok(df) => match df.collect().await {
@@ -186,13 +189,24 @@ async fn probe(dir: &str, name: &str) {
                             println!("DATAFUSION ROW       ({})", one.join(", "));
                         }
                         // The whole multiset: multiplicity is invisible in a schema.
-                        if batches.first().map(|b| b.num_columns()) == Some(1) {
+                        //
+                        // unwrap_or(plan_cols): an empty result arrives as zero batches, and the
+                        // condition on the first batch then did not fire at all, so the ROWS line
+                        // was not printed - "ran and returned nothing" was again indistinguishable
+                        // from "did not run", although the fix below claimed otherwise.
+                        if batches.first().map(|b| b.num_columns()).unwrap_or(plan_cols) == 1 {
                             use datafusion::arrow::array::{Array, Int64Array};
                             let mut vals: Vec<i64> = Vec::new();
+                            // Only Int64 is collected. For a column of another type the list stays
+                            // empty, and printing that as ROWS [] would say "no rows" about a result
+                            // that has them: on the aggregation-phase cases the column is Float64
+                            // and the answer is 1.5.
+                            let mut collectable = batches.is_empty();
                             for b in &batches {
                                 if let Some(arr) =
                                     b.column(0).as_any().downcast_ref::<Int64Array>()
                                 {
+                                    collectable = true;
                                     for i in 0..arr.len() {
                                         if !arr.is_null(i) {
                                             vals.push(arr.value(i));
@@ -200,11 +214,17 @@ async fn probe(dir: &str, name: &str) {
                                     }
                                 }
                             }
-                            vals.sort_unstable();
-                            // Always printed, an empty result included: the ROWS line used to be
-                            // omitted entirely at zero rows, which made "ran and returned nothing"
-                            // indistinguishable from "did not run". Divergences vanished that way.
-                            println!("DATAFUSION ROWS      {:?}", vals);
+                            if !collectable {
+                                let t = batches[0].column(0).data_type().to_string();
+                                // A tag of its own rather than ROWS: check_rows.py pulls every
+                                // number out of a ROWS body with a regexp, and "Float64" would
+                                // give it the row 64.
+                                println!("DATAFUSION NOCOUNT   column {t}, only Int64 is counted");
+                            } else {
+                                vals.sort_unstable();
+                                // Always printed, an empty result included.
+                                println!("DATAFUSION ROWS      {:?}", vals);
+                            }
                         }
                     }
                     Err(e) => println!("DATAFUSION EXECERR   {}", e.to_string().lines().next().unwrap_or("")),

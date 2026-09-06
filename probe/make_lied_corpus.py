@@ -20,7 +20,18 @@ def lie(t):
     if kind == "bool":
         return {"i32": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
     if kind == "struct":
-        return {"i64": {"nullability": spec.get("nullability", "NULLABILITY_REQUIRED")}}
+        # A struct is swapped for a struct of the same arity, not for a scalar. A scalar changed the
+        # number of fields in depth, the plan stopped agreeing with Plan.Root.names, and the
+        # participant refused over the count of names - which the measurement then recorded as
+        # "noticed the swapped type". phase_intermediate landed among the copied or among the caught
+        # depending on which swap happened to be in the directory.
+        inner = spec.get("types") or []
+        lied = [lie(t) or t for t in inner]
+        if all(l is t for l, t in zip(lied, inner)):
+            return None
+        out = dict(spec)
+        out["types"] = lied
+        return {"struct": out}
     return None
 
 src, dst = sys.argv[1], sys.argv[2]

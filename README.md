@@ -60,18 +60,22 @@ answer that moves is an answer that depends on the declaration. `results/LIE.txt
 
 | | answers that move | of them with an expectation | expectations left |
 | --- | ---: | ---: | ---: |
-| substrait-java | 10 | 9 | 63, and one it cannot judge |
+| substrait-java | 11 | 10 | 63 |
 | substrait-python | 10 | 10 | 63 |
 | substrait-validator | 10 | 10 | 63 |
 | DuckDB | 0 | 0 | 73 |
 
-For substrait-java the ten are the five decimal cases, the three `narrowing_*` predicates,
-`phase_final` and `ctas_keeps_declared_schema` — the last of which carries no expectation. The case
-it cannot judge is `phase_intermediate`: the swap turns a struct `output_type` into a scalar, which
-leaves three names in `Plan.Root` above one column, and substrait-java then rejects the plan over the
-names rather than over the type.
+For substrait-java the eleven are the five decimal cases, `narrowing_count`, the two null
+predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
+expectation.
 
-Two limits on reading that as *derived*. The swap perturbs `output_type` and nothing else, so an
+The swap has to preserve arity, and finding that out cost a wrong answer. Swapping a struct
+`output_type` for a scalar changed the number of fields in depth; the plan then disagreed with
+`Plan.Root.names`, the participant refused over the count of names, and the measurement recorded
+that as having noticed the type. `phase_intermediate` read as caught rather than copied, and the
+number above was 63 by a different route.
+
+Two limits on reading a held answer as *derived*. The swap perturbs `output_type` and nothing else, so an
 answer that holds is proven not to be copied **from that field** — it is not thereby proven to be
 derived, because a relation's schema also comes from `ReadRel.base_schema`, which the swap leaves
 alone. And only these four participants were measured; for DataFusion, substrait-go, Acero, Spark,

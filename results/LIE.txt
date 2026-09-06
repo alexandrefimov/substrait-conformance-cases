@@ -1,14 +1,21 @@
-Who copies the declared type: probe/lie_matrix.sh, 2026-09-04.
+Who copies the declared type: probe/lie_matrix.sh, 2026-09-06.
 
 Every declared output_type in the corpus is swapped for a false one (probe/make_lied_corpus.py:
-decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, struct -> i64) and nothing else about the
-plan changes. 23 of the 78 cases carry an output_type and are therefore touched.
+decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, and a struct for a struct of the same
+arity with each field swapped) and nothing else about the plan changes. 23 of the 78 cases carry an
+output_type and are therefore touched.
 
   follows    - the answer matched the swap: the declaration was copied, nothing was derived
   changed    - the answer moved but not into the swapped type: it still depends on the declaration
   held       - the answer did not change: not copied from output_type
   NOTICED    - an error only on the swapped plan
   both fail  - the case is unsupported either way
+
+Arity matters here. An earlier version swapped a struct for a scalar, which changed the number of
+fields in depth; the plan then disagreed with Plan.Root.names and the participant refused over the
+count of names, which this table recorded as NOTICED. phase_intermediate landed among the copied or
+among the caught depending on which swap was in the directory. Swapping a struct for a struct of the
+same arity settles it: it is copied.
 
 The participants here are the ones whose probes run from one command. Spark and Gluten were in an
 earlier hand-made version of this table and are not reproducible by the script, so they are gone.
@@ -36,10 +43,9 @@ narrowing_count                   follows             follows             follow
 narrowing_is_not_null             changed             changed             changed             held                
 narrowing_is_null                 changed             changed             changed             held                
 phase_final                       follows             follows             follows             held                
-phase_intermediate                NOTICED             changed             changed             both fail           
+phase_intermediate                follows             follows             follows             both fail           
 
-substrait-java, substrait-python and the validator each move on ten cases; DuckDB on none.
-NOTICED appears once and does not mean what it looks like: on phase_intermediate the swap turns a
-struct output_type into a scalar, which leaves three names in Plan.Root above one column, and
-substrait-java rejects the plan over the names rather than over the type. That case is not measured
-by this experiment.
+substrait-java moves on eleven cases, ten of which carry an expectation: the five decimal ones,
+narrowing_count, the two null predicates and the two aggregation phases; the eleventh,
+ctas_keeps_declared_schema, has no expectation. substrait-python and the validator move on ten each,
+all ten carrying one. DuckDB moves on none.
