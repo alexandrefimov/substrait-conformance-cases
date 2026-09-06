@@ -27,6 +27,20 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 (Types are shown in the corpus's own notation; `results/<NAME>.txt` keeps each implementation's spelling.)
 
+## What would help
+
+Three things, in the order they are worth someone's time:
+
+- **A reading of `probe/expected.py` against the spec.** It is 73 expectations written by hand from
+  the spec text; nobody outside this repository has checked them, and an expectation that is wrong
+  turns into a divergence reported against an implementation that was right.
+- **For a participant's maintainer: the cases that differ for you.** `differed.json` names them per
+  participant with a reason each — 28 for the validator, 18 for DuckDB, 17 for substrait-python,
+  16 for Acero — as plans you can take into your own tests without any of this harness.
+- **One answer from the spec.** When a virtual table's rows disagree with the schema it declares —
+  an i8 literal in an i32 column, a null in a required one — which wins? Four cases here go unscored
+  because the spec does not say, and that is a gap in the spec rather than in any implementation.
+
 ## What the corpus says
 
 The columns saved here were taken 2026-09-06 against the versions in `probe/versions.env`, which
@@ -43,6 +57,10 @@ each column's own first line names again. They answer the 73 cases that carry an
 | DuckDB | 33 | 18 | 22 |
 | Spark | 26 | 6 | 41 |
 | Acero | 2 | 16 | 55 |
+
+The substrait-java row is calibration, not a result: most cases are built with its builders and
+the expectations were written by someone who works on it, so 73/0 says the corpus is internally
+consistent and nothing about substrait-java. The rows to read are the other eight.
 
 These are nine consumer paths. The Java core, Isthmus and Spark paths share substrait-java;
 Isthmus adds Calcite conversion and Spark adds its Catalyst conversion. Gluten has a separate
@@ -68,7 +86,10 @@ then checks the generator's declaration against that expectation, but does not d
 independent function return-type inference by the consumer.
 
 `probe/lie_matrix.sh` changes declared `output_type` fields while preserving the rest of each plan
-and reports whose output schema moves. `results/LIE.txt` is a saved run.
+and reports whose output schema moves. `results/LIE.txt` is a saved run. The result: for
+substrait-java, substrait-python and the validator a false declaration moves the answer on ten of
+the 22 cases that carry one, and for DuckDB on none of them — a difference in behaviour, not in
+coverage.
 
 | | answers that move | of them with an expectation |
 | --- | ---: | ---: |
@@ -100,14 +121,11 @@ only Java, Python, the validator and DuckDB were run through this script at all.
 
 ## What is not settled
 
-This repository is three days old, and the claims on this page have been corrected seven times in
-that span — the size of the circular set, a "fail-closed" summary that a validator environment with
-nothing installed walked straight through, the date on the table above, the DataFusion commit the
-columns were taken against, a reason in `expected.json` that pointed at its neighbour and, once the
-file was sorted, at the wrong one, the count of differing cells that are a limit of a type system
-rather than a divergence, and reading a held answer in the swap table as one the consumer derived —
-the twelve that held are the `joineq_*` cases, where the swapped declaration is a join predicate
-whose type never reaches the output schema. Each is a commit with the measurement that found it.
+This repository is three days old and the claims on this page have been corrected seven times in
+that span, each correction a commit carrying the measurement that found it. The largest was
+reading a held answer in the swap table below as one the consumer derived: the twelve that held are
+the `joineq_*` cases, where the swapped declaration is a join predicate whose type never reaches
+the output schema.
 
 The self-checks verify relationships between committed artifacts. They do not establish that every
 encoded rule matches the spec or that every interpretation of a result is correct.
@@ -129,11 +147,6 @@ What is open, as against corrected:
   tally matching the ones above. It has not run on hardware that is not this machine's, and nobody
   outside this project has run it. CI runs only the self-check, which is the repository read against
   itself and says nothing about any implementation.
-- Getting there took five attempts, and each failure was a requirement recorded by the name of a
-  tool rather than by what it had to be: go, where the version was never stated and the check for it
-  could not fail; protoc, where the imports it needs ship in a separate package on Debian; and the
-  JDK, where the probe that wants a 17 finds one by itself only on macOS. Two more were defects in
-  the checks rather than in the harness, and are why `probe/selfcheck-negative.sh` exists.
 
 ## Where the expectations come from
 
@@ -144,7 +157,7 @@ emit order. It reads neither spec files nor plans. `expected.json` is the result
 cases also carry expected multisets of rows transcribed from the spec's examples;
 `probe/check_rows.py` compares those separately from schemas.
 
-Five cases carry no expectation, and `expected.json` separates the two reasons why. Four have
+Five cases carry no expectation, for two different reasons that `expected.json` keeps apart. Four have
 virtual-table row types or nullability different from the declared schema. They remain unscored
 pending clarification of exact type equality versus compatibility between a row and its schema;
 the `spec_silent` category records this unresolved question. The fifth is a CTAS whose input schema
@@ -193,8 +206,8 @@ arithmetic — where the rule is written down and can be checked directly.
 
 `derived-schema/manifest.json` has an entry per case: which generator writes it, the line that
 generator prints for it, and its expectation with the wording of where that came from. It is built
-by `gen/make_manifest.sh` from the generators themselves, so it cannot drift into saying something
-the corpus does not; the only hand-written part is `gen/sources.json`, which records the issue a case
+by `gen/make_manifest.sh` from the generators themselves, so it says what the generators
+say rather than what someone remembered about them; the only hand-written part is `gen/sources.json`, which records the issue a case
 came from. Five cases have one so far — that is what is still thin here, and thin on purpose: an
 entry is added only when the case exercises what the change it names actually changed. A case is added by adding a
 generator to `gen/`; `gen/README.md` says how the corpus is built.
@@ -223,7 +236,7 @@ so when it skips. It does not build Gluten: that column is taken in a cluster, a
 says what it takes.
 
 `reverify.sh` requires both checkouts to be at the pinned commits and refuses to run otherwise;
-`SJ_EXPECT=` or `DF_EXPECT=` left empty says you meant something else. The pin records what was
+set `SJ_EXPECT=` or `DF_EXPECT=` empty to say the mismatch is deliberate. The pin records what was
 measured rather than what is necessary: the same nine columns came out of substrait-java at
 `81120b91`, twelve commits earlier, with every number unchanged. A participant whose
 environment is missing is skipped with a line saying so, and the run then fails unless
