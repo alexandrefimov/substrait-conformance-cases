@@ -287,7 +287,10 @@ rm -rf probe/__pycache__
 echo
 echo "### hygiene"
 if git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  FILES="$(git -C "$ROOT" ls-files)"
+  # Tracked files and new ones that are not ignored. Tracked alone meant a file was exempt until it
+  # was staged, so "selfcheck green, then commit" said nothing about the file being added - which is
+  # exactly how a new script carrying an absolute path went in and turned CI red.
+  FILES="$(git -C "$ROOT" ls-files --cached --others --exclude-standard)"
 else
   FILES="$(find . -type f -not -path "./.git/*" -not -path "./.probe-env/*" -not -path "./gen/out/*" \
            -not -name classpath.txt | sed 's|^\./||')"

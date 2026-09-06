@@ -99,8 +99,10 @@ mutate "the count of cases naming a source" "name a source issue" \
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"
 
+# Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
+# carrying the literal would be flagged by the check it is testing.
 mutate "an absolute path" "absolute path in" \
-  sh -c "printf '\n# see /Users/someone/scratch\n' >> probe/setup.sh"
+  sh -c 'printf "\n# see %s\n" "/$(printf Users)/someone/scratch" >> probe/setup.sh' 
 
 mutate "untranslated text" "untranslated text in" \
   sh -c "printf '\n# \\xd0\\xbf\\xd1\\x80\\xd0\\xbe\\xd0\\xb2\\xd0\\xb5\\xd1\\x80\\xd0\\xba\\xd0\\xb0\n' >> probe/setup.sh"
