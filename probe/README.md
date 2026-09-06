@@ -4,6 +4,11 @@
 The shared environment is built by `setup.sh` (see the top-level README). The validator is not part
 of it and is installed separately, below.
 
+`selfcheck-negative.sh` checks that `selfcheck.sh` can fail: it breaks each invariant in a copy of
+the repository and requires the check to notice that one, not merely to go red. A check nobody
+checks is a comment the interpreter happens to run, and three guards here were written, committed
+and could never fire.
+
 `selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
 against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every
 saved column is complete and agrees with the expectations, that the numbers in the README match what

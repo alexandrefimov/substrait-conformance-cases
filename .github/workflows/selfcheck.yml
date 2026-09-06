@@ -16,3 +16,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: bash probe/selfcheck.sh
+      # And that those checks can fail: each invariant is broken in a copy and the check has to
+      # notice its own. Three guards in this repository were written, committed, and could never
+      # fire; two of them lived in checks.
+      - run: bash probe/selfcheck-negative.sh
