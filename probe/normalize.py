@@ -30,6 +30,14 @@ PRIORITY = ["ACCEPTED", "SCHEMA", "REJECTED", "ERROR", "CRASH", "LOADFAIL", "NOT
 ACCEPTING = {"ACCEPTED", "SCHEMA"}
 REFUSING = {"REJECTED", "CRASH", "LOADFAIL", "NOTIMPL"}
 
+# protobuf varies this marker between runs on purpose, so that debug output is not parsed as data.
+# Left as it comes, one Acero cell changes on every run for a reason that has nothing to do with the
+# measurement, and every run that saves columns dirties that file.
+REDACTION = re.compile(r"goo\.gle/debug\w*")
+
+def stable(value):
+    return REDACTION.sub("goo.gle/debug", value)
+
 def blocks(text):
     name, verdicts = None, []
     for line in text.splitlines():
@@ -71,12 +79,13 @@ def main():
                 continue
             kind, value = min(verdicts, key=lambda kv: PRIORITY.index(kv[0])
                               if kv[0] in PRIORITY else len(PRIORITY))
+            value = stable(value)
             rows.append((name, ("ERROR: " + value) if kind in REFUSAL else value))
     elif fmt == "line":
         for line in raw.splitlines():
             name, _, value = line.rstrip().partition(" ")
             if name and value.strip() and not name.startswith("#"):
-                rows.append((name, value.strip()))
+                rows.append((name, stable(value.strip())))
     else:
         sys.exit("unknown format: %s" % fmt)
 

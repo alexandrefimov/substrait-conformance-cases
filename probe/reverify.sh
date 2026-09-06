@@ -416,7 +416,10 @@ done
 # The saved columns are replaced only when explicitly asked for - like the corpus.
 if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
   for c in "$RUN"/*.txt; do cp "$c" "$ROOT/$(basename "$c")"; done
-  echo "saved columns updated from this run (UPDATE_COLUMNS=1)"
+  # MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
+  # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
+  python3 "$PROBE/matrix.py" > "$ROOT/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
+  echo "saved columns and MATRIX.txt updated from this run (UPDATE_COLUMNS=1)"
 fi
 
 echo

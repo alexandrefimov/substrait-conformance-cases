@@ -5,7 +5,7 @@ aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: 
 aggregate_grouping_sets_declared_order         ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
 control_join_without_relcommon                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 control_passthrough_rn                         [c0:int64, c1:int64?]
-ctas_keeps_declared_schema                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debugstr   write {   named_table {     names: "dst1"   }   table_schema {
+ctas_keeps_declared_schema                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug   write {   named_table {     names: "dst1"   }   table_schema {
 decimal_add_overflow                           ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 39
 decimal_add                                    [r:decimal128(11, 2)?]
 decimal_divide                                 [r:decimal128(16, 7)?]
