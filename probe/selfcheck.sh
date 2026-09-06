@@ -60,6 +60,23 @@ if not readme:
     print("FAILED: no results table found in README.md under %r" % HEADER)
     raise SystemExit(1)
 
+# The README dates the table. That date went stale the first time the columns were retaken, and the
+# tallies did not move, so nothing noticed. Gluten is left out: its column is taken in a cluster and
+# carries its own date, and it is not in this table.
+readme_text = io.open("README.md", encoding="utf-8").read()
+stamp = re.search(r"taken (\d{4}-\d{2}-\d{2}) against the versions", readme_text)
+taken = {re.search(r"column from run (\d{4}-\d{2}-\d{2})",
+                   io.open(c + ".txt", encoding="utf-8").readline()).group(1)
+         for _, c, _ in COLUMNS}
+if not stamp:
+    print("FAILED: the README no longer dates the results table")
+    raise SystemExit(1)
+if taken != {stamp.group(1)}:
+    print("FAILED: the README dates the table %s, the columns were taken %s"
+          % (stamp.group(1), ", ".join(sorted(taken))))
+    raise SystemExit(1)
+print("ok      the table is dated %s, matching every column" % stamp.group(1))
+
 bad = 0
 for label, col, fmt in COLUMNS:
     out = subprocess.run([sys.executable, "probe/check_expected.py", col + ".txt", fmt],

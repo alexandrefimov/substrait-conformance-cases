@@ -22,7 +22,7 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 ## What the corpus says
 
-The columns saved here, taken 2026-09-04 against the versions in `probe/versions.env`, answer the 73
+The columns saved here, taken 2026-09-06 against the versions in `probe/versions.env`, answer the 73
 cases that have an expectation like this:
 
 | | matched | differed | unsupported |
