@@ -2,9 +2,10 @@
 
 [![selfcheck](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml/badge.svg)](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml)
 
-A plan declares types, and a consumer may derive them or reuse those declarations. This repository
-holds 78 plans, case-specific expected schemas for 73 of them, and probes for comparing consumer
-outputs. The expectations encode spec rules and examples separately from the generators and
+A plan declares types and a consumer derives them again — or reuses what the plan declared. When
+the two disagree, nothing in the format notices. This repository holds 78 plans built to make such
+disagreements visible, an expected schema for 73 of them, and probes that put the corpus through ten
+implementations. The expectations encode spec rules and examples separately from the generators and
 consumers; they are not read from plans or consumer outputs. The spec repo already ships function
 test cases, which check what a scalar function returns; these cases compare schemas across relations.
 
@@ -98,6 +99,15 @@ test transformations of those inputs; simply returning `base_schema` would fail 
 Only Java, Python, validator and DuckDB were run through this mutation script.
 
 ## What is not settled
+
+This repository is three days old, and the claims on this page have been corrected seven times in
+that span — the size of the circular set, a "fail-closed" summary that a validator environment with
+nothing installed walked straight through, the date on the table above, the DataFusion commit the
+columns were taken against, a reason in `expected.json` that pointed at its neighbour and, once the
+file was sorted, at the wrong one, the count of differing cells that are a limit of a type system
+rather than a divergence, and reading a held answer in the swap table as one the consumer derived —
+the twelve that held are the `joineq_*` cases, where the swapped declaration is a join predicate
+whose type never reaches the output schema. Each is a commit with the measurement that found it.
 
 The self-checks verify relationships between committed artifacts. They do not establish that every
 encoded rule matches the spec or that every interpretation of a result is correct.
