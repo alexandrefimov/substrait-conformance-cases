@@ -1,7 +1,9 @@
 # Aggregation phase: three plans
 
 Three plans showing that the DataFusion consumer does not read `AggregateFunction.phase`, filed as
-apache/datafusion#24967. To run them: point `SUBSTRAIT_CORPUS_DIR` at this directory and run
+apache/datafusion#24967, whose "To Reproduce" links to this directory at tag `v0.1.0`. That tag is
+therefore load-bearing: it cannot be moved or deleted, and if these plans change, the new state gets
+a new tag rather than the old one being repointed. To run them: point `SUBSTRAIT_CORPUS_DIR` at this directory and run
 `probe/datafusion_corpus_probe.rs` as an example inside a DataFusion checkout, the way section 2 of
 `reverify.sh` does.
 
