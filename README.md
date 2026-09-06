@@ -43,11 +43,12 @@ Nine rows for ten implementations: Gluten is missing because it repeats a functi
 instead of deriving one, so comparing it against a derived expectation would measure nothing.
 *Unsupported* means the implementation rejected the plan, which is a fact about coverage rather than
 a divergence in derivation. Read *differed* against *matched + differed* rather than against 73: a
-participant that refuses most of the corpus is telling you about its coverage, and the few answers
-it does give are a thin base for anything else. Two rows here differ on more than a third of what
-they answer, and one on nearly all of it. *Differed* means the answer disagrees with this repository's reading of
-the spec — some of those have been filed against the implementations and some have not, and the
-corpus does not record which. Not every *differed* cell is a defect either: `stringlen_declared`
+participant that refuses most of the corpus is reporting its coverage, and the few answers it does
+give are a thin base for anything else.
+
+*Differed* means the answer disagrees with this repository's reading of the spec — some of those
+have been filed against the implementations and some have not, and the corpus does not record
+which. Not every *differed* cell is a defect either: `stringlen_declared`
 differs for DataFusion and DuckDB because neither type system has a string with a length, and the
 per-column boundaries below say where else that applies. `reverify.sh` reproduces the whole table,
 and `probe/check_expected.py results/<NAME>.txt <format>` reproduces one row and names the cases behind it.
