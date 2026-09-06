@@ -39,7 +39,8 @@ Three things, in the order they are worth someone's time:
   16 for Acero — as plans you can take into your own tests without any of this harness.
 - **One answer from the spec.** When a virtual table's rows disagree with the schema it declares —
   an i8 literal in an i32 column, a null in a required one — which wins? Four cases here go unscored
-  because the spec does not say, and that is a gap in the spec rather than in any implementation.
+  pending clarification of exact type equality versus compatibility. We have not found an explicit
+  rule that resolves this question.
 
 ## What the corpus says
 
@@ -58,17 +59,19 @@ each column's own first line names again. They answer the 73 cases that carry an
 | Spark | 26 | 6 | 41 |
 | Acero | 2 | 16 | 55 |
 
-The substrait-java row is calibration, not a result: most cases are built with its builders and
-the expectations were written by someone who works on it, so 73/0 says the corpus is internally
-consistent and nothing about substrait-java. The rows to read are the other eight.
+Most plans use substrait-java builders. The generators and expectations have the same author, who
+also contributes to substrait-java. Its 73 matches show agreement with these expectations. On ten
+cases, the mutation below shows that this agreement does not establish independent function
+return-type inference.
 
 These are nine consumer paths. The Java core, Isthmus and Spark paths share substrait-java;
 Isthmus adds Calcite conversion and Spark adds its Catalyst conversion. Gluten has a separate
 cluster run over the virtual-table variant and is outside this normalized comparison.
 *Unsupported* means the probe produced no comparable schema: it includes rejections, errors and
-crashes. It does not establish that the plan lies outside a declared capability. Read *differed*
-against *matched + differed* when comparing returned schemas; the unsupported count records the
-rest of the cases. A returned schema may also have diagnostics, which are reported separately.
+crashes. Read *differed* against *matched + differed* when comparing returned schemas; the
+unsupported count records the rest of the cases. A returned schema may also have diagnostics.
+For the validator, `bash probe/validator_all.sh` prints them; `results/VALIDATOR.txt` retains
+the schema when one is available.
 
 *Differed* means the answer disagrees with this repository's reading of the spec — some of those
 have been filed against the implementations and some have not. Not every *differed* cell is a
@@ -88,8 +91,8 @@ independent function return-type inference by the consumer.
 `probe/lie_matrix.sh` changes declared `output_type` fields while preserving the rest of each plan
 and reports whose output schema moves. `results/LIE.txt` is a saved run. The result: for
 substrait-java, substrait-python and the validator a false declaration moves the answer on ten of
-the 22 cases that carry one, and for DuckDB on none of them — a difference in behaviour, not in
-coverage.
+the 22 scored cases that carry one. For DuckDB, seventeen output schemas stay unchanged and five
+pairs produce no comparable schema on either plan.
 
 | | answers that move | of them with an expectation |
 | --- | ---: | ---: |
