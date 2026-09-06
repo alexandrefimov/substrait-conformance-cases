@@ -13,7 +13,9 @@ and could never fire.
 against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every
 saved column is complete and agrees with the expectations, that the numbers in the README match what
 `check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
-has come back. It needs python3 and nothing else, takes seconds, and is what CI runs.
+has come back. `check_differed.py`, which it calls, is the one part that reads judgements rather
+than generated files: every differing answer has a reason in `differed.json`, and every reason
+carries a test the saved answer has to pass. It needs python3 and nothing else, takes seconds, and is what CI runs.
 
 Every script finds the corpus relative to the repository, and its environment through
 `SUBSTRAIT_PROBE_ENV` (default `<repo>/.probe-env`). The two external checkouts are named by
