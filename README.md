@@ -84,8 +84,11 @@ number above was 63 by a different route.
 Two limits on reading a held answer as *derived*. The swap perturbs `output_type` and nothing else, so an
 answer that holds is proven not to be copied **from that field** — it is not thereby proven to be
 derived, because a relation's schema also comes from `ReadRel.base_schema`, which the swap leaves
-alone, and which is what those 51 declare. And only these four participants were measured; for
-DataFusion, substrait-go, Acero, Spark, Isthmus and Gluten the copy discount is simply not known.
+alone, and which is what those 51 declare — an implementation that simply returned the declared
+schema would pass all 51 without deriving anything, and this experiment would not notice. Swapping
+`base_schema` for a neighbouring type is the missing half; it would split those 51 into deriving and
+repeating. And only these four participants were measured; for DataFusion, substrait-go, Acero,
+Spark, Isthmus and Gluten the copy discount is simply not known.
 
 ## What is not settled
 

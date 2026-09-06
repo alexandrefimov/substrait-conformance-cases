@@ -70,6 +70,27 @@ a saved `reverify.sh` log; and `phase-cases/`, three plans with a README of thei
 **Helpers.** `isthmus_run.sh` and `spark_run.sh` compile and run one Java probe from this directory
 against the right classpath; `cp.sh` is where those classpaths come from.
 
+## Running this on another machine
+
+Nothing here has run anywhere but the machine it was built on, so the one thing a run elsewhere is
+for is finding what depends on that machine. Three defects were found that way and by no other:
+a guard that let a probe crashing on every case through, a version pin that was never applied and
+turned out to name the wrong commit, and a classpath that was printed but never built - which worked
+here only because the jar it named was already lying around.
+
+For such a run to measure the harness rather than someone's paths, these have to start empty:
+
+| | why it matters cold |
+| --- | --- |
+| the Gradle cache and both build directories | `:core`, `:isthmus` and `:spark:spark-3.5_2.12` are built through `cp.sh`, and a warm tree hides whether the task graph asks for what the classpath names |
+| the cargo target directory | the DataFusion example takes tens of minutes cold and seconds warm, and the toolchain that checkout pins has to be fetched |
+| the pip cache | `setup.sh` installs duckdb, pyarrow, substrait-python and the validator, and their wheels are large |
+| `JAVA17_HOME` | the Spark probe needs JDK 17 and finds it through `/usr/libexec/java_home` only on macOS; elsewhere it is set by hand or the probe is skipped |
+| the Go module cache | `probe_go9` is built from a pinned commit |
+
+The two checkouts have to be at the commits `versions.env` names, which `reverify.sh` requires
+anyway. Everything else `setup.sh` builds.
+
 ## substrait-validator
 
 `setup.sh` builds this when cargo and protoc are on PATH, and says so when it skips. By hand, the
