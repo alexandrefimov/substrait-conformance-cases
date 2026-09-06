@@ -58,7 +58,7 @@ Which cases those are is measured rather than guessed. `probe/lie_matrix.sh` swa
 `output_type` for a false one, changes nothing else, and reports whose answer moves with it; an
 answer that moves is an answer that depends on the declaration. `results/LIE.txt` is a saved run.
 
-| | answers that move | of them with an expectation | expectations left |
+| | answers that move | of them with an expectation | expectations not copied from `output_type` |
 | --- | ---: | ---: | ---: |
 | substrait-java | 11 | 10 | 63 |
 | substrait-python | 10 | 10 | 63 |
@@ -69,6 +69,12 @@ For substrait-java the eleven are the five decimal cases, `narrowing_count`, the
 predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
 expectation.
 
+How far that last column reaches is worth being exact about. Only 23 of the 78 cases carry an
+`output_type` at all, and the swap touches those and nothing else; 22 of the 23 have an expectation.
+So the experiment examined 22 of the 73 expectations and found ten copied and twelve held. The other
+51 carry no `output_type` for a consumer to copy, which is why they are counted in that column —
+not because this experiment cleared them.
+
 The swap has to preserve arity, and finding that out cost a wrong answer. Swapping a struct
 `output_type` for a scalar changed the number of fields in depth; the plan then disagreed with
 `Plan.Root.names`, the participant refused over the count of names, and the measurement recorded
@@ -78,8 +84,8 @@ number above was 63 by a different route.
 Two limits on reading a held answer as *derived*. The swap perturbs `output_type` and nothing else, so an
 answer that holds is proven not to be copied **from that field** — it is not thereby proven to be
 derived, because a relation's schema also comes from `ReadRel.base_schema`, which the swap leaves
-alone. And only these four participants were measured; for DataFusion, substrait-go, Acero, Spark,
-Isthmus and Gluten the copy discount is simply not known.
+alone, and which is what those 51 declare. And only these four participants were measured; for
+DataFusion, substrait-go, Acero, Spark, Isthmus and Gluten the copy discount is simply not known.
 
 ## What is not settled
 
@@ -101,8 +107,13 @@ What is open, as against corrected:
   `stringlen_declared`.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
-- The full sweep has never run on Linux. CI runs the self-check, which is the repository read
-  against itself and says nothing about any implementation.
+- The full sweep has never run on Linux, and has never run on a machine other than the one it was
+  built on. Every timing here is therefore a lower bound, and "it runs from a clean checkout" means
+  a clean checkout with this machine's Gradle, cargo and pip caches already warm. CI runs the
+  self-check, which is the repository read against itself and says nothing about any implementation.
+- An outside review of an earlier commit refused it on exactly that point and found three defects
+  nobody working here had: a guard that let a broken probe through, a version pin that was never
+  applied and turned out to be wrong, and a classpath printed but never built.
 
 ## Where the expectations come from
 

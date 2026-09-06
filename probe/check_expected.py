@@ -21,9 +21,15 @@ about the plan changes, so an answer that moves is an answer that depends on the
 For substrait-java eleven answers move: the five decimal cases, narrowing_count, the two null
 predicates, the two aggregation phases, and ctas_keeps_declared_schema, which carries no expectation.
 substrait-python and the validator move on ten each, all ten carrying one; DuckDB moves on none. So
-for substrait-java 63 of the 73 expectations are checked against an answer known not to be copied,
-and ten are circular. An earlier wording said "the five decimal cases" and called the rest
-independent, which understated the circular part by half.
+for substrait-java 63 of the 73 expectations are not copied from output_type, and ten are circular.
+An earlier wording said "the five decimal cases" and called the rest independent, which understated
+the circular part by half.
+
+How far that reaches. Only 23 of the 78 cases carry an output_type at all, 22 of them with an
+expectation, and the swap touches those and nothing else - so the experiment examined 22 of the 73,
+finding ten copied and twelve held. The other 51 have no output_type to copy, which is not the same
+as having been shown to derive: their schema comes from ReadRel.base_schema, which this swap leaves
+alone.
 
 The swap preserves arity, and it has to. Swapping a struct output_type for a scalar changed the
 number of fields in depth, the plan then disagreed with Plan.Root.names, and the participant refused
