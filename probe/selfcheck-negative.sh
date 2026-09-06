@@ -104,8 +104,12 @@ mutate "broken python" "python syntax" \
 mutate "an absolute path" "absolute path in" \
   sh -c 'printf "\n# see %s\n" "/$(printf Users)/someone/scratch" >> probe/setup.sh' 
 
+# Written with python3, which this repository requires anyway, rather than with printf: dash's
+# printf has no \xNN escape, so on Linux the bytes were never written, no untranslated text appeared,
+# and the check correctly stayed silent - a mutation that could not mutate, found by running the
+# suite somewhere other than where it was written.
 mutate "untranslated text" "untranslated text in" \
-  sh -c "printf '\n# \\xd0\\xbf\\xd1\\x80\\xd0\\xbe\\xd0\\xb2\\xd0\\xb5\\xd1\\x80\\xd0\\xba\\xd0\\xb0\n' >> probe/setup.sh"
+  python3 -c "import io; f=io.open('probe/setup.sh','a',encoding='utf-8'); f.write(u'\n# \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430\n'); f.close()"
 
 echo
 echo "invariants that could be broken and were caught: $PASS"
