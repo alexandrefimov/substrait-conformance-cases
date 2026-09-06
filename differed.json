@@ -117,7 +117,7 @@
   },
   "python-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability: it never widens a side to nullable for left, right, outer or single, and for a mark join it appends the mark column without dropping the right side.",
+   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single, and for a mark join it appends the mark column without dropping the right side.",
    "check": {
     "inputs_concatenated": {
      "mark_suffix": true
@@ -126,7 +126,7 @@
   },
   "validator-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "The validator applies the join type on inner, outer, left, left semi, left anti and left single, all of which match. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column. Filed as substrait-io/substrait-validator#580.",
+   "what": "The validator applies the join type on inner, outer, left, right, left semi, left anti and left single, all of which match - plain right included, which is the point of the contrast. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column. Filed as substrait-io/substrait-validator#580.",
    "check": {
     "inputs_concatenated": {}
    }
@@ -168,7 +168,7 @@
      "leading": true
     }
    },
-   "what": "RelCommon.emit names which columns the relation returns and in what order. DuckDB applies it on a ProjectRel - emit_project matches - and applies ReadRel.projection, which is a different field. On these six relations and on a virtual table it returns the leading columns of the unselected output instead. Filed as substrait-io/duckdb-substrait-extension#267."
+   "what": "RelCommon.emit names which columns the relation returns and in what order. DuckDB applies it on a ProjectRel - emit_project matches - and applies ReadRel.projection, which is a different field. On these six relations and on a virtual table it returns the leading columns of the leaf read's schema instead, the aggregate included, whose own output is neither that nor the mapping. Filed as substrait-io/duckdb-substrait-extension#267."
   },
   "acero-required-kept-only-on-a-bare-read": {
    "kind": "divergence",

@@ -37,6 +37,10 @@ COLS = [("PYTHON", "py"), ("GO", "go"), ("VALIDATOR", "py"), ("ISTHMUS", "calcit
 src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
 P = {"__file__": os.path.join(ROOT, "probe/check_expected.py")}
 exec(src[:src.index("path, fmt = sys.argv")], P)
+# TYPES_ONLY is assigned after that line, and it is a boundary rather than a detail: it names the
+# participants whose logical types carry no nullability. Taking it from the same file keeps the two
+# checks from drifting into disagreeing about what a participant claims to say.
+exec(re.search(r"^TYPES_ONLY = .*$", src, re.M).group(0), P)
 PARSE = {"java": "parse_java", "py": "parse_py", "df": "parse_df", "duckdb": "parse_duckdb",
          "acero": "parse_acero", "go": "parse_go", "spark": "parse_spark", "calcite": "parse_calcite"}
 
@@ -45,6 +49,24 @@ PARSE = {"java": "parse_java", "py": "parse_py", "df": "parse_df", "duckdb": "pa
 # then checked against the inputs, not against a copy of them that can go stale on its own.
 PROTO_TYPE = {"i64": "i64", "i32": "i32", "i16": "i16", "i8": "i8", "bool": "bool", "string": "str",
               "fp64": "fp64", "fp32": "fp32", "binary": "bin", "date": "date"}
+
+def case_precisions(case):
+    """The precisions the case's schema declares. Read from the plan, not from the expectation:
+    the two agree here only because the expectation of a bare read is its base_schema, and a
+    declaration disagreeing with what is derived from it is the thing this corpus exists to catch."""
+    plan = json.load(open(os.path.join(ROOT, "derived-schema/%s.json" % case), encoding="utf-8"))
+    found = []
+    def walk(node):
+        if isinstance(node, dict):
+            if "precisionTimestamp" in node:
+                found.append(node["precisionTimestamp"].get("precision", 0))
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+    walk(plan)
+    return found
 
 def case_inputs(case):
     plan = json.load(open(os.path.join(ROOT, "derived-schema/%s.json" % case), encoding="utf-8"))
@@ -77,6 +99,16 @@ def fail(msg):
     global bad
     print("FAILED: " + msg)
     bad = 1
+
+# check_expected.py compares DuckDB on types, arity and order alone, because its logical types do
+# not carry nullability; comparing it there would record the boundary of its type system as a
+# divergence. A reason's predicate has to honour the same boundary, or it would fail a participant
+# for something it never claimed to say. Today every DuckDB case here happens to be required on both
+# sides, so this changes no result - it stops one from appearing the moment a nullable case is added.
+def comparable(fmt, fields):
+    if fields is None:
+        return None
+    return [[t, False] for t, _ in fields] if fmt in P["TYPES_ONLY"] else [list(f) for f in fields]
 
 def answers(name):
     out, in_header = {}, True
@@ -201,8 +233,7 @@ for col, fmt in COLS:
                 fail("%s/%s says %s, so every field should be %s: %s"
                      % (col, case, said[case], check["all_fields_are"], got_raw))
         if "declared_precision_in" in check:
-            declared = [int(t[t.index("(") + 1:-1]) for t, _ in expected[case]["schema"]
-                        if t.startswith("precision_timestamp(")]
+            declared = case_precisions(case)
             if sorted(set(declared)) != sorted(set(declared) & set(check["declared_precision_in"])):
                 fail("%s/%s says %s, which is only about precisions %s, and this case declares %s"
                      % (col, case, said[case], check["declared_precision_in"], declared))
@@ -216,7 +247,8 @@ for col, fmt in COLS:
                 fail("%s/%s says %s, but not every field of the answer is nullable: %s"
                      % (col, case, said[case], got_raw))
         if "all_decimal" in check:
-            got, want = P[PARSE[fmt]](got_raw), expected[case]["schema"]
+            got = comparable(fmt, P[PARSE[fmt]](got_raw))
+            want = comparable(fmt, expected[case]["schema"])
             if got is None or len(got) != len(want) or not all(t.startswith("dec(") for t, _ in got):
                 fail("%s/%s says %s, so the answer should be %d decimal field(s): %s"
                      % (col, case, said[case], len(want), got_raw))
@@ -247,7 +279,8 @@ for col, fmt in COLS:
                 fail("%s/%s says %s, which is read against the case's inputs, and %s"
                      % (col, case, said[case], e.args[0]))
                 continue
-            got = P[PARSE[fmt]](got_raw)
+            got = comparable(fmt, P[PARSE[fmt]](got_raw))
+            inputs = [comparable(fmt, one) for one in inputs]
             if "inputs_concatenated" in check:
                 want = [f for one in inputs for f in one]
                 tail = got[len(want):] if got else []

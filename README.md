@@ -29,9 +29,8 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 ## What the corpus says
 
-The columns saved here, taken 2026-09-06 against the versions in `probe/versions.env` and named in
-each column's own first line, answer the 73
-cases that have an expectation like this:
+The columns saved here were taken 2026-09-06 against the versions in `probe/versions.env`, which
+each column's own first line names again. They answer the 73 cases that carry an expectation:
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
@@ -92,12 +91,12 @@ The swap preserves struct arity. Replacing a struct with a scalar would also cha
 fields in depth, making the plan disagree with `Plan.Root.names`. A refusal over that disagreement
 would not establish that the function's return type had been checked.
 
-For a return-type check, infer the type from the function arguments and extension definition and
-compare it with `output_type`. A mutation should check the affected expression or its diagnostic,
-as well as the final output schema. `ReadRel.base_schema` has a different role: it defines input
-types, so changing it can legitimately change the output. Existing emit, projection and join cases
-test transformations of those inputs; simply returning `base_schema` would fail such cases.
-Only Java, Python, validator and DuckDB were run through this mutation script.
+What this experiment cannot reach: it perturbs `output_type` and nothing else, so it says nothing
+about a schema that comes from `ReadRel.base_schema`, which is where the other 51 get theirs. That
+field is a legitimate source of input types rather than a declaration to be repeated — a consumer
+that returned it unchanged would still fail the emit, projection and join cases — so the missing
+half is a mutation that reaches the expression itself, not another swap of a declared output. And
+only Java, Python, the validator and DuckDB were run through this script at all.
 
 ## What is not settled
 
@@ -119,9 +118,10 @@ What is open, as against corrected:
 - Five of the 78 cases link to the issue they came from. The other 73 record their generator and
   expected rule without an originating issue link.
 - `differed.json` says why each cell differs but not which divergences were reported upstream: six
-  of its twenty-one reasons name an issue and the rest name none. Ten of the twenty-one were
-  rewritten after the answers behind them were read one by one: each had held for most of its cells
-  and described the others wrongly. That is why a reason there has to carry a test.
+  of its twenty-one reasons name an issue and the rest name none. Reasons here get rewritten: ten
+  were corrected after the answers behind them were read one by one, and a second reader then found
+  seven more that held for most of their cells and described the rest wrongly. That is why a reason
+  there has to carry a test.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
 - The full sweep has run on Linux, in a container on clean Ubuntu 24.04 with every cache empty,
