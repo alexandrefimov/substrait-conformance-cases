@@ -1691,7 +1691,7 @@
   "source": "substrait-java#1065",
   "generator_says": "virtual_table_literal_type_differs_from_schema  (base_schema declares i32, the literal is i8)",
   "expectation": {
-   "none": "same",
+   "none": "an i8 literal in a column the schema declares i32: the spec does not say which wins, the row or the schema",
    "because": "the spec is silent"
   }
  },
@@ -1702,7 +1702,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_null_in_required_column  (base_schema declares i32, the value is null)",
   "expectation": {
-   "none": "the spec does not say which type wins, the row's or the schema's",
+   "none": "a null value in a column the schema declares required: the spec does not say which wins, the row or the schema",
    "because": "the spec is silent"
   }
  },
@@ -1713,7 +1713,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_nullable_in_required_column  (base_schema declares i32, the literal is i32?)",
   "expectation": {
-   "none": "same",
+   "none": "a nullable literal in a column the schema declares required: the spec does not say which wins, the row or the schema",
    "because": "the spec is silent"
   }
  },
@@ -1724,7 +1724,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_required_in_nullable_column  (base_schema declares i32?, the literal is i32)",
   "expectation": {
-   "none": "same",
+   "none": "a required literal in a column the schema declares nullable: the spec does not say which wins, the row or the schema",
    "because": "the spec is silent"
   }
  }

@@ -1,10 +1,10 @@
 {
  "disputed": {
   "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
-  "virtual_table_literal_type_differs_from_schema": "same",
-  "virtual_table_row_null_in_required_column": "the spec does not say which type wins, the row's or the schema's",
-  "virtual_table_row_nullable_in_required_column": "same",
-  "virtual_table_row_required_in_nullable_column": "same"
+  "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: the spec does not say which wins, the row or the schema",
+  "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: the spec does not say which wins, the row or the schema",
+  "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: the spec does not say which wins, the row or the schema",
+  "virtual_table_row_required_in_nullable_column": "a required literal in a column the schema declares nullable: the spec does not say which wins, the row or the schema"
  },
  "expected": {
   "aggregate_grouping_field_shared_by_sets": {

@@ -155,10 +155,21 @@ expected["aggregate_grouping_sets_declared_order"] = {
 # second the spec does answer, with "this plan is invalid", and what is measured there is not the
 # type but whether anyone reports the violation.
 SPEC_SILENT = {
-    "virtual_table_row_null_in_required_column": "the spec does not say which type wins, the row's or the schema's",
-    "virtual_table_row_nullable_in_required_column": "same",
-    "virtual_table_row_required_in_nullable_column": "same",
-    "virtual_table_literal_type_differs_from_schema": "same",
+    # Each reason stands on its own. They used to say "same", which reads off the entry above it -
+    # and expected.json is written sorted by key, so the literal-type one ended up under the CTAS
+    # entry and its "same" said the plan was invalid, which is not the question there at all.
+    "virtual_table_row_null_in_required_column":
+        "a null value in a column the schema declares required: the spec does not say which wins, "
+        "the row or the schema",
+    "virtual_table_row_nullable_in_required_column":
+        "a nullable literal in a column the schema declares required: the spec does not say which "
+        "wins, the row or the schema",
+    "virtual_table_row_required_in_nullable_column":
+        "a required literal in a column the schema declares nullable: the spec does not say which "
+        "wins, the row or the schema",
+    "virtual_table_literal_type_differs_from_schema":
+        "an i8 literal in a column the schema declares i32: the spec does not say which wins, the "
+        "row or the schema",
 }
 SPEC_SAYS_INVALID = {
     "ctas_keeps_declared_schema":

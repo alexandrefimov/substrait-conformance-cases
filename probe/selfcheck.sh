@@ -201,6 +201,15 @@ if named != corpus:
     print("FAILED: the manifest does not cover the corpus: missing %s, extra %s"
           % (sorted(corpus - named)[:4], sorted(named - corpus)[:4]))
     bad = 1
+# A reason that points at its neighbour is a reason that stops being true when the file is sorted,
+# and expected.json is written sorted by key. One "same" ended up under an unrelated entry and said
+# something false about the case it belonged to.
+BACKREF = {"same", "ditto", "as above", "the same", "same as above"}
+for case, why in sorted(exp["disputed"].items()):
+    if why.strip().strip(".").lower() in BACKREF:
+        print("FAILED: %s: its reason for being disputed points at another entry: %r" % (case, why))
+        bad = 1
+
 for e in man:
     for field in ("plan", "binary", "generator", "note", "expectation"):
         if not e.get(field):
