@@ -119,13 +119,16 @@ What is open, as against corrected:
   `stringlen_declared`.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
-- The full sweep has never run on Linux, and has never run on a machine other than the one it was
-  built on. Every timing here is therefore a lower bound, and "it runs from a clean checkout" means
-  a clean checkout with this machine's Gradle, cargo and pip caches already warm. CI runs the
-  self-check, which is the repository read against itself and says nothing about any implementation.
-- An outside review of an earlier commit refused it on exactly that point and found three defects
-  nobody working here had: a guard that let a broken probe through, a version pin that was never
-  applied and turned out to be wrong, and a classpath printed but never built.
+- The full sweep has run on Linux, in a container on clean Ubuntu 24.04 with every cache empty,
+  cloning this repository anonymously and following this page and nothing else: nine columns, every
+  tally matching the ones above. It has not run on hardware that is not this machine's, and nobody
+  outside this project has run it. CI runs only the self-check, which is the repository read against
+  itself and says nothing about any implementation.
+- Getting there took five attempts, and each failure was a requirement recorded by the name of a
+  tool rather than by what it had to be: go, where the version was never stated and the check for it
+  could not fail; protoc, where the imports it needs ship in a separate package on Debian; and the
+  JDK, where the probe that wants a 17 finds one by itself only on macOS. Two more were defects in
+  the checks rather than in the harness, and are why `probe/selfcheck-negative.sh` exists.
 
 ## Where the expectations come from
 

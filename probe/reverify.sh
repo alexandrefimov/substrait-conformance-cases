@@ -229,7 +229,15 @@ rev_of() { # <COLUMN NAME>
     PYTHON)        v="substrait $("${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait"))' 2>/dev/null)" ;;
     VALIDATOR)     v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at $SUBSTRAIT_VALIDATOR_COMMIT" ;;
     GO)            v="$(grep -m1 -o 'substrait-go/v[0-9]* v[0-9a-z.+-]*' "$SP/gosub9/go.mod" 2>/dev/null)" ;;
-    SPARK)         v="spark $(basename "$(tr ':' '\n' < "${SPARK_CP:-$SP/spark_cp.txt}" 2>/dev/null | grep -m1 -E 'spark-core_[0-9.]+-[0-9.]+\.jar')" 2>/dev/null | sed 's/.*-\([0-9][0-9.]*\)\.jar/\1/')" ;;
+    # Spark's classpath is resolved when its probe runs, so before that there is nothing to read it
+    # from and the pinned value is reported instead, said to be pinned. Reading the jar unconditionally
+    # printed a version here only because a previous run had left the cache behind.
+    SPARK)         local cp_file="${SPARK_CP:-$SP/spark_cp.txt}"
+                   if [ -s "$cp_file" ]; then
+                     v="spark $(basename "$(tr ':' '\n' < "$cp_file" | grep -m1 -E 'spark-core_[0-9.]+-[0-9.]+\.jar')" 2>/dev/null | sed 's/.*-\([0-9][0-9.]*\)\.jar/\1/')"
+                   else
+                     v="spark ${SPARK_35:-} as pinned, not yet resolved"
+                   fi ;;
   esac
   case "$v" in ""|*" "|*"  "*) echo "revision unknown" ;; *) echo "$v" ;; esac
 }
