@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-06T09:45
+SPARK: column from run 2026-09-06T11:20
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed

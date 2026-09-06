@@ -26,7 +26,7 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 
 | | version | taken by |
 | --- | --- | --- |
-| substrait-java, Isthmus/Calcite | `81120b91` in the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
+| substrait-java, Isthmus/Calcite | `fff6390` in the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
 | substrait-python | 0.31.0 | `python_one.py` |
 | substrait-validator | built from `main` at `2a10470` | `validator_one.py` |
 | substrait-go | v9 at `cb2d6e648bc0` | `go/main.go` |

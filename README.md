@@ -81,6 +81,29 @@ derived, because a relation's schema also comes from `ReadRel.base_schema`, whic
 alone. And only these four participants were measured; for DataFusion, substrait-go, Acero, Spark,
 Isthmus and Gluten the copy discount is simply not known.
 
+## What is not settled
+
+This repository is three days old, and the claims on this page have been corrected five times in
+that span — the size of the circular set, a "fail-closed" summary that a validator environment with
+nothing installed walked straight through, the date on the table above, the DataFusion commit the
+columns were taken against, and a reason in `expected.json` that pointed at its neighbour and, once
+the file was sorted, at the wrong one. Each is a commit with the measurement that found it. None was
+an error in the harness's logic; all five were statements *about* the measurement, which no run
+contradicts, and each is now checked by one file being read against another.
+
+What is open, as against corrected:
+
+- The expectations are computed by `probe/expected.py`, in this repository. Nobody outside it has
+  reviewed them. The candour above is not a second opinion.
+- Five of the 78 cases record the issue they came from. For the other 73 the generator that builds a
+  case is the only record of what it asserts.
+- The *differed* column is not split into type-system boundaries and real divergences, beyond
+  `stringlen_declared`.
+- Rows are compared for three participants and eight cases; schemas for nine and 73.
+- The Gluten column is taken in a cluster and reproducible only in one.
+- The full sweep has never run on Linux. CI runs the self-check, which is the repository read
+  against itself and says nothing about any implementation.
+
 ## Where the expectations come from
 
 `probe/expected.py` computes them from four sources and records which one it used per case: the
@@ -163,8 +186,8 @@ says what it takes.
 
 `reverify.sh` requires both checkouts to be at the pinned commits and refuses to run otherwise;
 `SJ_EXPECT=` or `DF_EXPECT=` left empty says you meant something else. The pin records what was
-measured rather than what is necessary: the same nine columns come out of substrait-java 0.103.0
-(`fff6390`), twelve commits past the pinned one, with every number unchanged. A participant whose
+measured rather than what is necessary: the same nine columns came out of substrait-java at
+`81120b91`, twelve commits earlier, with every number unchanged. A participant whose
 environment is missing is skipped with a line saying so, and the run then fails unless
 `ALLOW_SKIPPED=1` says a partial run was intended.
 
