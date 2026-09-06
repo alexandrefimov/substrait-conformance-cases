@@ -28,7 +28,7 @@
   },
   "read-projection-ignored": {
    "kind": "divergence",
-   "what": "ReadRel.projection masks the read's columns before anything else; the answer is the unmasked schema. Filed as substrait-python#264 for substrait-python; substrait-java#1280 is open for Isthmus.",
+   "what": "ReadRel.projection masks the read's columns before anything else; the answer is the unmasked schema, all three columns of it, so not even the root's two names are applied. Filed as substrait-io/substrait-python#264 for substrait-python; substrait-io/substrait-java#1280 is open for Isthmus.",
    "check": {
     "first_input": true
    }
@@ -91,7 +91,7 @@
   },
   "validator-setop-takes-the-first-input": {
    "kind": "divergence",
-   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-validator#579.",
+   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-io/substrait-validator#579.",
    "check": {
     "first_input": true
    }
@@ -114,35 +114,10 @@
   },
   "validator-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "The validator returns the two inputs concatenated with their own nullability whatever the join type says, with no mark column appended. Filed as substrait-validator#580.",
+   "what": "The validator returns the two inputs concatenated with their own nullability whatever the join type says, with no mark column appended. Filed as substrait-io/substrait-validator#580.",
    "check": {
     "inputs_concatenated": {}
    }
-  },
-  "spark-projection-takes-the-leading-columns": {
-   "kind": "divergence",
-   "check": {
-    "first_input": {
-     "leading": true
-    }
-   },
-   "what": "ReadRel.projection names which columns the read returns and in what order. Spark returns as many columns as the mask selects but takes them from the start of the schema, so the count is right and the columns are not."
-  },
-  "duckdb-emit-takes-the-leading-columns": {
-   "kind": "divergence",
-   "check": {
-    "first_input": {
-     "leading": true
-    }
-   },
-   "what": "RelCommon.emit names which columns the relation returns and in what order. These cases select [2, 0] of three columns; DuckDB returns two columns taken from the start of the relation, so the count is right and the columns are not. Filed as duckdb-substrait-extension#267."
-  },
-  "duckdb-emit-names-one-column-and-types-another": {
-   "kind": "divergence",
-   "check": {
-    "got_matches": "^\\[col2:INTEGER\\]$"
-   },
-   "what": "The mapping selects [1] of (col1 i32, col2 string). DuckDB returns one column named col2 with the type of col1, so the name follows the mapping and the type does not."
   },
   "validator-aggregate-gives-i32-and-unresolved": {
    "kind": "divergence",
@@ -164,6 +139,24 @@
     "got_matches": "^\\[r:DOUBLE\\]$"
    },
    "what": "divide:dec is declared to return a decimal; DuckDB returns DOUBLE, so the result is not a decimal of another precision but not a decimal at all."
+  },
+  "duckdb-emit-not-applied-and-the-root-names-are": {
+   "kind": "divergence",
+   "check": {
+    "first_input": {
+     "leading": true
+    }
+   },
+   "what": "RelCommon.emit names which columns the relation returns and in what order. DuckDB does not apply it: the answer carries the root's column names - k0, k1 rather than the schema's c2, c0 - over the leading columns of the unselected output, so the count and the names come from the root and the types from wherever the relation happened to put them. Filed as substrait-io/duckdb-substrait-extension#267."
+  },
+  "spark-projection-not-applied-and-the-root-names-are": {
+   "kind": "divergence",
+   "check": {
+    "first_input": {
+     "leading": true
+    }
+   },
+   "what": "ReadRel.projection names which columns the read returns and in what order. Spark does not apply it and answers the same shape DuckDB does with an emit mapping: the root's two names over the first two columns of the unmasked schema."
   }
  },
  "cells": {
@@ -199,12 +192,12 @@
   "DUCKDB": {
    "decimal_divide": "duckdb-decimal-divide-returns-double",
    "decimal_multiply": "decimal-own-derivation",
-   "emit_aggregate": "duckdb-emit-takes-the-leading-columns",
-   "emit_fetch": "duckdb-emit-takes-the-leading-columns",
-   "emit_filter": "duckdb-emit-takes-the-leading-columns",
-   "emit_join": "duckdb-emit-takes-the-leading-columns",
-   "emit_read": "duckdb-emit-takes-the-leading-columns",
-   "emit_sort": "duckdb-emit-takes-the-leading-columns",
+   "emit_aggregate": "duckdb-emit-not-applied-and-the-root-names-are",
+   "emit_fetch": "duckdb-emit-not-applied-and-the-root-names-are",
+   "emit_filter": "duckdb-emit-not-applied-and-the-root-names-are",
+   "emit_join": "duckdb-emit-not-applied-and-the-root-names-are",
+   "emit_read": "duckdb-emit-not-applied-and-the-root-names-are",
+   "emit_sort": "duckdb-emit-not-applied-and-the-root-names-are",
    "phase_final": "avg-over-integers-returns-float",
    "precision_timestamp_p00": "duckdb-timestamp-precision-ignored",
    "precision_timestamp_p01": "duckdb-timestamp-is-microseconds",
@@ -214,7 +207,7 @@
    "precision_timestamp_p07": "duckdb-timestamp-is-microseconds",
    "precision_timestamp_p09": "duckdb-timestamp-precision-ignored",
    "stringlen_declared": "no-string-with-length",
-   "virtual_table_emit_mapping": "duckdb-emit-names-one-column-and-types-another"
+   "virtual_table_emit_mapping": "duckdb-emit-not-applied-and-the-root-names-are"
   },
   "GO": {
    "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
@@ -252,7 +245,7 @@
    "decimal_divide": "decimal-own-derivation",
    "decimal_multiply": "spark-decimal-result-nullable",
    "decimal_multiply_overflow": "spark-decimal-result-nullable",
-   "read_projection_mask": "spark-projection-takes-the-leading-columns"
+   "read_projection_mask": "spark-projection-not-applied-and-the-root-names-are"
   },
   "VALIDATOR": {
    "aggregate_grouping_field_shared_by_sets": "validator-aggregate-gives-i32-and-unresolved",

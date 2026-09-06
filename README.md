@@ -118,7 +118,7 @@ What is open, as against corrected:
 - Five of the 78 cases record the issue they came from. For the other 73 the generator that builds a
   case is the only record of what it asserts.
 - `differed.json` says why each cell differs but not which divergences were reported upstream: six
-  of its twenty-two reasons name an issue and the rest name none.
+  of its twenty-one reasons name an issue and the rest name none.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
 - The full sweep has run on Linux, in a container on clean Ubuntu 24.04 with every cache empty,
