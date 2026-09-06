@@ -22,13 +22,21 @@ case "$1" in
 esac
 if [ ! -s "$f" ]; then
   init="$CACHE/cp_$1.gradle"
+  # dependsOn the classpath itself, not just `classes`: :isthmus and :spark take :core through its
+  # shaded jar, and asking for classes alone printed a classpath naming a jar that had never been
+  # built. On a warm tree it was already there and everything worked; on a fresh checkout Isthmus
+  # failed with "package io.substrait.plan does not exist" and Spark with an ANTLR 4.13 against 4.9
+  # mismatch, because the relocation that shaded jar carries was missing too.
   cat > "$init" <<G
 gradle.afterProject { pr ->
   if (pr.path == '$p') {
-    pr.tasks.register('$t') { doLast { println "CPSTART"; println pr.sourceSets.main.runtimeClasspath.files.join(':'); println "CPEND" } }
+    pr.tasks.register('$t') {
+      dependsOn(pr.sourceSets.main.runtimeClasspath)
+      doLast { println "CPSTART"; println pr.sourceSets.main.runtimeClasspath.files.join(':'); println "CPEND" }
+    }
   }
 }
 G
-  (cd "$SJ" && ./gradlew -q --init-script "$init" "$p:classes" "$p:$t") | awk '/CPSTART/{f=1;next}/CPEND/{f=0}f' > "$f"
+  (cd "$SJ" && ./gradlew -q --init-script "$init" "$p:$t") | awk '/CPSTART/{f=1;next}/CPEND/{f=0}f' > "$f"
 fi
 cat "$f"

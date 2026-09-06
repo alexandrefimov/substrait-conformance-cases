@@ -14,6 +14,8 @@
 gradle.afterProject { p ->
   if (p.path == ':core') {
     p.tasks.register('printCoreCp') {
+      // The classpath is built, not only named: on a fresh checkout its entries do not exist yet.
+      dependsOn(p.sourceSets.main.runtimeClasspath)
       doLast {
         def main = p.sourceSets.main.runtimeClasspath.files as List
         def pb = main.find { it.name ==~ /protobuf-java-\d.*\.jar/ }

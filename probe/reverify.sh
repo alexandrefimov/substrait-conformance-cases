@@ -10,8 +10,9 @@
 #   DF_DIR=<path>               DataFusion checkout or worktree (required)
 #   SUBSTRAIT_PROBE_ENV=<path>  probe environment (venvs, probe_go9); default <repo>/.probe-env,
 #                               built by probe/setup.sh
-#   SJ_EXPECT=<ref>             if set, require this HEAD in substrait-java
-#   DF_EXPECT=<ref>             if set, require this HEAD in DataFusion
+#   SJ_EXPECT=<ref>             require this HEAD in substrait-java; defaults to the commit in
+#                               probe/versions.env, and an empty value means any
+#   DF_EXPECT=<ref>             the same for DataFusion
 #   REBUILD_CORE=1              rebuild :core before the run instead of trusting the classpath
 #   EXPECT_CASES=<n>            require exactly n generated cases
 #   UPDATE_CORPUS=1             replace the saved corpus, manifest and expected.json with what this
@@ -29,6 +30,15 @@ GEN=$ROOT/gen
 SJ="${SUBSTRAIT_JAVA_DIR:-}"
 DF="${DF_DIR:-}"
 SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
+
+# The commits the saved columns were taken against are required by default, so that reproducing them
+# is what the ordinary command does. Writing a pin down and never applying it is how DATAFUSION_COMMIT
+# came to name a commit the columns were not taken at. To run against something else on purpose, pass
+# the variable empty: SJ_EXPECT= or DF_EXPECT=.
+# shellcheck source=versions.env
+. "$PROBE/versions.env"
+SJ_EXPECT="${SJ_EXPECT-${SUBSTRAIT_JAVA_COMMIT:-}}"
+DF_EXPECT="${DF_EXPECT-${DATAFUSION_COMMIT:-}}"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 FAILED=0
@@ -54,8 +64,8 @@ SJ_HEAD=$(git -C "$SJ" rev-parse --short HEAD)
 DF_HEAD=$(git -C "$DF" rev-parse --short HEAD)
 echo "substrait-java HEAD=$SJ_HEAD origin/main=$(git -C "$SJ" rev-parse --short origin/main)"
 echo "datafusion     HEAD=$DF_HEAD branch=$(git -C "$DF" rev-parse --abbrev-ref HEAD) (checkout: $DF)"
-if [ -n "${SJ_EXPECT:-}" ] && [ "$SJ_HEAD" != "$(git -C "$SJ" rev-parse --short "$SJ_EXPECT" 2>/dev/null)" ]; then
-  die "substrait-java is not at $SJ_EXPECT (currently $SJ_HEAD)"
+if [ -n "$SJ_EXPECT" ] && [ "$SJ_HEAD" != "$(git -C "$SJ" rev-parse --short "$SJ_EXPECT" 2>/dev/null)" ]; then
+  die "substrait-java is not at $SJ_EXPECT (currently $SJ_HEAD); pass SJ_EXPECT= to run anyway"
 fi
 # :core is taken prebuilt from classpath.txt, so where those classes came from has to be either
 # guaranteed by a rebuild or stated plainly. Guessing from mtimes is pointless: after a checkout
@@ -68,8 +78,8 @@ else
   echo ":core is PREBUILT - this script does not vouch for where those classes came from."
   echo "  For a run anything public points at: REBUILD_CORE=1 SJ_EXPECT=<sha>."
 fi
-if [ -n "${DF_EXPECT:-}" ] && [ "$DF_HEAD" != "$(git -C "$DF" rev-parse --short "$DF_EXPECT" 2>/dev/null)" ]; then
-  die "DataFusion is not at $DF_EXPECT (currently $DF_HEAD)"
+if [ -n "$DF_EXPECT" ] && [ "$DF_HEAD" != "$(git -C "$DF" rev-parse --short "$DF_EXPECT" 2>/dev/null)" ]; then
+  die "DataFusion is not at $DF_EXPECT (currently $DF_HEAD); pass DF_EXPECT= to run anyway"
 fi
 # Tracked files must be clean: the probe does not touch them, so anything dirty here is someone
 # else's work. Untracked files no longer block: the probe drops its own example in and takes it
@@ -281,6 +291,18 @@ optional_column() { # <COLUMN NAME> <block|line> <name> <guard file> <command...
   local rc=$?
   cat "$out"
   [ "$rc" -eq 0 ] || fail "$name: the probe returned $rc"
+  # The participants that come through here used to skip every block check, so a probe that crashed
+  # on every case still produced a column and a clean run. Only completeness is checked: the
+  # validator prints a schema AND a diagnostic for one case, so "exactly one verdict" is unreachable
+  # for it by design, and resolving those is normalize.py's job - it fails the column when a case has
+  # no verdict or has contradictory ones.
+  if [ "$fmt" = block ]; then
+    local got crashes
+    got=$(grep -c '^#####' "$out")
+    [ "$got" -eq "$N_JSON" ] || fail "$name: $got blocks instead of $N_JSON - the run is incomplete"
+    crashes=$(grep -cE "CRASH" "$out")
+    [ "$crashes" -lt "$N_JSON" ] || fail "$name: failed on all $N_JSON cases - a broken probe, not an engine"
+  fi
   column "$col" "$out" "$fmt"
   rm -f "$out"
 }
@@ -299,15 +321,18 @@ optional_column PYTHON line substrait-python "${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}
   bash "$PROBE/python_all.sh" "$ROOT/derived-schema-vt"
 
 echo; echo "### 7. the substrait-validator side"
-optional_column VALIDATOR block substrait-validator "${SUBSTRAIT_VALIDATOR_ENV:-$SP/val314}/bin/python" \
+optional_column VALIDATOR block substrait-validator "${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" \
   bash "$PROBE/validator_all.sh" "$CASES"
 
 echo; echo "### 8. the Isthmus/Calcite side (declared against derived, through the observer)"
-optional_probe Isthmus "$SJ/isthmus/build/classes/java/main" \
+# The guard is the module, not its build output: probe/cp.sh builds :isthmus through Gradle when it
+# resolves the classpath. Testing for build/classes meant a fresh substrait-java checkout skipped
+# Isthmus silently, and the two documented commands never produced that column.
+optional_probe Isthmus "$SJ/isthmus/build.gradle.kts" \
   bash "$PROBE/isthmus_run.sh" ObserveOf "$CASES"/decimal_add_overflow.json
 # The schema Calcite derives is a full column over the whole corpus, not three examples:
 # relation-level divergences (the read mask, set-operation nullability) show up only there.
-if [ -e "$SJ/isthmus/build/classes/java/main" ]; then
+if [ -e "$SJ/isthmus/build.gradle.kts" ]; then
   ISTH_OUT=$(mktemp)
   bash "$PROBE/isthmus_run.sh" CalciteSchemaOf $(ls "$CASES"/*.json | grep -v manifest) \
     > "$ISTH_OUT" 2>&1 || fail "Isthmus: the probe returned a non-zero code"
@@ -331,12 +356,13 @@ PYEOF
   column ISTHMUS "$RUN/ISTHMUS.raw" block
   rm -f "$ISTH_OUT"
 else
-  echo "SKIPPED Isthmus schema: no $SJ/isthmus/build/classes/java/main"
+  echo "SKIPPED Isthmus schema: no $SJ/isthmus/build.gradle.kts"
   SKIPPED_PROBES="$SKIPPED_PROBES Isthmus-schema"
 fi
 
 echo; echo "### 9. the Spark side (needs JDK 17)"
-optional_column SPARK line Spark "${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}/bin/java" \
+J17_HOME="${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}"
+optional_column SPARK line Spark "${J17_HOME:-/nonexistent}/bin/java" \
   bash "$PROBE/spark_all.sh" "$CASES"
 
 # expected.json is built here, before both checks. It used to be regenerated below, after the row
@@ -401,10 +427,16 @@ for pair in "JAVA:java" "PYTHON:py" "VALIDATOR:py" "DATAFUSION:df" "DUCKDB:duckd
     if ! grep -q "^matched:" "$CHK"; then
       fail "$col: the check did not reach its summary (exit $CHK_RC): $(tail -1 "$CHK")"
     fi
-    # Refusing every case but one is a broken environment, not a property of the participant: a
-    # validator with a broken import used to give 78 "unsupported" and leave the outcome untouched.
-    UNSUP=$(sed -n 's/.*unsupported by the participant: \([0-9]*\).*/\1/p' "$CHK" | tail -1)
-    [ -z "$UNSUP" ] || [ "$UNSUP" -lt "$N_JSON" ] || fail "$col: refused all $N_JSON cases - that looks like a broken probe"
+    # A participant that gave no readable answer at all is a broken probe, not a participant that
+    # supports nothing. The guard here used to compare the refusals against the number of CASES, and
+    # the check only ever counts cases that carry an expectation - 73 of the 78 - so 73 refusals out
+    # of 73 read as "fewer than 78" and passed. A validator venv with nothing installed produced
+    # exactly that: 78 CRASH, and the runner, the normalization and this check all returned zero.
+    # The denominator is gone: what is required is at least one answer that was read.
+    ANSWERED=$(sed -n 's/^matched: \([0-9]*\), differed: \([0-9]*\).*/\1 \2/p' "$CHK" | tail -1)
+    if [ -n "$ANSWERED" ] && [ "$(( ${ANSWERED% *} + ${ANSWERED#* } ))" -eq 0 ]; then
+      fail "$col: not one case was answered - that is a broken probe, not a participant"
+    fi
     grep -q "^INCOMPLETE" "$CHK" && fail "$col: the check reported an incomplete column"
     grep -q "unparsed answer" "$CHK" && fail "$col: the check could not parse some answers"
     rm -f "$CHK"

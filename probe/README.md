@@ -20,15 +20,17 @@ Without it the Spark column is skipped with a line saying so.
 
 ## The participants and their versions
 
-`versions.env` is the single place these are pinned, and `setup.sh` installs exactly them.
+`versions.env` is the single place these are pinned, and `setup.sh` installs exactly them. The two
+commits are required by `reverify.sh` itself: a run against a different substrait-java or DataFusion
+fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you say you meant it.
 
 | | version | taken by |
 | --- | --- | --- |
-| substrait-java, Isthmus/Calcite | the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
+| substrait-java, Isthmus/Calcite | `81120b91` in the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
 | substrait-python | 0.31.0 | `python_one.py` |
 | substrait-validator | built from `main` at `2a10470` | `validator_one.py` |
 | substrait-go | v9 at `cb2d6e648bc0` | `go/main.go` |
-| DataFusion | `4a93adee0` | `datafusion_corpus_probe.rs` |
+| DataFusion | `f96892a9b` | `datafusion_corpus_probe.rs` |
 | DuckDB | 1.5.5, substrait community extension | `duckdb_one.py` |
 | Acero | pyarrow 25.0.1 | `acero_one.py` |
 | Spark | 3.5.4 | `SparkSchemaOf.java` |
@@ -70,18 +72,21 @@ against the right classpath; `cp.sh` is where those classpaths come from.
 
 ## substrait-validator
 
-The release on PyPI is no use: it is on spec 0.57.1 and does not load these cases. A build from
-`main` is needed - cargo, protoc, python >= 3.10:
+`setup.sh` builds this when cargo and protoc are on PATH, and says so when it skips. By hand, the
+same thing - the release on PyPI is no use, being on spec 0.57.1 and unable to load these cases:
 
     SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
-    git clone --depth 1 https://github.com/substrait-io/substrait-validator "$SP/substrait-validator"
-    python3 -m venv "$SP/val314"
+    git clone https://github.com/substrait-io/substrait-validator "$SP/substrait-validator"
+    git -C "$SP/substrait-validator" checkout "$SUBSTRAIT_VALIDATOR_COMMIT"
+    python3 -m venv "$SP/val"
     PATH="$HOME/.cargo/bin:$PATH" PROTOC=$(which protoc) \
-      "$SP/val314/bin/pip" install "$SP/substrait-validator/py"
-    "$SP/val314/bin/pip" install -U 'protobuf==7.36.1'
+      "$SP/val/bin/pip" install "$SP/substrait-validator/py"
+    "$SP/val/bin/pip" install -U 'protobuf==7.36.1'
 
-The last line is required: the generated code needs a 7.x runtime while the package pins
-`protobuf<7`. The commit the saved column was taken at is in `versions.env`. The path to the venv is
+`$SUBSTRAIT_VALIDATOR_COMMIT` comes from `versions.env`, so read that file first (`. probe/versions.env`);
+a shallow clone of `main` gets whatever `main` is today, which is not what the saved column was taken
+against. The last `pip install` is required too: the generated code needs a 7.x runtime while the
+package pins `protobuf<7`. The path to the venv is
 overridden with `SUBSTRAIT_VALIDATOR_ENV`.
 
 The validator's boundary is in `validator_one.py`: it does not derive the type a function call

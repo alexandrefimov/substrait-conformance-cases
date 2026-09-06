@@ -140,22 +140,43 @@ generator to `gen/`; `gen/README.md` says how the corpus is built.
 
 ## Running it
 
-You need python3, a JDK (17 for the Spark probe), cargo and go, plus two checkouts:
+You need python3, go, a JDK, and cargo with protoc. Two of those are more particular than they look:
+the Spark probe wants JDK 17 and is skipped without it, and the DataFusion probe builds that checkout
+with the Rust toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and
+an unmanaged cargo will not. Then two checkouts, at the commits `probe/versions.env` names:
 
     export SUBSTRAIT_JAVA_DIR=<a substrait-java checkout>
     export DF_DIR=<a DataFusion checkout, with no local modifications>
-    bash probe/setup.sh          # builds .probe-env/ and the generator classpath, once
+    bash probe/setup.sh          # builds .probe-env/, once
     bash probe/reverify.sh
 
 `probe/setup.sh` installs the versions pinned in `probe/versions.env` — the ones the saved columns
-were measured against, listed in `probe/README.md`, which also covers the validator and Gluten. Both
-are built from source and neither is part of `setup.sh`.
+were measured against — and builds the validator from source when cargo and protoc are there, saying
+so when it skips. It does not build Gluten: that column is taken in a cluster, and `probe/README.md`
+says what it takes.
 
-`reverify.sh` regenerates the corpus, runs every participant whose environment is up, compares each
-column against `expected.json` and prints all sides next to each other. It is fail-closed: any
-harness failure gives a non-zero exit and a `FAILED` line, while a single case failing inside an
-engine is not a harness failure but the finding. By default the run only reports: it rebuilds the corpus, the manifest and
-`expected.json` into temporary files and tells you what differs. `UPDATE_CORPUS=1` lets it replace
-those three, `UPDATE_COLUMNS=1` the saved columns, and nothing else writes to the repository.
+`reverify.sh` requires both checkouts to be at the pinned commits and refuses to run otherwise;
+`SJ_EXPECT=` or `DF_EXPECT=` left empty says you meant something else. The pin records what was
+measured rather than what is necessary: the same nine columns come out of substrait-java 0.103.0
+(`fff6390`), twelve commits past the pinned one, with every number unchanged. A participant whose
+environment is missing is skipped with a line saying so, and the run then fails unless
+`ALLOW_SKIPPED=1` says a partial run was intended.
+
+`reverify.sh` regenerates the corpus, runs every participant, compares each column against
+`expected.json` and prints all sides next to each other. A single case failing inside an engine is
+not a harness failure; that is the finding. What does fail the run, each with a `FAILED` line and a
+non-zero exit: a checkout at the wrong commit, a missing environment, a generator that will not
+build, a corpus or manifest or expectation file that no longer matches its source, fewer answers
+coming back than there are cases, a participant that answered nothing at all, a column the
+normalization could not make whole, and a participant skipped without `ALLOW_SKIPPED=1`.
+
+That list is written out rather than summarised as "fail-closed", because the summary was false once
+and read as true: a validator environment with nothing installed produced 78 crashes and a clean run,
+the guard having compared the refusals against the number of cases while the check only ever counts
+the 73 that carry an expectation.
+
+By default the run only reports: it rebuilds the corpus, the manifest and `expected.json` into
+temporary files and tells you what differs. `UPDATE_CORPUS=1` lets it replace those three,
+`UPDATE_COLUMNS=1` the saved columns and `MATRIX.txt`, and nothing else writes to the repository.
 
 Apache 2.0.

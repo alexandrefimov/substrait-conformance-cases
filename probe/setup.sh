@@ -43,6 +43,25 @@ python3 -m venv "$SP/pysub"
   "substrait-antlr==$SUBSTRAIT_ANTLR_VERSION" "substrait-extensions==$SUBSTRAIT_EXTENSIONS_VERSION" \
   antlr4-python3-runtime pyyaml
 
+echo "== substrait-validator (built from source; needs cargo and protoc)"
+if command -v cargo >/dev/null && command -v protoc >/dev/null; then
+  # Not a shallow clone of main: the saved column was taken at the commit versions.env names, and
+  # main is not that commit any more.
+  [ -d "$SP/substrait-validator/.git" ] || \
+    git clone -q https://github.com/substrait-io/substrait-validator "$SP/substrait-validator"
+  git -C "$SP/substrait-validator" fetch -q --all
+  git -C "$SP/substrait-validator" checkout -q "$SUBSTRAIT_VALIDATOR_COMMIT"
+  python3 -m venv "$SP/val"
+  PATH="$HOME/.cargo/bin:$PATH" PROTOC="$(command -v protoc)" \
+    "$SP/val/bin/pip" install --quiet "$SP/substrait-validator/py"
+  # The generated code needs a 7.x runtime; the package pins protobuf<7.
+  "$SP/val/bin/pip" install --quiet -U "protobuf==$PROTOBUF_RUNTIME_VERSION"
+  echo "   built at $SUBSTRAIT_VALIDATOR_COMMIT"
+else
+  echo "   skipped: cargo or protoc is not on PATH. The validator column will be skipped;"
+  echo "   probe/README.md has the recipe, and SUBSTRAIT_VALIDATOR_ENV points at an existing venv."
+fi
+
 echo "== classpath for the generators (needs a substrait-java checkout)"
 if [ -n "${SUBSTRAIT_JAVA_DIR:-}" ]; then
   bash "$ROOT/gen/make_classpath.sh"
