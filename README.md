@@ -194,10 +194,14 @@ generator to `gen/`; `gen/README.md` says how the corpus is built.
 
 You need python3, go 1.23 or newer, a JDK, and cargo with protoc — protoc and the well-known type
 definitions it imports, which some distributions package apart from it (`protobuf-compiler` and
-`libprotobuf-dev` on Debian and Ubuntu). Two of those are more particular than they look:
-the Spark probe wants JDK 17 and is skipped without it, and the DataFusion probe builds that checkout
-with the Rust toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and
-an unmanaged cargo will not. Then two checkouts, at the commits `probe/versions.env` names:
+`libprotobuf-dev` on Debian and Ubuntu). Two of those are more particular than they look.
+The Spark probe wants JDK 17 specifically, and finds it by itself only on macOS; anywhere else set
+`JAVA17_HOME` to one, or that probe is skipped and the run then fails, since a skipped participant
+needs `ALLOW_SKIPPED=1` to be counted as intended. And the DataFusion probe builds that checkout with
+the Rust toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and an
+unmanaged cargo will not. Then two checkouts, at the commits `probe/versions.env` names:
+
+    export JAVA17_HOME=/usr/lib/jvm/java-17-openjdk-arm64   # or wherever a 17 is, outside macOS
 
     export SUBSTRAIT_JAVA_DIR=<a substrait-java checkout>
     export DF_DIR=<a DataFusion checkout, with no local modifications>
