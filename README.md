@@ -7,7 +7,8 @@ the two disagree, nothing in the format notices. This repository holds 78 plans 
 disagreements visible, an expected schema for 73 of them, and probes that put the corpus through ten
 implementations. The expectations encode spec rules and examples separately from the generators and
 consumers; they are not read from plans or consumer outputs. The spec repo already ships function
-test cases, which check what a scalar function returns; these cases compare schemas across relations.
+test cases, which check what a scalar function returns; these cases compare schemas across
+relations.
 
 It is a lab rather than a proposal: the corpus and the harness, kept reproducible. A case is added
 by adding a generator to `gen/`; a column is retaken by running `probe/reverify.sh` with
