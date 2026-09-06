@@ -14,7 +14,7 @@
 #   both fail    the case is unsupported either way
 #
 # The participants here are the ones whose probes run locally from a single command: substrait-java,
-# substrait-python, the validator and DuckDB. The saved LIE.txt was taken over a different set
+# substrait-python, the validator and DuckDB. The saved results/LIE.txt was taken over a different set
 # (Spark and Gluten in place of DuckDB), so it does not line up with this run row for row; the rows
 # they share agree.
 # On ctas_keeps_declared_schema the validator derives no type in either run. The hand-written column

@@ -21,9 +21,9 @@ echo "### generated files match their sources"
 python3 probe/expected.py 2>/dev/null | diff -q - expected.json >/dev/null \
   && ok "expected.json is what probe/expected.py produces" \
   || fail "expected.json differs from probe/expected.py output"
-python3 probe/matrix.py 2>/dev/null | diff -q - MATRIX.txt >/dev/null \
-  && ok "MATRIX.txt is what probe/matrix.py produces from the saved columns" \
-  || fail "MATRIX.txt differs from probe/matrix.py output"
+python3 probe/matrix.py 2>/dev/null | diff -q - results/MATRIX.txt >/dev/null \
+  && ok "results/MATRIX.txt is what probe/matrix.py produces from the saved columns" \
+  || fail "results/MATRIX.txt differs from probe/matrix.py output"
 
 echo
 echo "### the saved columns agree with the expectations and with the README"
@@ -66,7 +66,7 @@ if not readme:
 readme_text = io.open("README.md", encoding="utf-8").read()
 stamp = re.search(r"taken (\d{4}-\d{2}-\d{2}) against the versions", readme_text)
 taken = {re.search(r"column from run (\d{4}-\d{2}-\d{2})",
-                   io.open(c + ".txt", encoding="utf-8").readline()).group(1)
+                   io.open("results/" + c + ".txt", encoding="utf-8").readline()).group(1)
          for _, c, _ in COLUMNS}
 if not stamp:
     print("FAILED: the README no longer dates the results table")
@@ -79,7 +79,7 @@ print("ok      the table is dated %s, matching every column" % stamp.group(1))
 
 bad = 0
 for label, col, fmt in COLUMNS:
-    out = subprocess.run([sys.executable, "probe/check_expected.py", col + ".txt", fmt],
+    out = subprocess.run([sys.executable, "probe/check_expected.py", "results/" + col + ".txt", fmt],
                          capture_output=True, text=True).stdout
     if "INCOMPLETE" in out:
         print("FAILED: %s: %s" % (col, [l for l in out.splitlines() if l.startswith("INCOMPLETE")][0]))
@@ -107,16 +107,16 @@ raise SystemExit(bad)
 PY
 
 echo
-echo "### the swap table agrees with LIE.txt"
+echo "### the swap table agrees with results/LIE.txt"
 python3 - <<'LIEPY' || FAILED=1
 import io, json, re, sys
 
 # The README's second table says how many answers move when the declared output_type is swapped.
-# LIE.txt is the per-case run behind it, so the counts can be derived from the file rather than
+# results/LIE.txt is the per-case run behind it, so the counts can be derived from the file rather than
 # trusted. "Moved" is follows plus changed: both mean the answer depends on the declaration, and the
 # difference between them is only whether it matched the swap exactly.
 MOVED = {"follows", "changed"}
-lines = io.open("LIE.txt", encoding="utf-8").read().splitlines()
+lines = io.open("results/LIE.txt", encoding="utf-8").read().splitlines()
 head = next(i for i, l in enumerate(lines) if l.startswith("case "))
 names = lines[head].split()[1:]
 verdicts = {n: {} for n in names}
@@ -156,7 +156,7 @@ for label, got in sorted(counts.items()):
     if want is None:
         print("FAILED: %s: no row in the README swap table" % label); bad = 1
     elif want != got:
-        print("FAILED: %s: README says %s, LIE.txt gives %s" % (label, want, got)); bad = 1
+        print("FAILED: %s: README says %s, results/LIE.txt gives %s" % (label, want, got)); bad = 1
     else:
         print("ok      %-20s moved %d, of them with an expectation %d" % (label, got[0], got[1]))
 raise SystemExit(bad)
@@ -168,11 +168,11 @@ python3 - <<'PY' || FAILED=1
 import json, os, sys
 cases = {f[:-5] for f in os.listdir("derived-schema") if f.endswith(".json") and f != "manifest.json"}
 bins  = {f[:-4] for f in os.listdir("derived-schema") if f.endswith(".bin")}
-vt    = {f[:-5] for f in os.listdir("derived-schema-vt") if f.endswith(".json")}
+vt    = {f[:-5] for f in os.listdir("derived-schema-virtual-tables") if f.endswith(".json")}
 exp   = json.load(open("expected.json", encoding="utf-8"))
 named = set(exp["expected"]) | set(exp["disputed"])
 bad = 0
-for what, got in (("binary protobuf", bins), ("derived-schema-vt", vt), ("expected.json", named)):
+for what, got in (("binary protobuf", bins), ("derived-schema-virtual-tables", vt), ("expected.json", named)):
     if got != cases:
         print("FAILED: %s does not cover the same cases: missing %s, extra %s"
               % (what, sorted(cases - got)[:4], sorted(got - cases)[:4]))

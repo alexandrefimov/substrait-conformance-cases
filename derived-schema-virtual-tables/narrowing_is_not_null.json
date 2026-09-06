@@ -1,15 +1,9 @@
 {
- "extensionUrns": [
-  {
-   "extensionUrnAnchor": 1,
-   "urn": "extension:io.substrait:functions_arithmetic"
-  }
- ],
  "extensions": [
   {
    "extensionFunction": {
     "functionAnchor": 1,
-    "name": "avg:i64",
+    "name": "is_not_null:any",
     "extensionUrnReference": 1
    }
   }
@@ -17,15 +11,14 @@
  "relations": [
   {
    "root": {
-    "names": [
-     "r",
-     "sum",
-     "count"
-    ],
     "input": {
-     "aggregate": {
+     "project": {
       "common": {
-       "direct": {}
+       "emit": {
+        "outputMapping": [
+         1
+        ]
+       }
       },
       "input": {
        "read": {
@@ -40,43 +33,27 @@
           "types": [
            {
             "i64": {
-             "nullability": "NULLABILITY_REQUIRED"
+             "nullability": "NULLABILITY_NULLABLE"
             }
            }
           ],
           "nullability": "NULLABILITY_REQUIRED"
          }
         },
-        "namedTable": {
-         "names": [
-          "t_avg"
-         ]
+        "virtualTable": {
+         "expressions": []
         }
        }
       },
-      "measures": [
+      "expressions": [
        {
-        "measure": {
+        "scalarFunction": {
          "functionReference": 1,
-         "phase": "AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",
          "outputType": {
-          "struct": {
-           "types": [
-            {
-             "i64": {
-              "nullability": "NULLABILITY_REQUIRED"
-             }
-            },
-            {
-             "i64": {
-              "nullability": "NULLABILITY_REQUIRED"
-             }
-            }
-           ],
+          "bool": {
            "nullability": "NULLABILITY_REQUIRED"
           }
          },
-         "invocation": "AGGREGATION_INVOCATION_ALL",
          "arguments": [
           {
            "value": {
@@ -93,12 +70,21 @@
        }
       ]
      }
-    }
+    },
+    "names": [
+     "r"
+    ]
    }
   }
  ],
  "version": {
-  "minorNumber": 103,
+  "minorNumber": 102,
   "producer": "case-corpus"
- }
+ },
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 1,
+   "urn": "extension:io.substrait:functions_comparison"
+  }
+ ]
 }

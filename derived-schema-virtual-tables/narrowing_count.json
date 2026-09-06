@@ -1,27 +1,16 @@
 {
- "extensionUrns": [
-  {
-   "extensionUrnAnchor": 1,
-   "urn": "extension:io.substrait:functions_arithmetic"
-  }
- ],
  "extensions": [
   {
    "extensionFunction": {
-    "functionAnchor": 1,
-    "name": "avg:i64",
-    "extensionUrnReference": 1
+    "functionAnchor": 3,
+    "name": "count:any",
+    "extensionUrnReference": 2
    }
   }
  ],
  "relations": [
   {
    "root": {
-    "names": [
-     "r",
-     "sum",
-     "count"
-    ],
     "input": {
      "aggregate": {
       "common": {
@@ -40,39 +29,25 @@
           "types": [
            {
             "i64": {
-             "nullability": "NULLABILITY_REQUIRED"
+             "nullability": "NULLABILITY_NULLABLE"
             }
            }
           ],
           "nullability": "NULLABILITY_REQUIRED"
          }
         },
-        "namedTable": {
-         "names": [
-          "t_avg"
-         ]
+        "virtualTable": {
+         "expressions": []
         }
        }
       },
       "measures": [
        {
         "measure": {
-         "functionReference": 1,
-         "phase": "AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",
+         "functionReference": 3,
+         "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
          "outputType": {
-          "struct": {
-           "types": [
-            {
-             "i64": {
-              "nullability": "NULLABILITY_REQUIRED"
-             }
-            },
-            {
-             "i64": {
-              "nullability": "NULLABILITY_REQUIRED"
-             }
-            }
-           ],
+          "i64": {
            "nullability": "NULLABILITY_REQUIRED"
           }
          },
@@ -93,12 +68,21 @@
        }
       ]
      }
-    }
+    },
+    "names": [
+     "n"
+    ]
    }
   }
  ],
  "version": {
-  "minorNumber": 103,
+  "minorNumber": 102,
   "producer": "case-corpus"
- }
+ },
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 2,
+   "urn": "extension:io.substrait:functions_aggregate_generic"
+  }
+ ]
 }

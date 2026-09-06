@@ -1,0 +1,127 @@
+{
+ "extensions": [
+  {
+   "extensionFunction": {
+    "functionAnchor": 5,
+    "name": "avg:i64",
+    "extensionUrnReference": 5
+   }
+  }
+ ],
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "aggregate": {
+      "common": {
+       "direct": {}
+      },
+      "input": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": [
+          {
+           "fields": [
+            {
+             "literal": {
+              "i64": "1",
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "i64": "10",
+              "nullable": false
+             }
+            }
+           ]
+          },
+          {
+           "fields": [
+            {
+             "literal": {
+              "i64": "2",
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "i64": "20",
+              "nullable": false
+             }
+            }
+           ]
+          }
+         ]
+        }
+       }
+      },
+      "measures": [
+       {
+        "measure": {
+         "functionReference": 5,
+         "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+         "outputType": {
+          "i64": {
+           "nullability": "NULLABILITY_NULLABLE"
+          }
+         },
+         "invocation": "AGGREGATION_INVOCATION_ALL",
+         "arguments": [
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {}
+             },
+             "rootReference": {}
+            }
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    "names": [
+     "r"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ },
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 5,
+   "urn": "extension:io.substrait:functions_arithmetic"
+  }
+ ]
+}

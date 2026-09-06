@@ -21,7 +21,7 @@ creates the same tables with the same rows. A leaf has to be a control: put a vi
 the run is also measuring support for virtual tables, at which point a divergence in derivation can
 no longer be told apart from a lack of support. The exception is `GenSetData`, whose cases carry
 their rows inside the plan because the spec's set-operation examples are about the rows.
-`../derived-schema-vt/` is a whole-corpus rewrite into virtual tables, built by
+`../derived-schema-virtual-tables/` is a whole-corpus rewrite into virtual tables, built by
 `probe/to_virtual_tables.py`, and exists only because Gluten does not read `named_table` at all;
 `probe/vt_equivalence.sh` checks that it derives the same schemas as the canonical corpus.
 

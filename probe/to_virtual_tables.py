@@ -103,6 +103,8 @@ for name in sorted(os.listdir(src)):
     if not name.endswith(".json") or "manifest" in name: continue
     d = json.load(open(os.path.join(src, name)))
     convert(d)
-    json.dump(d, open(os.path.join(dst, name), "w"), indent=1)
+    with open(os.path.join(dst, name), "w") as out:
+        json.dump(d, out, indent=1)
+        out.write("\n")   # json.dump writes none, and a file without one reads as unfinished
     n += 1
 print("cases rewritten:", n)

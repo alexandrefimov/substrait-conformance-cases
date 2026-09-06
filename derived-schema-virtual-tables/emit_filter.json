@@ -1,0 +1,95 @@
+{
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "filter": {
+      "common": {
+       "emit": {
+        "outputMapping": [
+         2,
+         0
+        ]
+       }
+      },
+      "input": {
+       "read": {
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1",
+          "c2"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "string": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "bool": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": [
+          {
+           "fields": [
+            {
+             "literal": {
+              "i64": "10",
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "string": "x",
+              "nullable": false
+             }
+            },
+            {
+             "literal": {
+              "boolean": true,
+              "nullable": false
+             }
+            }
+           ]
+          }
+         ]
+        }
+       }
+      },
+      "condition": {
+       "selection": {
+        "directReference": {
+         "structField": {
+          "field": 2
+         }
+        },
+        "rootReference": {}
+       }
+      }
+     }
+    },
+    "names": [
+     "k0",
+     "k1"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ }
+}

@@ -1,0 +1,44 @@
+{
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "read": {
+      "baseSchema": {
+       "names": [
+        "c0",
+        "c1"
+       ],
+       "struct": {
+        "types": [
+         {
+          "i64": {
+           "nullability": "NULLABILITY_REQUIRED"
+          }
+         },
+         {
+          "i64": {
+           "nullability": "NULLABILITY_NULLABLE"
+          }
+         }
+        ],
+        "nullability": "NULLABILITY_REQUIRED"
+       }
+      },
+      "virtualTable": {
+       "expressions": []
+      }
+     }
+    },
+    "names": [
+     "c0",
+     "c1"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ }
+}

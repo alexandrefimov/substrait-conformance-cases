@@ -1,9 +1,8 @@
-"""Builds MATRIX.txt from the saved columns: case x implementation.
+"""Builds results/MATRIX.txt from the saved columns: case x implementation.
 
-    python3 probe/matrix.py [column directory] > MATRIX.txt
+    python3 probe/matrix.py [column directory] > results/MATRIX.txt
 
-By default the columns are read from the repository root, where `reverify.sh UPDATE_COLUMNS=1`
-puts them.
+By default the columns are read from results/, where `reverify.sh UPDATE_COLUMNS=1` puts them.
 
 The list of cases comes from the corpus, not from the columns: otherwise a case lost by every
 participant at once would vanish from the table instead of showing an empty row.
@@ -11,7 +10,7 @@ participant at once would vanish from the table instead of showing an empty row.
 import io, os, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-COLDIR = sys.argv[1] if len(sys.argv) > 1 else ROOT
+COLDIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "results")
 CASES = os.path.join(ROOT, "derived-schema")
 
 COLUMNS = [("substrait-java", "JAVA"), ("Isthmus", "ISTHMUS"), ("python", "PYTHON"),
@@ -47,7 +46,7 @@ def short(v):
 # the table called itself "10 x 78" while Gluten had 74 answers. Partial coverage is allowed only
 # with a recorded reason, and then it is printed in the header rather than passed over.
 EXPECTED_PARTIAL = {
-    "Gluten": "four *_ALL cases are not expressible in its proto (see GLUTEN.txt)",
+    "Gluten": "four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)",
 }
 
 header = "%-46s" % "case" + "".join("%-*s" % (WIDTH, label) for label, _ in COLUMNS)
@@ -58,7 +57,7 @@ undeclared = [(l, n) for l, n in partial if l not in EXPECTED_PARTIAL]
 
 print("Schema derivation matrix: %d implementations x %d cases." % (len(COLUMNS), len(corpus)))
 print("Built by probe/matrix.py from the columns in %s." % os.path.relpath(COLDIR, ROOT))
-print("Versions are in probe/versions.env. Full values and each participant's boundaries are in <NAME>.txt.")
+print("Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.")
 print("BOUNDARIES: DuckDB is the only participant carrying no nullability - for it types, arity and")
 print("order are compared. Acero and Spark carry it and are compared on it. Gluten takes no part in")
 print("the comparison against the expectations at all.")

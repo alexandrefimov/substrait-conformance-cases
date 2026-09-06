@@ -318,7 +318,7 @@ rm -f "$JAVA_OUT"
 
 echo; echo "### 6. the substrait-python side"
 optional_column PYTHON line substrait-python "${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}/bin/python" \
-  bash "$PROBE/python_all.sh" "$ROOT/derived-schema-vt"
+  bash "$PROBE/python_all.sh" "$ROOT/derived-schema-virtual-tables"
 
 echo; echo "### 7. the substrait-validator side"
 optional_column VALIDATOR block substrait-validator "${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" \
@@ -447,11 +447,11 @@ done
 
 # The saved columns are replaced only when explicitly asked for - like the corpus.
 if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
-  for c in "$RUN"/*.txt; do cp "$c" "$ROOT/$(basename "$c")"; done
-  # MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
+  for c in "$RUN"/*.txt; do cp "$c" "$ROOT/results/$(basename "$c")"; done
+  # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
   # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
-  python3 "$PROBE/matrix.py" > "$ROOT/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
-  echo "saved columns and MATRIX.txt updated from this run (UPDATE_COLUMNS=1)"
+  python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
+  echo "saved columns and results/MATRIX.txt updated from this run (UPDATE_COLUMNS=1)"
 fi
 
 echo
@@ -470,6 +470,6 @@ if [ -n "$SKIPPED_PROBES" ]; then
 fi
 # Gluten lives in a cluster and this script does not run it. Saying so out loud is mandatory:
 # otherwise "one command re-checks everything" reads as a claim about it too.
-echo "outside this script: Gluten/Velox (run in a cluster; the GLUTEN.txt column is taken separately)"
+echo "outside this script: Gluten/Velox (run in a cluster; the results/GLUTEN.txt column is taken separately)"
 if [ "$FAILED" -ne 0 ]; then echo "RESULT: HARNESS FAILED - do not trust the conclusions"; exit 1; fi
 echo "RESULT: the harness ran to completion, $N_JSON cases, $RAN columns"

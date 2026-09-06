@@ -5,7 +5,7 @@ The shared environment is built by `setup.sh` (see the top-level README). The va
 of it and is installed separately, below.
 
 `selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
-against itself — that `expected.json` and `MATRIX.txt` are what their generators produce, that every
+against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every
 saved column is complete and agrees with the expectations, that the numbers in the README match what
 `check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
 has come back. It needs python3 and nothing else, takes seconds, and is what CI runs.
@@ -56,7 +56,7 @@ what substrait-go computes as a function's return type from the extension declar
 
 **The declared type against the derived one.** `ObserveOf.java` attaches substrait-java's
 `TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
-Calcite derived differently, and how often derivation failed; `ISTHMUS-OBSERVE.txt` is a saved run.
+Calcite derived differently, and how often derivation failed; `results/ISTHMUS-OBSERVE.txt` is a saved run.
 `decl_vs_derived_lie.py` establishes the same thing for the validator by handing it one case twice,
 once with a false declaration. `IsthmusRoundTrip.java` goes Substrait to Calcite and back, so what
 Isthmus writes into someone else's plan can be compared with what it read.
@@ -94,11 +94,11 @@ returns, it repeats the declared one, so its answer is independent only for rela
 
 ## Gluten/Velox
 
-Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved `GLUTEN.txt`
+Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved `results/GLUTEN.txt`
 column was taken in a cluster. To reproduce it: build Gluten at the commit in `versions.env` with
 `dev/builddeps-veloxbe.sh --build_tests=ON` - the `JsonToProtoConverter` harness that reads
 protobuf-JSON is only built with the tests - then put `SubstraitCorpusProbeTest.cc` into
 `cpp/velox/tests`, register it in the `CMakeLists.txt` there, and point `SUBSTRAIT_CORPUS_DIR` at
-the virtual-table variant of the corpus (`derived-schema-vt`, built by `to_virtual_tables.py`).
+the virtual-table variant of the corpus (`derived-schema-virtual-tables`, built by `to_virtual_tables.py`).
 Gluten reads only `virtual_table` and `local_files` out of a `ReadRel`, so the canonical corpus
 with its named tables will not do.
