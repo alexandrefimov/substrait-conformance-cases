@@ -1,8 +1,9 @@
 # Aggregation phase: three plans
 
-Three plans showing that the DataFusion consumer does not read `AggregateFunction.phase`. To run
-them: point `SUBSTRAIT_CORPUS_DIR` at this directory and run `probe/datafusion_corpus_probe.rs` as
-an example inside a DataFusion checkout, the way section 2 of `reverify.sh` does.
+Three plans showing that the DataFusion consumer does not read `AggregateFunction.phase`, filed as
+apache/datafusion#24967. To run them: point `SUBSTRAIT_CORPUS_DIR` at this directory and run
+`probe/datafusion_corpus_probe.rs` as an example inside a DataFusion checkout, the way section 2 of
+`reverify.sh` does.
 
 | file | what is in it | what DataFusion answered at f96892a9b |
 | --- | --- | --- |
@@ -16,4 +17,13 @@ the full phase. Neither plan was well-formed, so "two valid plans differing in o
 true description of them. Going through `rel` avoids the question of names entirely, and `a` is a
 valid plan on which a silently wrong result is visible on its own.
 
-`t_avg.c0` is `[1, 2]`, so avg's intermediate state is the pair (sum 3, count 2).
+`t_avg.c0` is `[1, 2]`, so avg's intermediate state is the pair (sum 3, count 2), and
+`functions_arithmetic.yaml` declares `avg:i64` with `return: i64?`, truncating partial values. The
+answer `Float64? 1.5` is therefore neither: not the intermediate state the phase asks for, and not
+the integral result the declared return calls for. It is DataFusion's own avg, run complete whatever
+the phase says.
+
+In the corpus proper the same thing shows in the DataFusion column: `phase_final` answers
+`Float64?` where the declared return is `i64?`, and `phase_intermediate` is refused over the names a
+struct column needs — which is why these three plans exist, since going through `PlanRel.rel` avoids
+the question of names entirely.
