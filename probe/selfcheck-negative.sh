@@ -107,6 +107,20 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['cells']['GO']['aggregate_grouping_sets_declared_order'] = 'no-such-rule'
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
+mutate "a reason claiming only nullability is lost" "the types differ too" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['acero-drops-a-fixed-size-binary']['check'] = {'nullable_only': True}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason claiming what the answer looks like" "whose answer should match" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['duckdb-timestamp-is-microseconds']['check']['got_matches'] = '^.c:DATE.$'
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "a count the README states about the reasons" "the README does not say" \
   python3 -c "
 import io, json

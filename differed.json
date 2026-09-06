@@ -11,11 +11,17 @@
   },
   "duckdb-timestamp-is-microseconds": {
    "kind": "boundary",
-   "what": "DuckDB has second, millisecond, microsecond and nanosecond timestamps and no others, so these precisions have nothing to come back as."
+   "what": "DuckDB has second, millisecond, microsecond and nanosecond timestamps and no others, so these precisions have nothing to come back as.",
+   "check": {
+    "got_matches": "^\\[c:TIMESTAMP\\]$"
+   }
   },
   "validator-does-not-resolve": {
    "kind": "unresolved",
-   "what": "The validator answers with an unresolved type class rather than a type. It is not a wrong derivation and not a limit of a type system: nothing was derived to compare."
+   "what": "The validator answers with an unresolved type class rather than a type. It is not a wrong derivation and not a limit of a type system: nothing was derived to compare.",
+   "check": {
+    "got_matches": "unresolved"
+   }
   },
   "emit-mapping-ignored": {
    "kind": "divergence",
@@ -29,21 +35,16 @@
    "kind": "divergence",
    "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. The answers make all keys required, or all nullable. DataFusion's instance is filed as apache/datafusion#24968."
   },
-  "join-output-not-applied": {
-   "kind": "divergence",
-   "what": "Semi and anti return one side, mark one side plus a boolean, single both with the opposite made nullable. The answer is the two inputs concatenated whatever the type says. Filed as substrait-validator#580 for the validator."
-  },
-  "setop-nullability-own-rule": {
-   "kind": "divergence",
-   "what": "The spec's Output Type Derivation table gives a pattern per operation; these follow one rule for all of them. Filed as substrait-validator#579 for the validator."
-  },
   "decimal-own-derivation": {
    "kind": "divergence",
    "what": "functions_arithmetic_decimal.yaml fixes precision and scale; these compute their own."
   },
   "spark-decimal-result-nullable": {
    "kind": "divergence",
-   "what": "Spark returns a nullable decimal from arithmetic over required inputs; the precision and scale are the spec's."
+   "what": "Spark returns a nullable decimal from arithmetic over required inputs; the precision and scale are the spec's.",
+   "check": {
+    "nullable_only": true
+   }
   },
   "avg-over-integers-returns-float": {
    "kind": "divergence",
@@ -51,7 +52,10 @@
   },
   "acero-required-lost-above-a-read": {
    "kind": "divergence",
-   "what": "Acero keeps required on a plain read - control_passthrough_rn matches - and loses it above any operation, so every column comes back nullable."
+   "what": "Acero keeps required on a plain read - control_passthrough_rn matches - and loses it above any operation, so every column comes back nullable.",
+   "check": {
+    "nullable_only": true
+   }
   },
   "acero-drops-a-fixed-size-binary": {
    "kind": "divergence",
@@ -59,7 +63,30 @@
   },
   "duckdb-timestamp-precision-ignored": {
    "kind": "divergence",
-   "what": "DuckDB has TIMESTAMP_S, TIMESTAMP_MS and TIMESTAMP_NS, and its reader rejects a precision above 9, so it reads the field; every declared precision still comes back as microseconds."
+   "what": "DuckDB has TIMESTAMP_S, TIMESTAMP_MS and TIMESTAMP_NS, and its reader rejects a precision above 9, so it reads the field; every declared precision still comes back as microseconds.",
+   "check": {
+    "got_matches": "^\\[c:TIMESTAMP\\]$"
+   }
+  },
+  "isthmus-setop-nullable-if-any-input-is": {
+   "kind": "divergence",
+   "what": "The spec's Output Type Derivation table gives a pattern per operation. Isthmus applies the union pattern - nullable where any input is - to intersection and minus as well."
+  },
+  "validator-setop-takes-the-first-input": {
+   "kind": "divergence",
+   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-validator#579."
+  },
+  "datafusion-intersection-takes-the-first-input": {
+   "kind": "divergence",
+   "what": "DataFusion returns the first input's nullability for intersection; its union and minus match the spec's patterns."
+  },
+  "python-join-concatenates-the-inputs": {
+   "kind": "divergence",
+   "what": "Semi and anti return one side, mark one side plus a boolean, single both with the opposite made nullable. substrait-python returns the two inputs concatenated with their own nullability, and for a mark join appends the mark column without dropping the right side."
+  },
+  "validator-join-concatenates-the-inputs": {
+   "kind": "divergence",
+   "what": "The validator returns the two inputs concatenated with their own nullability whatever the join type says, with no mark column appended. Filed as substrait-validator#580."
   }
  },
  "cells": {
@@ -87,9 +114,9 @@
    "decimal_divide": "decimal-own-derivation",
    "decimal_multiply_overflow": "decimal-own-derivation",
    "phase_final": "avg-over-integers-returns-float",
-   "setop_intersection_multiset": "setop-nullability-own-rule",
-   "setop_intersection_multiset_all": "setop-nullability-own-rule",
-   "setop_intersection_primary": "setop-nullability-own-rule",
+   "setop_intersection_multiset": "datafusion-intersection-takes-the-first-input",
+   "setop_intersection_multiset_all": "datafusion-intersection-takes-the-first-input",
+   "setop_intersection_primary": "datafusion-intersection-takes-the-first-input",
    "stringlen_declared": "no-string-with-length"
   },
   "DUCKDB": {
@@ -118,28 +145,28 @@
   },
   "ISTHMUS": {
    "read_projection_mask": "read-projection-ignored",
-   "setop_intersection_multiset": "setop-nullability-own-rule",
-   "setop_intersection_multiset_all": "setop-nullability-own-rule",
-   "setop_minus_primary": "setop-nullability-own-rule",
-   "setop_minus_primary_all": "setop-nullability-own-rule"
+   "setop_intersection_multiset": "isthmus-setop-nullable-if-any-input-is",
+   "setop_intersection_multiset_all": "isthmus-setop-nullable-if-any-input-is",
+   "setop_minus_primary": "isthmus-setop-nullable-if-any-input-is",
+   "setop_minus_primary_all": "isthmus-setop-nullable-if-any-input-is"
   },
   "PYTHON": {
    "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
    "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
-   "join_left": "join-output-not-applied",
-   "join_left_mark": "join-output-not-applied",
-   "join_left_single": "join-output-not-applied",
-   "join_outer": "join-output-not-applied",
-   "join_right": "join-output-not-applied",
-   "join_right_mark": "join-output-not-applied",
-   "join_right_single": "join-output-not-applied",
-   "joineq_left": "join-output-not-applied",
-   "joineq_left_mark": "join-output-not-applied",
-   "joineq_left_single": "join-output-not-applied",
-   "joineq_outer": "join-output-not-applied",
-   "joineq_right": "join-output-not-applied",
-   "joineq_right_mark": "join-output-not-applied",
-   "joineq_right_single": "join-output-not-applied",
+   "join_left": "python-join-concatenates-the-inputs",
+   "join_left_mark": "python-join-concatenates-the-inputs",
+   "join_left_single": "python-join-concatenates-the-inputs",
+   "join_outer": "python-join-concatenates-the-inputs",
+   "join_right": "python-join-concatenates-the-inputs",
+   "join_right_mark": "python-join-concatenates-the-inputs",
+   "join_right_single": "python-join-concatenates-the-inputs",
+   "joineq_left": "python-join-concatenates-the-inputs",
+   "joineq_left_mark": "python-join-concatenates-the-inputs",
+   "joineq_left_single": "python-join-concatenates-the-inputs",
+   "joineq_outer": "python-join-concatenates-the-inputs",
+   "joineq_right": "python-join-concatenates-the-inputs",
+   "joineq_right_mark": "python-join-concatenates-the-inputs",
+   "joineq_right_single": "python-join-concatenates-the-inputs",
    "read_projection_mask": "read-projection-ignored"
   },
   "SPARK": {
@@ -154,16 +181,16 @@
    "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
    "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
    "emit_aggregate": "validator-does-not-resolve",
-   "join_left_mark": "join-output-not-applied",
-   "join_right_anti": "join-output-not-applied",
-   "join_right_mark": "join-output-not-applied",
-   "join_right_semi": "join-output-not-applied",
-   "join_right_single": "join-output-not-applied",
-   "joineq_left_mark": "join-output-not-applied",
-   "joineq_right_anti": "join-output-not-applied",
-   "joineq_right_mark": "join-output-not-applied",
-   "joineq_right_semi": "join-output-not-applied",
-   "joineq_right_single": "join-output-not-applied",
+   "join_left_mark": "validator-join-concatenates-the-inputs",
+   "join_right_anti": "validator-join-concatenates-the-inputs",
+   "join_right_mark": "validator-join-concatenates-the-inputs",
+   "join_right_semi": "validator-join-concatenates-the-inputs",
+   "join_right_single": "validator-join-concatenates-the-inputs",
+   "joineq_left_mark": "validator-join-concatenates-the-inputs",
+   "joineq_right_anti": "validator-join-concatenates-the-inputs",
+   "joineq_right_mark": "validator-join-concatenates-the-inputs",
+   "joineq_right_semi": "validator-join-concatenates-the-inputs",
+   "joineq_right_single": "validator-join-concatenates-the-inputs",
    "precision_timestamp_p00": "validator-does-not-resolve",
    "precision_timestamp_p01": "validator-does-not-resolve",
    "precision_timestamp_p02": "validator-does-not-resolve",
@@ -173,11 +200,11 @@
    "precision_timestamp_p07": "validator-does-not-resolve",
    "precision_timestamp_p09": "validator-does-not-resolve",
    "precision_timestamp_p12": "validator-does-not-resolve",
-   "setop_intersection_multiset": "setop-nullability-own-rule",
-   "setop_intersection_multiset_all": "setop-nullability-own-rule",
-   "setop_intersection_primary": "setop-nullability-own-rule",
-   "setop_union_all": "setop-nullability-own-rule",
-   "setop_union_distinct": "setop-nullability-own-rule",
+   "setop_intersection_multiset": "validator-setop-takes-the-first-input",
+   "setop_intersection_multiset_all": "validator-setop-takes-the-first-input",
+   "setop_intersection_primary": "validator-setop-takes-the-first-input",
+   "setop_union_all": "validator-setop-takes-the-first-input",
+   "setop_union_distinct": "validator-setop-takes-the-first-input",
    "virtual_table_emit_mapping": "validator-does-not-resolve"
   }
  }
