@@ -8,8 +8,12 @@ what can be checked is that they describe this run and no other - every differin
 nothing classified that no longer differs - and, where a reason makes a claim a machine can test,
 that the claim holds. A reason carries that test in its own `check` field:
 
-    nullable_only   the answer has the expected types and every field nullable
-    got_matches     the raw answer matches this regular expression
+    nullable_only          the answer has the expected types and every field nullable
+    got_matches            the raw answer matches this regular expression
+    inputs_concatenated    the answer is the relation's inputs one after another, with their own
+                           nullability; `mark_suffix` allows one trailing boolean
+    first_input            the answer is the first input, types and nullability alike
+    nullable_if_any_input  the answer has a nullable field wherever any input does
 
 Without any of this the file would drift into describing a measurement that has moved, and would
 be more misleading than no file at all.
@@ -28,6 +32,35 @@ P = {"__file__": os.path.join(ROOT, "probe/check_expected.py")}
 exec(src[:src.index("path, fmt = sys.argv")], P)
 PARSE = {"java": "parse_java", "py": "parse_py", "df": "parse_df", "duckdb": "parse_duckdb",
          "acero": "parse_acero", "go": "parse_go", "spark": "parse_spark", "calcite": "parse_calcite"}
+
+# The inputs of the relation under test, in the order the plan declares them. Reading them from the
+# case rather than restating them here is the point: a reason that says "the inputs concatenated" is
+# then checked against the inputs, not against a copy of them that can go stale on its own.
+PROTO_TYPE = {"i64": "i64", "i32": "i32", "i16": "i16", "i8": "i8", "bool": "bool", "string": "str",
+              "fp64": "fp64", "fp32": "fp32", "binary": "bin", "date": "date"}
+
+def case_inputs(case):
+    plan = json.load(open(os.path.join(ROOT, "derived-schema/%s.json" % case), encoding="utf-8"))
+    found = []
+    def walk(node):
+        if isinstance(node, dict):
+            schema = node.get("baseSchema")
+            if schema:
+                fields = []
+                for t in schema["struct"]["types"]:
+                    (kind, body), = t.items()
+                    if kind not in PROTO_TYPE:
+                        raise KeyError("%s: unmapped proto type %r" % (case, kind))
+                    fields.append([PROTO_TYPE[kind],
+                                   body.get("nullability") == "NULLABILITY_NULLABLE"])
+                found.append(fields)
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+    walk(plan)
+    return found
 
 doc = json.load(open(os.path.join(ROOT, "differed.json"), encoding="utf-8"))
 expected = json.load(open(os.path.join(ROOT, "expected.json"), encoding="utf-8"))["expected"]
@@ -90,6 +123,27 @@ for col, fmt in COLS:
             elif not all(n for _, n in got):
                 fail("%s/%s says %s, but not every field of the answer is nullable: %s"
                      % (col, case, said[case], got_raw))
+        if {"inputs_concatenated", "first_input", "nullable_if_any_input"} & set(check):
+            try:
+                inputs = case_inputs(case)
+            except KeyError as e:
+                fail("%s/%s says %s, which is read against the case's inputs, and %s"
+                     % (col, case, said[case], e.args[0]))
+                continue
+            got = P[PARSE[fmt]](got_raw)
+            if "inputs_concatenated" in check:
+                want = [f for one in inputs for f in one]
+                tail = got[len(want):] if got else []
+                if check["inputs_concatenated"].get("mark_suffix") and tail == [["bool", True]]:
+                    got = got[:len(want)]
+            elif "first_input" in check:
+                want = inputs[0]
+            else:
+                want = [[t, any(one[i][1] for one in inputs)]
+                        for i, (t, _) in enumerate(inputs[0])]
+            if got != want:
+                fail("%s/%s says %s, which for these inputs means %s: %s"
+                     % (col, case, said[case], want, got))
 
 kinds, checked = {}, 0
 for cs in doc["cells"].values():

@@ -114,6 +114,20 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['acero-drops-a-fixed-size-binary']['check'] = {'nullable_only': True}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
+mutate "a reason claiming the answer is one input" "which for these inputs means" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['isthmus-setop-nullable-if-any-input-is']['check'] = {'first_input': True}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason allowing a column the answer really appends" "which for these inputs means" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['python-join-concatenates-the-inputs']['check'] = {'inputs_concatenated': {}}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "a reason claiming what the answer looks like" "whose answer should match" \
   python3 -c "
 import io, json

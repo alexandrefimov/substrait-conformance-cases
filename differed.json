@@ -70,23 +70,40 @@
   },
   "isthmus-setop-nullable-if-any-input-is": {
    "kind": "divergence",
-   "what": "The spec's Output Type Derivation table gives a pattern per operation. Isthmus applies the union pattern - nullable where any input is - to intersection and minus as well."
+   "what": "The spec's Output Type Derivation table gives a pattern per operation. Isthmus applies the union pattern - nullable where any input is - to intersection and minus as well.",
+   "check": {
+    "nullable_if_any_input": true
+   }
   },
   "validator-setop-takes-the-first-input": {
    "kind": "divergence",
-   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-validator#579."
+   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-validator#579.",
+   "check": {
+    "first_input": true
+   }
   },
   "datafusion-intersection-takes-the-first-input": {
    "kind": "divergence",
-   "what": "DataFusion returns the first input's nullability for intersection; its union and minus match the spec's patterns."
+   "what": "DataFusion returns the first input's nullability for intersection; its union and minus match the spec's patterns.",
+   "check": {
+    "first_input": true
+   }
   },
   "python-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "Semi and anti return one side, mark one side plus a boolean, single both with the opposite made nullable. substrait-python returns the two inputs concatenated with their own nullability, and for a mark join appends the mark column without dropping the right side."
+   "what": "Semi and anti return one side, mark one side plus a boolean, single both with the opposite made nullable. substrait-python returns the two inputs concatenated with their own nullability, and for a mark join appends the mark column without dropping the right side.",
+   "check": {
+    "inputs_concatenated": {
+     "mark_suffix": true
+    }
+   }
   },
   "validator-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "The validator returns the two inputs concatenated with their own nullability whatever the join type says, with no mark column appended. Filed as substrait-validator#580."
+   "what": "The validator returns the two inputs concatenated with their own nullability whatever the join type says, with no mark column appended. Filed as substrait-validator#580.",
+   "check": {
+    "inputs_concatenated": {}
+   }
   }
  },
  "cells": {
