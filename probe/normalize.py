@@ -33,10 +33,10 @@ REFUSING = {"REJECTED", "CRASH", "LOADFAIL", "NOTIMPL"}
 # protobuf varies this marker between runs on purpose, so that debug output is not parsed as data.
 # Left as it comes, one Acero cell changes on every run for a reason that has nothing to do with the
 # measurement, and every run that saves columns dirties that file.
-REDACTION = re.compile(r"goo\.gle/debug\w*")
+REDACTION = re.compile(r"goo\.gle/debug\w*\s+")
 
 def stable(value):
-    return REDACTION.sub("goo.gle/debug", value)
+    return REDACTION.sub("goo.gle/debug ", value)
 
 def blocks(text):
     name, verdicts = None, []

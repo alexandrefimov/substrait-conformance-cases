@@ -2,10 +2,19 @@
 
 Acero accepts binary protobuf only (the .bin next to each .json, written by JsonToBin).
 """
-import pathlib, sys
+import pathlib, re, sys
 import decimal
 import pyarrow as pa
 import pyarrow.substrait as ps
+
+# protobuf varies this marker, and the run of spaces after it, between runs on purpose, so that debug
+# output is not parsed as data. The message is truncated below, so the varying length shifts the cut
+# and the saved column changes on every run for a reason unrelated to the measurement. Collapsed here,
+# before the truncation.
+REDACTION = re.compile(r"goo\.gle/debug\w*\s+")
+
+def message(e):
+    return REDACTION.sub("goo.gle/debug ", str(e).replace("\n", " "))
 
 SCHEMAS = {
     "foo": pa.schema([pa.field("a", pa.int64(), nullable=False),
@@ -63,4 +72,4 @@ try:
             vals = sorted(r[nm] for r in tbl.to_pylist())
             print("ACERO ROWS       %s" % (vals if len(vals) <= 30 else vals[:30] + ["..."],))
 except Exception as e:
-    print("ACERO REJECTED   %s: %s" % (type(e).__name__, str(e).replace("\n", " ")[:150]))
+    print("ACERO REJECTED   %s: %s" % (type(e).__name__, message(e)[:150]))
