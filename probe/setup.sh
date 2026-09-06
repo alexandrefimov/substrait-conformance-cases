@@ -23,6 +23,15 @@ step() { # <name> <command...>
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 
+# The pinned versions are read first, because the checks below are made against them. They used to be
+# read after, so GO_MINIMUM was empty where it is compared, `sort -V` of an empty string against
+# anything returned the empty string, and the comparison was true whatever go was installed: the
+# version check could not fail. Only `set -u` on a machine without the file's values made it visible.
+#
+# Versions come from one file rather than from "whatever is latest": otherwise a second run measures
+# a different environment and the saved columns stop meaning anything.
+. "$(dirname "$0")/versions.env"
+
 for tool in python3 go; do
   command -v "$tool" >/dev/null || { echo "$tool is not on PATH; it is needed here" >&2; exit 1; }
 done
@@ -32,17 +41,14 @@ done
 # on its own ("go.mod requires go >= 1.24") names a number this script wrote, not a requirement the
 # reader can act on.
 GO_HAVE="$(go env GOVERSION 2>/dev/null | sed 's/^go//')"
-if [ "$(printf '%s\n%s\n' "$GO_MINIMUM" "$GO_HAVE" | sort -V | head -1)" != "$GO_MINIMUM" ]; then
+if [ -z "$GO_HAVE" ] || \
+   [ "$(printf '%s\n%s\n' "$GO_MINIMUM" "$GO_HAVE" | sort -V | head -1)" != "$GO_MINIMUM" ]; then
   echo "go $GO_MINIMUM or newer is needed; this is go ${GO_HAVE:-unknown}." >&2
   echo "It is not fetched automatically: setup.sh builds with GOTOOLCHAIN=local so that a run" >&2
   echo "cannot quietly measure a toolchain other than the one it reports." >&2
   exit 1
 fi
 mkdir -p "$SP"
-
-# Versions come from one file rather than from "whatever is latest": otherwise a second run
-# measures a different environment and the saved columns stop meaning anything.
-. "$(dirname "$0")/versions.env"
 
 build_engines_venv() {
   python3 -m venv "$SP/venv" &&
