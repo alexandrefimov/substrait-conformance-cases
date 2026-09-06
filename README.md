@@ -103,11 +103,12 @@ Spark, Isthmus and Gluten the copy discount is simply not known.
 
 ## What is not settled
 
-This repository is three days old, and the claims on this page have been corrected five times in
+This repository is three days old, and the claims on this page have been corrected six times in
 that span — the size of the circular set, a "fail-closed" summary that a validator environment with
 nothing installed walked straight through, the date on the table above, the DataFusion commit the
-columns were taken against, and a reason in `expected.json` that pointed at its neighbour and, once
-the file was sorted, at the wrong one. Each is a commit with the measurement that found it. None was
+columns were taken against, a reason in `expected.json` that pointed at its neighbour and, once the
+file was sorted, at the wrong one, and the count of differing cells that are a limit of a type
+system rather than a divergence. Each is a commit with the measurement that found it. None was
 an error in the harness's logic; all five were statements *about* the measurement, which no run
 contradicts, and each is now checked by one file being read against another.
 
@@ -118,7 +119,9 @@ What is open, as against corrected:
 - Five of the 78 cases record the issue they came from. For the other 73 the generator that builds a
   case is the only record of what it asserts.
 - `differed.json` says why each cell differs but not which divergences were reported upstream: six
-  of its twenty-one reasons name an issue and the rest name none.
+  of its twenty-one reasons name an issue and the rest name none. Ten of the twenty-one were
+  rewritten after the answers behind them were read one by one: each had held for most of its cells
+  and described the others wrongly. That is why a reason there has to carry a test.
 - Rows are compared for three participants and eight cases; schemas for nine and 73.
 - The Gluten column is taken in a cluster and reproducible only in one.
 - The full sweep has run on Linux, in a container on clean Ubuntu 24.04 with every cache empty,
