@@ -9,13 +9,17 @@ nothing classified that no longer differs - and, where a reason makes a claim a 
 that the claim holds. A reason carries that test in its own `check` field:
 
     nullable_only          the answer has the expected types and every field nullable
-    got_matches            the raw answer matches this regular expression
-    no_field_nullable      no field of the answer is nullable
-    all_decimal            every field of the answer is a decimal
+    got_matches            the raw answer matches this regular expression; a mapping of column
+                           name to expression when participants under one reason answer differently
+    no_field_nullable      the answer has the expected types and no field nullable
+    all_decimal            the answer has as many fields as expected and every one is a decimal
+    all_fields_are         every field of the answer has this type
+    declared_precision_in  the precision the case declares is one of these
     inputs_concatenated    the answer is the relation's inputs one after another, with their own
                            nullability; `mark_suffix` allows one trailing boolean
     first_input            the answer is the first input, types and nullability alike; `leading`
-                           allows it to stop short, matching only the columns the input starts with
+                           requires it to stop short instead - the columns the input starts with and
+                           fewer of them, so an answer that returns the input whole fails
     nullable_if_any_input  the answer has a nullable field wherever any input does
 
 Without any of this the file would drift into describing a measurement that has moved, and would
@@ -86,10 +90,16 @@ def answers(name):
             out[case.strip()] = value.strip()
     return out
 
-FLAGS = {"nullable_only", "no_field_nullable", "all_decimal", "nullable_if_any_input"}
-OPTIONS = {"inputs_concatenated": {"mark_suffix"}, "first_input": {"leading"}}
+FLAGS = {"nullable_only", "no_field_nullable", "nullable_if_any_input"}
+OPTIONS = {"inputs_concatenated": {"mark_suffix"}, "first_input": {"leading"},
+           "all_decimal": {"nullable_in"}}
 INPUT_CHECKS = set(OPTIONS) | {"nullable_if_any_input"}
-CHECKS = FLAGS | set(OPTIONS) | {"got_matches"}
+# all_fields_are takes a type name, declared_precision_in a list of precisions; got_matches takes an
+# expression, or a mapping from column name to one where the participants under a single reason
+# answer differently and a shared expression would only assert what they have in common.
+VALUED = {"all_fields_are", "declared_precision_in"}
+CHECKS = FLAGS | set(OPTIONS) | VALUED | {"got_matches"}
+INPUT_CHECKS = INPUT_CHECKS - {"all_decimal"}
 
 for rid, r in doc["rules"].items():
     if r["kind"] not in doc["kinds"]:
@@ -111,13 +121,24 @@ for rid, r in doc["rules"].items():
         if name in FLAGS and value is not True:
             fail("rule %s check %s must be true" % (rid, name))
         elif name == "got_matches":
-            if not isinstance(value, str) or not value:
-                fail("rule %s got_matches must be a nonempty regular expression" % rid)
+            by_column = value if isinstance(value, dict) else {None: value}
+            if not by_column or not all(isinstance(v, str) and v for v in by_column.values()):
+                fail("rule %s got_matches must be a nonempty regular expression, or a mapping of "
+                     "column name to one" % rid)
             else:
-                try:
-                    re.compile(value)
-                except re.error as e:
-                    fail("rule %s has an invalid got_matches expression: %s" % (rid, e))
+                for column, expression in by_column.items():
+                    if column is not None and column not in dict(COLS):
+                        fail("rule %s got_matches names %r, which is not a column" % (rid, column))
+                    try:
+                        re.compile(expression)
+                    except re.error as e:
+                        fail("rule %s has an invalid got_matches expression: %s" % (rid, e))
+        elif name == "all_fields_are":
+            if not isinstance(value, str) or not value:
+                fail("rule %s all_fields_are must be a type name" % rid)
+        elif name == "declared_precision_in":
+            if not isinstance(value, list) or not value or not all(isinstance(v, int) for v in value):
+                fail("rule %s declared_precision_in must be a nonempty list of precisions" % rid)
         elif name in OPTIONS:
             if name == "first_input" and value is True:
                 continue
@@ -126,8 +147,16 @@ for rid, r in doc["rules"].items():
                 continue
             if set(value) - OPTIONS[name]:
                 fail("rule %s check %s has unknown options" % (rid, name))
-            if any(type(v) is not bool for v in value.values()):
-                fail("rule %s check %s options must be booleans" % (rid, name))
+            for option, setting in value.items():
+                # nullable_in names the columns a second difference applies to; the rest are flags.
+                if option == "nullable_in":
+                    if (not isinstance(setting, list) or not setting
+                            or any(c not in dict(COLS) for c in setting)):
+                        fail("rule %s check %s nullable_in must be a nonempty list of columns"
+                             % (rid, name))
+                elif type(setting) is not bool:
+                    fail("rule %s check %s option %s must be true or false"
+                         % (rid, name, option))
 
 if bad:
     raise SystemExit(bad)
@@ -156,9 +185,27 @@ for col, fmt in COLS:
         if not check:
             continue
         got_raw = data[case]
-        if "got_matches" in check and not re.search(check["got_matches"], got_raw):
-            fail("%s/%s says %s, whose answer should match %s: %s"
-                 % (col, case, said[case], check["got_matches"], got_raw))
+        if "got_matches" in check:
+            pattern = check["got_matches"]
+            if isinstance(pattern, dict):
+                pattern = pattern.get(col)
+                if pattern is None:
+                    fail("%s/%s says %s, which says nothing about this participant"
+                         % (col, case, said[case]))
+            if pattern is not None and not re.search(pattern, got_raw):
+                fail("%s/%s says %s, whose answer should match %s: %s"
+                     % (col, case, said[case], pattern, got_raw))
+        if "all_fields_are" in check:
+            got = P[PARSE[fmt]](got_raw)
+            if got is None or not all(t == check["all_fields_are"] for t, _ in got):
+                fail("%s/%s says %s, so every field should be %s: %s"
+                     % (col, case, said[case], check["all_fields_are"], got_raw))
+        if "declared_precision_in" in check:
+            declared = [int(t[t.index("(") + 1:-1]) for t, _ in expected[case]["schema"]
+                        if t.startswith("precision_timestamp(")]
+            if sorted(set(declared)) != sorted(set(declared) & set(check["declared_precision_in"])):
+                fail("%s/%s says %s, which is only about precisions %s, and this case declares %s"
+                     % (col, case, said[case], check["declared_precision_in"], declared))
         if check.get("nullable_only"):
             got = P[PARSE[fmt]](got_raw)
             want = expected[case]["schema"]
@@ -168,14 +215,29 @@ for col, fmt in COLS:
             elif not all(n for _, n in got):
                 fail("%s/%s says %s, but not every field of the answer is nullable: %s"
                      % (col, case, said[case], got_raw))
-        if check.get("all_decimal"):
-            got = P[PARSE[fmt]](got_raw)
-            if got is None or not all(t.startswith("dec(") for t, _ in got):
-                fail("%s/%s says %s, but the answer is not a decimal: %s"
-                     % (col, case, said[case], got_raw))
+        if "all_decimal" in check:
+            got, want = P[PARSE[fmt]](got_raw), expected[case]["schema"]
+            if got is None or len(got) != len(want) or not all(t.startswith("dec(") for t, _ in got):
+                fail("%s/%s says %s, so the answer should be %d decimal field(s): %s"
+                     % (col, case, said[case], len(want), got_raw))
+            else:
+                # A cell can carry two differences at once. Naming which participants lose
+                # nullability on top of the precision keeps the second half from going unstated,
+                # which is how it went unnoticed here in the first place.
+                also = col in (check["all_decimal"] or {}).get("nullable_in", [])
+                nullable = [n for _, n in got]
+                if also and nullable != [True] * len(got):
+                    fail("%s/%s says %s is also nullable here, and it is not: %s"
+                         % (col, case, said[case], got_raw))
+                if not also and nullable != [n for _, n in want]:
+                    fail("%s/%s says %s differs in precision and scale alone, but its nullability "
+                         "differs too: %s against %s" % (col, case, said[case], got, want))
         if check.get("no_field_nullable"):
-            got = P[PARSE[fmt]](got_raw)
-            if got is None or any(n for _, n in got):
+            got, want = P[PARSE[fmt]](got_raw), expected[case]["schema"]
+            if got is None or [t for t, _ in got] != [t for t, _ in want]:
+                fail("%s/%s says %s - the expected types, none of them nullable - but the types "
+                     "differ too: %s against %s" % (col, case, said[case], got, want))
+            elif any(n for _, n in got):
                 fail("%s/%s says %s, but a field of the answer is nullable: %s"
                      % (col, case, said[case], got_raw))
         if {"inputs_concatenated", "first_input", "nullable_if_any_input"} & set(check):
@@ -194,8 +256,15 @@ for col, fmt in COLS:
             elif "first_input" in check:
                 want = inputs[0]
                 if isinstance(check["first_input"], dict) and check["first_input"].get("leading"):
-                    if got and len(got) < len(want):
+                    # A prefix, and a proper one: without this an answer returning the input whole
+                    # passes a reason that says it stops short, which is what the participants under
+                    # the neighbouring reason do.
+                    if got is not None and len(got) < len(want):
                         want = want[:len(got)]
+                    else:
+                        fail("%s/%s says %s, so the answer should be shorter than the input's %d "
+                             "columns: %s" % (col, case, said[case], len(want), got_raw))
+                        continue
             else:
                 want = [[t, any(one[i][1] for one in inputs)]
                         for i, (t, _) in enumerate(inputs[0])]

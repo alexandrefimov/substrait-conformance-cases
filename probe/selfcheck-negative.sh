@@ -142,11 +142,11 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['decimal-own-derivation']['check'] = {'all_decimall': True}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
-mutate "a disabled check counted as evidence" "all_decimal must be true" \
+mutate "a disabled check counted as evidence" "nullable_only must be true" \
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['decimal-own-derivation']['check'] = {'all_decimal': False}
+d['rules']['spark-decimal-result-nullable']['check'] = {'nullable_only': False}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "a misspelled input-check option" "has unknown options" \
@@ -177,11 +177,47 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['grouping-key-nullability']['check'] = {'no_field_nullable': True}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
-mutate "a reason claiming the answer is a decimal" "the answer is not a decimal" \
+mutate "a reason claiming the answer is a decimal" "decimal field(s)" \
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['duckdb-decimal-divide-returns-double']['check'] = {'all_decimal': True}
+d['rules']['duckdb-decimal-divide-returns-double']['check'] = {'all_decimal': {}}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason claiming a second difference the answer lacks" "differs in precision and scale alone" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['decimal-own-derivation']['check'] = {'all_decimal': {'nullable_in': ['SPARK']}}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason claiming every field is one type" "so every field should be" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['validator-does-not-resolve']['check'] = {'all_fields_are': 'i64'}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason applied to a precision it does not cover" "which is only about precisions" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['duckdb-timestamp-is-microseconds']['check']['declared_precision_in'] = [0, 3, 9]
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "one participant's answer asserted of another" "whose answer should match" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+m = d['rules']['no-string-with-length']['check']['got_matches']
+m['DATAFUSION'] = m['DUCKDB']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason saying the answer stops short of an answer that does not" "should be shorter than the input" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['read-projection-ignored']['check'] = {'first_input': {'leading': True}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "a reason claiming what the answer looks like" "whose answer should match" \
