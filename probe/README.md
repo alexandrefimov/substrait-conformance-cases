@@ -93,7 +93,10 @@ anyway. Everything else `setup.sh` builds.
 
 ## substrait-validator
 
-`setup.sh` builds this when cargo and protoc are on PATH, and says so when it skips. By hand, the
+`setup.sh` builds this when cargo and protoc are on PATH and `google/protobuf/any.proto` is where
+protoc can find it - the build compiles .proto files that import it, and Debian and Ubuntu ship that
+file in `libprotobuf-dev`, apart from the compiler. Without it the failure lands deep inside maturin
+and names neither package, so `setup.sh` checks first and says so when it skips. By hand, the
 same thing - the release on PyPI is no use, being on spec 0.57.1 and unable to load these cases:
 
     SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"

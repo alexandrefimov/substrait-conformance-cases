@@ -192,7 +192,9 @@ generator to `gen/`; `gen/README.md` says how the corpus is built.
 
 ## Running it
 
-You need python3, go 1.23 or newer, a JDK, and cargo with protoc. Two of those are more particular than they look:
+You need python3, go 1.23 or newer, a JDK, and cargo with protoc — protoc and the well-known type
+definitions it imports, which some distributions package apart from it (`protobuf-compiler` and
+`libprotobuf-dev` on Debian and Ubuntu). Two of those are more particular than they look:
 the Spark probe wants JDK 17 and is skipped without it, and the DataFusion probe builds that checkout
 with the Rust toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and
 an unmanaged cargo will not. Then two checkouts, at the commits `probe/versions.env` names:
