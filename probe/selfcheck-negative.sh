@@ -93,6 +93,27 @@ back_reference() {
 }
 mutate "a reason that only points at its neighbour" "points at another entry" back_reference
 
+mutate "a differing cell with no reason" "with no reason" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['cells']['GO'].pop('aggregate_grouping_sets_declared_order')
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a reason that names no rule" "which is not defined" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['cells']['GO']['aggregate_grouping_sets_declared_order'] = 'no-such-rule'
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a count the README states about the reasons" "the README does not say" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['duckdb-timestamp-is-microseconds']['kind'] = 'divergence'
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "the count of cases naming a source" "name a source issue" \
   replace README.md "Five cases have one so far" "Six cases have one so far"
 

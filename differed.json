@@ -1,0 +1,176 @@
+{
+ "kinds": {
+  "boundary": "the participant's type system cannot express what the expectation needs; not a defect",
+  "unresolved": "the participant returned no type rather than a different one",
+  "divergence": "the participant can express the expected answer and gives another"
+ },
+ "rules": {
+  "no-string-with-length": {
+   "kind": "boundary",
+   "what": "Neither Arrow nor DuckDB has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared."
+  },
+  "duckdb-timestamp-is-microseconds": {
+   "kind": "boundary",
+   "what": "DuckDB's TIMESTAMP is microseconds, so every declared precision comes back as 6."
+  },
+  "validator-does-not-resolve": {
+   "kind": "unresolved",
+   "what": "The validator answers with an unresolved type class rather than a type. It is not a wrong derivation and not a limit of a type system: nothing was derived to compare."
+  },
+  "emit-mapping-ignored": {
+   "kind": "divergence",
+   "what": "RelCommon.emit names the outputs and their order; the answer is the input's instead. Filed as duckdb-substrait-extension#267."
+  },
+  "read-projection-ignored": {
+   "kind": "divergence",
+   "what": "ReadRel.projection masks the read's columns before anything else; the answer is the unmasked schema. Filed as substrait-python#264 for substrait-python; substrait-java#1280 is open for Isthmus."
+  },
+  "grouping-key-nullability": {
+   "kind": "divergence",
+   "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. The answers make all keys required, or all nullable. DataFusion's instance is filed as apache/datafusion#24968."
+  },
+  "join-output-not-applied": {
+   "kind": "divergence",
+   "what": "Semi and anti return one side, mark one side plus a boolean, single both with the opposite made nullable. The answer is the two inputs concatenated whatever the type says. Filed as substrait-validator#580 for the validator."
+  },
+  "setop-nullability-own-rule": {
+   "kind": "divergence",
+   "what": "The spec's Output Type Derivation table gives a pattern per operation; these follow one rule for all of them. Filed as substrait-validator#579 for the validator."
+  },
+  "decimal-own-derivation": {
+   "kind": "divergence",
+   "what": "functions_arithmetic_decimal.yaml fixes precision and scale; these compute their own."
+  },
+  "spark-decimal-result-nullable": {
+   "kind": "divergence",
+   "what": "Spark returns a nullable decimal from arithmetic over required inputs; the precision and scale are the spec's."
+  },
+  "avg-over-integers-returns-float": {
+   "kind": "divergence",
+   "what": "functions_arithmetic.yaml declares avg:i64 with return i64?, truncating partial values; the answer is a float. Filed as substrait-io/substrait#1210."
+  },
+  "acero-required-lost-above-a-read": {
+   "kind": "divergence",
+   "what": "Acero keeps required on a plain read - control_passthrough_rn matches - and loses it above any operation, so every column comes back nullable."
+  }
+ },
+ "cells": {
+  "ACERO": {
+   "decimal_add": "acero-required-lost-above-a-read",
+   "decimal_divide": "decimal-own-derivation",
+   "decimal_multiply": "acero-required-lost-above-a-read",
+   "emit_fetch": "acero-required-lost-above-a-read",
+   "emit_filter": "acero-required-lost-above-a-read",
+   "emit_project": "acero-required-lost-above-a-read",
+   "emit_read": "acero-required-lost-above-a-read",
+   "emit_sort": "acero-required-lost-above-a-read",
+   "joineq_inner": "acero-required-lost-above-a-read",
+   "joineq_left": "acero-required-lost-above-a-read",
+   "joineq_right": "acero-required-lost-above-a-read",
+   "narrowing_count": "acero-required-lost-above-a-read",
+   "narrowing_is_not_null": "acero-required-lost-above-a-read",
+   "narrowing_is_null": "acero-required-lost-above-a-read",
+   "phase_final": "avg-over-integers-returns-float",
+   "stringlen_declared": "no-string-with-length"
+  },
+  "DATAFUSION": {
+   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
+   "decimal_add_overflow": "decimal-own-derivation",
+   "decimal_divide": "decimal-own-derivation",
+   "decimal_multiply_overflow": "decimal-own-derivation",
+   "phase_final": "avg-over-integers-returns-float",
+   "setop_intersection_multiset": "setop-nullability-own-rule",
+   "setop_intersection_multiset_all": "setop-nullability-own-rule",
+   "setop_intersection_primary": "setop-nullability-own-rule",
+   "stringlen_declared": "no-string-with-length"
+  },
+  "DUCKDB": {
+   "decimal_divide": "decimal-own-derivation",
+   "decimal_multiply": "decimal-own-derivation",
+   "emit_aggregate": "emit-mapping-ignored",
+   "emit_fetch": "emit-mapping-ignored",
+   "emit_filter": "emit-mapping-ignored",
+   "emit_join": "emit-mapping-ignored",
+   "emit_read": "emit-mapping-ignored",
+   "emit_sort": "emit-mapping-ignored",
+   "phase_final": "avg-over-integers-returns-float",
+   "precision_timestamp_p00": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p01": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p02": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p03": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p04": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p07": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p09": "duckdb-timestamp-is-microseconds",
+   "stringlen_declared": "no-string-with-length",
+   "virtual_table_emit_mapping": "emit-mapping-ignored"
+  },
+  "GO": {
+   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
+   "aggregate_grouping_sets_declared_order": "grouping-key-nullability"
+  },
+  "ISTHMUS": {
+   "read_projection_mask": "read-projection-ignored",
+   "setop_intersection_multiset": "setop-nullability-own-rule",
+   "setop_intersection_multiset_all": "setop-nullability-own-rule",
+   "setop_minus_primary": "setop-nullability-own-rule",
+   "setop_minus_primary_all": "setop-nullability-own-rule"
+  },
+  "PYTHON": {
+   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
+   "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
+   "join_left": "join-output-not-applied",
+   "join_left_mark": "join-output-not-applied",
+   "join_left_single": "join-output-not-applied",
+   "join_outer": "join-output-not-applied",
+   "join_right": "join-output-not-applied",
+   "join_right_mark": "join-output-not-applied",
+   "join_right_single": "join-output-not-applied",
+   "joineq_left": "join-output-not-applied",
+   "joineq_left_mark": "join-output-not-applied",
+   "joineq_left_single": "join-output-not-applied",
+   "joineq_outer": "join-output-not-applied",
+   "joineq_right": "join-output-not-applied",
+   "joineq_right_mark": "join-output-not-applied",
+   "joineq_right_single": "join-output-not-applied",
+   "read_projection_mask": "read-projection-ignored"
+  },
+  "SPARK": {
+   "decimal_add": "spark-decimal-result-nullable",
+   "decimal_add_overflow": "spark-decimal-result-nullable",
+   "decimal_divide": "decimal-own-derivation",
+   "decimal_multiply": "spark-decimal-result-nullable",
+   "decimal_multiply_overflow": "spark-decimal-result-nullable",
+   "read_projection_mask": "read-projection-ignored"
+  },
+  "VALIDATOR": {
+   "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
+   "aggregate_grouping_sets_declared_order": "grouping-key-nullability",
+   "emit_aggregate": "validator-does-not-resolve",
+   "join_left_mark": "join-output-not-applied",
+   "join_right_anti": "join-output-not-applied",
+   "join_right_mark": "join-output-not-applied",
+   "join_right_semi": "join-output-not-applied",
+   "join_right_single": "join-output-not-applied",
+   "joineq_left_mark": "join-output-not-applied",
+   "joineq_right_anti": "join-output-not-applied",
+   "joineq_right_mark": "join-output-not-applied",
+   "joineq_right_semi": "join-output-not-applied",
+   "joineq_right_single": "join-output-not-applied",
+   "precision_timestamp_p00": "validator-does-not-resolve",
+   "precision_timestamp_p01": "validator-does-not-resolve",
+   "precision_timestamp_p02": "validator-does-not-resolve",
+   "precision_timestamp_p03": "validator-does-not-resolve",
+   "precision_timestamp_p04": "validator-does-not-resolve",
+   "precision_timestamp_p06": "validator-does-not-resolve",
+   "precision_timestamp_p07": "validator-does-not-resolve",
+   "precision_timestamp_p09": "validator-does-not-resolve",
+   "precision_timestamp_p12": "validator-does-not-resolve",
+   "setop_intersection_multiset": "setop-nullability-own-rule",
+   "setop_intersection_multiset_all": "setop-nullability-own-rule",
+   "setop_intersection_primary": "setop-nullability-own-rule",
+   "setop_union_all": "setop-nullability-own-rule",
+   "setop_union_distinct": "setop-nullability-own-rule",
+   "virtual_table_emit_mapping": "validator-does-not-resolve"
+  }
+ }
+}
