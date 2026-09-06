@@ -1,25 +1,19 @@
 #!/bin/bash
-# Who notices when the declared type is swapped for a false one.
+# Observes output-schema sensitivity to changed function output_type declarations.
 #
 #   bash probe/lie_matrix.sh [output directory]
 #
-# Builds the swapped corpus (make_lied_corpus.py), runs the original and the swapped corpus
-# through the participants, and prints one of these words per case:
+# Run setup.sh and reverify.sh first: they prepare the environments, gen/classpath.txt and SchemaOf.
+# The four participants are Java, Python, validator and DuckDB, as in results/LIE.txt.
 #
-#   follows      the answer matched the swapped type - the declaration was copied, nothing derived
-#   changed      the answer changed, but not into the swapped type - it derives, but looks at the
-#                declaration on the way
-#   held         the answer did not change - the type was derived independently of the declaration
-#   NOTICED      the swapped plan errors where the original does not - the only honest outcome
-#   both fail    the case is unsupported either way
+#   follows      the output changed and matched the script's type-swap pattern
+#   changed      the output changed without matching that pattern
+#   held         the output did not change; this says nothing about types absent from that output
+#   NOTICED      the modified plan errors where the original does not; the cause needs inspection
+#   both fail    neither plan produced a comparable schema
 #
-# The participants here are the ones whose probes run locally from a single command: substrait-java,
-# substrait-python, the validator and DuckDB. The saved results/LIE.txt was taken over a different set
-# (Spark and Gluten in place of DuckDB), so it does not line up with this run row for row; the rows
-# they share agree.
-# On ctas_keeps_declared_schema the validator derives no type in either run. The hand-written column
-# called that "held" rather than "no type derived"; the second wording is the true one, because there
-# is nothing there to compare.
+# These categories describe final outputs, not expression-level inference or validation. In
+# particular a join predicate's declared type can be copied while the join's output schema holds.
 set -uo pipefail
 FAILED=0
 fail() { echo "FAILED: $*" >&2; FAILED=1; }

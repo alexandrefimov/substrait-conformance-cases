@@ -86,6 +86,11 @@ def answers(name):
             out[case.strip()] = value.strip()
     return out
 
+FLAGS = {"nullable_only", "no_field_nullable", "all_decimal", "nullable_if_any_input"}
+OPTIONS = {"inputs_concatenated": {"mark_suffix"}, "first_input": {"leading"}}
+INPUT_CHECKS = set(OPTIONS) | {"nullable_if_any_input"}
+CHECKS = FLAGS | set(OPTIONS) | {"got_matches"}
+
 for rid, r in doc["rules"].items():
     if r["kind"] not in doc["kinds"]:
         fail("rule %s has an unknown kind %r" % (rid, r["kind"]))
@@ -93,8 +98,39 @@ for rid, r in doc["rules"].items():
     # imprecise ones were where the mistakes were: reasons that held for most of their cells and
     # described the rest wrongly. So a reason without a test is refused rather than allowed as an
     # exception - if nothing can be tested about it, it is not yet saying what it observed.
-    if not r.get("check"):
+    check = r.get("check")
+    if not isinstance(check, dict) or not check:
         fail("rule %s makes no claim a machine can test" % rid)
+        continue
+    unknown = set(check) - CHECKS
+    if unknown:
+        fail("rule %s has unknown checks: %s" % (rid, ", ".join(sorted(unknown))))
+    if len(set(check) & INPUT_CHECKS) > 1:
+        fail("rule %s has multiple input checks; only one can run" % rid)
+    for name, value in check.items():
+        if name in FLAGS and value is not True:
+            fail("rule %s check %s must be true" % (rid, name))
+        elif name == "got_matches":
+            if not isinstance(value, str) or not value:
+                fail("rule %s got_matches must be a nonempty regular expression" % rid)
+            else:
+                try:
+                    re.compile(value)
+                except re.error as e:
+                    fail("rule %s has an invalid got_matches expression: %s" % (rid, e))
+        elif name in OPTIONS:
+            if name == "first_input" and value is True:
+                continue
+            if not isinstance(value, dict):
+                fail("rule %s check %s needs an options object" % (rid, name))
+                continue
+            if set(value) - OPTIONS[name]:
+                fail("rule %s check %s has unknown options" % (rid, name))
+            if any(type(v) is not bool for v in value.values()):
+                fail("rule %s check %s options must be booleans" % (rid, name))
+
+if bad:
+    raise SystemExit(bad)
 
 total = 0
 for col, fmt in COLS:

@@ -42,7 +42,7 @@
   },
   "decimal-own-derivation": {
    "kind": "divergence",
-   "what": "functions_arithmetic_decimal.yaml fixes the precision and scale of the result; these return a decimal and compute their own.",
+   "what": "functions_arithmetic_decimal.yaml defines the result precision and scale; these answers are decimal types with different precision or scale.",
    "check": {
     "all_decimal": true
    }
@@ -63,7 +63,7 @@
   },
   "acero-required-lost-above-a-read": {
    "kind": "divergence",
-   "what": "Acero keeps required on a plain read - control_passthrough_rn matches - and loses it above any operation, so every column comes back nullable.",
+   "what": "Acero preserves the required field in control_passthrough_rn. In these classified cases it returns the expected types but makes every field nullable.",
    "check": {
     "nullable_only": true
    }

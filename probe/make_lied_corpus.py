@@ -1,11 +1,9 @@
-"""A corpus with the declared type swapped for a false one - the input to probe/lie_matrix.sh,
-which measures who notices.
+"""Replace declared output types for the output-schema sensitivity experiment.
 
     python3 probe/make_lied_corpus.py <input dir> <output dir>
 
-Every declared `outputType` this knows how to swap is swapped. Booleans used to be left alone "because
-anyone would catch the disagreement structurally", and that made the measurement of circular agreement
-too small: the cases with predicates never entered the list of implementations that copy.
+Every supported `outputType` is replaced, including boolean predicate types. An unchanged final
+schema does not show whether the consumer checked an expression type absent from that schema.
 """
 import json, os, sys
 

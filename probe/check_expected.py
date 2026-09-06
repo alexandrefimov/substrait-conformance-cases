@@ -1,44 +1,29 @@
-"""Compares a participant's answer against the independent expectations (expected.json).
+"""Compares a participant's saved schema with the case-specific expectations in expected.json.
 
     python3 probe/check_expected.py <column file> [java|py|df|duckdb|acero|go|spark|calcite]
 
-The participant's format is parsed into a normalized (type, nullable) form and compared with the
-expectation computed from the spec in expected.py. Exit code 1 if any case differs - so this is a
-check with a verdict, not only a measurement.
+Expected rules are encoded separately from the generators and consumers in expected.py. This script
+normalizes participant type spellings and compares types and nullability; DuckDB nullability is
+excluded. A schema can be returned alongside diagnostics, so a match does not establish that the
+participant accepted a valid plan without errors. Exit code 1 means at least one schema differs.
 
-Cases with no independent expectation are skipped and counted separately: staying silent about them
-is more honest than comparing them with the same implementation's own answer.
+A match also does not establish independent function return-type inference. A consumer may repeat
+output_type while the generator and expected.py encode the same spec rule in separate code. That
+still checks the declaration against the expectation, but not the consumer's inference.
 
-THE CAVEAT, without which this check misleads. Some of the agreement is NOT independent evidence:
-the implementation repeats the output_type declared in the plan, and this project's own generator
-wrote that declaration from the same formula, so there the check catches generator drift rather than
-what the consumer derives.
+The mutation experiment in lie_matrix.sh observes final output schemas. Java changes on eleven
+cases, ten with expectations: five decimal cases, narrowing_count, two null predicates and two
+aggregation phases. The additional CTAS case has no expectation. Python and validator change on
+those ten; DuckDB changes on none.
 
-Which cases those are is measured, not guessed: every declared `outputType` is swapped for a false
-one (probe/make_lied_corpus.py) and the answers that move with it are the copied ones. Nothing else
-about the plan changes, so an answer that moves is an answer that depends on the declaration.
+Only 23 plans carry output_type, 22 with expectations. Java's other twelve touched scored cases
+alter join predicates whose types are absent from the output schema. Such a predicate's declaration
+can be copied while the output holds. The remaining 51 scored plans have no output_type. Thus this
+experiment does not establish how many cases independently infer every expression's type.
 
-For substrait-java eleven answers move: the five decimal cases, narrowing_count, the two null
-predicates, the two aggregation phases, and ctas_keeps_declared_schema, which carries no expectation.
-substrait-python and the validator move on ten each, all ten carrying one; DuckDB moves on none. So
-for substrait-java 63 of the 73 expectations are not copied from output_type, and ten are circular.
-An earlier wording said "the five decimal cases" and called the rest independent, which understated
-the circular part by half.
-
-How far that reaches. Only 23 of the 78 cases carry an output_type at all, 22 of them with an
-expectation, and the swap touches those and nothing else - so the experiment examined 22 of the 73,
-finding ten copied and twelve held. The other 51 have no output_type to copy, which is not the same
-as having been shown to derive: their schema comes from ReadRel.base_schema, which this swap leaves
-alone.
-
-The swap preserves arity, and it has to. Swapping a struct output_type for a scalar changed the
-number of fields in depth, the plan then disagreed with Plan.Root.names, and the participant refused
-over the count of names - which the measurement recorded as having noticed the type. That put
-phase_intermediate among the caught rather than among the copied.
-
-Two limits on reading "not copied" as "derived". The swap perturbs output_type and nothing else, so
-a relation schema taken from ReadRel.base_schema is untouched by it. And only substrait-java,
-substrait-python, the validator and DuckDB were measured this way.
+base_schema is a legitimate source of input types. Relations must transform those inputs according
+to their rules; changing an input type may legitimately change the output. Mutations of redundant
+function return declarations and changes to input schemas require different checks.
 """
 import json, os, re, sys
 

@@ -1,8 +1,8 @@
 # Probes
 
 `<name>_one.py` / `<name>_all.sh` are one participant each; `probe/reverify.sh` runs them all.
-The shared environment is built by `setup.sh` (see the top-level README). The validator is not part
-of it and is installed separately, below.
+The shared environment, including the validator, is built by `setup.sh` (see the top-level README).
+The validator build prerequisites and manual alternative are described below.
 
 `selfcheck-negative.sh` checks that `selfcheck.sh` can fail: it breaks each invariant in a copy of
 the repository and requires the check to notice that one, not merely to go red. A check nobody
@@ -15,7 +15,9 @@ saved column is complete and agrees with the expectations, that the numbers in t
 `check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
 has come back. `check_differed.py`, which it calls, is the one part that reads judgements rather
 than generated files: every differing answer has a reason in `differed.json`, and every reason
-carries a test the saved answer has to pass. It needs python3 and nothing else, takes seconds, and is what CI runs.
+carries a test of an output property. These checks do not prove the stated cause of a difference.
+Unknown or inactive checks are rejected. The self-check needs python3 and nothing else, takes
+seconds, and is what CI runs.
 
 Every script finds the corpus relative to the repository, and its environment through
 `SUBSTRAIT_PROBE_ENV` (default `<repo>/.probe-env`). The two external checkouts are named by
@@ -58,8 +60,15 @@ and `ProducerSpark.java` print what those two declare when they turn SQL into a 
 against the type after a `get_substrait_json` / `from_substrait_json` round trip, and
 `datafusion_producer_probe.rs` does it for DataFusion and writes the plans it produced to
 `$SUBSTRAIT_PLANS_OUT`. `SchemaOfBin.java` reads those written plans back through substrait-java, so
-one implementation's declaration can be handed to another. `go-producer/` is a small module printing
-what substrait-go computes as a function's return type from the extension declaration.
+one implementation's declaration can be handed to another. `go-producer/` prints
+what substrait-go computes as a function's return type from the extension declaration. It requires
+Go 1.24 or newer, separately from the consumer probe's Go 1.23 minimum:
+
+    (cd probe/go-producer && GOTOOLCHAIN=local go run .)
+
+After setup and a successful `reverify.sh`, `bash probe/lie_matrix.sh` reruns the output-schema
+mutation experiment on Java, Python, validator and DuckDB. `reverify.sh` compiles the `SchemaOf`
+helper that the mutation script uses.
 
 **The declared type against the derived one.** `ObserveOf.java` attaches substrait-java's
 `TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
@@ -79,11 +88,9 @@ against the right classpath; `cp.sh` is where those classpaths come from.
 
 ## Running this on another machine
 
-Nothing here has run anywhere but the machine it was built on, so the one thing a run elsewhere is
-for is finding what depends on that machine. Three defects were found that way and by no other:
-a guard that let a probe crashing on every case through, a version pin that was never applied and
-turned out to name the wrong commit, and a classpath that was printed but never built - which worked
-here only because the jar it named was already lying around.
+The nine-consumer sweep has also run in a clean Ubuntu 24.04 container with empty caches. A run on
+another machine is still useful for finding dependencies on the original workstation. The
+self-check in CI checks saved artifacts; it does not repeat the consumer measurements.
 
 For such a run to measure the harness rather than someone's paths, these have to start empty:
 
@@ -120,8 +127,10 @@ against. The last `pip install` is required too: the generated code needs a 7.x 
 package pins `protobuf<7`. The path to the venv is
 overridden with `SUBSTRAIT_VALIDATOR_ENV`.
 
-The validator's boundary is in `validator_one.py`: it does not derive the type a function call
-returns, it repeats the declared one, so its answer is independent only for relation schemas.
+The default validator probe reports that YAML resolution was not attempted. At the pinned validator
+revision, `FunctionBinding::new` also leaves function matching and return-type checking unimplemented
+and retains the supplied return type. Its schema output must be read alongside the diagnostics;
+returning a schema is not an assertion that the plan passed validation.
 
 ## Gluten/Velox
 

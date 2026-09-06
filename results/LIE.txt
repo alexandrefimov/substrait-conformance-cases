@@ -1,21 +1,21 @@
-Who copies the declared type: probe/lie_matrix.sh, 2026-09-06.
+Output-schema sensitivity to the declared type: probe/lie_matrix.sh, 2026-09-06.
 
 Every declared output_type in the corpus is swapped for a false one (probe/make_lied_corpus.py:
 decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, and a struct for a struct of the same
 arity with each field swapped) and nothing else about the plan changes. 23 of the 78 cases carry an
 output_type and are therefore touched.
 
-  follows    - the answer matched the swap: the declaration was copied, nothing was derived
-  changed    - the answer moved but not into the swapped type: it still depends on the declaration
-  held       - the answer did not change: not copied from output_type
-  NOTICED    - an error only on the swapped plan
-  both fail  - the case is unsupported either way
+  follows    - the output changed and matched the script's type-swap pattern
+  changed    - the output changed without matching that pattern
+  held       - the output did not change; expression types absent from it are not checked here
+  NOTICED    - an error only on the swapped plan; the cause needs inspection
+  both fail  - neither plan produced a comparable schema
 
 Arity matters here. An earlier version swapped a struct for a scalar, which changed the number of
 fields in depth; the plan then disagreed with Plan.Root.names and the participant refused over the
 count of names, which this table recorded as NOTICED. phase_intermediate landed among the copied or
 among the caught depending on which swap was in the directory. Swapping a struct for a struct of the
-same arity settles it: it is copied.
+same arity removes that confounder: the output follows the declaration.
 
 The participants here are the ones whose probes run from one command. Spark and Gluten were in an
 earlier hand-made version of this table and are not reproducible by the script, so they are gone.

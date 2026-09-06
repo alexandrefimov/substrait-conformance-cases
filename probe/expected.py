@@ -1,19 +1,14 @@
-"""Independent expectations for part of the corpus: computed from the spec, not from substrait-java.
+"""Case-specific expectations encoded from the spec, separately from generators and consumers.
 
     python3 probe/expected.py > expected.json
 
-Why. The manifest covers 4 cases out of 78, and for three of them the expectation comes from the
-same ProtoPlanConverter that is then checked against it - change that converter and both sides of
-the comparison move together, so the regression disappears. The expectations here are obtained
-four other ways:
+This script reads neither spec files nor plans. It contains manually encoded rules and examples:
+reimplemented decimal formulas, set-operation tables, function return declarations, and relation
+rules such as join nullability and emit order. Some rules use helpers; other cases have literal
+expected schemas. It is not a schema deriver for arbitrary plans.
 
-  formula  - the rules of functions_arithmetic_decimal.yaml, re-implemented;
-  table    - the set-operation Output Type Derivation table printed in the spec;
-  yaml     - the declared return of a function (avg:i64 -> i64?);
-  join     - the spec rules for each side's nullability by join type.
-
-Schemas are written normalized, as a list of (type, nullable) pairs, so they can be compared with
-any participant's output rather than only with this project's format.
+Schemas use normalized (type, nullable) pairs for comparison across consumer outputs. Rows are
+transcribed from the spec's set-operation examples and checked separately.
 """
 import json
 

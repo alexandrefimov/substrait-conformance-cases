@@ -2,12 +2,11 @@
 
 [![selfcheck](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml/badge.svg)](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml)
 
-A plan declares types and a consumer derives them again; when the two disagree, nothing in the format
-notices. This repository holds 78 plans built to make such disagreements visible, an expected schema
-for 73 of them computed from the spec rather than from any implementation, and the harness that puts
-the corpus through ten implementations. The spec repo already ships function test cases, which check
-what a scalar function returns; these are whole plans, and what they check is schema derivation
-across relations.
+A plan declares types, and a consumer may derive them or reuse those declarations. This repository
+holds 78 plans, case-specific expected schemas for 73 of them, and probes for comparing consumer
+outputs. The expectations encode spec rules and examples separately from the generators and
+consumers; they are not read from plans or consumer outputs. The spec repo already ships function
+test cases, which check what a scalar function returns; these cases compare schemas across relations.
 
 It is a lab rather than a proposal: the corpus and the harness, kept reproducible. A case is added
 by adding a generator to `gen/`; a column is retaken by running `probe/reverify.sh` with
@@ -16,7 +15,7 @@ by adding a generator to `gen/`; a column is retaken by running `probe/reverify.
 repository and worth an issue.
 
 Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
-`functions_arithmetic_decimal.yaml` gives `dec(21,8)`, and so do six of the ten:
+`functions_arithmetic_decimal.yaml` gives `dec(21,8)`, which six consumer paths report:
 
     substrait-java, substrait-go, substrait-python, validator, Isthmus, Gluten   dec(21,8)
     Spark        dec(17,8)
@@ -44,80 +43,70 @@ cases that have an expectation like this:
 | Spark | 26 | 6 | 41 |
 | Acero | 2 | 16 | 55 |
 
-Nine rows for ten implementations: Gluten is missing because it repeats a function's declared type
-instead of deriving one, so comparing it against a derived expectation would measure nothing.
-*Unsupported* means the implementation rejected the plan, which is a fact about coverage rather than
-a divergence in derivation. Read *differed* against *matched + differed* rather than against 73: a
-participant that refuses most of the corpus is reporting its coverage, and the few answers it does
-give are a thin base for anything else.
+These are nine consumer paths. The Java core, Isthmus and Spark paths share substrait-java;
+Isthmus adds Calcite conversion and Spark adds its Catalyst conversion. Gluten has a separate
+cluster run over the virtual-table variant and is outside this normalized comparison.
+*Unsupported* means the probe produced no comparable schema: it includes rejections, errors and
+crashes. It does not establish that the plan lies outside a declared capability. Read *differed*
+against *matched + differed* when comparing returned schemas; the unsupported count records the
+rest of the cases. A returned schema may also have diagnostics, which are reported separately.
 
 *Differed* means the answer disagrees with this repository's reading of the spec — some of those
 have been filed against the implementations and some have not. Not every *differed* cell is a
 defect either. `differed.json` gives all 101 of them a reason and marks 17 as something other than
 a divergence: six are limits of a type system, eleven a type the validator never resolved. Each
-reason states something about the answer that `probe/check_differed.py` tests against the saved
-column, so a reason that describes a participant wrongly fails the check. `reverify.sh` reproduces
+reason has a property that `probe/check_differed.py` tests against the saved column or case inputs.
+These checks verify the stated output properties; explanations of causes and type-system limits
+still require review. Unknown or inactive checks are rejected. `reverify.sh` reproduces
 the whole table, and `probe/check_expected.py results/<NAME>.txt <format>` reproduces one row and
 names the cases behind it.
 
-**One caveat.** The zero in the first row is worth less than it looks. On some cases the answer is
-not derived at all: the implementation repeats the `output_type` the plan declares, and this
-repository's own generator wrote that declaration from the same rule the expectation uses. There the
-check compares the generator with itself.
+**What a match establishes.** On some cases the consumer repeats the `output_type` the plan
+declares. The generator and expectation script encode the same spec rule in separate code. A match
+then checks the generator's declaration against that expectation, but does not demonstrate
+independent function return-type inference by the consumer.
 
-Which cases those are is measured rather than guessed. `probe/lie_matrix.sh` swaps every declared
-`output_type` for a false one, changes nothing else, and reports whose answer moves with it; an
-answer that moves is an answer that depends on the declaration. `results/LIE.txt` is a saved run.
+`probe/lie_matrix.sh` changes declared `output_type` fields while preserving the rest of each plan
+and reports whose output schema moves. `results/LIE.txt` is a saved run.
 
-| | answers that move | of them with an expectation | expectations not copied from `output_type` |
-| --- | ---: | ---: | ---: |
-| substrait-java | 11 | 10 | 63 |
-| substrait-python | 10 | 10 | 63 |
-| substrait-validator | 10 | 10 | 63 |
-| DuckDB | 0 | 0 | 73 |
+| | answers that move | of them with an expectation |
+| --- | ---: | ---: |
+| substrait-java | 11 | 10 |
+| substrait-python | 10 | 10 |
+| substrait-validator | 10 | 10 |
+| DuckDB | 0 | 0 |
 
 For substrait-java the eleven are the five decimal cases, `narrowing_count`, the two null
 predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
 expectation.
 
-How far that last column reaches is worth being exact about. Only 23 of the 78 cases carry an
-`output_type` at all, and the swap touches those and nothing else; 22 of the 23 have an expectation.
-So the experiment examined 22 of the 73 expectations and found ten copied and twelve held. The other
-51 carry no `output_type` for a consumer to copy, which is why they are counted in that column —
-not because this experiment cleared them.
+Only 23 of the 78 cases carry an `output_type`; 22 of those have an expectation. For Java, ten
+scored output schemas change and twelve hold. In those twelve cases the altered declaration belongs
+to a join predicate, whose type is absent from the output schema. The predicate's declaration can
+be copied without changing the join's output. The other 51 scored plans have no `output_type`.
+These counts measure output sensitivity; they do not count independently derived schemas.
 
-The swap has to preserve arity, and finding that out cost a wrong answer. Swapping a struct
-`output_type` for a scalar changed the number of fields in depth; the plan then disagreed with
-`Plan.Root.names`, the participant refused over the count of names, and the measurement recorded
-that as having noticed the type. `phase_intermediate` read as caught rather than copied, and the
-number above was 63 by a different route.
+The swap preserves struct arity. Replacing a struct with a scalar would also change the number of
+fields in depth, making the plan disagree with `Plan.Root.names`. A refusal over that disagreement
+would not establish that the function's return type had been checked.
 
-Two limits on reading a held answer as *derived*. The swap perturbs `output_type` and nothing else, so an
-answer that holds is proven not to be copied **from that field** — it is not thereby proven to be
-derived, because a relation's schema also comes from `ReadRel.base_schema`, which the swap leaves
-alone, and which is what those 51 declare — an implementation that simply returned the declared
-schema would pass all 51 without deriving anything, and this experiment would not notice. Swapping
-`base_schema` for a neighbouring type is the missing half; it would split those 51 into deriving and
-repeating. And only these four participants were measured; for DataFusion, substrait-go, Acero,
-Spark, Isthmus and Gluten the copy discount is simply not known.
+For a return-type check, infer the type from the function arguments and extension definition and
+compare it with `output_type`. A mutation should check the affected expression or its diagnostic,
+as well as the final output schema. `ReadRel.base_schema` has a different role: it defines input
+types, so changing it can legitimately change the output. Existing emit, projection and join cases
+test transformations of those inputs; simply returning `base_schema` would fail such cases.
+Only Java, Python, validator and DuckDB were run through this mutation script.
 
 ## What is not settled
 
-This repository is three days old, and the claims on this page have been corrected six times in
-that span — the size of the circular set, a "fail-closed" summary that a validator environment with
-nothing installed walked straight through, the date on the table above, the DataFusion commit the
-columns were taken against, a reason in `expected.json` that pointed at its neighbour and, once the
-file was sorted, at the wrong one, and the count of differing cells that are a limit of a type
-system rather than a divergence. Each is a commit with the measurement that found it. None was
-an error in the harness's logic; all five were statements *about* the measurement, which no run
-contradicts, and each is now checked by one file being read against another.
+The self-checks verify relationships between committed artifacts. They do not establish that every
+encoded rule matches the spec or that every interpretation of a result is correct.
 
 What is open, as against corrected:
 
-- The expectations are computed by `probe/expected.py`, in this repository. Nobody outside it has
-  reviewed them. The candour above is not a second opinion.
-- Five of the 78 cases record the issue they came from. For the other 73 the generator that builds a
-  case is the only record of what it asserts.
+- The rules encoded in `probe/expected.py` need independent review against the spec.
+- Five of the 78 cases link to the issue they came from. The other 73 record their generator and
+  expected rule without an originating issue link.
 - `differed.json` says why each cell differs but not which divergences were reported upstream: six
   of its twenty-one reasons name an issue and the rest name none. Ten of the twenty-one were
   rewritten after the answers behind them were read one by one: each had held for most of its cells
@@ -137,19 +126,19 @@ What is open, as against corrected:
 
 ## Where the expectations come from
 
-`probe/expected.py` computes them from four sources and records which one it used per case: the
-decimal formulas of `functions_arithmetic_decimal.yaml`, re-implemented; the Output Type Derivation
-table printed in the spec; a function's declared return in its YAML; and the spec's rules for each
-side's nullability by join type. `expected.json` is the result — a file to read and disagree with,
-not a hidden oracle. Eight of the set-operation cases also carry an expected multiset of rows,
-transcribed from the examples the spec prints; `probe/check_rows.py` compares those, and rows are the
-one part of the corpus that does not depend on a participant's type system at all.
+`probe/expected.py` encodes case-specific expectations by hand and records their source per case:
+decimal formulas reimplemented from `functions_arithmetic_decimal.yaml`, the spec's Output Type
+Derivation table, function return declarations, and relation rules such as join nullability and
+emit order. It reads neither spec files nor plans. `expected.json` is the result. Eight set-operation
+cases also carry expected multisets of rows transcribed from the spec's examples;
+`probe/check_rows.py` compares those separately from schemas.
 
-Five cases carry no expectation, and `expected.json` separates the two reasons why. Four are cases
-the spec is silent on: three virtual-table rows that contradict the declared schema on nullability,
-and one virtual-table literal whose type contradicts it. The fifth is a CTAS whose input schema does
-not match its `table_schema`, which the spec does answer — the plan is invalid — so what is worth
-measuring there is not a type but whether anyone reports the violation.
+Five cases carry no expectation, and `expected.json` separates the two reasons why. Four have
+virtual-table row types or nullability different from the declared schema. They remain unscored
+pending clarification of exact type equality versus compatibility between a row and its schema;
+the `spec_silent` category records this unresolved question. The fifth is a CTAS whose input schema
+does not match its `table_schema`. The spec requires them to match, so this plan is invalid and
+what is worth measuring is whether the violation is reported.
 
 ## Reading the matrix
 
@@ -168,7 +157,7 @@ that one goes:
 | DataFusion, DuckDB | have no string type with a length. Neither can represent `varchar<10>` or `fixedchar<5>`, which is why `stringlen_declared` differs there — not a defect |
 | Acero, Spark | do carry nullability and are compared on it |
 | Gluten | carries no nullability either, and repeats a function's declared type instead of deriving it |
-| substrait-validator | also repeats the declared type of a function call. Its answer is independent only for relation schemas, where a plan has no declaration to repeat |
+| substrait-validator | the pinned revision retains declared function return types; schema output must be read alongside diagnostics. The mutation checks final output schemas, not every expression's type |
 
 ## What is here
 

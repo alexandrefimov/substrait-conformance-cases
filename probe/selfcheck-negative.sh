@@ -135,6 +135,41 @@ d = json.load(open('differed.json', encoding='utf-8'))
 del d['rules']['decimal-own-derivation']['check']
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
+mutate "a misspelled check that would never run" "has unknown checks" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['decimal-own-derivation']['check'] = {'all_decimall': True}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a disabled check counted as evidence" "all_decimal must be true" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['decimal-own-derivation']['check'] = {'all_decimal': False}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a misspelled input-check option" "has unknown options" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['validator-join-concatenates-the-inputs']['check'] = {'inputs_concatenated': {'mark_sufix': True}}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "an input check hidden by another input check" "has multiple input checks" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['validator-join-concatenates-the-inputs']['check']['first_input'] = True
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "an empty pattern that checks no output" "must be a nonempty regular expression" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['duckdb-timestamp-is-microseconds']['check']['got_matches'] = ''
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "a reason claiming every column is required" "a field of the answer is nullable" \
   python3 -c "
 import io, json
