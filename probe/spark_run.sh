@@ -3,10 +3,12 @@
 set -e
 D="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$D/.." && pwd)"
-# An unset JAVA17_HOME used to collapse this to /bin, so the guard checked /bin/java - which exists
-# on most Linux boxes and is rarely a JDK 17. Spark then ran under whatever java that was and died in
-# Subject.getSubject, and the column came out empty. With nothing resolved the path cannot exist, so
-# the probe is skipped instead.
+# This used to collapse to /bin whenever the whole expression resolved to nothing - JAVA17_HOME unset
+# or empty with java_home absent or failing, which is every Linux box - so the guard checked
+# /bin/java, which exists on most of them and is rarely a JDK 17. Spark then ran under whatever java
+# that was and died in Subject.getSubject, and the column came out empty. Resolving to nothing now
+# gives a path that cannot exist, so the probe is skipped; the version is checked separately, because
+# a path that does exist is not thereby a 17.
 J17_HOME="${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}"
 J17="${J17_HOME:-/nonexistent}/bin"
 OUT="${PROBE_CACHE:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}/sparkprobe"; mkdir -p "$OUT"
