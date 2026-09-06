@@ -1,4 +1,4 @@
-JAVA: column from run 2026-09-06T11:19
+JAVA: column from run 2026-09-06T12:01, substrait-java fff6390
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}

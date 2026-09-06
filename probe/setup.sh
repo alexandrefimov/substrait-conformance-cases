@@ -13,6 +13,18 @@ SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 for tool in python3 go; do
   command -v "$tool" >/dev/null || { echo "$tool is not on PATH; it is needed here" >&2; exit 1; }
 done
+
+# The go version is checked here rather than left to fail inside `go get`. GOTOOLCHAIN=local below
+# stops a run fetching a different toolchain, so an older go is a hard stop, and the error it gives
+# on its own ("go.mod requires go >= 1.24") names a number this script wrote, not a requirement the
+# reader can act on.
+GO_HAVE="$(go env GOVERSION 2>/dev/null | sed 's/^go//')"
+if [ "$(printf '%s\n%s\n' "$GO_MINIMUM" "$GO_HAVE" | sort -V | head -1)" != "$GO_MINIMUM" ]; then
+  echo "go $GO_MINIMUM or newer is needed; this is go ${GO_HAVE:-unknown}." >&2
+  echo "It is not fetched automatically: setup.sh builds with GOTOOLCHAIN=local so that a run" >&2
+  echo "cannot quietly measure a toolchain other than the one it reports." >&2
+  exit 1
+fi
 mkdir -p "$SP"
 
 # Versions come from one file rather than from "whatever is latest": otherwise a second run
@@ -26,10 +38,10 @@ python3 -m venv "$SP/venv"
 echo "== substrait-go (main; the major version is part of the import path!)"
 mkdir -p "$SP/gosub9"
 cp "$(dirname "$0")/go/main.go" "$SP/gosub9/main.go"
-cat > "$SP/gosub9/go.mod" <<'G'
+cat > "$SP/gosub9/go.mod" <<G
 module probe9
 
-go 1.24
+go $GO_MINIMUM
 G
 ( cd "$SP/gosub9"
   export GOFLAGS=-mod=mod GOTOOLCHAIN=local PATH="$HOME/.cargo/bin:$PATH"

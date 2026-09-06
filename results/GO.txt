@@ -1,4 +1,4 @@
-GO: column from run 2026-09-06T11:19
+GO: column from run 2026-09-06T12:01, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_sets_declared_order         [c:string, a:i64]

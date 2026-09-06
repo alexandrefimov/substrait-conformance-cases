@@ -214,10 +214,36 @@ check_blocks() { # <file> <expected> <name> <verdict-regexp>
 RUN="$(mktemp -d)"
 echo "columns from this run: $RUN"
 
+# The revision each column was taken against, written into the column itself. Without it a column
+# taken elsewhere cannot be read: apt and pip give whatever is current there, so a difference from
+# the saved column could be a defect, a platform, or simply another version of the participant, and
+# the file would not say which. Anything that cannot be determined says so rather than guessing.
+rev_of() { # <COLUMN NAME>
+  local v=""
+  case "$1" in
+    JAVA|ISTHMUS)  v="substrait-java $(git -C "$SJ" rev-parse --short HEAD 2>/dev/null)" ;;
+    DATAFUSION)    v="datafusion $(git -C "$DF" rev-parse --short HEAD 2>/dev/null)" ;;
+    DUCKDB)        v="duckdb $("$SP/venv/bin/python" -c 'import duckdb;print(duckdb.__version__)' 2>/dev/null)" ;;
+    ACERO)         v="pyarrow $("$SP/venv/bin/python" -c 'import pyarrow;print(pyarrow.__version__)' 2>/dev/null)" ;;
+    # substrait-python and substrait-validator carry no __version__; the distribution metadata does.
+    PYTHON)        v="substrait $("${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait"))' 2>/dev/null)" ;;
+    VALIDATOR)     v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at $SUBSTRAIT_VALIDATOR_COMMIT" ;;
+    GO)            v="$(grep -m1 -o 'substrait-go/v[0-9]* v[0-9a-z.+-]*' "$SP/gosub9/go.mod" 2>/dev/null)" ;;
+    SPARK)         v="spark $(basename "$(tr ':' '\n' < "${SPARK_CP:-$SP/spark_cp.txt}" 2>/dev/null | grep -m1 -E 'spark-core_[0-9.]+-[0-9.]+\.jar')" 2>/dev/null | sed 's/.*-\([0-9][0-9.]*\)\.jar/\1/')" ;;
+  esac
+  case "$v" in ""|*" "|*"  "*) echo "revision unknown" ;; *) echo "$v" ;; esac
+}
+
 column() { # <COLUMN NAME> <raw output> <block|line>
-  python3 "$PROBE/normalize.py" "$2" "$3" "$1: column from run $(date +%Y-%m-%dT%H:%M)" \
+  python3 "$PROBE/normalize.py" "$2" "$3" "$1: column from run $(date +%Y-%m-%dT%H:%M), $(rev_of "$1")" \
     > "$RUN/$1.txt" 2>"$RUN/$1.err" || fail "$1: normalization did not yield a whole column: $(head -1 "$RUN/$1.err")"
 }
+
+echo
+echo "### 1a. the revision each participant is at"
+for c in JAVA ISTHMUS PYTHON VALIDATOR GO DATAFUSION DUCKDB ACERO SPARK; do
+  printf "  %-12s %s\n" "$c" "$(rev_of "$c")"
+done
 
 echo
 echo "### 2. the DataFusion side"

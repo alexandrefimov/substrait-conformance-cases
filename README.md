@@ -28,7 +28,8 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 ## What the corpus says
 
-The columns saved here, taken 2026-09-06 against the versions in `probe/versions.env`, answer the 73
+The columns saved here, taken 2026-09-06 against the versions in `probe/versions.env` and named in
+each column's own first line, answer the 73
 cases that have an expectation like this:
 
 | | matched | differed | unsupported |
@@ -191,7 +192,7 @@ generator to `gen/`; `gen/README.md` says how the corpus is built.
 
 ## Running it
 
-You need python3, go, a JDK, and cargo with protoc. Two of those are more particular than they look:
+You need python3, go 1.23 or newer, a JDK, and cargo with protoc. Two of those are more particular than they look:
 the Spark probe wants JDK 17 and is skipped without it, and the DataFusion probe builds that checkout
 with the Rust toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and
 an unmanaged cargo will not. Then two checkouts, at the commits `probe/versions.env` names:
