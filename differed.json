@@ -7,11 +7,11 @@
  "rules": {
   "no-string-with-length": {
    "kind": "boundary",
-   "what": "Neither Arrow nor DuckDB has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared."
+   "what": "Neither type system has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared. DuckDB has no fixed-size binary either and returns BLOB for fixedbinary<4>; DataFusion returns FixedSizeBinary(4) and differs only on the two strings."
   },
   "duckdb-timestamp-is-microseconds": {
    "kind": "boundary",
-   "what": "DuckDB's TIMESTAMP is microseconds, so every declared precision comes back as 6."
+   "what": "DuckDB has second, millisecond, microsecond and nanosecond timestamps and no others, so these precisions have nothing to come back as."
   },
   "validator-does-not-resolve": {
    "kind": "unresolved",
@@ -52,6 +52,14 @@
   "acero-required-lost-above-a-read": {
    "kind": "divergence",
    "what": "Acero keeps required on a plain read - control_passthrough_rn matches - and loses it above any operation, so every column comes back nullable."
+  },
+  "acero-drops-a-fixed-size-binary": {
+   "kind": "divergence",
+   "what": "Arrow has fixed_size_binary and DataFusion returns it for this case; Acero returns binary. The two string lengths in the same case are not expressible in Arrow, so only fixedbinary<4> is a divergence here."
+  },
+  "duckdb-timestamp-precision-ignored": {
+   "kind": "divergence",
+   "what": "DuckDB has TIMESTAMP_S, TIMESTAMP_MS and TIMESTAMP_NS, and its reader rejects a precision above 9, so it reads the field; every declared precision still comes back as microseconds."
   }
  },
  "cells": {
@@ -71,7 +79,7 @@
    "narrowing_is_not_null": "acero-required-lost-above-a-read",
    "narrowing_is_null": "acero-required-lost-above-a-read",
    "phase_final": "avg-over-integers-returns-float",
-   "stringlen_declared": "no-string-with-length"
+   "stringlen_declared": "acero-drops-a-fixed-size-binary"
   },
   "DATAFUSION": {
    "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
@@ -94,13 +102,13 @@
    "emit_read": "emit-mapping-ignored",
    "emit_sort": "emit-mapping-ignored",
    "phase_final": "avg-over-integers-returns-float",
-   "precision_timestamp_p00": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p00": "duckdb-timestamp-precision-ignored",
    "precision_timestamp_p01": "duckdb-timestamp-is-microseconds",
    "precision_timestamp_p02": "duckdb-timestamp-is-microseconds",
-   "precision_timestamp_p03": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p03": "duckdb-timestamp-precision-ignored",
    "precision_timestamp_p04": "duckdb-timestamp-is-microseconds",
    "precision_timestamp_p07": "duckdb-timestamp-is-microseconds",
-   "precision_timestamp_p09": "duckdb-timestamp-is-microseconds",
+   "precision_timestamp_p09": "duckdb-timestamp-precision-ignored",
    "stringlen_declared": "no-string-with-length",
    "virtual_table_emit_mapping": "emit-mapping-ignored"
   },

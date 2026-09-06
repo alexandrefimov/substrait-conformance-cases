@@ -236,7 +236,7 @@ for col, cs in doc["cells"].items():
 filed = sum(1 for r in doc["rules"].values() if re.search(r"[Ff]iled as", r["what"]))
 
 # The README puts these counts in prose, where nothing would notice them going stale.
-WORD = {10: "ten", 11: "eleven", 12: "twelve", 6: "six"}
+WORD = {6: "six", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen"}
 readme = io.open("README.md", encoding="utf-8").read()
 for sentence in ("gives all %d of them a reason and marks %d as something other than"
                  % (total, total - kinds.get("divergence", 0)),
