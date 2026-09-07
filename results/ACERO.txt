@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-06T12:01, pyarrow 25.0.1
+ACERO: column from run 2026-09-07T12:20, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item

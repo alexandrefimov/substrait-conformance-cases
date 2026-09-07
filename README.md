@@ -47,7 +47,7 @@ Three things, in the order they are worth someone's time:
 
 ## What the corpus says
 
-The columns saved here were taken 2026-09-06 against the versions in `probe/versions.env`, which
+The columns saved here were taken 2026-09-07 against the versions in `probe/versions.env`, which
 each column's own first line names again. They answer the 73 cases that carry an expectation:
 
 <picture>

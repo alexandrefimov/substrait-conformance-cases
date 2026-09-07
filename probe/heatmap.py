@@ -160,6 +160,16 @@ def build():
     }
 
 
+def short_version(text):
+    """The tail of a column header: `substrait-validator 0.1.4 at 2a10470` -> `2a10470`.
+
+    The picture has one line for nine of these, so the part that identifies the build is kept and
+    the name dropped - the column above it already says whose it is. A pseudo-version keeps only its
+    commit, which is the part a reader can look up."""
+    tail = text.split()[-1]
+    return tail.rsplit("-", 1)[-1] if len(tail) > 14 else tail
+
+
 def fmt_schema(schema):
     return "[" + ", ".join("%s%s" % (t, "?" if n else "") for t, n in schema) + "]"
 
@@ -203,7 +213,11 @@ CELL_W, CELL_H = COL_W - 8, ROW_H - 3
 def svg(model, theme):
     t = THEMES[theme]
     width = PAD * 2 + NAME_W + COL_W * len(model["participants"])
-    height = HEAD_H + sum(GROUP_H + g["n"] * ROW_H for g in model["groups"]) + 34
+    footer_lines = 1 + max(1, (len(" · ".join(
+        ["columns taken %s" % model["taken"]]
+        + ["%s %s" % (SHORT[p], short_version(model["versions"][p]))
+           for p in model["participants"]])) * 4.85) // (width - PAD * 2) + 1)
+    height = HEAD_H + sum(GROUP_H + g["n"] * ROW_H for g in model["groups"]) + 24 + int(footer_lines) * 11
     out = []
 
     def text(x, y, s, fill, size=9.5, weight="normal", anchor="start", family=MONO, spacing=None):
@@ -271,6 +285,24 @@ def svg(model, theme):
             counts.get(UNRESOLVED, 0), counts.get(BOUNDARY, 0), counts.get(UNSUPPORTED, 0),
             counts.get(NOSPEC, 0)),
          t["ink3"], 9, family=SANS)
+    # What was measured, in the picture itself: a screenshot of it travels without the README, and a
+    # matrix that does not say which builds it read is a claim nobody can check or repeat. The line
+    # is wrapped rather than sized to fit, so a longer commit or one more participant moves the text
+    # down instead of past the right edge.
+    parts = ["columns taken %s" % model["taken"]] + [
+        "%s %s" % (SHORT[p], short_version(model["versions"][p])) for p in model["participants"]]
+    room = int((width - PAD * 2) / 4.85)   # characters per line at font-size 8 in the mono face
+    lines, line = [], ""
+    for part in parts:
+        candidate = part if not line else line + " · " + part
+        if len(candidate) > room and line:
+            lines.append(line)
+            line = part
+        else:
+            line = candidate
+    lines.append(line)
+    for n, one in enumerate(lines):
+        text(PAD, y + 32 + n * 11, one, t["ink3"], 8)
     out.append('</svg>')
     return "\n".join(out) + "\n"
 
@@ -299,6 +331,8 @@ PAGE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Declared against derived</title>
+<meta name="description" content="%(cases)d Substrait plans read by %(participants)d implementations, each derived schema against an expectation written from the spec.">
+<link rel="icon" href="%(favicon)s">
 <style>
 :root {
   color-scheme: light dark;
@@ -557,6 +591,19 @@ footer p { max-width: 72ch; }
 
 REPO = "https://github.com/alexandrefimov/substrait-conformance-cases"
 
+# The tab icon: four cells in the states the matrix is mostly made of, drawn in the light palette so
+# it reads on either browser chrome. Inline rather than a file, so docs/ stays what heatmap.py
+# writes and nothing else.
+FAVICON = (
+    "data:image/svg+xml,"
+    "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E"
+    "%3Crect width='16' height='16' rx='3' fill='%23fdfdfc'/%3E"
+    "%3Crect x='2.5' y='3' width='5' height='4' rx='1' fill='%23d6d6d1'/%3E"
+    "%3Crect x='8.5' y='3' width='5' height='4' rx='1' fill='%23d03b3b'/%3E"
+    "%3Crect x='2.5' y='9' width='5' height='4' rx='1' fill='%23d6d6d1'/%3E"
+    "%3Crect x='8.5' y='9' width='5' height='4' rx='1' fill='none' stroke='%23c2c2ba'/%3E"
+    "%3C/svg%3E")
+
 
 def page(model):
     counts = tally(model)
@@ -578,10 +625,18 @@ def page(model):
               for s in range(6)]
     boundaries = " ".join("%s: %s" % (p, model["boundaries"][p])
                           for p in model["participants"] if model["boundaries"][p])
-    versions = "".join("<dt>%s</dt><dd>%s</dd>" % (html.escape(p), html.escape(model["versions"][p]))
+    # "substrait-java: substrait-java fff63906" reads as a stutter, so a leading word that only
+    # repeats the participant's own name is dropped. It is kept where it says something the name
+    # does not - pyarrow for Acero, substrait-java for Isthmus, the module path for substrait-go.
+    def build(participant):
+        text = model["versions"][participant]
+        first, _, rest = text.partition(" ")
+        return rest if rest and first.lower() == participant.lower() else text
+
+    versions = "".join("<dt>%s</dt><dd>%s</dd>" % (html.escape(p), html.escape(build(p)))
                        for p in model["participants"])
     return PAGE % {
-        "mono": MONO, "sans": SANS,
+        "mono": MONO, "sans": SANS, "favicon": FAVICON,
         "cases": len(model["cases"]),
         "scored": len([c for c in model["cases"] if c in model["expected"]]),
         "nospec": len([c for c in model["cases"] if c not in model["expected"]]),

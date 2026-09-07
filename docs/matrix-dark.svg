@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1423" viewBox="0 0 838 1423">
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1446" viewBox="0 0 838 1446">
 <defs><pattern id="hatch" width="4" height="4" patternTransform="rotate(135)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#7e827f" stroke-width="1.6"/></pattern><pattern id="dots" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#3d434b" stroke-width="0.8"/></pattern></defs>
-<rect x="0.0" y="0.0" width="838.0" height="1423.0" rx="1.5" fill="#171a1e"/>
+<rect x="0.0" y="0.0" width="838.0" height="1446.0" rx="1.5" fill="#171a1e"/>
 <text x="14.0" y="26.0" fill="#eef0ee" font-size="15.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Declared against derived</text>
 <text x="14.0" y="43.0" fill="#b3b6b3" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">78 plans read by 9 implementations, each answer compared with an expectation written from the spec.</text>
 <text x="14.0" y="57.0" fill="#b3b6b3" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">An empty cell is silence — the implementation does not accept that plan — and is never drawn as a colour.</text>
@@ -844,4 +844,6 @@
 <rect x="704.0" y="1376.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <rect x="766.0" y="1376.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <text x="14.0" y="1409.0" fill="#7e827f" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">702 cells: 391 matched, 84 divergences, 11 unresolved, 6 at a type-system boundary, 165 not accepted, 45 without an expectation.</text>
+<text x="14.0" y="1421.0" fill="#7e827f" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-07 · java fff63906 · python 0.31.0 · go cb2d6e648bc0 · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5 · Spark 3.5.4</text>
+<text x="14.0" y="1432.0" fill="#7e827f" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Acero 25.0.1</text>
 </svg>

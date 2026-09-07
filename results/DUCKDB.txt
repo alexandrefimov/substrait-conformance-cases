@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-06T12:01, duckdb 1.5.5
+DUCKDB: column from run 2026-09-07T12:20, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]

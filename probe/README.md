@@ -39,7 +39,7 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 | substrait-python | 0.31.0 | `python_one.py` |
 | substrait-validator | built from `main` at `2a10470` | `validator_one.py` |
 | substrait-go | v9 at `cb2d6e648bc0` | `go/main.go` |
-| DataFusion | `f96892a9b` | `datafusion_corpus_probe.rs` |
+| DataFusion | `cc29ea12a` | `datafusion_corpus_probe.rs` |
 | DuckDB | 1.5.5, substrait community extension | `duckdb_one.py` |
 | Acero | pyarrow 25.0.1 | `acero_one.py` |
 | Spark | 3.5.4 | `SparkSchemaOf.java` |

@@ -32,6 +32,12 @@ SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 # a different environment and the saved columns stop meaning anything.
 . "$(dirname "$0")/versions.env"
 
+# rustup installs cargo into ~/.cargo/bin and leaves adding it to PATH to a shell profile, which a
+# non-interactive run does not read. Without this the validator step decided cargo was absent and
+# skipped itself, while reverify.sh - which does add the directory - then required the column it had
+# not built. probe/reverify.sh has the same line for the same reason.
+export PATH="$HOME/.cargo/bin:$PATH"
+
 for tool in python3 go; do
   command -v "$tool" >/dev/null || { echo "$tool is not on PATH; it is needed here" >&2; exit 1; }
 done
