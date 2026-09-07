@@ -127,7 +127,10 @@ helper that the mutation script uses.
 
 **The declared type against the derived one.** `ObserveOf.java` attaches substrait-java's
 `TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
-Calcite derived differently, and how often derivation failed; `results/ISTHMUS-OBSERVE.txt` is a saved run.
+Calcite derived differently, and how often derivation failed. `observe_all.sh` takes that over the
+whole corpus into `results/ISTHMUS-OBSERVE.txt` - one JVM per case, because Isthmus throws on the
+cases it cannot convert and a single JVM would stop at the first of them; a case it refuses is
+absent from the file rather than recorded as zero.
 `decl_vs_derived_lie.py` establishes the same thing for the validator by handing it one case twice,
 once with a false declaration. `results/GLUTEN-ROWS.txt` is the other measurement kept outside the
 matrix: Gluten over the corpus variant that gives an empty table a synthetic row, which is how a
@@ -191,9 +194,13 @@ returning a schema is not an assertion that the plan passed validation.
 
 ## Gluten/Velox
 
-Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved `results/GLUTEN.txt`
-column was taken in a cluster, on 2026-09-03 rather than with the other nine — which is why
-`results/MATRIX.txt` names its date apart from theirs. To reproduce it: build Gluten at the commit in `versions.env` with
+Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved
+`results/GLUTEN.txt` column is taken in a cluster, by hand, whenever the other nine are retaken.
+`gluten_column.py` turns the probe's output into the column - it drops everything from
+` Retriable:` onwards, which is where a Velox exception stops being the message and becomes a
+forty-frame stack - so the one step that used to happen in someone's terminal is now in the
+repository. `results/MATRIX.txt` reads each column's date out of its own header, so a run that
+leaves Gluten behind says so rather than presenting one date for all ten. To reproduce it: build Gluten at the commit in `versions.env` with
 `dev/builddeps-veloxbe.sh --build_tests=ON` - the `JsonToProtoConverter` harness that reads
 protobuf-JSON is only built with the tests - then put `SubstraitCorpusProbeTest.cc` into
 `cpp/velox/tests`, register it in the `CMakeLists.txt` there, and point `SUBSTRAIT_CORPUS_DIR` at

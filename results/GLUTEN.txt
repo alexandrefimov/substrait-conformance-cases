@@ -1,4 +1,4 @@
-Gluten (Velox) @ f7f5f04, a corpus of 78 cases (74 submitted, 4 not expressible in its proto), 2026-09-03.
+Gluten (Velox) @ f7f5f04, a corpus of 78 cases (74 submitted, 4 not expressible in its proto), 2026-09-07.
 BOUNDARY: carries no nullability; types, arity, column order and rows are checked.
 IMPORTANT: for tables with no data the virtual table is now honestly empty, and Velox derives ROW<>,
 so 19 were accepted rather than the 25 of the earlier variant with a synthetic row.

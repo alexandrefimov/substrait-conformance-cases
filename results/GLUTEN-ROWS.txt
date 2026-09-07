@@ -1,4 +1,4 @@
-Gluten, the corpus variant giving empty tables a synthetic row (--row-for-empty), 2026-09-03.
+Gluten, the corpus variant giving empty tables a synthetic row (--row-for-empty), 2026-09-07.
 Needed because the honest corpus runs into Velox deriving ROW<> at zero rows, which hides everything else.
 28 of 74 accepted, against 19 on the honest variant.
 

@@ -1,5 +1,5 @@
-Isthmus/Calcite: declared against derived, 2026-09-03, substrait-java 81120b9.
-Command: javac -cp <isthmus runtime cp> probe/ObserveOf.java && java ... ObserveOf <case>
+Isthmus/Calcite: declared against derived, 2026-09-07, substrait-java fff63906.
+Command: SUBSTRAIT_JAVA_DIR=<checkout> bash probe/observe_all.sh, which runs probe/ObserveOf.java
 The observer is attached through ConverterProvider.builder().typeObserver(...).
 
 aggregate_grouping_field_shared_by_sets observations 3, divergences 0, derivation failed 0

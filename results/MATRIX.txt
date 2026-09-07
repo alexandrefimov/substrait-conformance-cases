@@ -1,6 +1,6 @@
 Schema derivation matrix: 10 implementations x 78 cases.
 Built by probe/matrix.py from the columns in results.
-Columns taken 2026-09-07, except: Gluten 2026-09-03.
+Every column taken 2026-09-07.
 Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.
 BOUNDARIES: DuckDB is the only participant carrying no nullability - for it types, arity and
 order are compared. Acero and Spark carry it and are compared on it. Gluten takes no part in
