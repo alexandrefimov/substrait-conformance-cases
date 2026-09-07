@@ -152,6 +152,8 @@ encoded rule matches the spec or that every interpretation of a result is correc
   and the rule expected of them.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this
-  project has run it, and CI runs only the self-check, which says nothing about any implementation.
+  project has run it. CI retakes one column of the nine — substrait-python, whose environment is a
+  pip install — on a machine that is not this one, and otherwise only reads the repository against
+  itself; the other eight columns are saved measurements, not reproduced ones.
 
 Apache 2.0.

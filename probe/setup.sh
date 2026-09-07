@@ -12,8 +12,17 @@
 # failures are collected, and the exit code says whether any of them failed.
 set -u
 FAILED_STEPS=""
+# SETUP_ONLY builds one piece instead of the environment. It exists so that probe/replay_python.sh
+# can install substrait-python from the same line as everyone else rather than keeping its own list
+# of packages - two lists of dependencies for one participant is how they come to differ.
+ONLY="${SETUP_ONLY:-}"
+wanted() { case "${1:-}" in *"$ONLY"*) return 0;; *) [ -z "$ONLY" ];; esac; }
 step() { # <name> <command...>
   local name="$1"; shift
+  if ! wanted "$name"; then
+    echo "== $name (skipped: SETUP_ONLY=$ONLY)"
+    return 0
+  fi
   echo "== $name"
   if "$@"; then return 0; fi
   echo "   FAILED: $name" >&2
@@ -38,17 +47,20 @@ SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 # not built. probe/reverify.sh has the same line for the same reason.
 export PATH="$HOME/.cargo/bin:$PATH"
 
-for tool in python3 go; do
-  command -v "$tool" >/dev/null || { echo "$tool is not on PATH; it is needed here" >&2; exit 1; }
-done
+# go is required for the substrait-go probe alone, so under SETUP_ONLY it is required only when
+# that step is the one being built.
+command -v python3 >/dev/null || { echo "python3 is not on PATH; it is needed here" >&2; exit 1; }
+if wanted "substrait-go"; then
+  command -v go >/dev/null || { echo "go is not on PATH; it is needed here" >&2; exit 1; }
+fi
 
 # The go version is checked here rather than left to fail inside `go get`. GOTOOLCHAIN=local below
 # stops a run fetching a different toolchain, so an older go is a hard stop, and the error it gives
 # on its own ("go.mod requires go >= 1.24") names a number this script wrote, not a requirement the
 # reader can act on.
-GO_HAVE="$(go env GOVERSION 2>/dev/null | sed 's/^go//')"
-if [ -z "$GO_HAVE" ] || \
-   [ "$(printf '%s\n%s\n' "$GO_MINIMUM" "$GO_HAVE" | sort -V | head -1)" != "$GO_MINIMUM" ]; then
+GO_HAVE="$(wanted "substrait-go" && go env GOVERSION 2>/dev/null | sed 's/^go//')"
+if wanted "substrait-go" && { [ -z "$GO_HAVE" ] || \
+   [ "$(printf '%s\n%s\n' "$GO_MINIMUM" "$GO_HAVE" | sort -V | head -1)" != "$GO_MINIMUM" ]; }; then
   echo "go $GO_MINIMUM or newer is needed; this is go ${GO_HAVE:-unknown}." >&2
   echo "It is not fetched automatically: setup.sh builds with GOTOOLCHAIN=local so that a run" >&2
   echo "cannot quietly measure a toolchain other than the one it reports." >&2

@@ -20,3 +20,16 @@ jobs:
       # notice its own. Three guards in this repository were written, committed, and could never
       # fire; two of them lived in checks.
       - run: bash probe/selfcheck-negative.sh
+
+  # One column reproduced rather than read: substrait-python is the participant whose whole
+  # environment is a pip install, so a machine that is not the author's can retake its column from
+  # the pinned version and compare. It covers one of nine and says nothing about the other eight -
+  # and it is still the only number here that a second machine produces instead of trusting.
+  python-column:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: bash probe/replay_python.sh

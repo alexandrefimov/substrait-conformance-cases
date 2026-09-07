@@ -9,6 +9,11 @@ the repository and requires the check to notice that one, not merely to go red. 
 checks is a comment the interpreter happens to run, and three guards here were written, committed
 and could never fire.
 
+`replay_python.sh` is the one probe CI can run: it builds the substrait-python environment from the
+pinned version through `setup.sh` (`SETUP_ONLY=substrait-python`, which builds one piece instead of
+all of them), puts the corpus through it and requires the result to be identical to
+`results/PYTHON.txt`. One column out of nine, retaken on a machine that is not the author's.
+
 `selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
 against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every
 saved column is complete and agrees with the expectations, that the numbers in the README match what
