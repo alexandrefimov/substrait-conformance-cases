@@ -101,6 +101,64 @@ resolves their classpaths from Gradle and caches them under the probe environmen
 `reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
 derives. The rest of this directory is not on that path, and none of it is run by CI.
 
+### Focused schema diagnostics
+
+These commands run from the corpus root after setting up the relevant participant.
+They report additional observations separately from the saved matrix.
+
+**Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
+against all four combinations of input nullability, plus five grouping-set layouts. Its
+expectations follow the [join and aggregate rules in spec v0.99.0](https://github.com/substrait-io/substrait/blob/v0.99.0/site/docs/relations/logical_relations.md).
+The plans use named reads and field references, with no measures or declared function return types.
+
+```sh
+SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
+SETUP_ONLY=substrait-python bash probe/setup.sh
+"$SP/pysub/bin/python" probe/python_nullability.py
+"$SP/pysub/bin/python" probe/python_nullability.py --area grouping --write-plans "$SP/nullability-plans"
+```
+
+The output is JSON Lines: installed package versions, expected and actual nullabilities for each
+case, then the number of cases and mismatches. `--area join` selects only the join cases. Differences
+are reported without a failing exit status; an inference error or mutation of the input does fail
+the run. `--write-plans` exports protobuf-JSON plans with named tables and no data. A consumer that
+resolves those names through its own catalog needs each table registered with the schema from its
+`ReadRel.base_schema`. These 29 checks are separate from the 78 plans in the main corpus. They reproduce
+[Python #267](https://github.com/substrait-io/substrait-python/issues/267) and
+[#268](https://github.com/substrait-io/substrait-python/issues/268).
+
+**Spark before root naming.** `SparkSchemaOf --relation` converts the first root's input relation
+directly, so its schema can be compared with the normal full-plan conversion. This helps isolate
+read projection from the later application of `RelRoot.names`, as in
+[Java/Spark #1290](https://github.com/substrait-io/substrait-java/issues/1290).
+
+```sh
+export SUBSTRAIT_JAVA_DIR=/path/to/substrait-java
+export JAVA17_HOME=/path/to/jdk-17
+export JAVA_HOME="$JAVA17_HOME"
+bash probe/spark_run.sh SparkSchemaOf derived-schema/read_projection_mask.json
+bash probe/spark_run.sh SparkSchemaOf --relation derived-schema/read_projection_mask.json
+```
+
+Set both paths to existing installations. The Spark probe only discovers JDK 17 automatically on
+macOS; set `JAVA17_HOME` explicitly on other systems.
+
+**DuckDB bound types.** `duckdb_one.py --describe` prints the DuckDB and extension versions, then
+uses `DESCRIBE` to report column names and types without executing the plan. This separates decimal
+return typing from execution overflow, as in
+[DuckDB #276](https://github.com/substrait-io/duckdb-substrait-extension/issues/276).
+
+```sh
+SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
+"$SP/venv/bin/python" probe/duckdb_one.py --load-only --describe derived-schema/decimal_multiply_overflow.json
+```
+
+`--load-only` uses an already installed Substrait extension and skips installation. Omit that flag
+to use the probe's normal installation path. The diagnostic prints `DUCKDB BOUND`; normal execution
+prints `DUCKDB ACCEPTED` or `DUCKDB REJECTED`. Column nullability is not compared for DuckDB.
+
+### Other probes
+
 **The matrix drawn.** `heatmap.py` turns the saved columns into `docs/matrix.svg` and
 `docs/matrix-dark.svg`, which the README shows, and `docs/index.html`, which the site serves with
 the expectation and the answer under the cursor. It does not decide anything of its own: the

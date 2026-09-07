@@ -15,6 +15,7 @@ import org.apache.spark.sql.types.StructType;
  * The schema Spark derives for a plan. The named tables are registered as temporary views with
  * exactly the schema the case itself declares: Spark reads a table from the catalog rather than from
  * base_schema, so anything else would compare the wrong thing.
+ * Pass --relation to inspect the root's input before RelRoot output naming.
  */
 public class SparkSchemaOf {
   static void collect(Rel rel, List<NamedScan> out) {
@@ -23,6 +24,7 @@ public class SparkSchemaOf {
   }
 
   public static void main(String[] args) throws Exception {
+    boolean relationOnly = Arrays.asList(args).contains("--relation");
     SparkSession spark =
         SparkSession.builder().master("local[1]").appName("probe")
             .config("spark.ui.enabled", "false")
@@ -32,6 +34,7 @@ public class SparkSchemaOf {
     spark.sparkContext().setLogLevel("ERROR");
     ToLogicalPlan tlp = new ToLogicalPlan(spark);
     for (String a : args) {
+      if (a.equals("--relation")) continue;
       String name = Paths.get(a).getFileName().toString().replace(".json", "");
       try {
         var b = io.substrait.proto.Plan.newBuilder();
@@ -45,7 +48,7 @@ public class SparkSchemaOf {
           spark.createDataFrame(new ArrayList<Row>(), st)
               .createOrReplaceTempView(ns.getNames().get(ns.getNames().size() - 1));
         }
-        var lp = tlp.convert(pojo);
+        var lp = relationOnly ? tlp.convert(root) : tlp.convert(pojo);
         StringBuilder sb = new StringBuilder();
         for (StructField f : lp.schema().fields()) {
           if (sb.length() > 0) sb.append(", ");
