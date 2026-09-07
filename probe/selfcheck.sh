@@ -239,8 +239,10 @@ for col, label in LABEL.items():
     moved = [c for c, v in verdicts.get(col, {}).items() if v in MOVED]
     counts[label] = (len(moved), len([c for c in moved if c in have]))
 
+# The swap table moved to METHOD.md when the README was split by audience, so both pages are read
+# as one. Which file a table sits in is a decision about readers; the check is about the numbers.
 readme, inside = {}, False
-for line in io.open("README.md", encoding="utf-8"):
+for line in list(io.open("README.md", encoding="utf-8")) + list(io.open("METHOD.md", encoding="utf-8")):
     if line.strip().startswith("| | answers that move |"):
         inside = True
         continue
@@ -366,7 +368,10 @@ for e in man:
 WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
          "nine": 9, "ten": 10}
 with_source = sum(1 for e in man if "source" in e)
-claim = re.search(r"([A-Za-z]+|\d+) cases have one so far", io.open("README.md", encoding="utf-8").read())
+# The prose lives on whichever page suits the reader - the count moved to METHOD.md when the README
+# was split - so both are searched rather than the sentence being pinned to one file.
+pages = "".join(io.open(f, encoding="utf-8").read() for f in ("README.md", "METHOD.md"))
+claim = re.search(r"([A-Za-z]+|\d+) cases have one so far", pages)
 if not claim:
     print("FAILED: the README no longer says how many cases name a source issue"); bad = 1
 else:

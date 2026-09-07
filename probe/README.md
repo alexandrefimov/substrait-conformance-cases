@@ -27,6 +27,47 @@ Every script finds the corpus relative to the repository, and its environment th
 dies in `Subject.getSubject`), and it is found through `/usr/libexec/java_home` only on a Mac.
 Without it the Spark column is skipped with a line saying so.
 
+## What a run needs, and what fails it
+
+python3, go 1.23 or newer, a JDK, and cargo with protoc — protoc and the well-known type definitions
+it imports, which some distributions package apart from it (`protobuf-compiler` and
+`libprotobuf-dev` on Debian and Ubuntu). Two of those are more particular than they look. The Spark
+probe wants JDK 17 specifically and finds it by itself only on macOS; anywhere else set
+`JAVA17_HOME`, or that probe is skipped and the run then fails, since a skipped participant needs
+`ALLOW_SKIPPED=1` to count as intended. And the DataFusion probe builds that checkout with the Rust
+toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and an unmanaged
+cargo will not.
+
+`results/MATRIX.txt` is case by implementation with one truncated answer per cell, and
+`results/<NAME>.txt` has the full values: a cell starting with `-` is a refusal and `·` means the
+case was not run through that implementation. A returned schema can still carry diagnostics — for
+the validator, `bash probe/validator_all.sh` prints them, and `results/VALIDATOR.txt` keeps the
+schema when there is one.
+
+`reverify.sh` regenerates the corpus, runs every participant, compares each column against
+`expected.json` and prints all sides next to each other. By default it only reports: the corpus, the
+manifest and `expected.json` are rebuilt into temporary files and it tells you what differs, and a
+participant whose environment is missing is skipped with a line saying so. `UPDATE_COLUMNS=1`
+replaces the saved columns, `results/MATRIX.txt` and `docs/`; `UPDATE_CORPUS=1` replaces the corpus,
+the manifest and `expected.json`; nothing else in the repository is written by a run.
+
+`reverify.sh` requires both checkouts to be at the commits `versions.env` names and refuses to run
+otherwise; `SJ_EXPECT=` or `DF_EXPECT=` left empty says the mismatch is deliberate. The pin records
+what was measured rather than what is necessary: the same nine columns came out of substrait-java at
+`81120b91`, twelve commits earlier, with every number unchanged.
+
+A single case failing inside an engine is not a harness failure; that is the finding. What does fail
+the run, each with a `FAILED` line and a non-zero exit: a checkout at the wrong commit, a missing
+environment, a generator that will not build, a corpus or manifest or expectation file that no
+longer matches its source, fewer answers coming back than there are cases, a participant that
+answered nothing at all, a column the normalization could not make whole, and a participant skipped
+without `ALLOW_SKIPPED=1`.
+
+That list is written out rather than summarised as "fail-closed", because the summary was false once
+and read as true: a validator environment with nothing installed produced 78 crashes and a clean
+run, the guard having compared the refusals against the number of cases while the check only ever
+counts the 73 that carry an expectation.
+
 ## The participants and their versions
 
 `versions.env` is the single place these are pinned, and `setup.sh` installs exactly them. The two
@@ -81,7 +122,9 @@ helper that the mutation script uses.
 `TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
 Calcite derived differently, and how often derivation failed; `results/ISTHMUS-OBSERVE.txt` is a saved run.
 `decl_vs_derived_lie.py` establishes the same thing for the validator by handing it one case twice,
-once with a false declaration. `IsthmusRoundTrip.java` goes Substrait to Calcite and back, so what
+once with a false declaration. `results/GLUTEN-ROWS.txt` is the other measurement kept outside the
+matrix: Gluten over the corpus variant that gives an empty table a synthetic row, which is how a
+schema it would otherwise refuse to produce becomes visible. `IsthmusRoundTrip.java` goes Substrait to Calcite and back, so what
 Isthmus writes into someone else's plan can be compared with what it read.
 
 **One-off diagnostics**, each kept because it is the reproduction behind a filed issue or a decided

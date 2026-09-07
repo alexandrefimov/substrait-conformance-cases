@@ -316,7 +316,10 @@ filed = sum(1 for r in doc["rules"].values() if re.search(r"[Ff]iled as", r["wha
 # The README puts these counts in prose, where nothing would notice them going stale.
 WORD = {6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
         14: "fourteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two", 19: "nineteen", 20: "twenty"}
-readme = " ".join(io.open(os.path.join(ROOT, "README.md"), encoding="utf-8").read().split())
+# README.md and METHOD.md are one page split by audience, and a sentence can move between them; the
+# claim has to be somewhere on it, not in a particular file.
+readme = " ".join(" ".join(io.open(os.path.join(ROOT, f), encoding="utf-8").read()
+                           for f in ("README.md", "METHOD.md")).split())
 for sentence in ("gives all %d of them a reason and marks %d as something other than"
                  % (total, total - kinds.get("divergence", 0)),
                  "%s are limits of a type system, %s a type the validator never resolved"

@@ -294,7 +294,19 @@ d['rules']['duckdb-timestamp-is-microseconds']['kind'] = 'divergence'
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "the count of cases naming a source" "name a source issue" \
-  replace README.md "Five cases have one so far" "Six cases have one so far"
+  python3 -c "
+import io, re
+# The sentence lives on whichever page suits the reader and has already moved once, so it is found
+# rather than named: the check reads both pages, and so does this.
+for name in ('README.md', 'METHOD.md'):
+    s = io.open(name, encoding='utf-8').read()
+    m = re.search(r'(Five|Six|Seven|Eight|Nine|Ten|\\d+) cases have one so far', s)
+    if not m: continue
+    swap = 'Six' if m.group(1) != 'Six' else 'Seven'
+    io.open(name, 'w', encoding='utf-8').write(
+        s[:m.start()] + '%s cases have one so far' % swap + s[m.end():])
+    raise SystemExit(0)
+raise SystemExit(1)"
 
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"

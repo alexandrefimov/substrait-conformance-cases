@@ -7,7 +7,7 @@ a new tag rather than the old one being repointed. To run them: point `SUBSTRAIT
 `probe/datafusion_corpus_probe.rs` as an example inside a DataFusion checkout, the way section 2 of
 `reverify.sh` does.
 
-| file | what is in it | what DataFusion answered at f96892a9b |
+| file | what is in it | what DataFusion answered at `f96892a9b`, and again at `cc29ea12a` |
 | --- | --- | --- |
 | `a_rel_intermediate.json` | `PlanRel.rel` with no `RelRoot`, phase `INITIAL_TO_INTERMEDIATE`, declared type `STRUCT<i64,i64>` - the plan is valid throughout | accepted, `Float64?`, row `1.5` |
 | `b_rel_result.json` | the same, but phase `INITIAL_TO_RESULT` and the type that phase calls for, `i64?` | accepted, `Float64?`, row `1.5` |
