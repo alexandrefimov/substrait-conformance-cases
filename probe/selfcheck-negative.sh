@@ -61,6 +61,12 @@ mutate "expected.json against its generator" "expected.json" \
 mutate "MATRIX.txt against its generator" "MATRIX.txt" \
   replace results/MATRIX.txt "Schema derivation matrix" "Schema derivation MATRIX"
 
+mutate "the drawn matrix against its generator" "matrix.svg differs" \
+  replace docs/matrix.svg "9 implementations" "8 implementations"
+
+mutate "the page against its generator" "index.html differs" \
+  replace docs/index.html "All 78 cases" "All 77 cases"
+
 mutate "the date on the results table" "dates the table" \
   replace README.md "taken 2026-09-06 against" "taken 2026-09-05 against"
 

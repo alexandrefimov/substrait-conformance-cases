@@ -24,6 +24,14 @@ python3 probe/expected.py 2>/dev/null | diff -q - expected.json >/dev/null \
 python3 probe/matrix.py 2>/dev/null | diff -q - results/MATRIX.txt >/dev/null \
   && ok "results/MATRIX.txt is what probe/matrix.py produces from the saved columns" \
   || fail "results/MATRIX.txt differs from probe/matrix.py output"
+# The picture in the README and the page on the site are generated from the same columns. A drawing
+# that has drifted from them is the failure this repository exists to catch, and it drifts silently:
+# nobody rereads an SVG.
+for want in svg-light:docs/matrix.svg svg-dark:docs/matrix-dark.svg page:docs/index.html; do
+  python3 probe/heatmap.py "${want%%:*}" 2>/dev/null | diff -q - "${want#*:}" >/dev/null \
+    && ok "${want#*:} is what probe/heatmap.py draws from the saved columns" \
+    || fail "${want#*:} differs from probe/heatmap.py output"
+done
 
 echo
 echo "### the saved columns agree with the expectations and with the README"
