@@ -65,7 +65,13 @@ mutate "the drawn matrix against its generator" "matrix.svg differs" \
   replace docs/matrix.svg "9 implementations" "8 implementations"
 
 mutate "the page against its generator" "index.html differs" \
-  replace docs/index.html "All 78 cases" "All 77 cases"
+  python3 -c "
+import io, re
+s = io.open('docs/index.html', encoding='utf-8').read()
+m = re.search(r'All (\\d+) cases', s)
+if not m: raise SystemExit(1)
+io.open('docs/index.html', 'w', encoding='utf-8').write(
+    s[:m.start()] + 'All %d cases' % (int(m.group(1)) - 1) + s[m.end():])"
 
 # The generator and the files it writes move together, the way a real edit would arrive: changing
 # only the generator leaves docs/ stale and the byte comparison above fires instead, which says
@@ -90,14 +96,38 @@ unpainted_state() {
 }
 mutate "a state the picture stops drawing" "where the page has" unpainted_state
 
+# The mutations below derive what they change from the file rather than naming it. A literal here
+# is a date, a tally or a case count that a rerun moves, and when it moves the replacement stops
+# matching: the mutation then "does not apply" and the check it stands for goes untested. That is
+# how this file failed CI the first time a column was retaken.
 mutate "the date on the results table" "dates the table" \
-  replace README.md "taken 2026-09-06 against" "taken 2026-09-05 against"
+  python3 -c "
+import io, re
+s = io.open('README.md', encoding='utf-8').read()
+m = re.search(r'taken (\\d{4})-(\\d{2})-(\\d{2}) against', s)
+if not m: raise SystemExit(1)
+day = '01' if m.group(3) != '01' else '02'
+io.open('README.md', 'w', encoding='utf-8').write(
+    s[:m.start()] + 'taken %s-%s-%s against' % (m.group(1), m.group(2), day) + s[m.end():])"
 
 mutate "a number in the results table" "README says" \
-  replace README.md "| substrait-validator | 45 | 28 | 0 |" "| substrait-validator | 45 | 27 | 0 |"
+  python3 -c "
+import io, re
+s = io.open('README.md', encoding='utf-8').read()
+m = re.search(r'^\\| substrait-validator \\| (\\d+) \\| (\\d+) \\| (\\d+) \\|$', s, re.M)
+if not m: raise SystemExit(1)
+io.open('README.md', 'w', encoding='utf-8').write(
+    s[:m.start()] + '| substrait-validator | %s | %d | %s |'
+    % (m.group(1), int(m.group(2)) + 1, m.group(3)) + s[m.end():])"
 
 mutate "the swap table against LIE.txt" "LIE.txt gives" \
-  replace results/LIE.txt "decimal_add                       follows" "decimal_add                       held   "
+  python3 -c "
+import io
+s = io.open('results/LIE.txt', encoding='utf-8').read()
+head = s.find(chr(10) + 'case ')   # the verdict table; 'follows' also appears in the legend above it
+at = s.find('follows', head) if head > 0 else -1
+if at < 0: raise SystemExit(1)
+io.open('results/LIE.txt', 'w', encoding='utf-8').write(s[:at] + 'held   ' + s[at + len('follows'):])"
 
 mutate "the virtual-table corpus against its generator" "generator produces" \
   replace derived-schema-virtual-tables/decimal_add.json '"precision": 11' '"precision": 12'
