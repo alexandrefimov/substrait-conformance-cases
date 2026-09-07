@@ -78,6 +78,18 @@ drawn_cells() {
 }
 mutate "a drawn cell the check calls a difference" "the drawing" drawn_cells
 
+# A state the drawing loop stops painting: the files stay byte-identical to the generator and the
+# page keeps every verdict, so only the count of shapes in the SVG can notice.
+unpainted_state() {
+  replace probe/heatmap.py '    elif state == NOSPEC:
+        box(x, y, w, h, fill="url(#dots)")' '    elif state == NOSPEC:
+        pass' &&
+  python3 probe/heatmap.py svg-light > docs/matrix.svg &&
+  python3 probe/heatmap.py svg-dark > docs/matrix-dark.svg &&
+  python3 probe/heatmap.py page > docs/index.html
+}
+mutate "a state the picture stops drawing" "where the page has" unpainted_state
+
 mutate "the date on the results table" "dates the table" \
   replace README.md "taken 2026-09-06 against" "taken 2026-09-05 against"
 

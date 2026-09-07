@@ -167,6 +167,49 @@ raise SystemExit(bad)
 DRAWPY
 
 echo
+echo "### the picture draws the cells the page carries"
+python3 - <<'SVGPY' || FAILED=1
+import collections, io, json, re, sys
+
+# The cell check above reads docs/index.html, which carries the verdicts as data. The two SVGs carry
+# them only as shapes, and nobody rereads an SVG: a drawing loop that skipped a state would keep the
+# files byte-identical to the generator and agree with every number on the page. So the shapes are
+# counted by their fill and compared with the cells - one more of each than the matrix holds, since
+# the legend draws one swatch per state.
+sys.path.insert(0, "probe")
+import heatmap   # for the palette only; the counts come from the drawn files and the page
+
+page = io.open("docs/index.html", encoding="utf-8").read()
+found = re.search(r'<script type="application/json" id="data">(.*?)</script>', page, re.S)
+if not found:
+    print("FAILED: docs/index.html carries no data for the matrix")
+    raise SystemExit(1)
+cells = collections.Counter(s for row in json.loads(found.group(1))["cells"] for s in row)
+
+bad = 0
+for theme, path in (("light", "docs/matrix.svg"), ("dark", "docs/matrix-dark.svg")):
+    t = heatmap.THEMES[theme]
+    svg = io.open(path, encoding="utf-8").read()
+    drawn = {
+        heatmap.MATCH: svg.count('fill="%s"' % t["match"]),
+        heatmap.DIVERGENCE: svg.count('fill="%s"' % t["divergence"]),
+        heatmap.UNRESOLVED: svg.count('fill="%s"' % t["unresolved"]),
+        heatmap.BOUNDARY: svg.count('fill="url(#hatch)"'),
+        heatmap.NOSPEC: svg.count('fill="url(#dots)"'),
+        heatmap.UNSUPPORTED: len(re.findall(r'fill="none" stroke="%s" stroke-width="0.8"' % t["rule"], svg)),
+    }
+    off = {heatmap.STATE_NAME[s]: (n, cells[s] + 1) for s, n in drawn.items() if n != cells[s] + 1}
+    if off:
+        print("FAILED: %s draws %s where the page has %s"
+              % (path, {k: v[0] for k, v in off.items()}, {k: v[1] for k, v in off.items()}))
+        bad = 1
+    else:
+        print("ok      %-22s %d shapes, one per cell and one per legend swatch"
+              % (path, sum(drawn.values())))
+raise SystemExit(bad)
+SVGPY
+
+echo
 echo "### the swap table agrees with results/LIE.txt"
 python3 - <<'LIEPY' || FAILED=1
 import io, json, re, sys
