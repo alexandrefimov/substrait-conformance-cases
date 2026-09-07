@@ -28,9 +28,12 @@ trap 'rm -rf "$WORK"' EXIT
 # runtime and the packaged extensions beside it, and a second copy of that list here would be one
 # more thing to keep in step.
 echo "== substrait-python $SUBSTRAIT_PYTHON_VERSION into a fresh environment"
-SETUP_ONLY=substrait-python bash "$PROBE/setup.sh" "$WORK" > "$WORK/setup.log" 2>&1 \
-  || { echo "FAILED: could not build the substrait-python venv:" >&2; tail -5 "$WORK/setup.log" >&2; exit 1; }
-[ -x "$WORK/pysub/bin/python" ] || { echo "FAILED: setup.sh built no venv at $WORK/pysub" >&2; exit 1; }
+SETUP_ONLY=substrait-python bash "$PROBE/setup.sh" "$WORK" > "$WORK/setup.log" 2>&1
+# The venv is the thing this needs, so that is what is checked. setup.sh reports on every piece of
+# the environment, and treating its exit code as the answer made this fail wherever another piece -
+# the validator, which wants cargo - was absent, even though nothing here asks for that piece.
+[ -x "$WORK/pysub/bin/python" ] || {
+  echo "FAILED: setup.sh built no venv at $WORK/pysub" >&2; tail -8 "$WORK/setup.log" >&2; exit 1; }
 
 # The saved column was taken over the virtual-table variant of the corpus, as reverify.sh does; over
 # the canonical corpus substrait-python would answer about named tables it cannot resolve, and the

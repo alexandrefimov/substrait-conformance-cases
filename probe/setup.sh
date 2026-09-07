@@ -122,24 +122,33 @@ build_validator() {
   echo "   built at $SUBSTRAIT_VALIDATOR_COMMIT"
 }
 
-echo "== substrait-validator (built from source; needs cargo and protoc)"
-if command -v cargo >/dev/null && command -v protoc >/dev/null && protoc_has_well_known; then
+# These last two pieces are not built through step(), so SETUP_ONLY has to be honoured here as well.
+# It was not, and a run asking for substrait-python alone still demanded cargo for the validator:
+# CI, which has no cargo, reported the whole setup as failed and the caller believed it.
+if ! wanted "substrait-validator"; then
+  echo "== substrait-validator (skipped: SETUP_ONLY=$ONLY)"
+elif command -v cargo >/dev/null && command -v protoc >/dev/null && protoc_has_well_known; then
+  echo "== substrait-validator (built from source; needs cargo and protoc)"
   # Not a shallow clone of main: the saved column was taken at the commit versions.env names, and
   # main is not that commit any more. The 7.x protobuf runtime at the end is required too: the
   # generated code needs it while the package pins protobuf<7.
   build_validator || FAILED_STEPS="$FAILED_STEPS substrait-validator"
 elif command -v cargo >/dev/null && command -v protoc >/dev/null; then
+  echo "== substrait-validator (built from source; needs cargo and protoc)"
   echo "   skipped: protoc is here but google/protobuf/any.proto is not, so its build would fail"
   echo "   inside maturin. On Debian and Ubuntu that file comes from libprotobuf-dev."
   FAILED_STEPS="$FAILED_STEPS substrait-validator"
 else
+  echo "== substrait-validator (built from source; needs cargo and protoc)"
   echo "   skipped: cargo or protoc is not on PATH. The validator column will be skipped;"
   echo "   probe/README.md has the recipe, and SUBSTRAIT_VALIDATOR_ENV points at an existing venv."
   FAILED_STEPS="$FAILED_STEPS substrait-validator"
 fi
 
 echo "== classpath for the generators (needs a substrait-java checkout)"
-if [ -n "${SUBSTRAIT_JAVA_DIR:-}" ]; then
+if ! wanted "classpath"; then
+  echo "   skipped: SETUP_ONLY=$ONLY"
+elif [ -n "${SUBSTRAIT_JAVA_DIR:-}" ]; then
   bash "$ROOT/gen/make_classpath.sh" || FAILED_STEPS="$FAILED_STEPS generator-classpath"
 else
   echo "   skipped: SUBSTRAIT_JAVA_DIR is not set."
