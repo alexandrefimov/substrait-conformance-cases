@@ -67,6 +67,17 @@ mutate "the drawn matrix against its generator" "matrix.svg differs" \
 mutate "the page against its generator" "index.html differs" \
   replace docs/index.html "All 78 cases" "All 77 cases"
 
+# The generator and the files it writes move together, the way a real edit would arrive: changing
+# only the generator leaves docs/ stale and the byte comparison above fires instead, which says
+# nothing about whether the cells themselves are checked.
+drawn_cells() {
+  replace probe/heatmap.py '"boundary": BOUNDARY' '"boundary": MATCH' &&
+  python3 probe/heatmap.py svg-light > docs/matrix.svg &&
+  python3 probe/heatmap.py svg-dark > docs/matrix-dark.svg &&
+  python3 probe/heatmap.py page > docs/index.html
+}
+mutate "a drawn cell the check calls a difference" "the drawing" drawn_cells
+
 mutate "the date on the results table" "dates the table" \
   replace README.md "taken 2026-09-06 against" "taken 2026-09-05 against"
 

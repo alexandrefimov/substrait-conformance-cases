@@ -115,6 +115,58 @@ raise SystemExit(bad)
 PY
 
 echo
+echo "### the drawn matrix agrees with the check, cell by cell"
+python3 - <<'DRAWPY' || FAILED=1
+import io, json, re, subprocess, sys
+
+# docs/ is byte-identical to probe/heatmap.py output by the check above, which says the files match
+# the generator - not that the generator reads a column the way check_expected.py does. It has its
+# own loop over the saved columns, and two loops over the same files are exactly how a drawing comes
+# to disagree with the numbers beside it. So the cells are compared with the check itself: the same
+# per-participant tallies, and the differing cases by name rather than by count, since a swap of one
+# case for another keeps every count intact.
+COLUMNS = [("substrait-java", "JAVA", "java"), ("substrait-python", "PYTHON", "py"),
+           ("substrait-go", "GO", "go"), ("substrait-validator", "VALIDATOR", "py"),
+           ("Isthmus/Calcite", "ISTHMUS", "calcite"), ("DataFusion", "DATAFUSION", "df"),
+           ("DuckDB", "DUCKDB", "duckdb"), ("Spark", "SPARK", "spark"), ("Acero", "ACERO", "acero")]
+DIFFERING = (1, 2, 3)   # divergence, type-system boundary, unresolved - see probe/heatmap.py
+
+page = io.open("docs/index.html", encoding="utf-8").read()
+found = re.search(r'<script type="application/json" id="data">(.*?)</script>', page, re.S)
+if not found:
+    print("FAILED: docs/index.html carries no data for the matrix")
+    raise SystemExit(1)
+drawn = json.loads(found.group(1))
+
+bad = 0
+for label, col, fmt in COLUMNS:
+    out = subprocess.run([sys.executable, "probe/check_expected.py", "results/%s.txt" % col, fmt],
+                         capture_output=True, text=True).stdout
+    summary = re.search(r"^matched: (\d+), differed: (\d+), unsupported by the participant: (\d+)",
+                        out, re.M)
+    if not summary:
+        print("FAILED: %s: the check did not reach its summary" % col)
+        bad = 1
+        continue
+    want = [int(summary.group(i)) for i in (1, 2, 3)]
+    named = set(re.findall(r"^  (\S+)\s+expected ", out, re.M))
+    c = drawn["participants"].index(label)
+    cells = {drawn["cases"][r] for r in range(len(drawn["cases"]))
+             if drawn["cells"][r][c] in DIFFERING}
+    if drawn["scored"][label] != want:
+        print("FAILED: %s: the drawing tallies %s, the check %s" % (label, drawn["scored"][label], want))
+        bad = 1
+    if cells != named:
+        only = sorted(named - cells) or sorted(cells - named)
+        print("FAILED: %s: the drawing and the check disagree on %d cases: %s"
+              % (label, len(named ^ cells), ", ".join(only[:4])))
+        bad = 1
+    if drawn["scored"][label] == want and cells == named:
+        print("ok      %-20s %s, %d differing cases by name" % (label, want, len(named)))
+raise SystemExit(bad)
+DRAWPY
+
+echo
 echo "### the swap table agrees with results/LIE.txt"
 python3 - <<'LIEPY' || FAILED=1
 import io, json, re, sys

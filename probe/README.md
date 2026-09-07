@@ -53,6 +53,13 @@ resolves their classpaths from Gradle and caches them under the probe environmen
 `reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
 derives. The rest of this directory is not on that path, and none of it is run by CI.
 
+**The matrix drawn.** `heatmap.py` turns the saved columns into `docs/matrix.svg` and
+`docs/matrix-dark.svg`, which the README shows, and `docs/index.html`, which the site serves with
+the expectation and the answer under the cursor. It does not decide anything of its own: the
+parsers and the expectations come out of `check_expected.py`, `reverify.sh` redraws all three under
+`UPDATE_COLUMNS=1`, and `selfcheck.sh` compares the files with the generator and the drawn cells
+with the check, participant by participant.
+
 **Producers — what an implementation declares.** A consumer's answer is only half the question; the
 other half is what a producer writes into `output_type` in the first place. `ProducerIsthmus.java`
 and `ProducerSpark.java` print what those two declare when they turn SQL into a plan,

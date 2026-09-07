@@ -2,6 +2,9 @@
 
 [![selfcheck](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml/badge.svg)](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml)
 
+**[Every case against every implementation](https://alexandrefimov.github.io/substrait-conformance-cases/)** —
+the matrix as a page, with the expectation and the answer beside each cell.
+
 A plan declares types and a consumer derives them again — or reuses what the plan declared. When
 the two disagree, nothing in the format notices. This repository holds 78 plans built to make such
 disagreements visible, an expected schema for 73 of them, and probes that put the corpus through ten

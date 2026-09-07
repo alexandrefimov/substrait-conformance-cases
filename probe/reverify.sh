@@ -485,7 +485,12 @@ if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
   # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
   # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
   python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
-  echo "saved columns and results/MATRIX.txt updated from this run (UPDATE_COLUMNS=1)"
+  # docs/ is the same columns drawn - the picture the README shows and the page the site serves.
+  # Left behind, it keeps showing the previous run to everyone who never opens a column.
+  python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || fail "could not redraw docs/matrix.svg"
+  python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || fail "could not redraw docs/matrix-dark.svg"
+  python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || fail "could not rebuild docs/index.html"
+  echo "saved columns, results/MATRIX.txt and docs/ updated from this run (UPDATE_COLUMNS=1)"
 fi
 
 echo
