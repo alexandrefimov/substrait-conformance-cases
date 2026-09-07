@@ -38,6 +38,8 @@ probe wants JDK 17 specifically and finds it by itself only on macOS; anywhere e
 toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and an unmanaged
 cargo will not.
 
+A column is written through `normalize.py`, which puts every participant's answer into one line per
+case and refuses a column it cannot make whole, so the comparison never runs on a half-read file.
 `results/MATRIX.txt` is case by implementation with one truncated answer per cell, and
 `results/<NAME>.txt` has the full values: a cell starting with `-` is a refusal and `·` means the
 case was not run through that implementation. A returned schema can still carry diagnostics — for
@@ -185,7 +187,8 @@ returning a schema is not an assertion that the plan passed validation.
 ## Gluten/Velox
 
 Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved `results/GLUTEN.txt`
-column was taken in a cluster. To reproduce it: build Gluten at the commit in `versions.env` with
+column was taken in a cluster, on 2026-09-03 rather than with the other nine — which is why
+`results/MATRIX.txt` names its date apart from theirs. To reproduce it: build Gluten at the commit in `versions.env` with
 `dev/builddeps-veloxbe.sh --build_tests=ON` - the `JsonToProtoConverter` harness that reads
 protobuf-JSON is only built with the tests - then put `SubstraitCorpusProbeTest.cc` into
 `cpp/velox/tests`, register it in the `CMakeLists.txt` there, and point `SUBSTRAIT_CORPUS_DIR` at

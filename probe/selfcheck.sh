@@ -389,6 +389,44 @@ raise SystemExit(bad)
 MANPY
 
 echo
+echo "### every link between the pages resolves"
+python3 - <<'LINKPY' || FAILED=1
+import io, os, re, sys
+
+# The pages point at each other and at files in the repository, and a split of the README moves
+# targets around. A broken link here is the kind of thing a reader finds and the author never does.
+#
+# The pages are found by walking the tree rather than by asking git: selfcheck-negative.sh runs in a
+# copy with no .git, where `git ls-files` returns nothing, and the first version of this check passed
+# there by examining no pages at all. Finding none is now a failure rather than a clean run.
+pages = []
+for here, dirs, names in os.walk("."):
+    dirs[:] = [d for d in dirs if d not in (".git", "__pycache__", ".probe-env")]
+    pages += [os.path.normpath(os.path.join(here, n)) for n in names if n.endswith(".md")]
+if len(pages) < 3:
+    print("FAILED: only %d pages found to check links in; that is not this repository" % len(pages))
+    raise SystemExit(1)
+bad = 0
+checked = 0
+for page in pages:
+    base = os.path.dirname(page)
+    text = io.open(page, encoding="utf-8").read()
+    targets = [m.group(1) for m in re.finditer(r"\[[^\]]*\]\(([^)\s]+)\)", text)]
+    targets += [m.group(1) for m in re.finditer(r'(?:src|srcset)="([^"]+)"', text)]
+    for target in targets:
+        if target.startswith(("http://", "https://", "#", "mailto:")):
+            continue
+        checked += 1
+        path = os.path.normpath(os.path.join(base, target.split("#")[0]))
+        if not os.path.exists(path):
+            print("FAILED: %s links to %s, which does not exist" % (page, target))
+            bad = 1
+if not bad:
+    print("ok      %d links across %d pages, all resolving" % (checked, len(pages)))
+raise SystemExit(bad)
+LINKPY
+
+echo
 echo "### syntax"
 SYNTAX=0
 for f in probe/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done

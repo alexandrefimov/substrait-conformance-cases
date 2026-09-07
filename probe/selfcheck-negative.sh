@@ -308,6 +308,14 @@ for name in ('README.md', 'METHOD.md'):
     raise SystemExit(0)
 raise SystemExit(1)"
 
+mutate "a link to a page that is not there" "which does not exist" \
+  python3 -c "
+import io
+s = io.open('README.md', encoding='utf-8').read()
+old = '(METHOD.md)'
+if old not in s: raise SystemExit(1)
+io.open('README.md', 'w', encoding='utf-8').write(s.replace(old, '(METHODS.md)', 1))"
+
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"
 

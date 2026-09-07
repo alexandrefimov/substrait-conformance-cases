@@ -471,8 +471,10 @@ footer p { max-width: 72ch; }
       four cases are not expressible in its proto. %(nospec)d cases carry no expectation &mdash; the
       spec does not say whether a virtual table's rows or its declared schema wins, and one case is
       invalid on purpose. The corpus, the probes and the expectations behind this page are in
-      <a href="%(repo)s">substrait-conformance-cases</a>; this page is built by
-      <code>probe/heatmap.py</code> from the saved columns.</p>
+      <a href="%(repo)s">substrait-conformance-cases</a>, and
+      <a href="%(repo)s/blob/main/METHOD.md">METHOD.md</a> says where an expectation comes from and
+      what a matching answer proves; this page is built by <code>probe/heatmap.py</code> from the
+      saved columns.</p>
   </footer>
 </div>
 

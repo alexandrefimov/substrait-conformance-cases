@@ -79,8 +79,8 @@ only Java, Python, the validator and DuckDB were run through this script at all.
 
 ## What has already been corrected
 
-This repository is days old and the claims on its pages have been corrected seven times in that
-span, each correction a commit carrying the measurement that found it. The largest was reading a
+The claims on these pages have been corrected seven times since the repository was published, each
+correction a commit carrying the measurement that found it. The largest was reading a
 held answer in the swap table as one the consumer derived: the twelve that held are the `joineq_*`
 cases, where the swapped declaration is a join predicate whose type never reaches the output schema.
 

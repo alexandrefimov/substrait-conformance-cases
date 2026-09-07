@@ -7,7 +7,7 @@ By default the columns are read from results/, where `reverify.sh UPDATE_COLUMNS
 The list of cases comes from the corpus, not from the columns: otherwise a case lost by every
 participant at once would vanish from the table instead of showing an empty row.
 """
-import io, os, sys
+import io, os, re, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 COLDIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "results")
@@ -57,6 +57,26 @@ undeclared = [(l, n) for l, n in partial if l not in EXPECTED_PARTIAL]
 
 print("Schema derivation matrix: %d implementations x %d cases." % (len(COLUMNS), len(corpus)))
 print("Built by probe/matrix.py from the columns in %s." % os.path.relpath(COLDIR, ROOT))
+# One table out of columns taken on different days reads as one snapshot unless it says otherwise:
+# nine are retaken together by reverify.sh, and the Gluten column is taken in a cluster on its own
+# schedule. Each date is read from the column's own first line, and a column whose header carries no
+# date is named as undated rather than dropped - the first version of this looked for the wording
+# reverify.sh writes, did not find it in the Gluten header, which is written by hand, and announced
+# that every column had been taken on the same day.
+taken = {}
+for label, stem in COLUMNS:
+    path = os.path.join(COLDIR, stem + ".txt")
+    if not os.path.exists(path):
+        continue
+    when = re.search(r"\d{4}-\d{2}-\d{2}", io.open(path, encoding="utf-8").readline())
+    taken.setdefault(when.group(0) if when else "an undated run", []).append(label)
+if len(taken) == 1:
+    print("Every column taken %s." % next(iter(taken)))
+else:
+    main = max(taken.items(), key=lambda kv: len(kv[1]))
+    others = "; ".join("%s %s" % (", ".join(sorted(v)), d)
+                       for d, v in sorted(taken.items()) if d != main[0])
+    print("Columns taken %s, except: %s." % (main[0], others))
 print("Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.")
 print("BOUNDARIES: DuckDB is the only participant carrying no nullability - for it types, arity and")
 print("order are compared. Acero and Spark carry it and are compared on it. Gluten takes no part in")
