@@ -313,10 +313,10 @@ for col, fmt in COLS:
 # anyone had read it, and a report filed to satisfy a check is worse than an untriaged cell that
 # says so.
 OUTCOMES = {
-    "reported":      "filed against the implementation",
+    "reported":      "covered by an implementation issue or PR, with limits in the note",
     "spec-question": "the spec text does not settle it",
     "ours":          "the expectation or this harness is wrong",
-    "open":          "not looked into yet",
+    "open":          "still needs investigation",
 }
 NEEDS_URL = {"reported", "spec-question"}
 ISSUE_URL = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+/(?:issues|pull)/\d+$")
@@ -387,8 +387,8 @@ for cs in doc["cells"].values():
 filed = rules_with_a_report
 
 # The README puts these counts in prose, where nothing would notice them going stale.
-WORD = {6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
-        14: "fourteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two",
+WORD = {3: "three", 6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
+        14: "fourteen", 15: "fifteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two",
         19: "nineteen", 20: "twenty", 23: "twenty-three", 24: "twenty-four", 25: "twenty-five"}
 # README.md and METHOD.md are one page split by audience, and a sentence can move between them; the
 # claim has to be somewhere on it, not in a particular file.
@@ -398,14 +398,14 @@ for sentence in ("gives all %d of them a reason and marks %d as something other 
                  % (total, total - kinds.get("divergence", 0)),
                  "%s are limits of a type system, %s a type the validator never resolved"
                  % (WORD.get(kinds.get("boundary")), WORD.get(kinds.get("unresolved"))),
-                 "%s of its %s reasons name an issue" % (WORD.get(filed), WORD.get(len(doc["rules"]))),
-                 "%s of those %s are not looked into yet"
+                 "%s of its %s reasons link an issue or PR" % (WORD.get(filed), WORD.get(len(doc["rules"]))),
+                 "%s of those %s still need investigation"
                  % (WORD.get(triage_open), WORD.get(triage_pairs))):
     if sentence not in readme:
         fail("the README does not say %r" % sentence)
 
 if not bad:
-    print("ok      %d differing cells, %d reasons (%d naming an issue), %s; %d cells machine-checked, "
+    print("ok      %d differing cells, %d reasons (%d linking an issue or PR), %s; %d cells machine-checked, "
           "%d triaged pairs (%d open)"
           % (total, len(doc["rules"]), filed,
              ", ".join("%s %d" % kv for kv in sorted(kinds.items())), checked,

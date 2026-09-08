@@ -86,7 +86,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "Acero's own derivation has not been read against the yaml formula yet"
+     "note": "decimal_divide returns decimal(16,7) for declared decimal(21,8). A focused comparison of the Arrow decimal kernel and Substrait import is still needed before assigning the report; nullability is a separate part of the observation"
     },
     "DATAFUSION": {
      "outcome": "reported",
@@ -101,8 +101,11 @@
      ]
     },
     "SPARK": {
-     "outcome": "open",
-     "note": "Spark's derivation is Catalyst's; whether that is a substrait-java concern or Spark's has not been settled"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/1292"
+     ],
+     "note": "the report isolates decimal_divide precision using nullable operands and output; the required-input matrix case also differs in nullability, which remains a separate question"
     }
    }
   },
@@ -115,7 +118,7 @@
    "triage": {
     "SPARK": {
      "outcome": "open",
-     "note": "the nullability half of the same four cases; not read against Catalyst yet"
+     "note": "the four add/multiply cases match precision and scale but return nullable with ANSI mode disabled. Before reporting, isolate the effect of ANSI mode and overflow options on the imported function contract; the divide precision report does not cover this"
     }
    }
   },
@@ -174,8 +177,11 @@
    },
    "triage": {
     "ISTHMUS": {
-     "outcome": "open",
-     "note": "Calcite's own set-operation typing may be what Isthmus inherits; not read yet"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/186"
+     ],
+     "note": "the updated reproducer in the issue covers these four intersection and minus operations; the corpus shows their output-schema disagreement without adding a projection above the set"
     }
    }
   },
@@ -249,11 +255,14 @@
    "check": {
     "got_matches": "^\\[i32, unresolved\\]$"
    },
-   "what": "The validator answers both aggregate cases with an i32 where a string was grouped on, and leaves the measure unresolved: the first follows neither the plan nor the spec, the second is no type at all.",
+   "what": "These plans contain two grouping expressions and no measures. The validator does not parse the relation-level grouping expressions, so its direct output contains only the grouping-set index, i32. The emit mapping [0, 1] exposes that index and an out-of-range reference, which remains unresolved.",
    "triage": {
     "VALIDATOR": {
-     "outcome": "open",
-     "note": "not filed: the validator's three open issues are #579 for set operations, #580 for joins and #584 for virtual-table rows, and none of them is about an aggregate answering i32 where a string was grouped on"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-validator/pull/567"
+     ],
+     "note": "the PR parses relation-level grouping expressions and their references, covering both emitted fields in these plans; this links the proposed fix, not a rerun of its head"
     }
    }
   },
@@ -262,15 +271,21 @@
    "check": {
     "no_field_nullable": true
    },
-   "what": "substrait-python and substrait-go return every column of an aggregate required. In aggregate_grouping_sets_declared_order that loses the key absent from one of the sets as well as the measure; in aggregate_grouping_field_shared_by_sets the key is in every set and both get it right, so only the measure differs.",
+   "what": "substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index.",
    "triage": {
     "GO": {
-     "outcome": "open",
-     "note": "not filed against substrait-go, which returns the same two answers as substrait-python; substrait-go#328 is a different defect"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-go/pull/324"
+     ],
+     "note": "the PR makes each grouping key nullable when absent from any set; the shared key stays required. Both emitted outputs are covered; these plans contain no measures"
     },
     "PYTHON": {
-     "outcome": "open",
-     "note": "substrait-io/substrait-python#268 is the grouping key absent from a set, and its reproducer has no aggregate function. Three columns differ across the two cases here, and it explains one: the key in aggregate_grouping_sets_declared_order. The key in aggregate_grouping_field_shared_by_sets is in every set and comes back right. The measure, required in both cases where the expectation is nullable, is a separate behaviour and is not filed"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-python/issues/268"
+     ],
+     "note": "the report includes both grouping-set layouts used here: disjoint keys and one shared key. Both nullable-key observations are covered; these plans contain no measures"
     }
    }
   },
@@ -332,7 +347,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "Acero is reached through pyarrow.substrait; where the nullability is lost has not been located"
+     "note": "the corrected provider preserves required fields on bare reads, while adding an emit mapping already loses them in emit_read. Separate projection, join and function-result nullability before treating these cells as one report"
     }
    }
   }

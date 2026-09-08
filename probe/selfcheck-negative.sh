@@ -289,8 +289,8 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['duckdb-timestamp-is-microseconds']['check']['got_matches'] = '^.c:DATE.$'
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
-# The triage beside each divergence: what came of it, per participant. Eight of the twenty-four
-# entries say 'open', and that is allowed on purpose - so what is left to check is that the record
+# The triage beside each divergence: what came of it, per participant. An entry may say 'open',
+# and that is allowed on purpose - so what is left to check is that the record
 # is complete, that it means one thing, and that its links go somewhere a reader is sent.
 mutate "a report named in a reason's prose instead of its record" "in its prose" \
   python3 -c "
@@ -348,8 +348,8 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['no-string-with-length']['triage'] = {'DUCKDB': {'outcome': 'open', 'note': 'x'}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
-mutate "the count of cells nobody has looked into" "are not looked into yet" \
-  replace METHOD.md "eight of those twenty-four are not" "seven of those twenty-four are not"
+mutate "the count of entries still needing investigation" "still need investigation" \
+  replace METHOD.md "three of those twenty-four still need" "four of those twenty-four still need"
 
 mutate "a count the README states about the reasons" "the README does not say" \
   python3 -c "
