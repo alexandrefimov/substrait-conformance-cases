@@ -146,8 +146,10 @@ identical to the saved column:
 
     bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
 
-`LATEST=1` in front of that runs it against today's release instead, and reports what moved rather
-than failing on it; that is the weekly `drift` workflow. Repeating all nine columns is
+`LATEST=1` selects current package releases or repository heads through `probe/versions-latest.env`
+and reports what moved rather than failing on it; that is the weekly `drift` workflow. Spark follows
+the selected substrait-java checkout's 3.5 variant, so this does not cover newer Spark patch releases
+independently or Spark 4. Repeating all nine columns is
 `probe/reverify.sh`, which needs a substrait-java checkout, a DataFusion checkout and several
 toolchains, and the Gluten column is taken separately, in a cluster;
 [`probe/README.md`](probe/README.md) has the prerequisites and the commands.

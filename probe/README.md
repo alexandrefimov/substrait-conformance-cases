@@ -135,6 +135,12 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 Spark and Isthmus need a built `:spark:spark-3.5_2.12` and `:isthmus` in that checkout; `cp.sh`
 resolves their classpaths from Gradle and caches them under the probe environment.
 
+These pins describe the saved measurements, not a promise to use every participant's newest release. Update a pin together with a reproduced column and its provenance. Package versions and Substrait spec versions are also distinct: a binding can depend on older packaged definitions even when the binding itself is the latest release.
+
+The Spark runner selects `:spark:spark-3.5_2.12`; its Spark version comes from that module's Gradle build. `SPARK_35` records the expected version but does not override the dependency. `SPARK_34` and `SPARK_40` record the other library variants and do not add corpus runs for them. The saved Spark column and automated replay therefore cover Spark 3.5 only. Focused diagnostics use the same default classpath selection.
+
+`LATEST=1` selects package releases or repository heads through `versions-latest.env`. For Spark it follows the current substrait-java checkout's 3.5 variant; it does not independently select the newest Apache Spark patch release. Neither replay nor weekly drift currently runs a Spark 4 variant. A Spark 4 comparison needs the Scala 2.13 consumer, a separately resolved classpath and a separately identified result.
+
 ## What else is in here
 
 `reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
