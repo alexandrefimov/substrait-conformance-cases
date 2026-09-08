@@ -345,19 +345,20 @@ PAGE = """<!doctype html>
   }
 }
 * { box-sizing: border-box; }
-body { margin: 0; padding: 0 20px; background: var(--ground); color: var(--ink);
+body { margin: 0; padding: 0 24px; background: var(--ground); color: var(--ink);
        font: 15px/1.55 var(--sans); }
-.page { max-width: 1080px; margin: 0 auto; }
+.page { max-width: 1140px; margin: 0 auto; }
 header { padding: 44px 0 26px; border-bottom: 1px solid var(--rule); }
 h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.015em; margin: 0 0 14px; }
-.lede { max-width: 63ch; margin: 0 0 12px; color: var(--ink-2); }
+.lede { margin: 0 0 12px; color: var(--ink-2); }
 .lede strong { color: var(--ink); font-weight: 600; }
-.meta { font: 12px/1.5 var(--mono); color: var(--ink-3); margin: 0; }
+.meta { font: 12px/1.5 var(--mono); color: var(--ink-3); margin: 0; overflow-wrap: anywhere; }
 .meta a, footer a { color: var(--ink-2); }
 h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: uppercase;
      color: var(--ink-3); margin: 30px 0 12px; }
-.rollup { display: grid; gap: 5px; }
-.row { display: grid; grid-template-columns: 150px 1fr 208px; align-items: center; gap: 14px; }
+.rollup { display: grid; grid-template-columns: 150px minmax(0, 1fr) max-content;
+          align-items: center; gap: 7px 14px; }
+.row { display: contents; }
 .row .name { font-size: 13px; color: var(--ink-2); }
 .bar { display: flex; height: 15px; gap: 2px; }
 .bar span { display: block; border-radius: 1px; }
@@ -378,18 +379,24 @@ button { font: 12.5px var(--sans); color: var(--ink-2); background: var(--surfac
 button[aria-pressed="true"] { color: var(--surface); background: var(--ink); border-color: var(--ink); }
 button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .hint { font-size: 12.5px; color: var(--ink-3); }
-.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; }
-table { border-collapse: separate; border-spacing: 0; font-size: 12px; }
+.explorer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.matrix-pane { min-width: 0; }
+.scroll { overflow: auto; max-height: 72vh; background: var(--surface);
+          border: 1px solid var(--rule); border-radius: 3px; }
+table { border-collapse: separate; border-spacing: 0; font-size: 12px;
+        table-layout: fixed; width: 100%%; min-width: 658px; }
 thead th { position: sticky; top: 0; z-index: 2; background: var(--surface);
            border-bottom: 1px solid var(--rule-strong); font: 500 11px var(--mono);
-           color: var(--ink-2); padding: 9px 4px; text-align: center; width: 78px; min-width: 78px; }
-thead th.corner { text-align: left; padding-left: 14px; width: 258px; min-width: 258px; left: 0; z-index: 3; }
+           color: var(--ink-2); padding: 10px 4px; text-align: center; width: 42px; height: 92px;
+           vertical-align: bottom; }
+thead th .column-name { display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); }
+thead th.corner { text-align: left; padding-left: 14px; width: 280px; left: 0; z-index: 3; }
 tbody th.case { position: sticky; left: 0; z-index: 1; background: var(--surface);
                 font: 400 11px var(--mono); color: var(--ink-2); text-align: left;
-                padding: 0 10px 0 14px; white-space: nowrap; }
+                padding: 3px 10px 3px 14px; line-height: 1.4; overflow-wrap: anywhere; }
 tbody tr.group th { position: sticky; left: 0; background: var(--surface);
                     font: 600 11px var(--sans); letter-spacing: 0.05em; text-transform: uppercase;
-                    color: var(--ink-3); padding: 16px 14px 5px; text-align: left; white-space: nowrap; }
+                    color: var(--ink-3); padding: 16px 14px 5px; text-align: left; }
 tbody tr.group td { border-bottom: 1px solid var(--rule); }
 td.cell { padding: 0 1px; height: 19px; }
 td.cell i { display: block; height: 15px; border-radius: 2px; }
@@ -402,15 +409,23 @@ td.cell i { display: block; height: 15px; border-radius: 2px; }
 .st5 i { background: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
 tbody tr:hover th.case { color: var(--ink); }
 td.cell.on i { outline: 2px solid var(--ink); outline-offset: 1px; }
-.detail { position: sticky; bottom: 0; margin-top: 10px; z-index: 4; background: var(--surface);
-          border: 1px solid var(--rule); border-radius: 3px; padding: 12px 14px; }
-.detail .head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font: 12px var(--mono); }
-.detail .head .who { color: var(--ink); font-weight: 500; }
-.detail .head .state { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
-.detail dl { display: grid; grid-template-columns: 76px 1fr; gap: 3px 12px; margin: 9px 0 0; font: 12px var(--mono); }
+.detail { position: sticky; top: 24px; min-width: 0; max-height: calc(100vh - 48px); overflow: auto;
+          background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 5px;
+          padding: 20px; box-shadow: 0 5px 18px #0000000a; }
+.detail-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+                  border-bottom: 1px solid var(--rule); padding-bottom: 12px; margin-bottom: 14px; }
+.detail h3 { font: 600 17px/1.4 var(--sans); margin: 0; }
+.detail-help { font-size: 12.5px; color: var(--ink-3); margin: 0 0 16px; }
+.detail .head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; font: 13px var(--mono); }
+.detail .head .who { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.detail .head .state { font: 13px var(--sans); }
+.detail .status-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; }
+.detail dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; margin: 20px 0 0;
+             font: 13px/1.5 var(--mono); }
 .detail dt { color: var(--ink-3); }
-.detail dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
-.detail .why { font: 12.5px var(--sans); color: var(--ink-2); margin: 9px 0 0; max-width: 78ch; }
+.detail dd { margin: 0 0 12px; color: var(--ink); overflow-wrap: anywhere; }
+.detail .why { font: 14px/1.6 var(--sans); color: var(--ink-2); margin: 10px 0 0;
+               border-top: 1px solid var(--rule); padding-top: 16px; overflow-wrap: anywhere; }
 .c-div { color: var(--divergence); }
 .c-unr { color: var(--unresolved); }
 .c-bnd { color: var(--ink-3); }
@@ -419,10 +434,23 @@ footer { border-top: 1px solid var(--rule); margin-top: 26px; padding: 18px 0 40
 footer dl { display: grid; grid-template-columns: 150px 1fr; gap: 2px 14px; font: 11.5px var(--mono); margin: 10px 0 16px; }
 footer dt { color: var(--ink-3); }
 footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
-footer p { max-width: 72ch; }
+@media (max-width: 1199px) {
+  .explorer { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .detail { position: static; max-height: none; }
+  .detail dl { grid-template-columns: 100px minmax(0, 1fr); gap: 10px 16px; }
+  .detail dd { margin-bottom: 0; }
+}
 @media (max-width: 620px) {
-  .row { grid-template-columns: 112px 1fr; }
-  .row .num { grid-column: 2; text-align: left; }
+  body { padding: 0 16px; }
+  header { padding-top: 28px; }
+  .rollup { grid-template-columns: 112px minmax(0, 1fr); }
+  .row .num { grid-column: 1 / -1; text-align: left; white-space: normal; margin-bottom: 7px; }
+  .scroll { max-height: 55vh; }
+  table { min-width: 558px; }
+  thead th.corner { width: 180px; }
+  .detail { padding: 16px; }
+  .detail dl { grid-template-columns: minmax(0, 1fr); gap: 5px; }
+  .detail dd { margin-bottom: 12px; }
   footer dl { grid-template-columns: 1fr; }
 }
 </style>
@@ -450,14 +478,24 @@ footer p { max-width: 72ch; }
   <div class="controls">
     <button id="f-all" aria-pressed="true">All %(cases)d cases</button>
     <button id="f-diff" aria-pressed="false">Only rows where someone differs</button>
-    <span class="hint">Hover or tap a cell for the two answers.</span>
+    <span class="hint">Hover to preview. Click or tap to pin a cell.</span>
   </div>
 
-  <div class="scroll">
-    <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
+  <div class="explorer">
+    <div class="matrix-pane">
+      <div class="scroll" tabindex="0" role="region" aria-label="Conformance matrix">
+        <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
+      </div>
+    </div>
+    <aside class="detail" aria-labelledby="detail-title">
+      <div class="detail-toolbar">
+        <h3 id="detail-title">Cell details</h3>
+        <button id="unpin" hidden>Unpin</button>
+      </div>
+      <p class="detail-help" id="detail-help">Preview follows the pointer. Click a cell to keep it here.</p>
+      <div id="detail"></div>
+    </aside>
   </div>
-
-  <div class="detail" id="detail"></div>
 
   <footer>
     <p>What each column was taken against:</p>
@@ -502,7 +540,9 @@ footer p { max-width: 72ch; }
   });
 
   document.getElementById("head").innerHTML = '<th class="corner">case</th>' +
-    D.participants.map(function (p) { return '<th title="' + p + '">' + D.short[p] + '</th>'; }).join("");
+    D.participants.map(function (p) {
+      return '<th title="' + p + '"><span class="column-name">' + D.short[p] + '</span></th>';
+    }).join("");
 
   var body = document.getElementById("body"), at = 0;
   D.groups.forEach(function (g) {
@@ -535,11 +575,11 @@ footer p { max-width: 72ch; }
     var why = rule && D.rules[rule] ? D.rules[rule].what : (D.disputed[name] || D.why[name] || "");
     detail.innerHTML =
       '<div class="head"><span class="who">' + p + '</span>' +
-      '<span class="state ' + S.tone + '">' + S.name + '</span>' +
-      '<span class="state c-bnd">' + S.note + '</span></div>' +
-      '<dl><dt>case</dt><dd>' + name + '</dd>' +
-      '<dt>expected</dt><dd>' + (want ? esc(want) : "\\u2014 the spec does not settle this case") + '</dd>' +
-      '<dt>' + D.short[p] + '</dt><dd>' + (got ? esc(got) : "\\u2014") + '</dd></dl>' +
+      '<span class="state ' + S.tone + '">' + S.name + '</span></div>' +
+      '<p class="status-note">' + S.note + '</p>' +
+      '<dl><dt>Case</dt><dd>' + esc(name).replace(/_/g, "_<wbr>") + '</dd>' +
+      '<dt>Expected</dt><dd>' + (want ? esc(want) : "\\u2014 the spec does not settle this case") + '</dd>' +
+      '<dt>Returned</dt><dd>' + (got ? esc(got) : "\\u2014") + '</dd></dl>' +
       (why ? '<p class="why">' + esc(why) + '</p>' : "");
     var prev = document.querySelector("td.cell.on");
     if (prev) { prev.classList.remove("on"); }
@@ -547,6 +587,13 @@ footer p { max-width: 72ch; }
     if (td) { td.classList.add("on"); }
   }
   var matrix = document.getElementById("matrix");
+  var unpin = document.getElementById("unpin"), help = document.getElementById("detail-help");
+  function pinState() {
+    unpin.hidden = !pinned;
+    help.textContent = pinned ? "Pinned. Select another cell or unpin to follow the pointer." :
+      "Preview follows the pointer. Click a cell to keep it here.";
+  }
+  unpin.addEventListener("click", function () { pinned = null; pinState(); });
   matrix.addEventListener("mouseover", function (e) {
     var td = e.target.closest && e.target.closest("td.cell");
     if (td && !pinned) { show(+td.dataset.r, +td.dataset.c); }
@@ -557,6 +604,10 @@ footer p { max-width: 72ch; }
     var same = pinned && pinned[0] === +td.dataset.r && pinned[1] === +td.dataset.c;
     pinned = same ? null : [+td.dataset.r, +td.dataset.c];
     if (pinned) { show(pinned[0], pinned[1]); }
+    pinState();
+    if (window.matchMedia("(max-width: 1199px)").matches) {
+      detail.parentElement.scrollIntoView({ block: "nearest" });
+    }
   });
 
   var all = document.getElementById("f-all"), diff = document.getElementById("f-diff");
