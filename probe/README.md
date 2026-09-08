@@ -191,6 +191,51 @@ SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
 to use the probe's normal installation path. The diagnostic prints `DUCKDB BOUND`; normal execution
 prints `DUCKDB ACCEPTED` or `DUCKDB REJECTED`. Column nullability is not compared for DuckDB.
 
+### Impala type-factory comparison
+
+`impala_types.py` runs all canonical plans through Isthmus twice, with its default
+provider and with a provider using `ImpalaTypeFactoryImpl`. Both runs use the same
+combined Java classpath, with Isthmus dependencies first. This measures relation
+schemas at the Isthmus boundary. It does not invoke Impala's optimizer, catalog,
+authorization or execution, and does not add an Impala
+consumer column to the saved matrix.
+
+[The saved paired measurement](../results/impala-types/README.md) records the
+first run, its source revisions, changed cases and interpretation limits.
+
+Use a JDK 17 and already built Isthmus and Impala artifacts. Resolve a fresh
+Isthmus classpath with `probe/cp.sh isthmus` against the desired substrait-java
+checkout. The Impala classpath must include its built planner classes, frontend
+classes or jar, and their dependencies. Classpath files contain one line of
+explicit absolute paths, separated by the platform's classpath separator;
+wildcards are not expanded. The probe does not download or build dependencies.
+
+```sh
+python3 probe/impala_types.py \
+  --isthmus-classpath <isthmus-classpath.txt> \
+  --impala-classpath <impala-classpath.txt> \
+  --substrait-java-revision <source-revision-from-build> \
+  --impala-revision <source-revision-from-build> \
+  --out run/impala-types
+```
+
+The output directory must be new. It keeps both raw and normalized columns,
+comparisons against `expected.json`, a pairwise `comparison.txt`, and a local
+`record.json` with input fingerprints. Revision labels come from the supplied
+build records; hashing bytecode does not establish which source built it. The
+per-run logs record loaded factory locations, Calcite and Java versions, and
+both the provider and `RelBuilder` factories. This distinction matters: the
+pinned Isthmus provider passes its type system to `RelBuilder`, which constructs
+its own factory rather than reusing the provider's factory instance.
+
+Schema differences are measurements. Missing classes, process failures,
+incomplete columns, wholly refused columns or unparseable schema answers fail
+the harness. `COMPLETE` is written only after both columns pass these checks.
+The existing Calcite schema normalizer compares types, order and nullability;
+pairwise comparison also shows name and refusal-message changes, so those need
+to be distinguished from type differences. Keep run artifacts local: their
+provenance logs contain machine paths.
+
 ### Other probes
 
 **Focused producer checks.** These extend the existing producer probes and do not

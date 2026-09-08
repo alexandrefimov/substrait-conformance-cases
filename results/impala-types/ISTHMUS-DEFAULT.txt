@@ -1,0 +1,81 @@
+ISTHMUS-DEFAULT: column from run 2026-09-08; substrait-java fff639064df794840db36fffcd881c09100e23df; Calcite 1.42.0; Java 17.0.20.1; Impala build source label 453eeeccaa6f0a6852083fc70da34a8044fad011
+boundary: Isthmus relation schema with an explicit type factory; no Impala planning or execution
+
+aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
+aggregate_grouping_sets_declared_order         [c:VARCHAR?, a:BIGINT?]
+control_join_without_relcommon                 [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+control_passthrough_rn                         [c0:BIGINT, c1:BIGINT?]
+ctas_keeps_declared_schema                     [total:BIGINT, doubled:INTEGER?]
+decimal_add                                    [$f4:DECIMAL(11,2)]
+decimal_add_overflow                           [$f4:DECIMAL(38,9)]
+decimal_divide                                 [$f4:DECIMAL(21,8)]
+decimal_multiply                               [$f4:DECIMAL(16,3)]
+decimal_multiply_overflow                      [$f4:DECIMAL(38,6)]
+emit_aggregate                                 [c2:BOOLEAN, c0:BIGINT]
+emit_fetch                                     [c2:BOOLEAN, c0:BIGINT]
+emit_filter                                    [c2:BOOLEAN, c0:BIGINT]
+emit_join                                      [c2:BOOLEAN, c0:BIGINT]
+emit_project                                   [c2:BOOLEAN, c0:BIGINT]
+emit_read                                      [c2:BOOLEAN, c0:BIGINT]
+emit_sort                                      [c2:BOOLEAN, c0:BIGINT]
+join_inner                                     [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+join_left                                      [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+join_left_anti                                 [c0:BIGINT, c1:BIGINT?]
+join_left_mark                                 ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK
+join_left_semi                                 [c0:BIGINT, c1:BIGINT?]
+join_left_single                               ERROR: UnsupportedOperationException: Unsupported join type: LEFT_SINGLE
+join_outer                                     [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+join_right                                     [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+join_right_anti                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_ANTI
+join_right_mark                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_MARK
+join_right_semi                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
+join_right_single                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
+joineq_inner                                   [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+joineq_left                                    [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+joineq_left_anti                               [c0:BIGINT, c1:BIGINT?]
+joineq_left_mark                               ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK
+joineq_left_semi                               [c0:BIGINT, c1:BIGINT?]
+joineq_left_single                             ERROR: UnsupportedOperationException: Unsupported join type: LEFT_SINGLE
+joineq_outer                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+joineq_right                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+joineq_right_anti                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_ANTI
+joineq_right_mark                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_MARK
+joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
+joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
+narrowing_count                                [$f0:BIGINT]
+narrowing_is_not_null                          [$f1:BOOLEAN]
+narrowing_is_null                              [$f1:BOOLEAN]
+phase_final                                    [$f0:BIGINT?]
+phase_intermediate                             [$f0:ROW[f0:BIGINT, f1:BIGINT]]
+precision_timestamp_p00                        [c:TIMESTAMP(0)]
+precision_timestamp_p01                        [c:TIMESTAMP(1)]
+precision_timestamp_p02                        [c:TIMESTAMP(2)]
+precision_timestamp_p03                        [c:TIMESTAMP(3)]
+precision_timestamp_p04                        [c:TIMESTAMP(4)]
+precision_timestamp_p06                        [c:TIMESTAMP(6)]
+precision_timestamp_p07                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 7, max precision in Calcite type system is set to 6
+precision_timestamp_p09                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 9, max precision in Calcite type system is set to 6
+precision_timestamp_p12                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 12, max precision in Calcite type system is set to 6
+read_projection_mask                           [c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]
+setdata_intersection_multiset                  [v:BIGINT]
+setdata_intersection_multiset_all              [v:BIGINT]
+setdata_intersection_primary                   ERROR: UnsupportedOperationException: Unsupported set operation: INTERSECTION_PRIMARY
+setdata_minus_multiset                         ERROR: UnsupportedOperationException: Unsupported set operation: MINUS_MULTISET
+setdata_minus_primary                          [v:BIGINT]
+setdata_minus_primary_all                      [v:BIGINT]
+setdata_union_all                              [v:BIGINT]
+setdata_union_distinct                         [v:BIGINT]
+setop_intersection_multiset                    [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_intersection_multiset_all                [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_intersection_primary                     ERROR: UnsupportedOperationException: Unsupported set operation: INTERSECTION_PRIMARY
+setop_minus_multiset                           ERROR: UnsupportedOperationException: Unsupported set operation: MINUS_MULTISET
+setop_minus_primary                            [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_minus_primary_all                        [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_union_all                                [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_union_distinct                           [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+stringlen_declared                             [c0:VARCHAR(10), c1:CHAR(5), c2:BINARY(4), c3:VARCHAR]
+virtual_table_emit_mapping                     [col2:VARCHAR]
+virtual_table_literal_type_differs_from_schema ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})
+virtual_table_row_null_in_required_column      ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
+virtual_table_row_nullable_in_required_column  ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
+virtual_table_row_required_in_nullable_column  ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=false}) does not match schema field type (I32{nullable=true})
