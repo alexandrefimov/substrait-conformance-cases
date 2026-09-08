@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-08T15:45, pyarrow 25.0.1
+ACERO: column from run 2026-09-08T17:11, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -18,6 +18,8 @@ emit_join                                      ERROR: ArrowInvalid: A join rel's
 emit_project                                   [k0:bool?, k1:int64?]
 emit_read                                      [k0:bool?, k1:int64?]
 emit_sort                                      [k0:bool?, k1:int64?]
+expand_consistent_fields                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }   }   input {     read {       co
+expand_switching_nullability                   ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }   }   input {     read {       co
 join_inner                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_left_anti                                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_left_mark                                 ERROR: ArrowInvalid: Unsupported join type

@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-08T16:25, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T17:11, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -18,6 +18,8 @@ emit_join                                      [k0:BIGINT, k1:VARCHAR]
 emit_project                                   [k0:BOOLEAN, k1:BIGINT]
 emit_read                                      [k0:BIGINT, k1:VARCHAR]
 emit_sort                                      [k0:BIGINT, k1:VARCHAR]
+expand_consistent_fields                       ERROR: NotImplementedException: Not implemented Error: Unsupported relation type expand LINE 1: SELECT * FROM from_substrait_json(?) ^
+expand_switching_nullability                   ERROR: NotImplementedException: Not implemented Error: Unsupported relation type expand LINE 1: SELECT * FROM from_substrait_json(?) ^
 join_inner                                     [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 join_left_anti                                 [c0:BIGINT, c1:BIGINT]
 join_left_mark                                 [c0:BIGINT, c1:BIGINT, c2:BOOLEAN]

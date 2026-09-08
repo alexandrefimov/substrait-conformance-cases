@@ -203,6 +203,40 @@
    ],
    "source": "RelCommon.emit: the listed order of direct outputs"
   },
+  "expand_consistent_fields": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "source": "physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns"
+  },
+  "expand_switching_nullability": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "source": "ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index"
+  },
   "join_inner": {
    "schema": [
     [

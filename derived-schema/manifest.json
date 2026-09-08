@@ -322,6 +322,54 @@
   }
  },
  {
+  "case": "expand_consistent_fields",
+  "plan": "expand_consistent_fields.json",
+  "binary": "expand_consistent_fields.bin",
+  "generator": "GenExpand",
+  "note": "consistent_fields  two fields that do not switch, so the output is those two and the i32 index",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "from": "physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns"
+  }
+ },
+ {
+  "case": "expand_switching_nullability",
+  "plan": "expand_switching_nullability.json",
+  "binary": "expand_switching_nullability.bin",
+  "generator": "GenExpand",
+  "note": "switching_nullability  a field switching between a required column and a nullable one is nullable",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "from": "ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index"
+  }
+ },
+ {
   "case": "join_inner",
   "plan": "join_inner.json",
   "binary": "join_inner.bin",

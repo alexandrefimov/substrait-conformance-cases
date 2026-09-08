@@ -1,4 +1,4 @@
-ISTHMUS: column from run 2026-09-08T15:45, substrait-java fff63906
+ISTHMUS: column from run 2026-09-08T17:12, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
 aggregate_grouping_sets_declared_order         [c:VARCHAR?, a:BIGINT?]
@@ -17,6 +17,8 @@ emit_join                                      [c2:BOOLEAN, c0:BIGINT]
 emit_project                                   [c2:BOOLEAN, c0:BIGINT]
 emit_read                                      [c2:BOOLEAN, c0:BIGINT]
 emit_sort                                      [c2:BOOLEAN, c0:BIGINT]
+expand_consistent_fields                       ERROR: UnsupportedOperationException: null
+expand_switching_nullability                   ERROR: UnsupportedOperationException: null
 join_inner                                     [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 join_left_anti                                 [c0:BIGINT, c1:BIGINT?]
 join_left_mark                                 ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK

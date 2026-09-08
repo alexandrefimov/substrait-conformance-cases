@@ -1,0 +1,86 @@
+{
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "expand": {
+      "common": {
+       "direct": {}
+      },
+      "input": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "i64": {
+             "nullability": "NULLABILITY_NULLABLE"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": []
+        }
+       }
+      },
+      "fields": [
+       {
+        "consistentField": {
+         "selection": {
+          "directReference": {
+           "structField": {}
+          },
+          "rootReference": {}
+         }
+        }
+       },
+       {
+        "switchingField": {
+         "duplicates": [
+          {
+           "selection": {
+            "directReference": {
+             "structField": {}
+            },
+            "rootReference": {}
+           }
+          },
+          {
+           "selection": {
+            "directReference": {
+             "structField": {
+              "field": 1
+             }
+            },
+            "rootReference": {}
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ }
+}

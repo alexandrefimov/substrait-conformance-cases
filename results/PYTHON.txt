@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-09-08T15:45, substrait 0.31.0
+PYTHON: column from run 2026-09-08T17:11, substrait 0.31.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64]
 aggregate_grouping_sets_declared_order         [c:str, a:i64]
@@ -17,6 +17,8 @@ emit_join                                      [k0:bool, k1:i64]
 emit_project                                   [k0:bool, k1:i64]
 emit_read                                      [k0:bool, k1:i64]
 emit_sort                                      [k0:bool, k1:i64]
+expand_consistent_fields                       [?:i64, ?:i64?, ?:i32]  !! names 0, types 3
+expand_switching_nullability                   [?:i64, ?:i64, ?:i32]  !! names 0, types 3
 join_inner                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_left_anti                                 [c0:i64, c1:i64?]
 join_left_mark                                 [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5

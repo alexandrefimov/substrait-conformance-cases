@@ -366,6 +366,36 @@
      "note": "the same shape as duckdb-substrait-extension#276, which reports native return types for the decimal functions; whether that issue covers an integer sum has not been established, and the window relation this case reaches it through is separately unfinished there"
     }
    }
+  },
+  "java-expand-omits-the-duplicate-index": {
+   "kind": "divergence",
+   "what": "The spec's output order for this relation is the expand fields followed by an i32 column carrying the index of the duplicate a row came from, and the rule is unconditional in that table. substrait-java maps the fields and stops, so its answer is a column short on both cases. The reading is not only this repository's: substrait-python returns the third column, and it is the one implementation here that does.",
+   "check": {
+    "got_matches": {
+     "JAVA": "^Struct\\{nullable=false, fields=\\[I64\\{nullable=false\\}, I64\\{nullable=true\\}\\]\\}$"
+    }
+   },
+   "triage": {
+    "JAVA": {
+     "outcome": "open",
+     "note": "not filed. Two implementations read the output order differently and each of them carries one of this relation's two rules and not the other, which may be a question for the spec as much as a defect in either; that has not been settled"
+    }
+   }
+  },
+  "python-expand-switching-stays-required": {
+   "kind": "divergence",
+   "what": "A switching field takes the type class its duplicates share and is nullable if any of them is, which algebra.proto states on SwitchingField itself. The field here switches between t_rn's required column and its nullable one, and substrait-python returns it required. It returns the duplicate index the same case asks for, which substrait-java does not - each of the two carries one rule and misses the other.",
+   "check": {
+    "got_matches": {
+     "PYTHON": "^\\[\\?:i64, \\?:i64, \\?:i32\\]"
+    }
+   },
+   "triage": {
+    "PYTHON": {
+     "outcome": "open",
+     "note": "not filed. substrait-python#267 and #268 are the join and grouping-key sides of the same shape, a required field that should have widened, and whether an expand switching field belongs with them or on its own has not been established"
+    }
+   }
   }
  },
  "cells": {
@@ -446,7 +476,8 @@
    "joineq_right": "python-join-concatenates-the-inputs",
    "joineq_right_mark": "python-join-concatenates-the-inputs",
    "joineq_right_single": "python-join-concatenates-the-inputs",
-   "read_projection_mask": "read-projection-ignored"
+   "read_projection_mask": "read-projection-ignored",
+   "expand_switching_nullability": "python-expand-switching-stays-required"
   },
   "SPARK": {
    "decimal_add": "spark-decimal-result-nullable",
@@ -485,6 +516,10 @@
    "setop_union_all": "validator-setop-takes-the-first-input",
    "setop_union_distinct": "validator-setop-takes-the-first-input",
    "virtual_table_emit_mapping": "validator-does-not-resolve"
+  },
+  "JAVA": {
+   "expand_consistent_fields": "java-expand-omits-the-duplicate-index",
+   "expand_switching_nullability": "java-expand-omits-the-duplicate-index"
   }
  }
 }

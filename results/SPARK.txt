@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-08T15:45, spark 3.5.4
+SPARK: column from run 2026-09-08T17:12, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -18,6 +18,8 @@ emit_join                                      ERROR: IllegalArgumentException: 
 emit_project                                   [k0:boolean, k1:bigint]
 emit_read                                      [k0:boolean, k1:bigint]
 emit_sort                                      [k0:boolean, k1:bigint]
+expand_consistent_fields                       ERROR: UnsupportedOperationException: ConsistentField not currently supported
+expand_switching_nullability                   ERROR: UnsupportedOperationException: ConsistentField not currently supported
 join_inner                                     [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint]
 join_left_anti                                 [c0:bigint, c1:bigint?]
 join_left_mark                                 ERROR: UnsupportedOperationException: Unsupported join type LEFT_MARK

@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-08T15:45, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-08T17:11, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_sets_declared_order         [i32, unresolved]
@@ -17,6 +17,8 @@ emit_join                                      [bool, i64]
 emit_project                                   [bool, i64]
 emit_read                                      [bool, i64]
 emit_sort                                      [bool, i64]
+expand_consistent_fields                       —
+expand_switching_nullability                   —
 join_inner                                     [i64, i64?, i64?, i64]
 join_left_anti                                 [i64, i64?]
 join_left_mark                                 [i64, i64?, i64?, i64]

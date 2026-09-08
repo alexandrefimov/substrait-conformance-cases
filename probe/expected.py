@@ -250,6 +250,37 @@ for _case in ("window_bound_offset", "window_bound_offset_expr"):
                   "plan carries: each sum is its row and the one before it, so the rows are "
                   "(1,1), (2,3), (3,5), (4,7), compared as the multiset of every integer in them"}
 
+# --- The expand relation -------------------------------------------------------------------------
+# Two rules, both stated and neither declared in the plan: an ExpandField carries no output_type, so
+# a consumer has to derive these rather than repeat them.
+#
+# The output order is unconditional in the spec's table: "The expand fields followed by an i32 column
+# describing the index of the duplicate that the row is derived from" (physical_relations.md, Expand
+# Operation). Two expand fields therefore make three columns. The spec calls the last one an i32
+# column and does not qualify its nullability; it is taken as required here, because the operator
+# produces it for every row it emits - that much is a reading, and it is the only one in these two.
+#
+# Neither plan carries Plan.Root.names. With three names - what this expectation implies - substrait-
+# java refuses on the count before reporting any schema, because it derives two columns, and the
+# disagreement about the index would turn into a names error and land in the refusals, where nothing
+# records it. With none, every participant reports what it derives and substrait-python flags the
+# absence beside its answer. The second is the lesser distortion: it moves a note into one column,
+# where the first moves the finding out of the data.
+INDEX = ["i32", False]
+expected["expand_consistent_fields"] = {
+    "schema": [["i64", False], ["i64", True], INDEX],
+    "source": "physical_relations.md, Expand Operation: the expand fields followed by an i32 column "
+              "for the duplicate index; the two fields are direct references to t_rn's columns"}
+
+# And a switching field's type: "All duplicates must return the same type class but may differ in
+# nullability. The effective type of the output field will be nullable if any of the duplicate
+# expressions are nullable" (ExpandRel.SwitchingField in algebra.proto). The field here switches
+# between t_rn's required column and its nullable one, so it is nullable.
+expected["expand_switching_nullability"] = {
+    "schema": [["i64", False], ["i64", True], INDEX],
+    "source": "ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the "
+              "expand fields followed by the i32 duplicate index"}
+
 print(json.dumps({"expected": expected, "rows": rows, "disputed": DISPUTED,
                   "spec_silent": sorted(SPEC_SILENT), "spec_says_invalid": sorted(SPEC_SAYS_INVALID)},
                  ensure_ascii=False, indent=1, sort_keys=True))

@@ -6,13 +6,13 @@
 the matrix as a page, with the expectation and the answer beside each cell.
 
 A plan declares types and a consumer derives them again — or reuses what the plan declared. When
-the two disagree, nothing in the format notices. The main comparison corpus contains 81 plans built
-to make such disagreements visible, an expected schema for 76 of them, and probes that put the corpus
+the two disagree, nothing in the format notices. The main comparison corpus contains 83 plans built
+to make such disagreements visible, an expected schema for 78 of them, and probes that put the corpus
 through ten implementations.
 
 [Focused diagnostics](probe/README.md#focused-schema-diagnostics) also include
 minimal consumer cases with controls and checks of producer output. These can be
-run separately and are not counted in the saved 81-plan matrix.
+run separately and are not counted in the saved 83-plan matrix.
 
 The expectations are the part worth being suspicious of, so this is how they are made. Each one is
 written by hand from the spec — the derivation tables, the decimal formulas, the relation rules — in
@@ -35,7 +35,7 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 Three things, in the order they are worth someone's time:
 
-- **A reading of `probe/expected.py` against the spec.** It is 76 expectations written by hand from
+- **A reading of `probe/expected.py` against the spec.** It is 78 expectations written by hand from
   the spec text; nobody outside this repository has checked them, and an expectation that is wrong
   turns into a divergence reported against an implementation that was right.
 - **For a participant's maintainer: the cases that differ for you.** `differed.json` names them per
@@ -55,7 +55,7 @@ page is wrong, that is a bug here and worth an issue.
 ## What the corpus says
 
 The columns saved here were taken 2026-09-08 against the versions in `probe/versions.env`, which
-each column's own first line names again. They answer the 76 cases that carry an expectation:
+each column's own first line names again. They answer the 78 cases that carry an expectation:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/matrix-dark.svg">
@@ -72,15 +72,15 @@ expectation and the answer beside each cell.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
-| substrait-java | 76 | 0 | 0 |
-| substrait-python | 58 | 17 | 1 |
-| substrait-go | 55 | 2 | 19 |
-| substrait-validator | 45 | 28 | 3 |
-| Isthmus/Calcite | 49 | 5 | 22 |
-| DataFusion | 52 | 9 | 15 |
-| DuckDB | 33 | 19 | 24 |
-| Spark | 28 | 6 | 42 |
-| Acero | 3 | 15 | 58 |
+| substrait-java | 76 | 2 | 0 |
+| substrait-python | 59 | 18 | 1 |
+| substrait-go | 55 | 2 | 21 |
+| substrait-validator | 45 | 28 | 5 |
+| Isthmus/Calcite | 49 | 5 | 24 |
+| DataFusion | 52 | 9 | 17 |
+| DuckDB | 33 | 19 | 26 |
+| Spark | 28 | 6 | 44 |
+| Acero | 3 | 15 | 60 |
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
 and the same person wrote the generators, the expectations and part of substrait-java. Its 76
@@ -89,6 +89,14 @@ swap a declared `output_type` for a false one and Java's answer follows it on te
 cases that carry one, as do substrait-python and the validator. [METHOD.md](METHOD.md) has that
 experiment, its tallies and what it cannot reach.
 
+That row is no longer clean, and the two cells that broke it are the point of having it. Both are
+`expand`, where the spec's output order is the expand fields followed by an i32 column carrying the
+index of the duplicate a row came from; substrait-java stops at the fields. The expectation was
+written from that sentence before any implementation was asked, and substrait-python — which
+derives the third column and loses the nullability rule substrait-java gets right — is what keeps
+the reading from being this repository's alone. Neither is filed: two implementations each carrying
+one of the relation's two rules may be a question for the spec as much as a defect in either.
+
 These are nine consumer paths rather than nine engines — the Java core, Isthmus and Spark paths
 share substrait-java, Isthmus adding Calcite conversion and Spark its Catalyst one. Gluten has a
 separate cluster run over the virtual-table variant and is outside this comparison. *Unsupported*
@@ -96,7 +104,7 @@ means the probe produced no comparable schema: rejections, errors and crashes. R
 against *matched + differed*; the unsupported count records the rest of the cases.
 
 *Differed* means the answer disagrees with this repository's reading of the spec, and not every such
-cell is a defect. `differed.json` gives all 101 of them a reason and marks 17 as something other than
+cell is a defect. `differed.json` gives all 104 of them a reason and marks 17 as something other than
 a divergence: six are limits of a type system, eleven a type the validator never resolved. Each
 reason carries a property that `probe/check_differed.py` tests against the saved column or the case
 inputs, so a reason cannot quietly describe a cell it does not fit; the cause it states still needs
@@ -118,7 +126,7 @@ A column also has a reach, and a number read past it says nothing. The first lin
 
 ## What is here
 
-The corpus is `derived-schema/` — 81 plans as protobuf-JSON and as binary protobuf, with a
+The corpus is `derived-schema/` — 83 plans as protobuf-JSON and as binary protobuf, with a
 `manifest.json` describing every one — plus `derived-schema-virtual-tables/`, the same cases rewritten
 for Gluten, which reads only `virtual_table` and `local_files` out of a `ReadRel`. The answers are
 `results/<NAME>.txt`, one file per implementation, gathered by `probe/matrix.py` into
@@ -169,8 +177,8 @@ encoded rule matches the spec or that every interpretation of a result is correc
   Each says what is missing. Existing reports can cover only part of a linked observation, so
   their notes also matter. `open` is an allowed answer; a link does not prove a fix. The count is
   written down and `probe/check_differed.py` compares it.
-- Rows are compared for three participants and ten cases; schemas for nine participants and 76
-  cases. Five of the 81 cases link to the issue they came from; the rest record only their generator
+- Rows are compared for three participants and ten cases; schemas for nine participants and 78
+  cases. Five of the 83 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this

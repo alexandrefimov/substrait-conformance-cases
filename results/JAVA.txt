@@ -1,4 +1,4 @@
-JAVA: column from run 2026-09-08T15:45, substrait-java fff63906
+JAVA: column from run 2026-09-08T17:11, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}
@@ -17,6 +17,8 @@ emit_join                                      Struct{nullable=false, fields=[Bo
 emit_project                                   Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
 emit_read                                      Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
 emit_sort                                      Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+expand_consistent_fields                       Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+expand_switching_nullability                   Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 join_inner                                     Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 join_left_anti                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 join_left_mark                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, Bool{nullable=true}]}

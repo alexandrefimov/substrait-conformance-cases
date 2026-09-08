@@ -29,7 +29,8 @@ import io, json, os, re, subprocess, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 COLS = [("PYTHON", "py"), ("GO", "go"), ("VALIDATOR", "py"), ("ISTHMUS", "calcite"),
-        ("DATAFUSION", "df"), ("DUCKDB", "duckdb"), ("SPARK", "spark"), ("ACERO", "acero")]
+        ("DATAFUSION", "df"), ("DUCKDB", "duckdb"), ("SPARK", "spark"), ("ACERO", "acero"),
+        ("JAVA", "java")]
 
 # check_expected.py is a script, not a module: it reads sys.argv at import time. Its parsers are
 # taken by running the source down to that line, so the two files cannot disagree about what an
@@ -461,9 +462,23 @@ for cs in doc["cells"].values():
 filed = rules_with_a_report
 
 # The README puts these counts in prose, where nothing would notice them going stale.
-WORD = {2: "two", 3: "three", 6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
-        14: "fourteen", 15: "fifteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two",
-        19: "nineteen", 20: "twenty", 23: "twenty-three", 24: "twenty-four", 25: "twenty-five"}
+ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+        "nineteen"]
+TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+def word(n):
+    """The English for a count under a hundred, so that a number moving past a hand-kept list
+    cannot turn a checked sentence into one nothing can satisfy."""
+    if n < 20:
+        return ONES[n]
+    return TENS[n // 10] + ("-" + ONES[n % 10] if n % 10 else "")
+
+class _Word:
+    def get(self, n, default=None):
+        return word(n) if isinstance(n, int) and 0 <= n < 100 else default
+
+WORD = _Word()
 # README.md and METHOD.md are one page split by audience, and a sentence can move between them; the
 # claim has to be somewhere on it, not in a particular file.
 readme = " ".join(" ".join(io.open(os.path.join(ROOT, f), encoding="utf-8").read()
