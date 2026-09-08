@@ -1,5 +1,5 @@
 """One case through DuckDB. A separate process per case: the extension can die on a signal."""
-import argparse, pathlib
+import argparse, pathlib, re
 import duckdb
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -56,4 +56,5 @@ try:
             vals = sorted(r[0] for r in rows)
             print("DUCKDB ROWS      %s" % (vals if len(vals) <= 30 else vals[:30] + ["..."],))
 except Exception as e:
-    print("DUCKDB REJECTED  %s: %s" % (type(e).__name__, str(e).replace("\n", " ")[:150]))
+    print("DUCKDB REJECTED  %s: %s"
+          % (type(e).__name__, re.sub(r"\s+", " ", str(e)).strip()[:150]))
