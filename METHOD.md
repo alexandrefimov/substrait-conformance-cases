@@ -9,9 +9,31 @@ matching answer does and does not establish, and what in here has already been c
 `probe/expected.py` encodes case-specific expectations by hand and records their source per case:
 decimal formulas reimplemented from `functions_arithmetic_decimal.yaml`, the spec's Output Type
 Derivation table, function return declarations, and relation rules such as join nullability and
-emit order. It reads neither spec files nor plans. `expected.json` is the result. Eight set-operation
-cases also carry expected multisets of rows transcribed from the spec's examples;
-`probe/check_rows.py` compares those separately from schemas.
+emit order. It reads neither spec files nor plans. `expected.json` is the result. Ten cases also carry
+expected rows: eight set-operation cases whose multisets are transcribed from the spec's examples,
+and the two window-bound cases, whose four rows are in the plan. `probe/check_rows.py` compares
+those separately from schemas.
+
+`probe/expected.py` opens by naming every spec file it cites and the release it cites them at —
+[v0.102.0](https://github.com/substrait-io/substrait/tree/v0.102.0), which is what these plans
+declare and what substrait-java pins through substrait-packaging — so a reader checking a rule knows
+which text to open without guessing; the focused probes in [`probe/README.md`](probe/README.md) name
+their own where it differs. A schema is written as
+type-and-nullability pairs — `[str, i64?]` on these pages, `[["str", false], ["i64", true]]` in
+`expected.json` — with `?` on a nullable field and nothing on a required one.
+
+`expected.py` is not a deriver, and that is deliberate. A program that computed a schema from any
+plan would be a second implementation of the spec. It would apply one reading of a rule to every
+case that touches it, so a wrong reading would produce cases that agree with each other, and a run
+of them would come back green. Written case by case, a wrong reading has the cases around it to
+disagree with.
+
+That is a difference of degree, not of kind, and two helpers here are where the degree runs out.
+`dec_return` computes the five decimal cases and `join_expected` the whole join matrix. A mistake in
+either is the same mistake across its group, exactly as it would be in a deriver. What holds for
+every case without exception is narrower: no expectation here reads a plan, and none reads an
+implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
+is why the first thing the README asks for is somebody else's reading of it.
 
 Five cases carry no expectation, for two different reasons that `expected.json` keeps apart. Four have
 virtual-table row types or nullability different from the declared schema. They remain unscored
@@ -23,10 +45,23 @@ what is worth measuring is whether the violation is reported.
 ## What the corpus is made of
 
 The cases are plain `substrait.Plan` protobuf-JSON with no wrapper of any kind, and they declare spec
-0.102. Most are the tests of bugs already fixed in substrait-java, rebuilt with the same builders so
-that the expected schema is produced mechanically rather than retyped; the rest cover parts of the
-spec — the set-operation derivation table, `ReadRel.projection`, aggregation phases, decimal
-arithmetic — where the rule is written down and can be checked directly.
+0.102. Most are the tests of bugs already fixed in substrait-java, rebuilt with the same builders
+rather than retyped into JSON by hand; the rest cover parts of the spec — the set-operation
+derivation table, `ReadRel.projection`, aggregation phases, decimal arithmetic — where the rule is
+written down and can be checked directly.
+
+Three things in a case come from three places, and the distinction is what the numbers rest on. The
+plan is built by substrait-java's builders, so its shape comes from that library. The types the plan
+declares come from there too, which is the whole reason the swap experiment below exists. The
+expectation comes from `probe/expected.py`, written from the spec text: it is not read back from the
+plan, from a generator, or from any implementation's answer.
+
+Where an upstream test asserts the same thing, that is worth naming rather than leaving to be found.
+substrait-java's `JoinRecordTypeTest`, added with substrait-java#1112, tabulates the record type of
+each join type, and the rule it encodes is the rule `join_expected` encodes here — written by
+somebody else, applied to different inputs, and agreeing. The two aggregate cases have no such
+counterpart: `AggregateRelTest`, where they come from, asserts grouping counts and a round trip and
+never an output schema.
 
 `derived-schema/manifest.json` has an entry per case: which generator writes it, the line that
 generator prints for it, and its expectation with the wording of where that came from. It is built
@@ -35,6 +70,48 @@ say rather than what someone remembered about them; the only hand-written part i
 came from. Five cases have one so far — that is what is still thin here, and thin on purpose: an
 entry is added only when the case exercises what the change it names actually changed. A case is added by adding a
 generator to `gen/`; `gen/README.md` says how the corpus is built.
+
+## What moving these upstream would take
+
+Three things here bear on the question substrait#1164 asks, and none of them is an argument either
+way.
+
+A case is a plain `substrait.Plan`, and its expectation lives beside it in `expected.json` under the
+case's own name. The pairing therefore needs no wrapper message: a corpus can be a directory of
+plans and one file of expectations. What that costs is that nothing in the format holds the two
+together — `derived-schema/manifest.json` and `probe/selfcheck.sh` do it instead, and a plan copied
+out of here without its entry loses its expectation silently.
+
+The plans are built with substrait-java's builders. Here that is recorded as calibration, and the
+first row of the matrix says what it is worth. In the spec repository the same fact would be a
+dependency question: the tests of the spec generated by one of the implementations of the spec.
+The cases themselves need nothing but a protobuf library once they are written; the generators need
+that checkout.
+
+The plans declare spec 0.102 rather than leaving `Plan.version` unset, so they are not the
+version-agnostic fixtures substrait#1164 proposes for a spec-repository corpus.
+
+## The two expand cases
+
+These are the cells that broke the calibration row, and they are worth their own section, because
+what they say about the spec and what they say about the two implementations are different things.
+
+The spec's output order for `expand` is the expand fields followed by a column carrying the index of
+the duplicate a row came from. That order is unconditional in the table that states it: unlike
+Aggregate's own index column, which the same page marks "(if applicable)" and explains below the
+table, Expand's carries no condition at all. substrait-java maps the fields and stops, so its answer
+is a column short. substrait-python returns the third column and loses the nullability rule that
+`ExpandRel.SwitchingField` states outright, which substrait-java gets right. Each implementation
+carries one of the relation's two rules. The expectation was written from those sentences before
+either was asked, and it is substrait-python — not this repository — that keeps the reading of the
+first one from standing alone.
+
+The width of that column is the part the spec leaves open. `physical_relations.md` calls it i32 and
+`algebra.proto` calls it int64; [substrait#714](https://github.com/substrait-io/substrait/issues/714)
+is open on which is meant. The expectation here follows the documentation table, and the comparison
+is exact, so a participant answering `i64` would be recorded as differing on a reading the spec has
+not ruled out. None does today. The day one does, the cell arrives needing a reason written by hand,
+which is where that reading would be recorded rather than lost.
 
 ## What a match establishes
 
@@ -60,7 +137,7 @@ For substrait-java the eleven that move are the five decimal cases, `narrowing_c
 predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
 expectation.
 
-Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. The three window cases added since are not in that run, and each of them declares one. For Java, ten
+Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. Seventeen cases have been added since that run — three window cases, two expand, cross, top-N, the integer sum and the nine physical joins — four of them declaring an `output_type`. For Java, ten
 scored output schemas change and twelve hold. In those twelve cases the altered declaration belongs
 to a join predicate, whose type is absent from the output schema. The predicate's declaration can
 be copied without changing the join's output. The other 51 scored plans have no `output_type`.
@@ -108,14 +185,14 @@ The Acero table provider now materializes each known synthetic table with the sc
 
 The previous provider ignored that schema and registered `t_str` with plain string and binary fields. It therefore removed the lengths before Acero executed `stringlen_declared`. With the requested schema, Acero preserves `varchar(10)` and `fixed_char(5)` as Arrow extension types and `fixed_binary(4)` as fixed-size binary. The comparison normalizes those names while retaining widths and nullability.
 
-Retaking all 78 Acero cases with the same pinned PyArrow version changed only `stringlen_declared`; it now matches. The former `acero-drops-a-fixed-size-binary` explanation has been removed. A match on this bare read establishes preservation of the supplied input schema, not independent derivation of a function return type. Each column retains its own measurement date when only one participant is rerun.
+Retaking the whole Acero column — 78 cases then — with the same pinned PyArrow version changed only `stringlen_declared`; it now matches. The former `acero-drops-a-fixed-size-binary` explanation has been removed. A match on this bare read establishes preservation of the supplied input schema, not independent derivation of a function return type. Each column retains its own measurement date when only one participant is rerun.
 
 ## Reports and generator sources
 
-[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: sixteen of its twenty-three reasons link an issue or PR. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
+[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: twenty of its twenty-four reasons link an issue or PR. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
 
 A refusal is not recorded that way, and mostly should not be: a participant that says it does not implement a relation has already said everything a reason could, and 201 of the cells are that. [refused.json](refused.json) holds the ones that are not. In eleven cells where a participant died rather than refused — ten in the DuckDB extension, one in Acero — what came back is a signal and not a message, and an engine that cannot do something is not in the condition of one that dies trying, whatever its support. Those carry a reason with a predicate and a triage, exactly as a divergence does, and `probe/check_differed.py` requires the file and the columns to name the same cells in both directions.
 
 The general answer for the other 190 would be to compare a refusal against what the engine declares it supports, which needs no reasons written by hand at all. The spec ships no such declaration today: at v0.102.0 `dialects/` holds the schema and its fixtures and not one engine's file.
 
-What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-seven of them; four of those twenty-seven still need investigation, each saying what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
+What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-eight of them; one of those twenty-eight still need investigation, each saying what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
