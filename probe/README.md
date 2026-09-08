@@ -43,8 +43,10 @@ against itself — that `expected.json` and `results/MATRIX.txt` are what their 
 saved column is complete and agrees with the expectations, that the numbers in the README match what
 `check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
 has come back. `check_differed.py`, which it calls, is the one part that reads judgements rather
-than generated files: every differing answer has a reason in `differed.json`, and every reason
-carries a test of an output property. These checks do not prove the stated cause of a difference.
+than generated files: every differing answer has a reason in `differed.json`, every reason
+carries a test of an output property, and every divergence carries a record of what came of
+it — per participant, since one reason can cover four of them. These checks do not prove the
+stated cause of a difference.
 Unknown or inactive checks are rejected. The self-check needs python3 and nothing else, takes
 seconds, and is what CI runs.
 

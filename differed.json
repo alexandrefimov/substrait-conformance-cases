@@ -37,16 +37,39 @@
   },
   "read-projection-ignored": {
    "kind": "divergence",
-   "what": "ReadRel.projection masks the read's columns before anything else; both return the unmasked schema, all three columns of it. substrait-python labels the first two with the root's names and the third with none, which its probe flags; Isthmus keeps the schema's own names. Filed as substrait-io/substrait-python#264 for substrait-python; substrait-io/substrait-java#1280 is open for Isthmus.",
+   "what": "ReadRel.projection masks the read's columns before anything else; both return the unmasked schema, all three columns of it. substrait-python labels the first two with the root's names and the third with none, which its probe flags; Isthmus keeps the schema's own names.",
    "check": {
     "first_input": true
+   },
+   "triage": {
+    "ISTHMUS": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/pull/1280"
+     ],
+     "note": "a fix, opened without a separate issue"
+    },
+    "PYTHON": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-python/issues/264"
+     ]
+    }
    }
   },
   "grouping-key-nullability": {
    "kind": "divergence",
-   "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. DataFusion makes the key nullable. Filed as apache/datafusion#24968.",
+   "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. DataFusion makes the key nullable.",
    "check": {
     "got_matches": "^\\[c:Utf8\\?, "
+   },
+   "triage": {
+    "DATAFUSION": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/24968"
+     ]
+    }
    }
   },
   "decimal-own-derivation": {
@@ -59,6 +82,28 @@
       "SPARK"
      ]
     }
+   },
+   "triage": {
+    "ACERO": {
+     "outcome": "open",
+     "note": "Acero's own derivation has not been read against the yaml formula yet"
+    },
+    "DATAFUSION": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/25043"
+     ]
+    },
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/276"
+     ]
+    },
+    "SPARK": {
+     "outcome": "open",
+     "note": "Spark's derivation is Catalyst's; whether that is a substrait-java concern or Spark's has not been settled"
+    }
    }
   },
   "spark-decimal-result-nullable": {
@@ -66,13 +111,39 @@
    "what": "Spark returns a nullable decimal from arithmetic over required inputs; the precision and scale are the spec's.",
    "check": {
     "nullable_only": true
+   },
+   "triage": {
+    "SPARK": {
+     "outcome": "open",
+     "note": "the nullability half of the same four cases; not read against Catalyst yet"
+    }
    }
   },
   "avg-over-integers-returns-float": {
    "kind": "divergence",
-   "what": "functions_arithmetic.yaml declares avg:i64 with return i64?, truncating partial values; the answer is a float. Filed as substrait-io/substrait#1210.",
+   "what": "functions_arithmetic.yaml declares avg:i64 with return i64?, truncating partial values; the answer is a float.",
    "check": {
     "got_matches": "(?i)(float64|double|fp64)"
+   },
+   "triage": {
+    "ACERO": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1210"
+     ]
+    },
+    "DATAFUSION": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1210"
+     ]
+    },
+    "DUCKDB": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1210"
+     ]
+    }
    }
   },
   "duckdb-timestamp-precision-ignored": {
@@ -85,6 +156,14 @@
      3,
      9
     ]
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/268"
+     ]
+    }
    }
   },
   "isthmus-setop-nullable-if-any-input-is": {
@@ -92,13 +171,27 @@
    "what": "The spec's Output Type Derivation table gives a pattern per operation. Isthmus applies the union pattern - nullable where any input is - to intersection and minus as well.",
    "check": {
     "nullable_if_any_input": true
+   },
+   "triage": {
+    "ISTHMUS": {
+     "outcome": "open",
+     "note": "Calcite's own set-operation typing may be what Isthmus inherits; not read yet"
+    }
    }
   },
   "validator-setop-takes-the-first-input": {
    "kind": "divergence",
-   "what": "The validator returns the first input's nullability for every set operation, union included. Filed as substrait-io/substrait-validator#579.",
+   "what": "The validator returns the first input's nullability for every set operation, union included.",
    "check": {
     "first_input": true
+   },
+   "triage": {
+    "VALIDATOR": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-validator/issues/579"
+     ]
+    }
    }
   },
   "datafusion-intersection-takes-the-first-input": {
@@ -106,6 +199,14 @@
    "what": "DataFusion returns the first input's nullability for intersection. Its union shows this is not what it does everywhere - that answer is nullable wherever any input is, which the first input is not - while minus cannot tell the two apart, because there the spec's pattern is the first input.",
    "check": {
     "first_input": true
+   },
+   "triage": {
+    "DATAFUSION": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/25042"
+     ]
+    }
    }
   },
   "python-join-concatenates-the-inputs": {
@@ -115,13 +216,32 @@
     "inputs_concatenated": {
      "mark_suffix": true
     }
+   },
+   "triage": {
+    "PYTHON": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-python/issues/263",
+      "https://github.com/substrait-io/substrait-python/issues/267"
+     ],
+     "note": "263 is the four mark joins, reproduced by these cases; 267 is the ten left, right, outer and single ones, reproduced by probe/python_nullability.py"
+    }
    }
   },
   "validator-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "The validator applies the join type on inner, outer, left, right, left semi, left anti and left single, all of which match - plain right included, which is the point of the contrast. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column. Filed as substrait-io/substrait-validator#580.",
+   "what": "The validator applies the join type on inner, outer, left, right, left semi, left anti and left single, all of which match - plain right included, which is the point of the contrast. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column.",
    "check": {
     "inputs_concatenated": {}
+   },
+   "triage": {
+    "VALIDATOR": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-validator/issues/580"
+     ],
+     "note": "the two right-single cells are adjacent evidence, outside what that issue reports"
+    }
    }
   },
   "validator-aggregate-gives-i32-and-unresolved": {
@@ -129,21 +249,45 @@
    "check": {
     "got_matches": "^\\[i32, unresolved\\]$"
    },
-   "what": "The validator answers both aggregate cases with an i32 where a string was grouped on, and leaves the measure unresolved: the first follows neither the plan nor the spec, the second is no type at all."
+   "what": "The validator answers both aggregate cases with an i32 where a string was grouped on, and leaves the measure unresolved: the first follows neither the plan nor the spec, the second is no type at all.",
+   "triage": {
+    "VALIDATOR": {
+     "outcome": "open",
+     "note": "an i32 where a string was grouped on is a third behaviour, not covered by 579 or 580"
+    }
+   }
   },
   "python-go-aggregate-all-required": {
    "kind": "divergence",
    "check": {
     "no_field_nullable": true
    },
-   "what": "substrait-python and substrait-go return every column of an aggregate required. In aggregate_grouping_sets_declared_order that loses the key absent from one of the sets as well as the measure; in aggregate_grouping_field_shared_by_sets the key is in every set and both get it right, so only the measure differs."
+   "what": "substrait-python and substrait-go return every column of an aggregate required. In aggregate_grouping_sets_declared_order that loses the key absent from one of the sets as well as the measure; in aggregate_grouping_field_shared_by_sets the key is in every set and both get it right, so only the measure differs.",
+   "triage": {
+    "GO": {
+     "outcome": "open",
+     "note": "not filed against substrait-go"
+    },
+    "PYTHON": {
+     "outcome": "open",
+     "note": "substrait-python#268 reports this behaviour from probe/python_nullability.py; whether it covers these two corpus cases has not been established"
+    }
+   }
   },
   "duckdb-decimal-divide-returns-double": {
    "kind": "divergence",
    "check": {
     "got_matches": "^\\[r:DOUBLE\\]$"
    },
-   "what": "divide:dec is declared to return a decimal; DuckDB returns DOUBLE, so the result is not a decimal of another precision but not a decimal at all."
+   "what": "divide:dec is declared to return a decimal; DuckDB returns DOUBLE, so the result is not a decimal of another precision but not a decimal at all.",
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/276"
+     ]
+    }
+   }
   },
   "spark-projection-not-applied": {
    "kind": "divergence",
@@ -152,7 +296,15 @@
      "leading": true
     }
    },
-   "what": "ReadRel.projection names which columns the read returns and in what order. Spark returns the first two columns of the unmasked schema. The count matches what the mask selects; this corpus cannot tell that apart from the count of the root's names, which is the same in every case here."
+   "what": "ReadRel.projection names which columns the read returns and in what order. Spark returns the first two columns of the unmasked schema. The count matches what the mask selects; this corpus cannot tell that apart from the count of the root's names, which is the same in every case here.",
+   "triage": {
+    "SPARK": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/1290"
+     ]
+    }
+   }
   },
   "duckdb-emit-ignored-except-on-a-project": {
    "kind": "divergence",
@@ -161,13 +313,27 @@
      "leading": true
     }
    },
-   "what": "RelCommon.emit names which columns the relation returns and in what order. DuckDB applies it on a ProjectRel - emit_project matches - and applies ReadRel.projection, which is a different field. On these six relations and on a virtual table it returns the leading columns of the leaf read's schema instead, the aggregate included, whose own output is neither that nor the mapping. Filed as substrait-io/duckdb-substrait-extension#267."
+   "what": "RelCommon.emit names which columns the relation returns and in what order. DuckDB applies it on a ProjectRel - emit_project matches - and applies ReadRel.projection, which is a different field. On these six relations and on a virtual table it returns the leading columns of the leaf read's schema instead, the aggregate included, whose own output is neither that nor the mapping.",
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/267"
+     ]
+    }
+   }
   },
   "acero-required-kept-only-on-a-bare-read": {
    "kind": "divergence",
    "what": "control_passthrough_rn and stringlen_declared are the only two answers Acero returns with a required field. Everything else comes back wholly nullable - including emit_read, a read whose one addition is an emit mapping, which Acero applies correctly apart from that.",
    "check": {
     "nullable_only": true
+   },
+   "triage": {
+    "ACERO": {
+     "outcome": "open",
+     "note": "Acero is reached through pyarrow.substrait; where the nullability is lost has not been located"
+    }
    }
   }
  },

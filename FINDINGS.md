@@ -1,6 +1,6 @@
 # Reported findings and their reproducers
 
-This map links the 22 reports filed during the [Substrait #1164 investigation](https://github.com/substrait-io/substrait/issues/1164) to the cases and probes that exercise their specific contracts. It includes the focused diagnostics outside the saved 78-plan matrix.
+This map links the 23 reports filed during the [Substrait #1164 investigation](https://github.com/substrait-io/substrait/issues/1164) to the cases and probes that exercise their specific contracts. It includes the focused diagnostics outside the saved 78-plan matrix.
 
 An implementation PR link identifies work on the report; it does not mean that the change is merged or included in the pinned measurements. Follow the issue and PR for current status. A missing PR link means none is recorded here, not that nobody is working on it.
 
@@ -19,6 +19,7 @@ The separate `virtual_table_literal_type_differs_from_schema` case also has no s
 | --- | --- | --- |
 | Spark self-join resolution depends on table registration | [min_self_join.json](probe/min_self_join.json), run by [DiagnoseSelfJoin.java](probe/DiagnoseSelfJoin.java) with temporary-view and catalog-table registration. | [substrait-java #1245](https://github.com/substrait-io/substrait-java/issues/1245) |
 | Spark read projection is not applied | [read_projection_mask](derived-schema/read_projection_mask.json), with [SparkSchemaOf.java](probe/SparkSchemaOf.java) in `--relation` mode to separate relation output from root naming. | [substrait-java #1290](https://github.com/substrait-io/substrait-java/issues/1290) |
+| Isthmus applies no read projection | [read_projection_mask](derived-schema/read_projection_mask.json), through [CalciteSchemaOf.java](probe/CalciteSchemaOf.java); the same case Spark fails on, down a different path out of substrait-java. | [substrait-java PR #1280](https://github.com/substrait-io/substrait-java/pull/1280) |
 | Python mark joins retain both inputs | [join_left_mark](derived-schema/join_left_mark.json) and [join_right_mark](derived-schema/join_right_mark.json); the matching `joineq_*` cases cover equality conditions. | [substrait-python #263](https://github.com/substrait-io/substrait-python/issues/263) / [PR #265](https://github.com/substrait-io/substrait-python/pull/265) |
 | Python read projection is ignored | [read_projection_mask](derived-schema/read_projection_mask.json), through [python_one.py](probe/python_one.py). | [substrait-python #264](https://github.com/substrait-io/substrait-python/issues/264) / [PR #266](https://github.com/substrait-io/substrait-python/pull/266) |
 | Python outer and single joins retain input nullability | [python_nullability.py](probe/python_nullability.py) with `--area join`: left, right, outer and both single joins over all four input-nullability pairs; inner joins are controls. | [substrait-python #267](https://github.com/substrait-io/substrait-python/issues/267) |

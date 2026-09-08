@@ -289,6 +289,68 @@ d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['duckdb-timestamp-is-microseconds']['check']['got_matches'] = '^.c:DATE.$'
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
+# The triage beside each divergence: what came of it, per participant. Eight of the twenty-four
+# entries say 'open', and that is allowed on purpose - so what is left to check is that the record
+# is complete, that it means one thing, and that its links go somewhere a reader is sent.
+mutate "a report named in a reason's prose instead of its record" "in its prose" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['grouping-key-nullability']['what'] += ' Filed as apache/datafusion#24968.'
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a divergence with nothing said about what came of it" "with no triage" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+del d['rules']['grouping-key-nullability']['triage']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a triage missing one of the participants it covers" "its cells belong to" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+del d['rules']['decimal-own-derivation']['triage']['ACERO']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "an outcome that is not one of the four" "is not one of" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['grouping-key-nullability']['triage']['DATAFUSION']['outcome'] = 'filed'
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a report named with nothing to follow" "names nothing to follow" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['grouping-key-nullability']['triage']['DATAFUSION']['at'] = []
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "an untriaged cell carrying a link anyway" "which names no report" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['acero-required-kept-only-on-a-bare-read']['triage']['ACERO']['at'] = ['https://github.com/apache/datafusion/issues/24968']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a link the report map does not carry" "which FINDINGS.md does not" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['grouping-key-nullability']['triage']['DATAFUSION']['at'] = ['https://github.com/apache/datafusion/issues/24969']
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a type-system boundary triaged as if it were a defect" "only a divergence carries a triage" \
+  python3 -c "
+import io, json
+d = json.load(open('differed.json', encoding='utf-8'))
+d['rules']['no-string-with-length']['triage'] = {'DUCKDB': {'outcome': 'open', 'note': 'x'}}
+io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "the count of cells nobody has looked into" "are not looked into yet" \
+  replace METHOD.md "eight of those twenty-four are not" "seven of those twenty-four are not"
+
 mutate "a count the README states about the reasons" "the README does not say" \
   python3 -c "
 import io, json

@@ -305,17 +305,91 @@ for col, fmt in COLS:
                 fail("%s/%s says %s, which for these inputs means %s: %s"
                      % (col, case, said[case], want, got))
 
+# What came of a divergence, as opposed to what it is. The reason says what the participant does;
+# this says whether anyone has taken it anywhere - and it is kept per participant, because a rule
+# can span four of them and no single report covers all four.
+#
+# "open" is a first-class answer. Requiring a link would push a cell towards a bug report before
+# anyone had read it, and a report filed to satisfy a check is worse than an untriaged cell that
+# says so.
+OUTCOMES = {
+    "reported":      "filed against the implementation",
+    "spec-question": "the spec text does not settle it",
+    "ours":          "the expectation or this harness is wrong",
+    "open":          "not looked into yet",
+}
+NEEDS_URL = {"reported", "spec-question"}
+ISSUE_URL = re.compile(r"^https://github\.com/[\w.-]+/[\w.-]+/(?:issues|pull)/\d+$")
+
+# Every link the data names has to appear in the map a reader is sent to, or the map falls behind
+# the data silently - which is how probe/README.md came to carry findings differed.json did not.
+findings = io.open(os.path.join(ROOT, "FINDINGS.md"), encoding="utf-8").read()
+
+parties = {}
+for col, cs in doc["cells"].items():
+    for case, rid in cs.items():
+        parties.setdefault(rid, set()).add(col)
+
+triage_pairs, triage_open, rules_with_a_report = 0, 0, 0
+REFERENCE = re.compile(r"[\w.-]+/[\w.-]+#\d+|https://github\.com/\S+")
+
+for rid, rule in doc["rules"].items():
+    # A report belongs in the triage, not in the sentence beside it. Both carried them until now
+    # and nothing compared the two, so a reason could name one issue in its prose and another in
+    # its record - and the prose was the half nothing checked, since it is a sentence.
+    stray = REFERENCE.findall(rule["what"])
+    if stray:
+        fail("%s names %s in its prose; a report goes in the triage, where it is checked"
+             % (rid, ", ".join(stray)))
+    triage = rule.get("triage")
+    if rule["kind"] != "divergence":
+        # A boundary or an unresolved type is a statement about a type system, not something to
+        # report to anyone. Letting the field appear there would make it mean two things.
+        if triage is not None:
+            fail("%s is %s, and only a divergence carries a triage" % (rid, rule["kind"]))
+        continue
+    if not isinstance(triage, dict) or not triage:
+        fail("%s is a divergence with no triage; every one of them says what came of it, "
+             "and \"open\" is an allowed answer" % rid)
+        continue
+    if set(triage) != parties[rid]:
+        fail("%s is triaged for %s and its cells belong to %s"
+             % (rid, ", ".join(sorted(triage)) or "nobody", ", ".join(sorted(parties[rid]))))
+    if any(v.get("at") for v in triage.values()):
+        rules_with_a_report += 1
+    for col, entry in sorted(triage.items()):
+        triage_pairs += 1
+        outcome, at = entry.get("outcome"), entry.get("at", [])
+        if outcome not in OUTCOMES:
+            fail("%s/%s: %r is not one of %s" % (rid, col, outcome, ", ".join(sorted(OUTCOMES))))
+            continue
+        if outcome == "open":
+            triage_open += 1
+        if outcome in NEEDS_URL and not at:
+            fail("%s/%s says %s and names nothing to follow" % (rid, col, outcome))
+        if outcome not in NEEDS_URL and at:
+            fail("%s/%s says %s, which names no report, and carries %s" % (rid, col, outcome, at))
+        for url in at:
+            if not ISSUE_URL.match(url):
+                fail("%s/%s: %s is not an issue or pull request" % (rid, col, url))
+            elif url not in findings:
+                fail("%s/%s names %s, which FINDINGS.md does not" % (rid, col, url))
+
 kinds, checked = {}, 0
 for cs in doc["cells"].values():
     for rid in cs.values():
         k = doc["rules"].get(rid, {})
         kinds[k.get("kind")] = kinds.get(k.get("kind"), 0) + 1
         checked += 1 if k.get("check") else 0
-filed = sum(1 for r in doc["rules"].values() if re.search(r"[Ff]iled as", r["what"]))
+# Counted from the triage rather than from the words "Filed as" in the reason's own prose, which
+# was a proxy: it counted the sentence, not the record, and could not see a report filed for one
+# participant of a rule that covers four.
+filed = rules_with_a_report
 
 # The README puts these counts in prose, where nothing would notice them going stale.
 WORD = {6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
-        14: "fourteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two", 19: "nineteen", 20: "twenty"}
+        14: "fourteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two",
+        19: "nineteen", 20: "twenty", 23: "twenty-three", 24: "twenty-four", 25: "twenty-five"}
 # README.md and METHOD.md are one page split by audience, and a sentence can move between them; the
 # claim has to be somewhere on it, not in a particular file.
 readme = " ".join(" ".join(io.open(os.path.join(ROOT, f), encoding="utf-8").read()
@@ -324,12 +398,16 @@ for sentence in ("gives all %d of them a reason and marks %d as something other 
                  % (total, total - kinds.get("divergence", 0)),
                  "%s are limits of a type system, %s a type the validator never resolved"
                  % (WORD.get(kinds.get("boundary")), WORD.get(kinds.get("unresolved"))),
-                 "%s of its %s reasons name an issue" % (WORD.get(filed), WORD.get(len(doc["rules"])))):
+                 "%s of its %s reasons name an issue" % (WORD.get(filed), WORD.get(len(doc["rules"]))),
+                 "%s of those %s are not looked into yet"
+                 % (WORD.get(triage_open), WORD.get(triage_pairs))):
     if sentence not in readme:
         fail("the README does not say %r" % sentence)
 
 if not bad:
-    print("ok      %d differing cells, %d reasons (%d naming an issue), %s; %d cells machine-checked"
+    print("ok      %d differing cells, %d reasons (%d naming an issue), %s; %d cells machine-checked, "
+          "%d triaged pairs (%d open)"
           % (total, len(doc["rules"]), filed,
-             ", ".join("%s %d" % kv for kv in sorted(kinds.items())), checked))
+             ", ".join("%s %d" % kv for kv in sorted(kinds.items())), checked,
+             triage_pairs, triage_open))
 raise SystemExit(bad)

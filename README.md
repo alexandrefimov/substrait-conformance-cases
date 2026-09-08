@@ -159,6 +159,11 @@ encoded rule matches the spec or that every interpretation of a result is correc
 [METHOD.md](METHOD.md) records what has already been corrected here; these are open:
 
 - The rules encoded in `probe/expected.py` need independent review against the spec.
+- Eight of the twenty-four divergence-and-participant pairs in `differed.json` have not been looked
+  into, and each says what is missing. The record is checked for completeness rather than for
+  links: `open` is an allowed answer, because a report filed to satisfy a check is worse than an
+  untriaged cell that says so. What stops it spreading quietly is that the count is written down
+  and `probe/check_differed.py` compares it.
 - Rows are compared for three participants and eight cases; schemas for nine participants and 73
   cases. Five of the 78 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.
