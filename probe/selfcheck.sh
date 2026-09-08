@@ -24,6 +24,9 @@ python3 probe/expected.py 2>/dev/null | diff -q - expected.json >/dev/null \
 python3 probe/matrix.py 2>/dev/null | diff -q - results/MATRIX.txt >/dev/null \
   && ok "results/MATRIX.txt is what probe/matrix.py produces from the saved columns" \
   || fail "results/MATRIX.txt differs from probe/matrix.py output"
+python3 probe/diffs.py 2>/dev/null | diff -q - results/DIFFS.md >/dev/null \
+  && ok "results/DIFFS.md is what probe/diffs.py joins out of differed.json and the columns" \
+  || fail "results/DIFFS.md differs from probe/diffs.py output"
 # The picture in the README and the page on the site are generated from the same columns. A drawing
 # that has drifted from them is the failure this repository exists to catch, and it drifts silently:
 # nobody rereads an SVG.
@@ -32,6 +35,25 @@ for want in svg-light:docs/matrix.svg svg-dark:docs/matrix-dark.svg page:docs/in
     && ok "${want#*:} is what probe/heatmap.py draws from the saved columns" \
     || fail "${want#*:} differs from probe/heatmap.py output"
 done
+
+# The coverage block in the README is generated too, and unlike the files above it lives inside a
+# page a person edits by hand, which is the one place a generated thing quietly gets improved.
+python3 - <<'COVPY' || FAILED=1
+import io, re, subprocess, sys
+want = subprocess.run([sys.executable, "probe/coverage.py"], capture_output=True, text=True)
+if want.returncode:
+    print("FAILED: probe/coverage.py: %s" % want.stderr.strip().splitlines()[-1:])
+    raise SystemExit(1)
+page = io.open("README.md", encoding="utf-8").read()
+got = re.search(r"<!-- coverage:.*?<!-- /coverage -->", page, re.S)
+if not got:
+    print("FAILED: the README no longer carries the coverage block probe/coverage.py writes")
+    raise SystemExit(1)
+if got.group(0).strip() != want.stdout.strip():
+    print("FAILED: the README's coverage block differs from probe/coverage.py output")
+    raise SystemExit(1)
+print("ok      the README's coverage block is what probe/coverage.py counts from the plans")
+COVPY
 
 echo
 echo "### the saved columns agree with the expectations and with the README"
@@ -400,6 +422,12 @@ raise SystemExit(bad)
 MANPY
 
 echo
+echo "### the pages state the numbers the files hold"
+# The table above is checked against check_expected.py; the sentences around it were not checked at
+# all, and that is where the numbers went stale.
+python3 probe/check_pages.py || FAILED=1
+
+echo
 echo "### every link between the pages resolves"
 python3 - <<'LINKPY' || FAILED=1
 import io, os, re, sys
@@ -432,6 +460,23 @@ for page in pages:
         if not os.path.exists(path):
             print("FAILED: %s links to %s, which does not exist" % (page, target))
             bad = 1
+            continue
+        # A wrong anchor is the quiet half of a broken link: the page opens, at the top, and the
+        # reader is left looking for a section that was renamed. Only headings in these pages are
+        # checked, by the slug GitHub builds from them.
+        anchor = target.split("#")[1] if "#" in target else ""
+        if anchor and path.endswith(".md"):
+            headings = io.open(path, encoding="utf-8").read()
+            slugs = set()
+            for line in headings.splitlines():
+                m = re.match(r"^#+\s+(.*?)\s*$", line)
+                if m:
+                    slug = re.sub(r"[^\w\- ]", "", m.group(1).lower()).replace(" ", "-")
+                    slugs.add(slug)
+            if anchor not in slugs:
+                print("FAILED: %s links to %s, and %s has no heading with that anchor"
+                      % (page, target, path))
+                bad = 1
 if not bad:
     print("ok      %d links across %d pages, all resolving" % (checked, len(pages)))
 raise SystemExit(bad)
