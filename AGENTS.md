@@ -16,11 +16,12 @@ git branch --show-current
 
 - While parallel work is active, treat the primary checkout (the first entry in
   `git worktree list`) as coordination-only. Do not edit or run generators there.
-- Use one uniquely named branch and one dedicated worktree per task. Create the
-  worktree as a sibling of the primary checkout, not inside it:
+- Use one uniquely named branch and one dedicated worktree per task. Use the
+  operator-provided worktree root when one exists; otherwise create the
+  worktree as a sibling of the primary checkout, never inside it:
 
   ```sh
-  git worktree add <sibling-worktree> -b <agent>/<short-task>-<date> <base-sha>
+  git worktree add <worktree-path> -b <agent>/<short-task>-<date> <base-sha>
   ```
 
 - Use the base named by the task. If none is named, resolve `origin/main`, record
@@ -29,9 +30,9 @@ git branch --show-current
 - At the first status update, identify the branch, worktree basename, base SHA,
   and intended file scope. A worktree belongs to that task until its owner hands
   it off or removes it.
-- Treat every other registered worktree, dirty file, branch, stash, lock, and
-  running process as another agent's work. Do not edit in it or reset, stash,
-  clean, switch, remove, prune, kill, or force-delete it.
+- Treat every other registered worktree and its dirty files, branch, stashes,
+  locks, and processes as another agent's work. Do not edit in it or reset,
+  stash, clean, switch, remove, prune, kill, or force-delete its state.
 - If another active task overlaps the intended files or generated outputs, stop
   before editing and coordinate ownership. Do not resolve overlap by copying
   changes between dirty worktrees.
