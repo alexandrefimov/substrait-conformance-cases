@@ -286,5 +286,100 @@
       "schema": "[r:decimal(21,8)?]",
       "control": false
     }
+  },
+  "acero": {
+    "read_control": {
+      "schema": [
+        [
+          "r",
+          "int64",
+          false
+        ],
+        [
+          "n",
+          "int64",
+          true
+        ]
+      ],
+      "rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "control": true
+    },
+    "emit_identity": {
+      "schema": [
+        [
+          "r",
+          "int64",
+          false
+        ],
+        [
+          "n",
+          "int64",
+          true
+        ]
+      ],
+      "rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "control": false
+    },
+    "emit_reorder": {
+      "schema": [
+        [
+          "n",
+          "int64",
+          true
+        ],
+        [
+          "r",
+          "int64",
+          false
+        ]
+      ],
+      "rows": [
+        [
+          null,
+          1
+        ],
+        [
+          3,
+          2
+        ]
+      ],
+      "control": false
+    },
+    "emit_nullable_control": {
+      "schema": [
+        [
+          "n",
+          "int64",
+          true
+        ]
+      ],
+      "rows": [
+        [
+          null
+        ],
+        [
+          3
+        ]
+      ],
+      "control": true
+    }
   }
 }

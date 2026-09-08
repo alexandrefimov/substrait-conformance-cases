@@ -1,9 +1,10 @@
 # Minimal consumer and text round-trip cases
 
-These 23 plans isolate relation metadata, nullability, virtual-table row typing,
+These 27 plans isolate relation metadata, nullability, virtual-table row typing,
 unsupported-operation errors, type text round-trips and decimal result types.
 They are separate from the 78-plan matrix. The Spark plans declare spec v0.103.0;
-the other plans declare v0.87.0. Each uses only the fields needed for its case.
+the Acero plans declare v0.102.0 and the other plans declare v0.87.0. Each uses
+only the fields needed for its case.
 
 Run from the repository root after installing the relevant participant:
 
@@ -18,6 +19,9 @@ python3 probe/structural_cases.py go
 
 SETUP_ONLY=substrait-validator bash probe/setup.sh
 python3 probe/structural_cases.py validator
+
+SETUP_ONLY=Acero bash probe/setup.sh
+python3 probe/structural_cases.py acero
 
 # Optional text-format diagnostic; this tool is not a scored matrix participant.
 cargo install substrait-explain --version 0.9.0 --locked
@@ -47,11 +51,12 @@ tools, malformed output and failing controls always fail the command.
 | Validator | 4 | Empty, one-column and two-column virtual tables retain their declared struct schema. Emitting the second column yields one required string field. All nonempty rows exactly match their base schema. |
 | Explain | 5 | A named read with i64, varchar(10), fixed-char(5), fixed-binary(4) or decimal(10,2) survives JSON → text → JSON with its schema and root names preserved. The i64 case is the control. |
 | Spark | 3 | Nullable decimal(10,2) and decimal(5,1) produce decimal(11,2) for add, decimal(16,3) for multiply, and decimal(21,8) for divide under the standard extension contract. Add and multiply are controls. |
+| Acero | 4 | An identity or reordered emit preserves the selected fields' types and nullability. A bare read and an emit selecting only the nullable field are controls. Native Acero and `Table.select` apply the same mappings to the same nonempty table; every path must preserve rows. |
 
 The DuckDB worker registers `t(x INTEGER NOT NULL)` with rows 1 and 2. Go and the
-validator infer schemas without registering a database table. The Go directory
-includes binary equivalents of its JSON plans because the existing Go probe
-reads binary protobuf. To regenerate those files with the Python environment:
+validator infer schemas without registering a database table. The Go and Acero
+directories include binary equivalents of their JSON plans because their probes
+read binary protobuf. To regenerate those files with the Python environment:
 
 ```sh
 SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
@@ -60,13 +65,42 @@ from pathlib import Path
 from google.protobuf.json_format import Parse
 from substrait import proto
 
-for path in Path("probe/structural-cases/go").glob("*.json"):
-    plan = Parse(path.read_text(), proto.Plan())
-    path.with_suffix(".bin").write_bytes(plan.SerializeToString())
+for group in ("go", "acero"):
+    for path in Path("probe/structural-cases", group).glob("*.json"):
+        plan = Parse(path.read_text(), proto.Plan())
+        path.with_suffix(".bin").write_bytes(plan.SerializeToString())
 PY
 ```
 
 ## Interpretation
+
+The Acero input is `r: int64 required, n: int64 nullable`, with rows `(1, null)`
+and `(2, 3)`. The table provider verifies the requested input schema and returns
+the table with that schema intact. Under the
+[emit rule in spec v0.102.0](https://github.com/substrait-io/substrait/blob/v0.102.0/site/docs/relations/common_fields.md#emit),
+the expected outputs select the same fields;
+there are no scalar functions or casts. In PyArrow 25.0.1, bare reads preserve
+requiredness, but both identity and reordered emits make `r` nullable. Direct
+Acero field-reference projections produce the same change without Substrait.
+`Table.select` preserves the selected fields' nullability in all four cases.
+All paths retain the expected values, including the actual null in `n`.
+
+The JSON Lines report Substrait, native Acero and `Table.select` results for each
+case. A schema difference in either Acero path is a mismatch; a row difference,
+failed input-schema check or failing `Table.select` control stops the run.
+PyArrow 25.0.1 reports two differing cases and zero failed controls. Normal mode
+exits 0 for this result; `--check` exits 1.
+
+The Arrow implementation turns a Substrait emit into a
+[field-reference project](https://github.com/apache/arrow/blob/apache-arrow-25.0.1/cpp/src/arrow/engine/substrait/relation_internal.cc#L136).
+[ProjectNode](https://github.com/apache/arrow/blob/apache-arrow-25.0.1/cpp/src/arrow/acero/project_node.cc#L70)
+creates new fields from expression names and types without carrying input
+nullability. This explains the focused projection cases. It does not establish
+the cause of the corpus's join or function-result nullability differences.
+Arrow also documents incomplete support for
+[non-nullable inputs](https://github.com/apache/arrow/blob/apache-arrow-25.0.1/docs/source/cpp/acero/substrait.rst#types);
+these inputs obey their declared nullability, and this check concerns the output
+schema rather than validation of invalid input rows.
 
 The Go union expectations follow the [set-operation rules in v0.87.0](https://github.com/substrait-io/substrait/blob/v0.87.0/site/docs/relations/logical_relations.md#set-operation-types). The mixed inputs are exercised in both orders. The existing eight `derived-schema/setop_*` plans cover the wider operation table.
 

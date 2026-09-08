@@ -347,7 +347,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "the corrected provider preserves required fields on bare reads, while adding an emit mapping already loses them in emit_read. Separate projection, join and function-result nullability before treating these cells as one report"
+     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: both Substrait and native Acero field-reference projects make the required field nullable, while Table.select preserves it and all rows agree. ProjectNode creates new fields without carrying input nullability. The join and function-result cells still need separate investigation before assigning them the same cause"
     }
    }
   }

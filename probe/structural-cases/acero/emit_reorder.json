@@ -1,0 +1,54 @@
+{
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "baseSchema": {
+              "names": [
+                "r",
+                "n"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "namedTable": {
+              "names": [
+                "t"
+              ]
+            },
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  1,
+                  0
+                ]
+              }
+            }
+          }
+        },
+        "names": [
+          "n",
+          "r"
+        ]
+      }
+    }
+  ]
+}
