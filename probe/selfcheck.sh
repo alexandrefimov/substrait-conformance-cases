@@ -170,6 +170,8 @@ if not found:
     print("FAILED: docs/index.html carries no data for the matrix")
     raise SystemExit(1)
 drawn = json.loads(found.group(1))
+differed = json.load(io.open("differed.json", encoding="utf-8"))
+refused = json.load(io.open("refused.json", encoding="utf-8"))
 
 bad = 0
 for label, col, fmt in COLUMNS:
@@ -196,6 +198,30 @@ for label, col, fmt in COLUMNS:
         bad = 1
     if drawn["scored"][label] == want and cells == named:
         print("ok      %-20s %s, %d differing cases by name" % (label, want, len(named)))
+
+# The page exposes the triage beside a cell. Check the denormalized cell-shaped payload against the
+# reason/participant record, so a report cannot silently move to another implementation or case.
+tracked, links = 0, set()
+for label, col, _ in COLUMNS:
+    c = drawn["participants"].index(label)
+    for r, case in enumerate(drawn["cases"]):
+        rule = drawn["answers"][r][c][1]
+        want = (differed["rules"].get(rule, {}).get("triage", {}).get(col)
+                or refused["rules"].get(rule, {}).get("triage", {}).get(col))
+        got = drawn["tracking"][r][c]
+        if got != want:
+            print("FAILED: %s/%s: page tracking is %r, triage records say %r"
+                  % (col, case, got, want))
+            bad = 1
+        if got:
+            tracked += 1
+            links.update(got.get("at", []))
+if tracked:
+    print("ok      page carries triage for %d cells, linking %d unique issues or PRs"
+          % (tracked, len(links)))
+else:
+    print("FAILED: page carries no cell tracking")
+    bad = 1
 raise SystemExit(bad)
 DRAWPY
 
