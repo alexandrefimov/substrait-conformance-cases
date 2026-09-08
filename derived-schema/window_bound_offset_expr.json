@@ -1,0 +1,125 @@
+{
+  "extensions": [{
+    "extensionFunction": {
+      "functionAnchor": 1,
+      "name": "sum:i64",
+      "extensionUrnReference": 1
+    }
+  }],
+  "relations": [{
+    "root": {
+      "input": {
+        "window": {
+          "common": {
+            "direct": {
+            }
+          },
+          "input": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["v"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "virtualTable": {
+                "expressions": [{
+                  "fields": [{
+                    "literal": {
+                      "i64": "1"
+                    }
+                  }]
+                }, {
+                  "fields": [{
+                    "literal": {
+                      "i64": "2"
+                    }
+                  }]
+                }, {
+                  "fields": [{
+                    "literal": {
+                      "i64": "3"
+                    }
+                  }]
+                }, {
+                  "fields": [{
+                    "literal": {
+                      "i64": "4"
+                    }
+                  }]
+                }]
+              }
+            }
+          },
+          "windowFunctions": [{
+            "functionReference": 1,
+            "upperBound": {
+              "currentRow": {
+              }
+            },
+            "lowerBound": {
+              "preceding": {
+                "offsetExpr": {
+                  "literal": {
+                    "i64": "1"
+                  }
+                }
+              }
+            },
+            "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+            "outputType": {
+              "i64": {
+                "nullability": "NULLABILITY_NULLABLE"
+              }
+            },
+            "arguments": [{
+              "value": {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                    }
+                  },
+                  "rootReference": {
+                  }
+                }
+              }
+            }],
+            "invocation": "AGGREGATION_INVOCATION_ALL",
+            "boundsType": "BOUNDS_TYPE_ROWS"
+          }],
+          "sorts": [{
+            "expr": {
+              "selection": {
+                "directReference": {
+                  "structField": {
+                  }
+                },
+                "rootReference": {
+                }
+              }
+            },
+            "direction": "SORT_DIRECTION_ASC_NULLS_LAST"
+          }]
+        }
+      },
+      "names": ["v", "s"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  },
+  "extensionUrns": [{
+    "extensionUrnAnchor": 1,
+    "urn": "extension:io.substrait:functions_arithmetic"
+  }]
+}

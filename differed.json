@@ -353,6 +353,19 @@
      "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: native and Substrait field-reference projects make the required field nullable while preserving rows. Arrow #51231 covers direct field references. Native inner, left and right joins also widen output fields; HashJoinSchema creates nullable fields, and the existing inner-join report Arrow #45557 was closed after a stale notice. Native is_null/is_valid projections and count also return nullable fields while preserving the tested values. General function and aggregate output inference remains outside those reports, so this broader entry stays open"
     }
    }
+  },
+  "duckdb-sum-returns-hugeint": {
+   "kind": "divergence",
+   "what": "functions_arithmetic.yaml declares sum:i64 as returning i64?, and the plan declares it too. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column.",
+   "check": {
+    "got_matches": "^\\[v:BIGINT, s:HUGEINT\\]$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "open",
+     "note": "the same shape as duckdb-substrait-extension#276, which reports native return types for the decimal functions; whether that issue covers an integer sum has not been established, and the window relation this case reaches it through is separately unfinished there"
+    }
+   }
   }
  },
  "cells": {
@@ -402,7 +415,8 @@
    "precision_timestamp_p07": "duckdb-timestamp-is-microseconds",
    "precision_timestamp_p09": "duckdb-timestamp-precision-ignored",
    "stringlen_declared": "no-string-with-length",
-   "virtual_table_emit_mapping": "duckdb-emit-ignored-except-on-a-project"
+   "virtual_table_emit_mapping": "duckdb-emit-ignored-except-on-a-project",
+   "window_bound_offset": "duckdb-sum-returns-hugeint"
   },
   "GO": {
    "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",

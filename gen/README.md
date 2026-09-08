@@ -19,8 +19,11 @@ file, not an object in memory.
 The leaves are named tables with schemas shared by every case (`Tables.java`), and every engine probe
 creates the same tables with the same rows. A leaf has to be a control: put a virtual table there and
 the run is also measuring support for virtual tables, at which point a divergence in derivation can
-no longer be told apart from a lack of support. The exception is `GenSetData`, whose cases carry
-their rows inside the plan because the spec's set-operation examples are about the rows.
+no longer be told apart from a lack of support. Two generators are exceptions, and both for the
+same reason: the case is about the rows, so the rows have to be in the plan. `GenSetData`
+carries the multisets the spec prints for each set operation, and `GenWindow`'s two bound cases
+carry the four rows a frame is taken over. Their divergences are therefore readable only
+against a participant that reads virtual tables at all.
 `../derived-schema-virtual-tables/` is a whole-corpus rewrite into virtual tables, built by
 `probe/to_virtual_tables.py`, and exists only because Gluten does not read `named_table` at all;
 `probe/vt_equivalence.sh` checks that it derives the same schemas as the canonical corpus.

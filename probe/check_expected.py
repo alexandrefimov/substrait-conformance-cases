@@ -32,7 +32,12 @@ _DOC = json.load(open(os.path.join(ROOT, "expected.json"), encoding="utf-8"))
 EXPECTED, DISPUTED = _DOC["expected"], _DOC["disputed"]
 
 JAVA_FIELD = re.compile(r"(Decimal|PrecisionTimestamp|VarChar|FixedChar|FixedBinary|"
-                        r"I64|I32|Str|Bool|Fp64|I8|I16)\{([^}]*)\}")
+                        r"I64|I32|Str|Bool|FP64|FP32|Fp64|I8|I16)\{([^}]*)\}")
+# Every Kind{...} token, known or not. The list above named Fp64 where substrait-java prints FP64,
+# so an fp64 field matched nothing and vanished from the parsed answer - and the comparison then
+# read four fields against five and reported a divergence against the implementation. A parser that
+# drops what it cannot read is worse than one that stops, so the two counts are compared below.
+JAVA_ANY_FIELD = re.compile(r"([A-Za-z][A-Za-z0-9]*)\{([^{}]*)\}")
 
 def _nested_java(inner):
     """A nested struct in java notation: Struct{...fields=[I64{..}, I64{..}]}."""
@@ -48,6 +53,10 @@ def parse_java(s):
     nested = _nested_java(inner)
     if nested is not None:
         return [nested]
+    # A field this parser does not know must not disappear: returning nothing makes the caller
+    # report an unparsed answer and fail the run, which is the honest outcome.
+    if len(JAVA_ANY_FIELD.findall(inner)) != len(JAVA_FIELD.findall(inner)):
+        return None
     out = []
     for kind, attrs in JAVA_FIELD.findall(inner):
         nullable = "nullable=true" in attrs
@@ -62,7 +71,8 @@ def parse_java(s):
             out.append(["%s(%s)" % (short, re.search(r"length=(\d+)", attrs).group(1)), nullable])
         else:
             out.append([{"I64": "i64", "I32": "i32", "Str": "str", "Bool": "bool",
-                         "Fp64": "fp64", "I8": "i8", "I16": "i16"}[kind], nullable])
+                         "FP64": "fp64", "FP32": "fp32", "Fp64": "fp64",
+                         "I8": "i8", "I16": "i16"}[kind], nullable])
     return out
 
 def _nested_bracket(s):

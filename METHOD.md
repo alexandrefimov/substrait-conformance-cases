@@ -60,7 +60,7 @@ For substrait-java the eleven that move are the five decimal cases, `narrowing_c
 predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
 expectation.
 
-Only 23 of the 78 cases carry an `output_type`; 22 of those have an expectation. For Java, ten
+Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. The three window cases added since are not in that run, and each of them declares one. For Java, ten
 scored output schemas change and twelve hold. In those twelve cases the altered declaration belongs
 to a join predicate, whose type is absent from the output schema. The predicate's declaration can
 be copied without changing the join's output. The other 51 scored plans have no `output_type`.
@@ -112,6 +112,6 @@ Retaking all 78 Acero cases with the same pinned PyArrow version changed only `s
 
 ## Reports and generator sources
 
-[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: fifteen of its twenty reasons link an issue or PR. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
+[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: fifteen of its twenty-one reasons link an issue or PR. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
 
-What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-four of them; two of those twenty-four still need investigation, each saying what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
+What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-five of them; three of those twenty-five still need investigation, each saying what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.

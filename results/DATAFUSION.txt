@@ -1,4 +1,4 @@
-DATAFUSION: column from run 2026-09-07T12:20, datafusion cc29ea12a
+DATAFUSION: column from run 2026-09-08T15:44, datafusion cc29ea12a
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
@@ -79,3 +79,6 @@ virtual_table_literal_type_differs_from_schema [c:Int32]
 virtual_table_row_null_in_required_column      [c:Int32]
 virtual_table_row_nullable_in_required_column  [c:Int32]
 virtual_table_row_required_in_nullable_column  [c:Int32?]
+window_bound_offset                            ERROR: This feature is not implemented: Consistent Partition Window Rel not supported
+window_bound_offset_expr                       ERROR: This feature is not implemented: Consistent Partition Window Rel not supported
+window_output_order                            ERROR: This feature is not implemented: Consistent Partition Window Rel not supported

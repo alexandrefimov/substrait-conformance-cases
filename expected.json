@@ -1163,6 +1163,57 @@
     ]
    ],
    "source": "RelCommon.emit over a virtual table: the listed order of direct outputs"
+  },
+  "window_bound_offset": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml"
+  },
+  "window_bound_offset_expr": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml"
+  },
+  "window_output_order": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "str",
+     false
+    ],
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "fp64",
+     true
+    ]
+   ],
+   "source": "physical_relations.md, Consistent Partition Window: the input followed by each window expression; the two added types are the returns functions_arithmetic.yaml declares, row_number i64? and cume_dist fp64?"
   }
  },
  "rows": {
@@ -1236,6 +1287,32 @@
     6
    ],
    "source": "the example the spec prints for this operation"
+  },
+  "window_bound_offset": {
+   "rows": [
+    1,
+    1,
+    2,
+    3,
+    3,
+    4,
+    5,
+    7
+   ],
+   "source": "the frame ROWS BETWEEN 1 PRECEDING AND CURRENT ROW over the rows 1, 2, 3, 4 the plan carries: each sum is its row and the one before it, so the rows are (1,1), (2,3), (3,5), (4,7), compared as the multiset of every integer in them"
+  },
+  "window_bound_offset_expr": {
+   "rows": [
+    1,
+    1,
+    2,
+    3,
+    3,
+    4,
+    5,
+    7
+   ],
+   "source": "the frame ROWS BETWEEN 1 PRECEDING AND CURRENT ROW over the rows 1, 2, 3, 4 the plan carries: each sum is its row and the one before it, so the rows are (1,1), (2,3), (3,5), (4,7), compared as the multiset of every integer in them"
   }
  },
  "spec_says_invalid": [
