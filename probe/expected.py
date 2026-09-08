@@ -9,6 +9,19 @@ expected schemas. It is not a schema deriver for arbitrary plans.
 
 Schemas use normalized (type, nullable) pairs for comparison across consumer outputs. Rows are
 transcribed from the spec's set-operation examples and checked separately.
+
+Every spec file named in the comments below is named at v0.102.0, the release these plans declare:
+
+    https://github.com/substrait-io/substrait/tree/v0.102.0
+
+    site/docs/relations/physical_relations.md      site/docs/types/type_system.md
+    site/docs/relations/logical_relations.md       site/docs/types/type_parsing.md
+    proto/substrait/algebra.proto                  extensions/functions_arithmetic.yaml
+    extensions/functions_arithmetic_decimal.yaml   extensions/functions_aggregate_generic.yaml
+
+Reading this file against the spec - the first thing the README asks for - should not start with
+guessing which release to open. Where a probe outside this file read another one, probe/README.md
+says which and why.
 """
 import json
 
@@ -99,6 +112,19 @@ for kind in ["inner", "outer", "left", "right", "left_semi", "left_anti", "right
         expected[prefix + kind] = {
             "schema": join_expected(kind),
             "source": "the spec rules for join types and Direct Output Order"}
+
+# The three physical join messages take the same rule and the same inputs: "Direct Output Order: Same
+# as the Join operator" is what physical_relations.md gives HashJoin, MergeJoin and NestedLoopJoin,
+# and each carries its own copy of JoinRel's twelve-member JoinType enum. So these expectations are
+# not a second reading of the spec - they are join_expected again, and a case that disagrees with one
+# here disagrees with the same sentence its join_ counterpart already asserts. What they add is the
+# entry point: everything above is a JoinRel, so a consumer that derives the rule once and wires it
+# to one message of four looks correct until asked through another.
+for kind in ["inner", "left", "left_mark"]:
+    for message in ("hash", "merge", "nested"):
+        expected["physjoin_%s_%s" % (message, kind)] = {
+            "schema": join_expected(kind),
+            "source": "physical_relations.md: the same Direct Output Order as the Join operator"}
 
 # --- emit ---------------------------------------------------------------------------------------
 # All of these carry the same outputMapping [2, 0] over t_mix = (i64 R, string R, bool R), so by
@@ -259,9 +285,19 @@ for _case in ("window_bound_offset", "window_bound_offset_expr"):
 #
 # The output order is unconditional in the spec's table: "The expand fields followed by an i32 column
 # describing the index of the duplicate that the row is derived from" (physical_relations.md, Expand
-# Operation). Two expand fields therefore make three columns. The spec calls the last one an i32
-# column and does not qualify its nullability; it is taken as required here, because the operator
-# produces it for every row it emits - that much is a reading, and it is the only one in these two.
+# Operation). Two expand fields therefore make three columns.
+#
+# The width of that last column is where the spec answers twice. algebra.proto's own comment on
+# ExpandRel says "an extra int64 field is emitted" instead, and substrait#714 is open to reconcile
+# the two; this expectation follows the docs table, which is a choice and not the only reading. No
+# cell here turns on it - substrait-python emits the column as i32 and substrait-java emits none, so
+# nothing has yet answered i64 - and a participant that does answer i64 is not diverging from the
+# spec while that issue is open, whatever this expectation says.
+#
+# Its nullability is not a reading. The docs write the column as a type, and a type written without
+# a "?" is REQUIRED: type_system.md gives nullability as "Either NULLABLE (? suffix) or REQUIRED (no
+# suffix)" and type_parsing.md makes the indicator "Optional, defaults to non-nullable". The proto
+# comment says "int64 field" in prose rather than in that notation, so it settles nothing there.
 #
 # Neither plan carries Plan.Root.names. With three names - what this expectation implies - substrait-
 # java refuses on the count before reporting any schema, because it derives two columns, and the

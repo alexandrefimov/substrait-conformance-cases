@@ -736,6 +736,183 @@
    ],
    "source": "functions_arithmetic.yaml: avg:i64, intermediate: STRUCT<i64,i64>"
   },
+  "physjoin_hash_inner": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_hash_left": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_hash_left_mark": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_merge_inner": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_merge_left": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_merge_left_mark": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_nested_inner": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_nested_left": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_nested_left_mark": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
   "precision_timestamp_p00": {
    "schema": [
     [

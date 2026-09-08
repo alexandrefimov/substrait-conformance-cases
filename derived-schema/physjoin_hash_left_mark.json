@@ -1,0 +1,93 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "hashJoin": {
+          "common": {
+            "direct": {
+            }
+          },
+          "left": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_rn"]
+              }
+            }
+          },
+          "right": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_nr"]
+              }
+            }
+          },
+          "type": "JOIN_TYPE_LEFT_MARK",
+          "keys": [{
+            "left": {
+              "directReference": {
+                "structField": {
+                }
+              },
+              "rootReference": {
+              }
+            },
+            "right": {
+              "directReference": {
+                "structField": {
+                }
+              },
+              "rootReference": {
+              }
+            },
+            "comparison": {
+              "simple": "SIMPLE_COMPARISON_TYPE_EQ"
+            }
+          }]
+        }
+      },
+      "names": ["c0", "c1", "c2"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

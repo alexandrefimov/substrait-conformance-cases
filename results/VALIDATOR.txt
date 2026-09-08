@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-08T20:22, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-08T22:13, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_sets_declared_order         [i32, unresolved]
@@ -50,6 +50,15 @@ narrowing_is_not_null                          [bool]
 narrowing_is_null                              [bool]
 phase_final                                    [i64?]
 phase_intermediate                             [[i64, i64]]
+physjoin_hash_inner                            —
+physjoin_hash_left_mark                        —
+physjoin_hash_left                             —
+physjoin_merge_inner                           —
+physjoin_merge_left_mark                       —
+physjoin_merge_left                            —
+physjoin_nested_inner                          —
+physjoin_nested_left_mark                      —
+physjoin_nested_left                           —
 precision_timestamp_p00                        [c:unresolved]
 precision_timestamp_p01                        [c:unresolved]
 precision_timestamp_p02                        [c:unresolved]
