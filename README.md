@@ -231,6 +231,16 @@ these are open:
 - Rows are compared for three participants and ten cases; schemas for nine participants and 90
   cases. Five of the 95 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.
+- Those ten row cases are all a single column of integers, and that is the whole reach of the row
+  half: each executing probe prints a row line only for a one-column result, and
+  `probe/check_rows.py` compares what it reads as a multiset of integers.
+  `probe/selfcheck.sh` refuses an expectation of any other shape rather than let it land on a
+  participant as a divergence. Widening it is the open work, and the `emit_*` cases are why: there
+  the expectation is two columns in reverse order, so a consumer can return the right column count
+  filled with another column's data and every schema comparison here still passes. DuckDB does
+  exactly that on six of the eight, and DataFusion derives the right schema on all eight, which is
+  as far as a schema can go. Rows would need a typed, per-column comparison in all three probes and
+  in the check.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this
   project has run it. CI now retakes all nine on a machine that is not this one, each from the
