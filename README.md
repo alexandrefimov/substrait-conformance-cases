@@ -48,8 +48,8 @@ Three things, in the order they are worth someone's time:
 
 Whether cases like these belong in the spec repository is the question under discussion in
 [substrait#1164](https://github.com/substrait-io/substrait/issues/1164). This repository is where
-they live meanwhile, kept reproducible: a case is added by adding a generator to `gen/`, seven of
-the nine columns are retaken by `probe/replay_column.sh` on any machine and the rest by
+they live meanwhile, kept reproducible: a case is added by adding a generator to `gen/`, eight of
+the nine columns are retaken by `probe/replay_column.sh` on any machine and the ninth by
 `probe/reverify.sh`, and if a number on this page is wrong, that is a bug here and worth an issue.
 
 ## What the corpus says
@@ -144,7 +144,7 @@ Retaking one column needs nothing but the toolchain that participant installs wi
 environment from the pinned version, puts the corpus through it and requires the answers to be
 identical to the saved column:
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK
 
 `LATEST=1` in front of that runs it against today's release instead, and reports what moved rather
 than failing on it; that is the weekly `drift` workflow. Repeating all nine columns is
@@ -169,10 +169,9 @@ encoded rule matches the spec or that every interpretation of a result is correc
   and the rule expected of them.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this
-  project has run it. CI retakes seven of the nine — substrait-python, substrait-go, DuckDB,
-  Acero, the validator, substrait-java and Isthmus — on a machine that is not this one, and
-  otherwise only reads the repository against itself. Spark and DataFusion are saved
-  measurements, not reproduced ones.
+  project has run it. CI retakes eight of the nine — every one but DataFusion — on a machine that
+  is not this one, and otherwise only reads the repository against itself. The DataFusion column
+  is a saved measurement, not a reproduced one.
 - What the columns say is dated. Each is a measurement against one version, and nothing here yet
   keeps a history of when an answer changed: the weekly `drift` run reports a move against the saved
   column and uploads the run, but the moves are not accumulated anywhere.

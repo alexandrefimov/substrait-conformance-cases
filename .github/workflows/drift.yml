@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS, SPARK]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,14 +38,15 @@ jobs:
       # The JDK the substrait-java columns were measured with, read from versions.env rather than
       # written again here: a second copy would let CI pass on a toolchain the file does not name.
       - id: java
-        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS' || matrix.column == 'SPARK'
         run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v4
-        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS' || matrix.column == 'SPARK'
         with:
           distribution: temurin
           java-version: ${{ steps.java.outputs.version }}
-      - run: LATEST=1 OUT=run bash probe/replay_column.sh ${{ matrix.column }}
+      # JAVA17_HOME is what the Spark probe looks for, and it finds one by itself only on a Mac.
+      - run: JAVA17_HOME="$JAVA_HOME" LATEST=1 OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # The run, not just the verdict: the record names the versions that were actually installed,
       # the revision this repository was at and a fingerprint of the corpus, the expectations and
       # the normalization, so a later reader can tell a moved answer from a changed input.

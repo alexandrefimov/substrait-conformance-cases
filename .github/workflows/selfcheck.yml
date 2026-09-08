@@ -24,14 +24,14 @@ jobs:
   # Columns reproduced rather than read: built from the pinned versions on a machine that is not the
   # author's, retaken, and required to be identical. Four are a pip install or a go get, the
   # validator is a clone and a cargo build, and the substrait-java pair is a clone and a Gradle
-  # build. That is seven of the nine; Spark and DataFusion remain saved measurements until someone
-  # automates those too.
+  # build, which serves the three columns that come out of it. That is eight of the nine; DataFusion
+  # remains a saved measurement until someone automates that one too.
   column:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS, SPARK]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -55,14 +55,15 @@ jobs:
       # The JDK the substrait-java columns were measured with, read from versions.env rather than
       # written again here: a second copy would let CI pass on a toolchain the file does not name.
       - id: java
-        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS' || matrix.column == 'SPARK'
         run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v4
-        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS' || matrix.column == 'SPARK'
         with:
           distribution: temurin
           java-version: ${{ steps.java.outputs.version }}
-      - run: OUT=run bash probe/replay_column.sh ${{ matrix.column }}
+      # JAVA17_HOME is what the Spark probe looks for, and it finds one by itself only on a Mac.
+      - run: JAVA17_HOME="$JAVA_HOME" OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # Kept whether the comparison passed or failed: a column that differs is the run worth having.
       - uses: actions/upload-artifact@v4
         if: always()

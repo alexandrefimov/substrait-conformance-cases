@@ -2,7 +2,7 @@
 # Retakes one participant's column in an environment built from nothing, and compares it with the
 # saved one.
 #
-#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS
+#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK
 #   LATEST=1 bash probe/replay_column.sh <NAME>
 #
 # Everything in results/ is measured on one workstation and saved, and selfcheck.sh only reads those
@@ -77,7 +77,12 @@ case "$NAME" in
           EXT=json; FMT=line;  VERDICT=""; GUARD=classpath.txt; WANT="" ;;
   ISTHMUS) SETUP_KEY="substrait-java"; RUNNER=isthmus_all.sh; CORPUS=derived-schema
           EXT=json; FMT=block; VERDICT="^ISTHMUS (ACCEPTED|REJECTED)"; GUARD=classpath.txt; WANT="" ;;
-  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS" >&2; exit 2 ;;
+  # Spark's classpath is resolved by its own probe, so there is nothing for rev_of to read until
+  # then; it is resolved below, before the comparison, or a run would report the version the file
+  # pins rather than the one it measured.
+  SPARK)  SETUP_KEY="substrait-java"; RUNNER=spark_all.sh;    CORPUS=derived-schema
+          EXT=json; FMT=line;  VERDICT=""; GUARD=classpath.txt; WANT="spark $SPARK_35" ;;
+  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK" >&2; exit 2 ;;
 esac
 
 SAVED="results/$NAME.txt"
@@ -122,6 +127,9 @@ SETUP_ONLY="$SETUP_KEY" bash "$PROBE/setup.sh" "$WORK" > "$WORK/setup.log" 2>&1
 # The two substrait-java columns learn what to expect only now, from the checkout the setup made.
 case "$NAME" in
   JAVA|ISTHMUS) WANT="substrait-java $(git -C "$WORK/substrait-java" rev-parse --short "$SUBSTRAIT_JAVA_COMMIT" 2>/dev/null)" ;;
+  SPARK) bash "$PROBE/cp.sh" spark >/dev/null 2>"$WORK/spark_cp.err" ||
+           { echo "FAILED: could not resolve the :spark classpath: $(tail -1 "$WORK/spark_cp.err")" >&2
+             exit 1; } ;;
 esac
 
 GOT="$(rev_of "$NAME")"

@@ -13,15 +13,15 @@ and could never fire.
 through `setup.sh` (`SETUP_ONLY=<key>`, which builds one piece instead of all of them), puts the
 corpus through it and requires the answers to be identical to the saved column:
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK
 
-Seven of the nine columns, retaken on a machine that is not the author's. Four are a pip install
+Eight of the nine columns, retaken on a machine that is not the author's. Four are a pip install
 or a go get; the validator is a clone and a cargo build, wanting protoc and its well-known types
-from `protobuf-compiler` and `libprotobuf-dev`; the substrait-java pair is a clone at the pinned
-commit and a Gradle build, wanting the JDK `versions.env` names. Each builds its own checkout,
-so none of them needs one to exist first. The two left — Spark, which wants a JDK 17 beside the
-substrait-java one, and DataFusion, which wants a checkout of its own and the Rust toolchain it
-pins — remain saved measurements.
+from `protobuf-compiler` and `libprotobuf-dev`; the three that come out of substrait-java are a
+clone at the pinned commit and a Gradle build, wanting the JDK `versions.env` names, and Spark
+additionally wants that JDK named in `JAVA17_HOME`, which it finds by itself only on a Mac.
+Each builds its own checkout, so none of them needs one to exist first. DataFusion is the one
+left: it wants a checkout of its own and the Rust toolchain that repository pins.
 
 `LATEST=1` is the same run against today's release rather than the pinned one, through
 `versions-latest.env`. There a difference is the finding rather than the failure — the participant
