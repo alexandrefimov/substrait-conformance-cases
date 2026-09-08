@@ -34,7 +34,7 @@ The separate `virtual_table_literal_type_differs_from_schema` case also has no s
 | DataFusion widens a grouping key present in every set | [aggregate_grouping_field_shared_by_sets](derived-schema/aggregate_grouping_field_shared_by_sets.json); `aggregate_grouping_sets_declared_order` is a companion case. | [DataFusion #24968](https://github.com/apache/datafusion/issues/24968) |
 | DataFusion intersections retain primary-input nullability | [setop_intersection_primary](derived-schema/setop_intersection_primary.json), `setop_intersection_multiset` and `setop_intersection_multiset_all`; union and minus are controls. | [DataFusion #25042](https://github.com/apache/datafusion/issues/25042) |
 | DataFusion decimal return types differ from standard functions | [decimal_divide](derived-schema/decimal_divide.json), `decimal_add_overflow` and `decimal_multiply_overflow`, with small add/multiply controls; use [datafusion_corpus_probe.rs](probe/datafusion_corpus_probe.rs). | [DataFusion #25043](https://github.com/apache/datafusion/issues/25043) |
-| Go panics when a join omits optional `RelCommon` | [Three structural cases](probe/structural-cases/go), run with `python3 probe/structural_cases.py go`: absent common, with empty and direct common as controls. | [substrait-go #328](https://github.com/substrait-io/substrait-go/issues/328) |
+| Go panics when a join omits optional `RelCommon` | [Join metadata cases](probe/structural-cases/go), run with `python3 probe/structural_cases.py go`: absent common, with empty and direct common as controls. | [substrait-go #328](https://github.com/substrait-io/substrait-go/issues/328) |
 
 ## Producers
 

@@ -1,4 +1,4 @@
-"""Run minimal consumer cases with controls, separately from the saved matrix.
+"""Run minimal consumer and text round-trip cases, separately from the saved matrix.
 
 Set SUBSTRAIT_PROBE_ENV to the environment built by probe/setup.sh.
 Differences are reported as JSON Lines; --check makes them fail the command.
@@ -16,8 +16,8 @@ CASES = PROBE / "structural-cases"
 
 def load_cases():
     groups = json.loads((CASES / "expected.json").read_text())
-    if set(groups) != {"duckdb", "go", "validator"}:
-        raise ValueError("expected exactly the duckdb, go and validator case groups")
+    if set(groups) != {"duckdb", "go", "validator", "explain", "spark"}:
+        raise ValueError("expected the duckdb, go, validator, explain and spark case groups")
     for engine, cases in groups.items():
         files = {p.stem for p in (CASES / engine).glob("*.json")}
         if not cases or set(cases) != files or not any(c["control"] for c in cases.values()):
@@ -52,9 +52,33 @@ def duck_worker(path):
     print(json.dumps({**result, "duckdb": duckdb.__version__, "extension": version}))
 
 
+def explain_roundtrip(path, expected):
+    command = [os.environ.get("SUBSTRAIT_EXPLAIN", "substrait-explain"), "convert"]
+    formatted = subprocess.run(command + ["-i", str(path), "-f", "json", "-t", "text"],
+                               capture_output=True, text=True, timeout=30)
+    if formatted.returncode:
+        raise RuntimeError(f"{path.stem}: formatter failed: {formatted.stderr.strip()}")
+    parsed = subprocess.run(command + ["-f", "text", "-t", "json"], input=formatted.stdout,
+                            capture_output=True, text=True, timeout=30)
+    if parsed.returncode:
+        if "panicked at" in parsed.stderr:
+            return {"status": "crash", "stage": "parse", "returncode": parsed.returncode}, False
+        raise RuntimeError(f"{path.stem}: parser failed: {parsed.stderr.strip()}")
+    root = json.loads(parsed.stdout)["relations"][0]["root"]
+    schema = root["input"]["read"]["baseSchema"]
+    observed = {"status": "accepted", "schema": schema, "names": root["names"]}
+    return observed, schema == expected["schema"] and root["names"] == expected["names"]
+
+
 def run_case(engine, name, expected, env):
     path = CASES / engine / (name + ".json")
-    if engine == "duckdb":
+    if engine == "explain":
+        observed, matches = explain_roundtrip(path, expected)
+        return {"case": name, "matches": matches, "control": expected["control"],
+                "observed": observed}
+    elif engine == "spark":
+        command = ["bash", str(PROBE / "spark_run.sh"), "SparkSchemaOf", str(path)]
+    elif engine == "duckdb":
         command = [str(env / "venv/bin/python"), str(PROBE / "structural_cases.py"),
                    "--duck-worker", str(path)]
     elif engine == "go":
@@ -62,7 +86,8 @@ def run_case(engine, name, expected, env):
     else:
         val = Path(os.environ.get("SUBSTRAIT_VALIDATOR_ENV", str(env / "val")))
         command = [str(val / "bin/python"), str(PROBE / "validator_one.py"), str(path)]
-    result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+    result = subprocess.run(command, capture_output=True, text=True,
+                            timeout=90 if engine == "spark" else 30)
     if result.returncode:
         # Go uses exit 2 for an unrecovered panic. C++ crashes terminate on a signal.
         if result.returncode < 0 or (engine == "go" and result.stderr.startswith("panic:")):
@@ -70,6 +95,13 @@ def run_case(engine, name, expected, env):
         else:
             raise RuntimeError(f"{name}: probe failed: {result.stderr.strip()}")
         matches = False
+    elif engine == "spark":
+        lines = [line[len(name):].strip() for line in result.stdout.splitlines()
+                 if line.startswith(name + " ")]
+        if len(lines) != 1 or not lines[0].startswith("[") or not lines[0].endswith("]"):
+            raise RuntimeError(f"{name}: Spark did not produce one schema: {result.stdout}")
+        observed = {"status": "accepted", "schema": lines[0]}
+        matches = observed["schema"] == expected["schema"]
     elif engine == "duckdb":
         observed = json.loads(result.stdout)
         matches = (observed["status"] == "unsupported" and expected["allow_unsupported"])
@@ -103,7 +135,7 @@ def run_case(engine, name, expected, env):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("engine", choices=["duckdb", "go", "validator"], nargs="?")
+    parser.add_argument("engine", choices=["duckdb", "go", "validator", "explain", "spark"], nargs="?")
     parser.add_argument("--check", action="store_true", help="fail if any case differs")
     parser.add_argument("--verify-fixtures", action="store_true", help="check fixture inventory without running engines")
     parser.add_argument("--duck-worker", type=Path, help=argparse.SUPPRESS)

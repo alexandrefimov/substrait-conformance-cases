@@ -129,6 +129,18 @@
     "join_common_direct": {
       "schema": "[l:i32, r:i32]",
       "control": true
+    },
+    "union_required_control": {
+      "schema": "[x:i64]",
+      "control": true
+    },
+    "union_required_nullable": {
+      "schema": "[x:i64?]",
+      "control": false
+    },
+    "union_nullable_required": {
+      "schema": "[x:i64?]",
+      "control": false
     }
   },
   "validator": {
@@ -146,6 +158,132 @@
     },
     "two_columns_emit": {
       "schema": "[s:str]",
+      "control": false
+    }
+  },
+  "explain": {
+    "i64_control": {
+      "schema": {
+        "names": [
+          "x"
+        ],
+        "struct": {
+          "types": [
+            {
+              "i64": {
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+        }
+      },
+      "names": [
+        "x"
+      ],
+      "control": true
+    },
+    "varchar_length": {
+      "schema": {
+        "names": [
+          "x"
+        ],
+        "struct": {
+          "types": [
+            {
+              "varchar": {
+                "length": 10,
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+        }
+      },
+      "names": [
+        "x"
+      ],
+      "control": false
+    },
+    "fixedchar_length": {
+      "schema": {
+        "names": [
+          "x"
+        ],
+        "struct": {
+          "types": [
+            {
+              "fixedChar": {
+                "length": 5,
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+        }
+      },
+      "names": [
+        "x"
+      ],
+      "control": false
+    },
+    "fixedbinary_length": {
+      "schema": {
+        "names": [
+          "x"
+        ],
+        "struct": {
+          "types": [
+            {
+              "fixedBinary": {
+                "length": 4,
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+        }
+      },
+      "names": [
+        "x"
+      ],
+      "control": false
+    },
+    "decimal_parameters": {
+      "schema": {
+        "names": [
+          "x"
+        ],
+        "struct": {
+          "types": [
+            {
+              "decimal": {
+                "precision": 10,
+                "scale": 2,
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+        }
+      },
+      "names": [
+        "x"
+      ],
+      "control": false
+    }
+  },
+  "spark": {
+    "decimal_add_control": {
+      "schema": "[r:decimal(11,2)?]",
+      "control": true
+    },
+    "decimal_multiply_control": {
+      "schema": "[r:decimal(16,3)?]",
+      "control": true
+    },
+    "decimal_divide": {
+      "schema": "[r:decimal(21,8)?]",
       "control": false
     }
   }

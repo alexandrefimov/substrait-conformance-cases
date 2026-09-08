@@ -130,12 +130,13 @@ derives. The rest of this directory is not on that path, and none of it is run b
 These commands run from the corpus root after setting up the relevant participant.
 They report additional observations separately from the saved matrix.
 
-**Minimal consumer cases.** [Twelve plans with controls](structural-cases/README.md)
-cover missing `RelCommon` in Go, valid `VirtualTable.expressions` in the validator,
-and DuckDB error handling for unsupported join/set operations. Run
-`python3 probe/structural_cases.py duckdb`, `go` or `validator` after setting up that
-participant. Each plan runs in its own process; errors remain visible beside schema
-observations. `--check` makes differences fail the command.
+**Minimal consumer and text cases.** [23 plans with controls](structural-cases/README.md)
+cover Go relation metadata and union nullability, validator virtual tables, DuckDB
+unsupported-operation errors, explain type round-trips, and Spark decimal result
+types. Run `python3 probe/structural_cases.py duckdb`, `go`, `validator`, `explain`
+or `spark` after setting up that participant. Each plan runs in its own process;
+errors remain visible beside schema observations. `--check` makes differences fail
+the command. These diagnostics do not update the saved matrix.
 
 **Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
 against all four combinations of input nullability, plus five grouping-set layouts. Its

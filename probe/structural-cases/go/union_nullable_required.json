@@ -1,0 +1,79 @@
+{
+  "version": {
+    "minorNumber": 87,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "set": {
+            "common": {
+              "direct": {}
+            },
+            "inputs": [
+              {
+                "read": {
+                  "common": {
+                    "direct": {}
+                  },
+                  "baseSchema": {
+                    "names": [
+                      "x"
+                    ],
+                    "struct": {
+                      "types": [
+                        {
+                          "i64": {
+                            "nullability": "NULLABILITY_NULLABLE"
+                          }
+                        }
+                      ],
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "namedTable": {
+                    "names": [
+                      "t"
+                    ]
+                  }
+                }
+              },
+              {
+                "read": {
+                  "common": {
+                    "direct": {}
+                  },
+                  "baseSchema": {
+                    "names": [
+                      "x"
+                    ],
+                    "struct": {
+                      "types": [
+                        {
+                          "i64": {
+                            "nullability": "NULLABILITY_REQUIRED"
+                          }
+                        }
+                      ],
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "namedTable": {
+                    "names": [
+                      "t"
+                    ]
+                  }
+                }
+              }
+            ],
+            "op": "SET_OP_UNION_ALL"
+          }
+        },
+        "names": [
+          "x"
+        ]
+      }
+    }
+  ]
+}

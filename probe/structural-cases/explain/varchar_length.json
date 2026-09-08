@@ -1,0 +1,43 @@
+{
+  "version": {
+    "minorNumber": 87,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "common": {
+              "direct": {}
+            },
+            "baseSchema": {
+              "names": [
+                "x"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "varchar": {
+                      "length": 10,
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "namedTable": {
+              "names": [
+                "t"
+              ]
+            }
+          }
+        },
+        "names": [
+          "x"
+        ]
+      }
+    }
+  ]
+}
