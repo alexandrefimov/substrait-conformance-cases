@@ -67,6 +67,27 @@
    ],
    "source": "a read with no operations: the schema is base_schema"
   },
+  "cross_preserves_nullability": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "logical_relations.md, Cross Product Operation: the same order as the inputs, with neither side padded"
+  },
   "decimal_add": {
    "schema": [
     [
@@ -1188,6 +1209,19 @@
     ]
    ],
    "source": "a read with no operations: the schema is base_schema"
+  },
+  "topn_keeps_the_input_schema": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "physical_relations.md, Top-N Operation: the field order of the input"
   },
   "virtual_table_emit_mapping": {
    "schema": [

@@ -1,9 +1,10 @@
-JAVA: column from run 2026-09-08T17:11, substrait-java fff63906
+JAVA: column from run 2026-09-08T17:49, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}
 control_join_without_relcommon                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 control_passthrough_rn                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+cross_preserves_nullability                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 ctas_keeps_declared_schema                     Struct{nullable=false, fields=[I32{nullable=true}, I32{nullable=true}]}
 decimal_add_overflow                           Struct{nullable=false, fields=[Decimal{nullable=false, scale=9, precision=38}]}
 decimal_add                                    Struct{nullable=false, fields=[Decimal{nullable=false, scale=2, precision=11}]}
@@ -75,6 +76,7 @@ setop_minus_primary                            Struct{nullable=false, fields=[I6
 setop_union_all                                Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
 setop_union_distinct                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
 stringlen_declared                             Struct{nullable=false, fields=[VarChar{nullable=false, length=10}, FixedChar{nullable=false, length=5}, FixedBinary{nullable=false, length=4}, Str{nullable=false}]}
+topn_keeps_the_input_schema                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 virtual_table_emit_mapping                     Struct{nullable=false, fields=[Str{nullable=false}]}
 virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullab
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullab

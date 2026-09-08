@@ -1,9 +1,10 @@
-VALIDATOR: column from run 2026-09-08T17:11, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-08T17:49, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_sets_declared_order         [i32, unresolved]
 control_join_without_relcommon                 [i64, i64?, i64?, i64]
 control_passthrough_rn                         [c0:i64, c1:i64?]
+cross_preserves_nullability                    [i64, i64?, i64?, i64]
 ctas_keeps_declared_schema                     —
 decimal_add_overflow                           [dec(38,9)]
 decimal_add                                    [dec(11,2)]
@@ -75,6 +76,7 @@ setop_minus_primary                            [i64, i64, i64, i64, i64?, i64?, 
 setop_union_all                                [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
 setop_union_distinct                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
+topn_keeps_the_input_schema                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "topN" at "Plan.relations[0].root.input".  Availab
 virtual_table_emit_mapping                     [unresolved]
 virtual_table_literal_type_differs_from_schema i8
 virtual_table_row_null_in_required_column      i32?

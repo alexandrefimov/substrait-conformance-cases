@@ -281,6 +281,25 @@ expected["expand_switching_nullability"] = {
     "source": "ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the "
               "expand fields followed by the i32 duplicate index"}
 
+# --- Cross product and Top-N ----------------------------------------------------------------------
+# "Direct Output Order: Same as the `Input Order`" (logical_relations.md, Cross Product Operation):
+# the left input's fields and then the right input's. Nullability is the half worth measuring - a
+# cross product pads nothing, every output row pairing a real left row with a real right row, so a
+# required column stays required on both sides. The join cases in this corpus already found three
+# participants widening a side that a join does pad; this asks the same question where the answer is
+# no. t_rn is (required, nullable) and t_nr is (nullable, required), so a side coming back wholly one
+# way, or in the wrong order, shows in the pattern alone.
+expected["cross_preserves_nullability"] = {
+    "schema": [["i64", False], ["i64", True], ["i64", True], ["i64", False]],
+    "source": "logical_relations.md, Cross Product Operation: the same order as the inputs, with "
+              "neither side padded"}
+
+# "Direct Output Order: The field order of the input" (physical_relations.md, Top-N Operation).
+# Sorting and cutting change which rows come back, not which columns.
+expected["topn_keeps_the_input_schema"] = {
+    "schema": [["i64", False], ["i64", True]],
+    "source": "physical_relations.md, Top-N Operation: the field order of the input"}
+
 print(json.dumps({"expected": expected, "rows": rows, "disputed": DISPUTED,
                   "spec_silent": sorted(SPEC_SILENT), "spec_says_invalid": sorted(SPEC_SAYS_INVALID)},
                  ensure_ascii=False, indent=1, sort_keys=True))

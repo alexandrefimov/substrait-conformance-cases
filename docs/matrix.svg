@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1545" viewBox="0 0 838 1545">
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1605" viewBox="0 0 838 1605">
 <defs><pattern id="hatch" width="4" height="4" patternTransform="rotate(135)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#8a8b88" stroke-width="1.6"/></pattern><pattern id="dots" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#c2c2ba" stroke-width="0.8"/></pattern></defs>
-<rect x="0.0" y="0.0" width="838.0" height="1545.0" rx="1.5" fill="#fdfdfc"/>
+<rect x="0.0" y="0.0" width="838.0" height="1605.0" rx="1.5" fill="#fdfdfc"/>
 <text x="14.0" y="26.0" fill="#14161a" font-size="15.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Declared against derived</text>
-<text x="14.0" y="43.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">83 plans read by 9 implementations, each answer compared with an expectation written from the spec.</text>
+<text x="14.0" y="43.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">85 plans read by 9 implementations, each answer compared with an expectation written from the spec.</text>
 <text x="14.0" y="57.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">An empty cell is silence — the implementation does not accept that plan — and is never drawn as a colour.</text>
 <rect x="14.0" y="68.0" width="11.0" height="9.0" rx="1.5" fill="#d6d6d1"/>
 <text x="29.0" y="76.0" fill="#55575c" font-size="9.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">matched</text>
@@ -843,61 +843,85 @@
 <rect x="642.0" y="1376.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <rect x="704.0" y="1376.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <rect x="766.0" y="1376.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
-<text x="14.0" y="1400.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">EXPAND</text>
+<text x="14.0" y="1400.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">CROSS</text>
 <line x1="14" y1="1403.0" x2="824" y2="1403.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1415.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">expand_consistent_fields</text>
-<rect x="270.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<text x="14.0" y="1415.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">cross_preserves_nullability</text>
+<rect x="270.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="332.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="394.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="456.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="518.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="580.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="642.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="704.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="766.0" y="1406.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1428.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">expand_switching_nullability</text>
-<rect x="270.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="332.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1443.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW</text>
-<line x1="14" y1="1446.0" x2="824" y2="1446.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1458.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset</text>
-<rect x="270.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="14.0" y="1430.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">EXPAND</text>
+<line x1="14" y1="1433.0" x2="824" y2="1433.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1445.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">expand_consistent_fields</text>
+<rect x="270.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1436.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1458.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">expand_switching_nullability</text>
+<rect x="270.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="394.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="580.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="704.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="642.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1449.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1471.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset_expr</text>
-<rect x="270.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="394.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="766.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1484.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_output_order</text>
-<rect x="270.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1475.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1508.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">747 cells: 400 matched, 87 divergences, 11 unresolved, 6 at a type-system boundary, 198 not accepted, 45 without an expectation.</text>
-<text x="14.0" y="1520.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-08 · java fff63906 · python 0.31.0 · go cb2d6e648bc0 · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5 · Spark 3.5.4</text>
-<text x="14.0" y="1531.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Acero 25.0.1</text>
+<text x="14.0" y="1473.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">TOPN</text>
+<line x1="14" y1="1476.0" x2="824" y2="1476.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1488.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">topn_keeps_the_input_schema</text>
+<rect x="270.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1479.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1503.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW</text>
+<line x1="14" y1="1506.0" x2="824" y2="1506.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1518.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset</text>
+<rect x="270.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="704.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="766.0" y="1509.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1531.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset_expr</text>
+<rect x="270.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="394.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="766.0" y="1522.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1544.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_output_order</text>
+<rect x="270.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1535.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1568.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">765 cells: 410 matched, 87 divergences, 11 unresolved, 6 at a type-system boundary, 206 not accepted, 45 without an expectation.</text>
+<text x="14.0" y="1580.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-08 · java fff63906 · python 0.31.0 · go cb2d6e648bc0 · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5 · Spark 3.5.4</text>
+<text x="14.0" y="1591.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Acero 25.0.1</text>
 </svg>

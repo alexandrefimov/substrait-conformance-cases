@@ -90,6 +90,34 @@
   }
  },
  {
+  "case": "cross_preserves_nullability",
+  "plan": "cross_preserves_nullability.json",
+  "binary": "cross_preserves_nullability.bin",
+  "generator": "GenCross",
+  "note": "cross_preserves_nullability  the left input's fields then the right's, neither side padded",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "logical_relations.md, Cross Product Operation: the same order as the inputs, with neither side padded"
+  }
+ },
+ {
   "case": "ctas_keeps_declared_schema",
   "plan": "ctas_keeps_declared_schema.json",
   "binary": "ctas_keeps_declared_schema.bin",
@@ -1711,6 +1739,26 @@
     ]
    ],
    "from": "a read with no operations: the schema is base_schema"
+  }
+ },
+ {
+  "case": "topn_keeps_the_input_schema",
+  "plan": "topn_keeps_the_input_schema.json",
+  "binary": "topn_keeps_the_input_schema.bin",
+  "generator": "GenTopN",
+  "note": "topn_keeps_the_input_schema  sorting and cutting change rows, not columns",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "physical_relations.md, Top-N Operation: the field order of the input"
   }
  },
  {

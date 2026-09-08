@@ -1,10 +1,11 @@
-DUCKDB: column from run 2026-09-08T17:11, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T17:49, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
 aggregate_grouping_sets_declared_order         [c:VARCHAR, a:BIGINT]
 control_join_without_relcommon                 [a:BIGINT, b:BIGINT, c:BIGINT, d:BIGINT]
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT]
+cross_preserves_nullability                    [l0:BIGINT, l1:BIGINT, r0:BIGINT, r1:BIGINT]
 ctas_keeps_declared_schema                     [Count:BIGINT]
 decimal_add_overflow                           ERROR: OutOfRangeException: Out of Range Error: Overflow in addition of DECIMAL(38) (99999999999999999999999999999999999999 + 99999999999999999999999999999999999999);
 decimal_add                                    [r:DECIMAL(11,2)]
@@ -76,6 +77,7 @@ setop_minus_primary                            [c0:BIGINT, c1:BIGINT, c2:BIGINT,
 setop_union_all                                [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT, c4:BIGINT, c5:BIGINT, c6:BIGINT, c7:BIGINT]
 setop_union_distinct                           ERROR: signal/exit 139
 stringlen_declared                             [c0:VARCHAR, c1:VARCHAR, c2:BLOB, c3:VARCHAR]
+topn_keeps_the_input_schema                    ERROR: NotImplementedException: Not implemented Error: Unsupported relation type top_n LINE 1: SELECT * FROM from_substrait_json(?) ^
 virtual_table_emit_mapping                     [col2:INTEGER]
 virtual_table_literal_type_differs_from_schema [c:TINYINT]
 virtual_table_row_null_in_required_column      [c:INTEGER]

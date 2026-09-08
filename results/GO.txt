@@ -1,9 +1,10 @@
-GO: column from run 2026-09-08T17:11, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
+GO: column from run 2026-09-08T17:49, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_sets_declared_order         [c:string, a:i64]
 control_join_without_relcommon                 ERROR: panic: runtime error: invalid memory address or nil pointer dereference
 control_passthrough_rn                         [c0:i64, c1:i64?]
+cross_preserves_nullability                    [l0:i64, l1:i64?, r0:i64?, r1:i64]
 ctas_keeps_declared_schema                     []
 decimal_add_overflow                           [r:decimal<38,9>]
 decimal_add                                    [r:decimal<11,2>]
@@ -75,6 +76,7 @@ setop_minus_primary                            ERROR: invalid relation: set oper
 setop_union_all                                ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_union_distinct                           ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 stringlen_declared                             [c0:varchar<10>, c1:fixedchar<5>, c2:fixedbinary<4>, c3:string]
+topn_keeps_the_input_schema                    ERROR: invalid relation: got nil
 virtual_table_emit_mapping                     [col2:string]
 virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]

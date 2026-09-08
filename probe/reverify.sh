@@ -112,7 +112,7 @@ echo
 echo "### 1. generating the cases, and the substrait-java side"
 CP="$(cat "$GEN/classpath.txt")"
 rm -rf "$GEN/out"; mkdir -p "$GEN/out"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand JsonToBin"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN JsonToBin"
 SRCS=""; for g in $GENS Tables; do SRCS="$SRCS $GEN/$g.java"; done
 javac -nowarn -cp "$CP" -d "$GEN/out" $SRCS || die "javac of the generators"
 
@@ -143,7 +143,7 @@ fi
 # compared against it, and a difference is a report rather than a silent overwrite of the inputs.
 # manifest.json is excluded from the corpus comparison in both directions and from the update:
 # GenCases still writes a four-entry manifest of its own, and in this repository that file belongs to
-# gen/make_manifest.sh, which describes all 78 cases. One file, one writer.
+# gen/make_manifest.sh, which describes every case. One file, one writer.
 if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
   find "$CASES" -maxdepth 1 \( -name '*.json' ! -name manifest.json -o -name '*.bin' \) -delete
   for f in "$STAGE"/*.json "$STAGE"/*.bin; do
@@ -177,6 +177,26 @@ else
     fail "generation drifted from the saved corpus; check it, and if the difference is expected, UPDATE_CORPUS=1"
   fi
 fi
+
+# expected.json is built here, before the manifest and before both checks. It used to be built
+# after the row check, so a change to the expectations was only caught by the next run; and then
+# after the manifest, which embeds each case's expectation - so a run that added a case wrote a
+# manifest saying that case had none, and the repository contradicted itself on the next check.
+#
+# Like the corpus and the manifest, it is rebuilt into a temporary file and compared. It used to be
+# written straight over the saved file on every run, which meant a change to expected.py silently
+# became the new expectation with nothing said about it - and the run then measured against it.
+EXP="$(mktemp)"
+python3 "$PROBE/expected.py" > "$EXP" || fail "could not build expected.json"
+if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
+  cp "$EXP" "$ROOT/expected.json"
+  echo "expected.json updated from probe/expected.py (UPDATE_CORPUS=1)"
+elif cmp -s "$EXP" "$ROOT/expected.json"; then
+  echo "expected.json matches probe/expected.py"
+else
+  fail "expected.json drifted from probe/expected.py; sync it with UPDATE_CORPUS=1"
+fi
+rm -f "$EXP"
 
 # The manifest says, per case, which generator writes it and what that generator calls it. It is
 # built from the generators rather than kept by hand, so it is checked the way the corpus is: rebuilt
@@ -336,24 +356,6 @@ echo; echo "### 9. the Spark side (needs JDK 17)"
 J17_HOME="${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}"
 optional_column SPARK line Spark "${J17_HOME:-/nonexistent}/bin/java" \
   bash "$PROBE/spark_all.sh" "$CASES"
-
-# expected.json is built here, before both checks. It used to be regenerated below, after the row
-# check, so a change to the expectations was only caught by the next run.
-#
-# Like the corpus and the manifest, it is rebuilt into a temporary file and compared. It used to be
-# written straight over the saved file on every run, which meant a change to expected.py silently
-# became the new expectation with nothing said about it - and the run then measured against it.
-EXP="$(mktemp)"
-python3 "$PROBE/expected.py" > "$EXP" || fail "could not build expected.json"
-if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
-  cp "$EXP" "$ROOT/expected.json"
-  echo "expected.json updated from probe/expected.py (UPDATE_CORPUS=1)"
-elif cmp -s "$EXP" "$ROOT/expected.json"; then
-  echo "expected.json matches probe/expected.py"
-else
-  fail "expected.json drifted from probe/expected.py; sync it with UPDATE_CORPUS=1"
-fi
-rm -f "$EXP"
 
 echo; echo "### 10. rows against the examples in the spec"
 # The rows section of expected.json was not read at all before: eight expectations sat in the file

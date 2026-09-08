@@ -1,0 +1,69 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "topN": {
+          "common": {
+            "direct": {
+            }
+          },
+          "input": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_rn"]
+              }
+            }
+          },
+          "sorts": [{
+            "expr": {
+              "selection": {
+                "directReference": {
+                  "structField": {
+                  }
+                },
+                "rootReference": {
+                }
+              }
+            },
+            "direction": "SORT_DIRECTION_ASC_NULLS_LAST"
+          }],
+          "offset": {
+            "literal": {
+              "i64": "0"
+            }
+          },
+          "count": {
+            "literal": {
+              "i64": "2"
+            }
+          },
+          "mode": "FETCH_MODE_ROWS_ONLY"
+        }
+      },
+      "names": ["c0", "c1"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

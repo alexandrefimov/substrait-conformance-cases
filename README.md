@@ -6,13 +6,13 @@
 the matrix as a page, with the expectation and the answer beside each cell.
 
 A plan declares types and a consumer derives them again — or reuses what the plan declared. When
-the two disagree, nothing in the format notices. The main comparison corpus contains 83 plans built
-to make such disagreements visible, an expected schema for 78 of them, and probes that put the corpus
+the two disagree, nothing in the format notices. The main comparison corpus contains 85 plans built
+to make such disagreements visible, an expected schema for 80 of them, and probes that put the corpus
 through ten implementations.
 
 [Focused diagnostics](probe/README.md#focused-schema-diagnostics) also include
 minimal consumer cases with controls and checks of producer output. These can be
-run separately and are not counted in the saved 83-plan matrix.
+run separately and are not counted in the saved 85-plan matrix.
 
 The expectations are the part worth being suspicious of, so this is how they are made. Each one is
 written by hand from the spec — the derivation tables, the decimal formulas, the relation rules — in
@@ -35,7 +35,7 @@ Take `decimal_divide`, which divides `dec(10,2)` by `dec(5,1)`. The formula in
 
 Three things, in the order they are worth someone's time:
 
-- **A reading of `probe/expected.py` against the spec.** It is 78 expectations written by hand from
+- **A reading of `probe/expected.py` against the spec.** It is 80 expectations written by hand from
   the spec text; nobody outside this repository has checked them, and an expectation that is wrong
   turns into a divergence reported against an implementation that was right.
 - **For a participant's maintainer: the cases that differ for you.** `differed.json` names them per
@@ -55,7 +55,7 @@ page is wrong, that is a bug here and worth an issue.
 ## What the corpus says
 
 The columns saved here were taken 2026-09-08 against the versions in `probe/versions.env`, which
-each column's own first line names again. They answer the 78 cases that carry an expectation:
+each column's own first line names again. They answer the 80 cases that carry an expectation:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/matrix-dark.svg">
@@ -72,18 +72,18 @@ expectation and the answer beside each cell.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
-| substrait-java | 76 | 2 | 0 |
-| substrait-python | 59 | 18 | 1 |
-| substrait-go | 55 | 2 | 21 |
-| substrait-validator | 45 | 28 | 5 |
-| Isthmus/Calcite | 49 | 5 | 24 |
-| DataFusion | 52 | 9 | 17 |
-| DuckDB | 33 | 19 | 26 |
-| Spark | 28 | 6 | 44 |
-| Acero | 3 | 15 | 60 |
+| substrait-java | 78 | 2 | 0 |
+| substrait-python | 61 | 18 | 1 |
+| substrait-go | 56 | 2 | 22 |
+| substrait-validator | 46 | 28 | 6 |
+| Isthmus/Calcite | 50 | 5 | 25 |
+| DataFusion | 53 | 9 | 18 |
+| DuckDB | 34 | 19 | 27 |
+| Spark | 29 | 6 | 45 |
+| Acero | 3 | 15 | 62 |
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
-and the same person wrote the generators, the expectations and part of substrait-java. Its 76
+and the same person wrote the generators, the expectations and part of substrait-java. Its 78
 matches say the two encodings of a spec rule agree. They do not say the consumer derived anything:
 swap a declared `output_type` for a false one and Java's answer follows it on ten of the 22 scored
 cases that carry one, as do substrait-python and the validator. [METHOD.md](METHOD.md) has that
@@ -126,7 +126,7 @@ A column also has a reach, and a number read past it says nothing. The first lin
 
 ## What is here
 
-The corpus is `derived-schema/` — 83 plans as protobuf-JSON and as binary protobuf, with a
+The corpus is `derived-schema/` — 85 plans as protobuf-JSON and as binary protobuf, with a
 `manifest.json` describing every one — plus `derived-schema-virtual-tables/`, the same cases rewritten
 for Gluten, which reads only `virtual_table` and `local_files` out of a `ReadRel`. The answers are
 `results/<NAME>.txt`, one file per implementation, gathered by `probe/matrix.py` into
@@ -177,8 +177,8 @@ encoded rule matches the spec or that every interpretation of a result is correc
   Each says what is missing. Existing reports can cover only part of a linked observation, so
   their notes also matter. `open` is an allowed answer; a link does not prove a fix. The count is
   written down and `probe/check_differed.py` compares it.
-- Rows are compared for three participants and ten cases; schemas for nine participants and 78
-  cases. Five of the 83 cases link to the issue they came from; the rest record only their generator
+- Rows are compared for three participants and ten cases; schemas for nine participants and 80
+  cases. Five of the 85 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this

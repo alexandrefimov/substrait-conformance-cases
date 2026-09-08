@@ -1,9 +1,10 @@
-PYTHON: column from run 2026-09-08T17:11, substrait 0.31.0
+PYTHON: column from run 2026-09-08T17:49, substrait 0.31.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64]
 aggregate_grouping_sets_declared_order         [c:str, a:i64]
 control_join_without_relcommon                 [a:i64, b:i64?, c:i64?, d:i64]
 control_passthrough_rn                         [c0:i64, c1:i64?]
+cross_preserves_nullability                    [l0:i64, l1:i64?, r0:i64?, r1:i64]
 ctas_keeps_declared_schema                     ERROR: Exception: Unhandled rel_type write
 decimal_add_overflow                           [r:dec(38,9)]
 decimal_add                                    [r:dec(11,2)]
@@ -75,6 +76,7 @@ setop_minus_primary                            [c0:i64, c1:i64, c2:i64, c3:i64, 
 setop_union_all                                [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 setop_union_distinct                           [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
+topn_keeps_the_input_schema                    [c0:i64, c1:i64?]
 virtual_table_emit_mapping                     [col2:str]
 virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]

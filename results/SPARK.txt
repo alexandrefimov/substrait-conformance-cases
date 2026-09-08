@@ -1,10 +1,11 @@
-SPARK: column from run 2026-09-08T17:12, spark 3.5.4
+SPARK: column from run 2026-09-08T17:49, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
 aggregate_grouping_sets_declared_order         ERROR: IllegalArgumentException: requirement failed
 control_join_without_relcommon                 [a:bigint, b:bigint?, c:bigint?, d:bigint]
 control_passthrough_rn                         [c0:bigint, c1:bigint?]
+cross_preserves_nullability                    [l0:bigint, l1:bigint?, r0:bigint?, r1:bigint]
 ctas_keeps_declared_schema                     []
 decimal_add_overflow                           [r:decimal(38,9)?]
 decimal_add                                    [r:decimal(11,2)?]
@@ -76,6 +77,7 @@ setop_minus_primary                            ERROR: UnsupportedOperationExcept
 setop_union_all                                [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?, c4:bigint?, c5:bigint?, c6:bigint?, c7:bigint?]
 setop_union_distinct                           ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
 stringlen_declared                             ERROR: UnsupportedOperationException: Unknown expression type.
+topn_keeps_the_input_schema                    ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableTopN not handled by visitor type io.substrait
 virtual_table_emit_mapping                     [col2:string]
 virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
