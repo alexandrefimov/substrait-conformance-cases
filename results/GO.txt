@@ -1,4 +1,4 @@
-GO: column from run 2026-09-07T12:20, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
+GO: column from run 2026-09-08T15:45, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_sets_declared_order         [c:string, a:i64]
@@ -78,3 +78,6 @@ virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]
 virtual_table_row_nullable_in_required_column  [c:i32]
 virtual_table_row_required_in_nullable_column  [c:i32?]
+window_bound_offset_expr                       ERROR: not implemented
+window_bound_offset                            ERROR: not implemented
+window_output_order                            ERROR: not implemented

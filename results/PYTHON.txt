@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-09-07T12:21, substrait 0.31.0
+PYTHON: column from run 2026-09-08T15:45, substrait 0.31.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64]
 aggregate_grouping_sets_declared_order         [c:str, a:i64]
@@ -78,3 +78,6 @@ virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]
 virtual_table_row_nullable_in_required_column  [c:i32]
 virtual_table_row_required_in_nullable_column  [c:i32?]
+window_bound_offset_expr                       ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Failed to parse wi
+window_bound_offset                            [v:i64, s:i64?]
+window_output_order                            [c0:i64, c1:str, c2:bool, rn:i64?, cd:fp64?]

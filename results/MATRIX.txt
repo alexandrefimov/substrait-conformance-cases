@@ -1,13 +1,13 @@
-Schema derivation matrix: 10 implementations x 78 cases.
+Schema derivation matrix: 10 implementations x 81 cases.
 Built by probe/matrix.py from the columns in results.
-Columns taken 2026-09-07, except: Acero 2026-09-08.
+Columns taken 2026-09-08, except: Gluten 2026-09-07.
 Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.
 BOUNDARIES: DuckDB is the only participant carrying no nullability - for it types, arity and
 order are compared. Acero and Spark carry it and are compared on it. Gluten takes no part in
 the comparison against the expectations at all.
 String length is lost by DataFusion and DuckDB: their type systems have no string with a length.
 · means the case was not run through that implementation.
-PARTIAL COLUMN: Gluten - 74 of 78, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
+PARTIAL COLUMN: Gluten - 74 of 81, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
 
 case                                          substrait-java                    Isthmus                           python                            validator                         substrait-go                      Spark                             DataFusion                        DuckDB                            Acero                             Gluten                            
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -89,3 +89,6 @@ virtual_table_literal_type_differs_from_schema- IllegalArgumentException: Row f�
 virtual_table_row_null_in_required_column     - IllegalArgumentException: Row f…- PARSE FAILED: IllegalArgumentEx…[c:i32]                           i32?                              [c:i32]                           - IllegalArgumentException: Row f…[c:Int32]                         [c:INTEGER]                       - ArrowNotImplementedError: subst…ROW<n0_0:INTEGER>                 
 virtual_table_row_nullable_in_required_column - IllegalArgumentException: Row f…- PARSE FAILED: IllegalArgumentEx…[c:i32]                           i32?                              [c:i32]                           - IllegalArgumentException: Row f…[c:Int32]                         [c:INTEGER]                       - ArrowNotImplementedError: subst…ROW<n0_0:INTEGER>                 
 virtual_table_row_required_in_nullable_column - IllegalArgumentException: Row f…- PARSE FAILED: IllegalArgumentEx…[c:i32?]                          i32                               [c:i32?]                          - IllegalArgumentException: Row f…[c:Int32?]                        [c:INTEGER]                       - ArrowNotImplementedError: subst…ROW<n0_0:INTEGER>                 
+window_bound_offset                           {I64{R}, I64{N}]}                 - UnsupportedOperationException: …[v:i64, s:i64?]                   —                                 - not implemented                 [v:bigint, s:bigint?]             - This feature is not implemented…[v:BIGINT, s:HUGEINT]             - ArrowNotImplementedError: conve…·                                 
+window_bound_offset_expr                      {I64{R}, I64{N}]}                 - UnsupportedOperationException: …- LOAD: Failed to parse relations…- Failed to parse relations field…- not implemented                 [v:bigint, s:bigint?]             - This feature is not implemented…- Error: Was not possible to conv…- ArrowNotImplementedError: conve…·                                 
+window_output_order                           {I64{R}, Str{R}, Bool{R}, I64{N},…- UnsupportedOperationException: …[c0:i64, c1:str, c2:bool, rn:i64?…—                                 - not implemented                 - IllegalArgumentException: requi…- This feature is not implemented…- InternalException: INTERNAL Err…- ArrowNotImplementedError: conve…·                                 

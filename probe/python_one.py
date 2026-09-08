@@ -23,7 +23,7 @@ for path in sys.argv[1:]:
     try:
         plan = json_format.Parse(open(path).read(), Plan())
     except Exception as e:
-        print("%-46s LOAD: %s" % (name, str(e).replace("\n"," ")[:80])); continue
+        print("%-46s ERROR: LOAD: %s" % (name, str(e).replace("\n"," ")[:80])); continue
     try:
         ns = infer_plan_schema(plan, registry=REG)
         names, types = list(ns.names), list(ns.struct.types)

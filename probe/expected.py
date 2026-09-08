@@ -216,6 +216,40 @@ expected["phase_intermediate"] = {
     "schema": [["struct(i64,i64)", False]],
     "source": "functions_arithmetic.yaml: avg:i64, intermediate: STRUCT<i64,i64>"}
 
+# --- The window relation -------------------------------------------------------------------------
+# The spec says one thing about this relation's output and says it plainly: "Direct Output Order:
+# same as Project operator (input followed by each window expression)" (physical_relations.md,
+# Consistent Partition Window Operation). That fixes the order and the count. It does not fix the
+# type of an added column: that is the return the extension declares, which the plan repeats and
+# ConsistentPartitionWindow.deriveRecordType reads back, so a match on that half is the same
+# calibration the decimal cases carry rather than a derivation.
+expected["window_output_order"] = {
+    "schema": [["i64", False], ["str", False], ["bool", False], ["i64", True], ["fp64", True]],
+    "source": "physical_relations.md, Consistent Partition Window: the input followed by each "
+              "window expression; the two added types are the returns functions_arithmetic.yaml "
+              "declares, row_number i64? and cume_dist fp64?"}
+
+# One frame written through each of the two encodings of a bound. Both plans are legal - the spec
+# requires at least one of `offset` and `offset_expr` and allows either alone - and both say ROWS
+# BETWEEN 1 PRECEDING AND CURRENT ROW, so the schema and the rows are the same in both. What differs
+# is which field a consumer reads, and the spec is imperative: "Consumers must use offset_expr when
+# it is set and ignore offset."
+for _case in ("window_bound_offset", "window_bound_offset_expr"):
+    expected[_case] = {
+        "schema": [["i64", False], ["i64", True]],
+        "source": "the input followed by the window expression; sum:i64 returns i64? in "
+                  "functions_arithmetic.yaml"}
+    rows[_case] = {
+        # check_rows.py reads every integer in the answer and compares the multiset, which was
+        # written for the set-operation cases, whose output is one column. Here the output is two,
+        # so the pairing of a row with its sum is not what gets compared - the bag of numbers is.
+        # It still separates the answers that matter: a frame that read no offset at all sums each
+        # row with nothing, giving 1, 2, 3, 4 and the bag [1,1,2,2,3,3,4,4].
+        "rows": sorted([1, 1, 2, 3, 3, 5, 4, 7]),
+        "source": "the frame ROWS BETWEEN 1 PRECEDING AND CURRENT ROW over the rows 1, 2, 3, 4 the "
+                  "plan carries: each sum is its row and the one before it, so the rows are "
+                  "(1,1), (2,3), (3,5), (4,7), compared as the multiset of every integer in them"}
+
 print(json.dumps({"expected": expected, "rows": rows, "disputed": DISPUTED,
                   "spec_silent": sorted(SPEC_SILENT), "spec_says_invalid": sorted(SPEC_SAYS_INVALID)},
                  ensure_ascii=False, indent=1, sort_keys=True))

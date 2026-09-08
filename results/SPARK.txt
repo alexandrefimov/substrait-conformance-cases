@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-07T12:21, spark 3.5.4
+SPARK: column from run 2026-09-08T15:45, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -79,3 +79,6 @@ virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: 
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_nullable_in_required_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_required_in_nullable_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=false}) does not match schema field type (I32{nullable=true})
+window_bound_offset_expr                       [v:bigint, s:bigint?]
+window_bound_offset                            [v:bigint, s:bigint?]
+window_output_order                            ERROR: IllegalArgumentException: requirement failed

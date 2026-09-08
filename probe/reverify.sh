@@ -112,7 +112,7 @@ echo
 echo "### 1. generating the cases, and the substrait-java side"
 CP="$(cat "$GEN/classpath.txt")"
 rm -rf "$GEN/out"; mkdir -p "$GEN/out"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl JsonToBin"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow JsonToBin"
 SRCS=""; for g in $GENS Tables; do SRCS="$SRCS $GEN/$g.java"; done
 javac -nowarn -cp "$CP" -d "$GEN/out" $SRCS || die "javac of the generators"
 
@@ -151,6 +151,12 @@ if [ "${UPDATE_CORPUS:-0}" = "1" ]; then
     cp "$f" "$CASES/"
   done
   echo "corpus updated from the fresh generation (UPDATE_CORPUS=1)"
+  # And the variant substrait-python and Gluten are measured on, which is derived from the corpus
+  # rather than generated beside it. Updating one and not the other left the variant a case short,
+  # so the Python column had no answer for a case that existed - and selfcheck, which checks that
+  # variant against its own generator, would have called the repository inconsistent afterwards.
+  python3 "$PROBE/to_virtual_tables.py" "$CASES" "$ROOT/derived-schema-virtual-tables" \
+    || fail "could not rebuild derived-schema-virtual-tables"
 else
   DRIFT=0
   for f in "$STAGE"/*.json; do

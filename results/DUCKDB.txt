@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-07T12:20, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T15:44, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -79,3 +79,6 @@ virtual_table_literal_type_differs_from_schema [c:TINYINT]
 virtual_table_row_null_in_required_column      [c:INTEGER]
 virtual_table_row_nullable_in_required_column  [c:INTEGER]
 virtual_table_row_required_in_nullable_column  [c:INTEGER]
+window_bound_offset_expr                       ERROR: Error: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON in substrait.Plan @ relations[0].root.input.window.windowFunction
+window_bound_offset                            [v:BIGINT, s:HUGEINT]
+window_output_order                            ERROR: InternalException: INTERNAL Error: Unrecognized FROM in WindowExpression  LINE 1: SELECT * FROM from_substrait_json(?)                       ^

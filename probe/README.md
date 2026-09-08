@@ -112,7 +112,7 @@ without `ALLOW_SKIPPED=1`.
 That list is written out rather than summarised as "fail-closed", because the summary was false once
 and read as true: a validator environment with nothing installed produced 78 crashes and a clean
 run, the guard having compared the refusals against the number of cases while the check only ever
-counts the 73 that carry an expectation.
+counts the 76 that carry an expectation.
 
 ## The participants and their versions
 
@@ -198,7 +198,7 @@ case, then the number of cases and mismatches. `--area join` selects only the jo
 are reported without a failing exit status; an inference error or mutation of the input does fail
 the run. `--write-plans` exports protobuf-JSON plans with named tables and no data. A consumer that
 resolves those names through its own catalog needs each table registered with the schema from its
-`ReadRel.base_schema`. These 29 checks are separate from the 78 plans in the main corpus. They reproduce
+`ReadRel.base_schema`. These 29 checks are separate from the 81 plans in the main corpus. They reproduce
 [Python #267](https://github.com/substrait-io/substrait-python/issues/267) and
 [#268](https://github.com/substrait-io/substrait-python/issues/268).
 

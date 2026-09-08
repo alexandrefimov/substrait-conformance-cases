@@ -1727,5 +1727,77 @@
    "none": "a required literal in a column the schema declares nullable: the spec does not say which wins, the row or the schema",
    "because": "the spec is silent"
   }
+ },
+ {
+  "case": "window_bound_offset",
+  "plan": "window_bound_offset.json",
+  "binary": "window_bound_offset.bin",
+  "generator": "GenWindow",
+  "note": "bound_offset  ROWS 1 PRECEDING to CURRENT ROW over 1,2,3,4 written through the deprecated offset; sums 1,3,5,7",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml"
+  }
+ },
+ {
+  "case": "window_bound_offset_expr",
+  "plan": "window_bound_offset_expr.json",
+  "binary": "window_bound_offset_expr.bin",
+  "generator": "GenWindow",
+  "note": "bound_offset_expr  ROWS 1 PRECEDING to CURRENT ROW over 1,2,3,4 written through offset_expr; sums 1,3,5,7",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml"
+  }
+ },
+ {
+  "case": "window_output_order",
+  "plan": "window_output_order.json",
+  "binary": "window_output_order.bin",
+  "generator": "GenWindow",
+  "note": "output_order  the input's three columns, then row_number and cume_dist in that order",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "str",
+     false
+    ],
+    [
+     "bool",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "fp64",
+     true
+    ]
+   ],
+   "from": "physical_relations.md, Consistent Partition Window: the input followed by each window expression; the two added types are the returns functions_arithmetic.yaml declares, row_number i64? and cume_dist fp64?"
+  }
  }
 ]

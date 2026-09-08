@@ -1,0 +1,85 @@
+{
+  "extensions": [{
+    "extensionFunction": {
+      "functionAnchor": 1,
+      "name": "row_number:",
+      "extensionUrnReference": 1
+    }
+  }, {
+    "extensionFunction": {
+      "functionAnchor": 2,
+      "name": "cume_dist:",
+      "extensionUrnReference": 1
+    }
+  }],
+  "relations": [{
+    "root": {
+      "input": {
+        "window": {
+          "common": {
+            "direct": {
+            }
+          },
+          "input": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1", "c2"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "string": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "bool": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_mix"]
+              }
+            }
+          },
+          "windowFunctions": [{
+            "functionReference": 1,
+            "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+            "outputType": {
+              "i64": {
+                "nullability": "NULLABILITY_NULLABLE"
+              }
+            },
+            "invocation": "AGGREGATION_INVOCATION_ALL"
+          }, {
+            "functionReference": 2,
+            "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+            "outputType": {
+              "fp64": {
+                "nullability": "NULLABILITY_NULLABLE"
+              }
+            },
+            "invocation": "AGGREGATION_INVOCATION_ALL"
+          }]
+        }
+      },
+      "names": ["c0", "c1", "c2", "rn", "cd"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  },
+  "extensionUrns": [{
+    "extensionUrnAnchor": 1,
+    "urn": "extension:io.substrait:functions_arithmetic"
+  }]
+}
