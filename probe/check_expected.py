@@ -248,6 +248,12 @@ def parse_acero(s):
         out.append([t, nullable])
     return out
 
+# --- the command line starts here ---
+# probe/heatmap.py, probe/check_differed.py and probe/selfcheck.sh run this file's source down to
+# this line to reuse the parsers below it without running the script. Everything above must stay
+# free of argv, and anything reading argv belongs after it.
+if len(sys.argv) < 2:
+    raise SystemExit(__doc__)
 path, fmt = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "java")
 parse = {"java": parse_java, "py": parse_py, "df": parse_df,
          "duckdb": parse_duckdb, "acero": parse_acero, "go": parse_go,

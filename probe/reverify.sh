@@ -112,7 +112,7 @@ echo
 echo "### 1. generating the cases, and the substrait-java side"
 CP="$(cat "$GEN/classpath.txt")"
 rm -rf "$GEN/out"; mkdir -p "$GEN/out"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum JsonToBin"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins JsonToBin"
 SRCS=""; for g in $GENS Tables; do SRCS="$SRCS $GEN/$g.java"; done
 javac -nowarn -cp "$CP" -d "$GEN/out" $SRCS || die "javac of the generators"
 
@@ -425,12 +425,13 @@ if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
   # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
   # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
   python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
+  python3 "$PROBE/diffs.py" > "$ROOT/results/DIFFS.md" || fail "could not rebuild results/DIFFS.md"
   # docs/ is the same columns drawn - the picture the README shows and the page the site serves.
   # Left behind, it keeps showing the previous run to everyone who never opens a column.
   python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || fail "could not redraw docs/matrix.svg"
   python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || fail "could not redraw docs/matrix-dark.svg"
   python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || fail "could not rebuild docs/index.html"
-  echo "saved columns, results/MATRIX.txt and docs/ updated from this run (UPDATE_COLUMNS=1)"
+  echo "saved columns, results/MATRIX.txt, results/DIFFS.md and docs/ updated from this run (UPDATE_COLUMNS=1)"
 fi
 
 echo

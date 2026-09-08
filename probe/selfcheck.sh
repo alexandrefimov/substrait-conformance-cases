@@ -89,7 +89,7 @@ print("ok      the table is dated %s, matching every column" % stamp.group(1))
 # the particular widths in the saved stringlen_declared result.
 src = io.open("probe/check_expected.py", encoding="utf-8").read()
 parsers = {"__file__": "probe/check_expected.py"}
-exec(src[:src.index("path, fmt = sys.argv")], parsers)
+exec(src[:src.index("# --- the command line starts here ---")], parsers)
 sample = "[a:extension<varchar{length:17}>, b:extension<fixed_char{length:8}>?, c:fixed_size_binary[6], d:binary?]"
 if parsers["parse_acero"](sample) != [["vchar(17)", False], ["fchar(8)", True], ["fbin(6)", False], ["bin", True]]:
     print("FAILED: Acero parameterized-type parser lost a width, kind or nullability")

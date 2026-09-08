@@ -45,7 +45,10 @@ GROUP_LABEL = {"read": "Column selection at the read", "control": "Controls",
                "setdata": "Set operations: rows", "emit": "Emit mapping",
                "decimal": "Decimal arithmetic", "phase": "Aggregation phase",
                "precision": "precision_timestamp", "narrowing": "Narrowing to required",
-               "stringlen": "String types carrying a length", "ctas": "CTAS"}
+               "stringlen": "String types carrying a length", "ctas": "CTAS",
+               "window": "Window frames and bounds", "expand": "Expand",
+               "cross": "Cross product", "topn": "Top-N",
+               "physjoin": "Physical joins"}
 
 MATCH, DIVERGENCE, BOUNDARY, UNRESOLVED, UNSUPPORTED, NOSPEC = range(6)
 STATE_NAME = {MATCH: "matched", DIVERGENCE: "divergence", BOUNDARY: "type-system boundary",
@@ -69,7 +72,7 @@ def check_expected():
     repository is about."""
     src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
     ns = {"__name__": "check_expected", "__file__": os.path.join(ROOT, "probe/check_expected.py")}
-    exec(compile(src[:src.index("path, fmt = sys.argv[1]")], "check_expected.py", "exec"), ns)
+    exec(compile(src[:src.index("# --- the command line starts here ---")], "check_expected.py", "exec"), ns)
     return ns
 
 
@@ -478,6 +481,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   <div class="controls">
     <button id="f-all" aria-pressed="true">All %(cases)d cases</button>
     <button id="f-diff" aria-pressed="false">Only rows where someone differs</button>
+    <label class="hint" for="f-who">or only where <select id="f-who"></select> differs</label>
     <span class="hint">Hover to preview. Click or tap to pin a cell.</span>
   </div>
 
@@ -541,6 +545,10 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     el.innerHTML = '<span class="sw st' + i + '"><i></i></span>' + STATES[i].name;
     legend.appendChild(el);
   });
+
+  var who = document.getElementById("f-who");
+  who.innerHTML = '<option value="">one implementation</option>' +
+    D.participants.map(function (p, i) { return '<option value="' + i + '">' + p + '</option>'; }).join("");
 
   document.getElementById("head").innerHTML = '<th class="corner">case</th>' +
     D.participants.map(function (p) {
@@ -614,9 +622,13 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   });
 
   var all = document.getElementById("f-all"), diff = document.getElementById("f-diff");
-  function apply(onlyDiff) {
-    all.setAttribute("aria-pressed", String(!onlyDiff));
-    diff.setAttribute("aria-pressed", String(onlyDiff));
+  function differs(state) { return state > 0 && state < 4; }
+  // Three modes rather than a checkbox: everything, wherever anyone differs, and wherever one
+  // implementation does - the last is what a maintainer arriving from their own issue wants, and
+  // it is the same rows results/DIFFS.md lists for them.
+  function apply(mode) {
+    all.setAttribute("aria-pressed", String(mode === "all"));
+    diff.setAttribute("aria-pressed", String(mode === "any"));
     var group = null, shown = 0;
     Array.prototype.forEach.call(body.children, function (tr) {
       if (tr.classList.contains("group")) {
@@ -624,14 +636,20 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
         group = tr; shown = 0; tr.hidden = false;
         return;
       }
-      var keep = !onlyDiff || D.cells[+tr.dataset.r].some(function (s) { return s > 0 && s < 4; });
+      var row = D.cells[+tr.dataset.r];
+      var keep = mode === "all" ? true
+               : mode === "any" ? row.some(differs)
+               : differs(row[mode]);
       tr.hidden = !keep;
       if (keep) { shown++; }
     });
     if (group) { group.hidden = shown === 0; }
   }
-  all.addEventListener("click", function () { apply(false); });
-  diff.addEventListener("click", function () { apply(true); });
+  all.addEventListener("click", function () { who.value = ""; apply("all"); });
+  diff.addEventListener("click", function () { who.value = ""; apply("any"); });
+  who.addEventListener("change", function () {
+    apply(who.value === "" ? "all" : +who.value);
+  });
 
   var start = D.cases.indexOf("decimal_divide");
   show(start < 0 ? 0 : start, D.participants.indexOf("DuckDB"));

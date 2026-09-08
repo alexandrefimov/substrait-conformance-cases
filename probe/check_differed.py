@@ -37,7 +37,7 @@ COLS = [("PYTHON", "py"), ("GO", "go"), ("VALIDATOR", "py"), ("ISTHMUS", "calcit
 # answer means.
 src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
 P = {"__file__": os.path.join(ROOT, "probe/check_expected.py")}
-exec(src[:src.index("path, fmt = sys.argv")], P)
+exec(src[:src.index("# --- the command line starts here ---")], P)
 # TYPES_ONLY is assigned after that line, and it is a boundary rather than a detail: it names the
 # participants whose logical types carry no nullability. Taking it from the same file keeps the two
 # checks from drifting into disagreeing about what a participant claims to say.

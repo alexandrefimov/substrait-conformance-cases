@@ -853,7 +853,7 @@
 <rect x="642.0" y="1389.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <rect x="704.0" y="1389.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <rect x="766.0" y="1389.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
-<text x="14.0" y="1413.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">CROSS</text>
+<text x="14.0" y="1413.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">CROSS PRODUCT</text>
 <line x1="14" y1="1416.0" x2="824" y2="1416.0" stroke="#2b2f35" stroke-width="0.6"/>
 <text x="14.0" y="1428.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">cross_preserves_nullability</text>
 <rect x="270.0" y="1419.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
@@ -887,7 +887,7 @@
 <rect x="642.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="704.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="766.0" y="1462.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<text x="14.0" y="1486.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">PHYSJOIN</text>
+<text x="14.0" y="1486.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">PHYSICAL JOINS</text>
 <line x1="14" y1="1489.0" x2="824" y2="1489.0" stroke="#2b2f35" stroke-width="0.6"/>
 <text x="14.0" y="1501.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_inner</text>
 <rect x="270.0" y="1492.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
@@ -979,7 +979,7 @@
 <rect x="642.0" y="1596.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="704.0" y="1596.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="766.0" y="1596.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<text x="14.0" y="1620.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">TOPN</text>
+<text x="14.0" y="1620.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">TOP-N</text>
 <line x1="14" y1="1623.0" x2="824" y2="1623.0" stroke="#2b2f35" stroke-width="0.6"/>
 <text x="14.0" y="1635.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">topn_keeps_the_input_schema</text>
 <rect x="270.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
@@ -991,7 +991,7 @@
 <rect x="642.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="704.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="766.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<text x="14.0" y="1650.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW</text>
+<text x="14.0" y="1650.0" fill="#7e827f" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW FRAMES AND BOUNDS</text>
 <line x1="14" y1="1653.0" x2="824" y2="1653.0" stroke="#2b2f35" stroke-width="0.6"/>
 <text x="14.0" y="1665.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset</text>
 <rect x="270.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
