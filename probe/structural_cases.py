@@ -16,8 +16,8 @@ CASES = PROBE / "structural-cases"
 
 def load_cases():
     groups = json.loads((CASES / "expected.json").read_text())
-    if set(groups) != {"duckdb", "go", "validator", "explain", "spark", "acero"}:
-        raise ValueError("expected the duckdb, go, validator, explain, spark and acero case groups")
+    if set(groups) != {"duckdb", "go", "validator", "explain", "spark", "acero", "acero-functions"}:
+        raise ValueError("unexpected structural case groups")
     for engine, cases in groups.items():
         files = {p.stem for p in (CASES / engine).glob("*.json")}
         if not cases or set(cases) != files or not any(c["control"] for c in cases.values()):
@@ -26,7 +26,7 @@ def load_cases():
             plan = json.loads((CASES / engine / (name + ".json")).read_text())
             if len(plan.get("relations", [])) != 1 or "root" not in plan["relations"][0]:
                 raise ValueError(f"{engine}/{name}: expected one rooted plan")
-            if engine in ("go", "acero") and not (CASES / engine / (name + ".bin")).is_file():
+            if engine in ("go", "acero", "acero-functions") and not (CASES / engine / (name + ".bin")).is_file():
                 raise ValueError(f"{engine}/{name}: missing binary plan")
     return groups
 
@@ -92,6 +92,55 @@ def acero_worker(path):
                       "table_select": describe(table.select(indices))}))
 
 
+def acero_function_worker(path):
+    from decimal import Decimal
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    import pyarrow.substrait as ps
+
+    plan = json.loads(path.read_text())
+    read = plan["relations"][0]["root"]["input"]["project"]["input"]["read"]
+    if "decimal" in read["baseSchema"]["struct"]["types"][0]:
+        types = [pa.decimal128(10, 2), pa.decimal128(5, 1)]
+        values = [[Decimal("1.00"), Decimal("-1.00"), None, Decimal("1.00")],
+                  [Decimal("256.0"), Decimal("256.0"), Decimal("256.0"), None]]
+    else:
+        types = [pa.int64(), pa.int64()]
+        values = [[2, -2, None, 2], [3, -3, 3, None]]
+    schema = pa.schema([pa.field(name, dtype) for name, dtype in zip(["a", "b"], types)])
+    arrays = [pa.array(column, type=dtype) for column, dtype in zip(values, types)]
+    table = pa.Table.from_arrays(arrays, schema=schema)
+
+    def provider(names, requested):
+        if names != ["t"] or not requested.equals(schema):
+            raise ValueError("Acero requested a different table or input schema")
+        return table
+
+    def describe(value):
+        return {"schema": [[f.name, str(f.type), f.nullable] for f in value.schema],
+                "rows": [[str(v) if isinstance(v, Decimal) else v for v in row.values()]
+                         for row in value.to_pylist()]}
+
+    function = plan["extensions"][0]["extensionFunction"]["name"].split(":", 1)[0]
+    if function not in ("add", "divide"):
+        raise ValueError("expected an add or divide diagnostic")
+    # Native arithmetic identifies the selected implementation; it is not the oracle
+    # for the Substrait extension's return type or its supported identifiers.
+    native = pa.table([pc.call_function(function, arrays)], names=["r"])
+    observed = {"pyarrow": pa.__version__, "native": describe(native)}
+    try:
+        reader = ps.run_query(path.with_suffix(".bin").read_bytes(),
+                              table_provider=provider, use_threads=False)
+        reader_schema = reader.schema
+        result = reader.read_all()
+        if not reader_schema.equals(result.schema):
+            raise ValueError("Acero reader and materialized table have different schemas")
+        observed.update(status="accepted", **describe(result))
+    except pa.ArrowNotImplementedError as exc:
+        observed.update(status="unsupported", error=str(exc))
+    print(json.dumps(observed))
+
+
 def explain_roundtrip(path, expected):
     command = [os.environ.get("SUBSTRAIT_EXPLAIN", "substrait-explain"), "convert"]
     formatted = subprocess.run(command + ["-i", str(path), "-f", "json", "-t", "text"],
@@ -121,9 +170,10 @@ def run_case(engine, name, expected, env):
     elif engine == "duckdb":
         command = [str(env / "venv/bin/python"), str(PROBE / "structural_cases.py"),
                    "--duck-worker", str(path)]
-    elif engine == "acero":
+    elif engine in ("acero", "acero-functions"):
+        worker = "--acero-worker" if engine == "acero" else "--acero-function-worker"
         command = [str(env / "venv/bin/python"), str(PROBE / "structural_cases.py"),
-                   "--acero-worker", str(path)]
+                   worker, str(path)]
     elif engine == "go":
         command = [str(env / "gosub9/probe_go9"), str(path.with_suffix(".bin"))]
     else:
@@ -151,6 +201,12 @@ def run_case(engine, name, expected, env):
         if observed["status"] == "accepted":
             matches = (observed["columns"] == expected["columns"]
                        and observed["rows"] == expected["rows"])
+    elif engine == "acero-functions":
+        observed = json.loads(result.stdout)
+        matches = observed["status"] == "unsupported" and expected["allow_unsupported"]
+        if observed["status"] == "accepted":
+            matches = (observed["schema"] == expected.get("schema")
+                       and observed["rows"] == expected.get("rows"))
     elif engine == "acero":
         observed = json.loads(result.stdout)
         want = {"schema": expected["schema"], "rows": expected["rows"]}
@@ -187,17 +243,21 @@ def run_case(engine, name, expected, env):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("engine", choices=["duckdb", "go", "validator", "explain", "spark", "acero"], nargs="?")
+    parser.add_argument("engine", choices=["duckdb", "go", "validator", "explain", "spark", "acero", "acero-functions"], nargs="?")
     parser.add_argument("--check", action="store_true", help="fail if any case differs")
     parser.add_argument("--verify-fixtures", action="store_true", help="check fixture inventory without running engines")
     parser.add_argument("--duck-worker", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--acero-worker", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--acero-function-worker", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.duck_worker:
         duck_worker(args.duck_worker)
         return
     if args.acero_worker:
         acero_worker(args.acero_worker)
+        return
+    if args.acero_function_worker:
+        acero_function_worker(args.acero_function_worker)
         return
     groups = load_cases()
     if args.verify_fixtures:

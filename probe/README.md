@@ -134,11 +134,12 @@ derives. The rest of this directory is not on that path, and none of it is run b
 These commands run from the corpus root after setting up the relevant participant.
 They report additional observations separately from the saved matrix.
 
-**Minimal consumer and text cases.** [27 plans with controls](structural-cases/README.md)
+**Minimal consumer and text cases.** [32 plans with controls](structural-cases/README.md)
 cover Go relation metadata and union nullability, validator virtual tables, DuckDB
-unsupported-operation errors, Acero projection nullability, explain type round-trips, and Spark decimal result
-types. Run `python3 probe/structural_cases.py duckdb`, `go`, `validator`, `explain`,
-`spark` or `acero` after setting up that participant. Each plan runs in its own process;
+unsupported-operation errors, Acero projection nullability and function-extension
+resolution, explain type round-trips, and Spark decimal result types. Run
+`python3 probe/structural_cases.py duckdb`, `go`, `validator`, `explain`, `spark`,
+`acero` or `acero-functions` after setting up that participant. Each plan runs in its own process;
 errors remain visible beside schema observations. `--check` makes differences fail
 the command. These diagnostics do not update the saved matrix.
 

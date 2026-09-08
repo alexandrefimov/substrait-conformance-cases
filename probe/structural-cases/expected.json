@@ -381,5 +381,69 @@
       ],
       "control": true
     }
+  },
+  "acero-functions": {
+    "decimal_divide_urn": {
+      "control": false,
+      "allow_unsupported": true,
+      "schema": [
+        [
+          "r",
+          "decimal128(21, 8)",
+          true
+        ]
+      ],
+      "rows": [
+        [
+          "0.00390625"
+        ],
+        [
+          "-0.00390625"
+        ],
+        [
+          null
+        ],
+        [
+          null
+        ]
+      ]
+    },
+    "decimal_divide_uri_control": {
+      "control": true,
+      "allow_unsupported": true
+    },
+    "unknown_add_urn": {
+      "control": false,
+      "allow_unsupported": true
+    },
+    "unknown_add_uri_control": {
+      "control": true,
+      "allow_unsupported": true
+    },
+    "add_uri_control": {
+      "control": true,
+      "allow_unsupported": false,
+      "schema": [
+        [
+          "r",
+          "int64",
+          true
+        ]
+      ],
+      "rows": [
+        [
+          5
+        ],
+        [
+          -5
+        ],
+        [
+          null
+        ],
+        [
+          null
+        ]
+      ]
+    }
   }
 }

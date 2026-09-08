@@ -1,0 +1,112 @@
+{
+  "version": {
+    "minorNumber": 102,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2
+                ]
+              }
+            },
+            "input": {
+              "read": {
+                "common": {
+                  "direct": {}
+                },
+                "baseSchema": {
+                  "names": [
+                    "a",
+                    "b"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "t"
+                  ]
+                }
+              }
+            },
+            "expressions": [
+              {
+                "scalarFunction": {
+                  "functionReference": 1,
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 0
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    },
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 1
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ],
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "r"
+        ]
+      }
+    }
+  ],
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:example.com:unregistered_arithmetic"
+    }
+  ],
+  "extensions": [
+    {
+      "extensionFunction": {
+        "extensionUrnReference": 1,
+        "functionAnchor": 1,
+        "name": "add:i64_i64"
+      }
+    }
+  ]
+}

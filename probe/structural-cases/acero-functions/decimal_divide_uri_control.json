@@ -1,0 +1,118 @@
+{
+  "version": {
+    "minorNumber": 44,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2
+                ]
+              }
+            },
+            "input": {
+              "read": {
+                "common": {
+                  "direct": {}
+                },
+                "baseSchema": {
+                  "names": [
+                    "a",
+                    "b"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "decimal": {
+                          "precision": 10,
+                          "scale": 2,
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
+                      {
+                        "decimal": {
+                          "precision": 5,
+                          "scale": 1,
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "t"
+                  ]
+                }
+              }
+            },
+            "expressions": [
+              {
+                "scalarFunction": {
+                  "functionReference": 1,
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 0
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    },
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 1
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ],
+                  "outputType": {
+                    "decimal": {
+                      "precision": 21,
+                      "scale": 8,
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "r"
+        ]
+      }
+    }
+  ],
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "divide:dec_dec",
+        "extensionUriReference": 1
+      }
+    }
+  ],
+  "extensionUris": [
+    {
+      "extensionUriAnchor": 1,
+      "uri": "https://github.com/substrait-io/substrait/blob/main/extensions/functions_arithmetic_decimal.yaml"
+    }
+  ]
+}

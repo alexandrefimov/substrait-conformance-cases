@@ -86,7 +86,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "decimal_divide returns decimal(16,7) for declared decimal(21,8). A focused comparison of the Arrow decimal kernel and Substrait import is still needed before assigning the report; nullability is a separate part of the observation"
+     "note": "probe/structural_cases.py acero-functions isolates modern extension URNs reaching the legacy name-only fallback. The decimal URI is rejected, but the decimal URN executes native divide as decimal(16,7), losing the final digit of the exactly representable 1.00 / 256.0 result. An unregistered add URN is also accepted while its legacy URI is rejected. The report candidate concerns extension resolution; nullability remains separate"
     },
     "DATAFUSION": {
      "outcome": "reported",
