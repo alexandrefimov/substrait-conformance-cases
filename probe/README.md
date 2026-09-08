@@ -139,12 +139,33 @@ These pins describe the saved measurements, not a promise to use every participa
 
 The Spark runner selects `:spark:spark-3.5_2.12`; its Spark version comes from that module's Gradle build. `SPARK_35` records the expected version but does not override the dependency. `SPARK_34` and `SPARK_40` record the other library variants and do not add corpus runs for them. The saved Spark column and automated replay therefore cover Spark 3.5 only. Focused diagnostics use the same default classpath selection.
 
-`LATEST=1` selects package releases or repository heads through `versions-latest.env`. For Spark it follows the current substrait-java checkout's 3.5 variant; it does not independently select the newest Apache Spark patch release. Neither replay nor weekly drift currently runs a Spark 4 variant. A Spark 4 comparison needs the Scala 2.13 consumer, a separately resolved classpath and a separately identified result.
+`LATEST=1` selects package releases or repository heads through `versions-latest.env`. For Spark it follows the current substrait-java checkout's 3.5 variant; it does not independently select the newest Apache Spark patch release. The separate runtime profiles below cover explicitly selected Spark 3.5 and 4.x releases.
+
+### Separate Spark runtime profiles
+
+[`spark-runtimes.json`](spark-runtimes.json) selects Spark 3.5.9, 4.0.4, 4.1.3 and 4.2.0. The 3.5 profile compiles the Scala 2.12 consumer; all 4.x profiles compile the Scala 2.13 consumer from the library's 4.0 module against the requested runtime. This measures compatibility; it does not claim that upstream supports a dedicated 4.1 or 4.2 module. The versions are explicit and require a reviewed configuration update when new Spark releases arrive.
+
+```sh
+export JAVA_HOME=/path/to/jdk-17
+python3 probe/spark_runtime.py --list
+python3 probe/spark_runtime.py 3.5.9 --out run/spark-3.5.9
+python3 probe/spark_runtime.py 4.2.0 --out run/spark-4.2.0
+python3 probe/spark_runtime.py 4.2.0 --latest --out run/spark-4.2.0-main
+```
+
+Each run uses a fresh environment, consumer build directory and resolved classpath. By default it clones the Java revision in `versions.env`; `--java-dir /path/to/checkout` reuses a clean checkout at that exact revision. `--latest` instead clones current Java `main` and records its resolved SHA. It still uses the explicitly selected Spark release. Both `JAVA_HOME` and the probe's `JAVA17_HOME` are set to the selected JDK 17. A supplied checkout gets build outputs but its source and revision are not changed; use a separate checkout if another process is building it.
+
+The runner sends every current corpus plan through Spark with ANSI explicitly disabled and enabled, compares both columns with the saved Spark column and `expected.json`, evaluates the eight overflow expressions, and runs the three decimal schema cases with ANSI disabled. It records actual Spark, Scala, JDK and packaged spec versions, the native ANSI default, resolved dependencies, source revisions and input hashes. `--out` must be new or empty. It retains logs on failure and writes `summary.json` and `summary.txt` only after the complete run succeeds.
+
+Build failures, incorrect runtime identity, incomplete or malformed output, and failed safe-value/schema controls fail the command. Schema or option differences are reported as observations, so a successful run does not mean full Substrait conformance. The existing saved matrix and version pins are not replaced by these profiles.
+
+The [`Spark runtimes` workflow](../.github/workflows/spark-runtimes.yml) runs every profile on pushes and pull requests against the pinned Java revision. Its weekly run uses current Java `main`; manual runs can select either. Every runtime has its own job and uploaded result artifact, including failures. The workflow publishes observations in the job summary and does not commit results back to the repository.
 
 ## What else is in here
 
 `reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
-derives. The rest of this directory is not on that path, and none of it is run by CI.
+derives. The diagnostics below are separate from that path. The Spark runtime workflow also runs
+the Spark decimal and overflow diagnostics; the other engine diagnostics remain manual.
 
 ### Focused schema diagnostics
 

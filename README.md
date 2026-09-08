@@ -149,7 +149,10 @@ identical to the saved column:
 `LATEST=1` selects current package releases or repository heads through `probe/versions-latest.env`
 and reports what moved rather than failing on it; that is the weekly `drift` workflow. Spark follows
 the selected substrait-java checkout's 3.5 variant, so this does not cover newer Spark patch releases
-independently or Spark 4. Repeating all nine columns is
+independently or Spark 4. The separate [Spark runtime profiles](probe/README.md#separate-spark-runtime-profiles)
+run Spark 3.5.9, 4.0.4, 4.1.3 and 4.2.0 in both ANSI modes, plus focused decimal and overflow
+diagnostics. Their CI artifacts report observations without replacing the saved matrix.
+Repeating all nine columns is
 `probe/reverify.sh`, which needs a substrait-java checkout, a DataFusion checkout and several
 toolchains, and the Gluten column is taken separately, in a cluster;
 [`probe/README.md`](probe/README.md) has the prerequisites and the commands.
