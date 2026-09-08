@@ -154,6 +154,33 @@ resolution, explain type round-trips, and Spark decimal result types. Run
 errors remain visible beside schema observations. `--check` makes differences fail
 the command. These diagnostics do not update the saved matrix.
 
+**Spark decimal overflow options.** `spark_function_options.py` evaluates eight
+expressions through `ToSparkExpression`: add and multiply with ANSI disabled and
+enabled, each with a safe-value control and an overflowing invocation carrying
+`overflow=ERROR`. It uses literal inputs and does not start a Spark session.
+
+```sh
+export SUBSTRAIT_JAVA_DIR=/path/to/substrait-java
+export JAVA17_HOME=/path/to/jdk-17
+export JAVA_HOME="$JAVA17_HOME"
+python3 probe/spark_function_options.py
+python3 probe/spark_function_options.py --check
+```
+
+The JSON Lines include the options passed to the importer, the returned type and
+nullability, and the value or error. Safe controls must return `4.00` and `3.000`
+with their expected decimal types. An overflowing invocation with explicit ERROR
+must raise an arithmetic error or be rejected during conversion, as required by
+the [option contract in spec v0.103.0](https://github.com/substrait-io/substrait/blob/v0.103.0/site/docs/expressions/scalar_functions.md#options).
+Nullability is reported separately and does not determine the verdict.
+
+With substrait-java `fff639064df794840db36fffcd881c09100e23df` and Spark 3.5.4,
+both explicit-ERROR cases return null when ANSI is disabled and raise an error
+when it is enabled. All four safe controls pass: normal diagnostic mode exits 0
+with two differences, while `--check` exits 1. Missing or malformed observations
+and failed controls always fail the command. These evaluated expressions are
+separate from the 32 structural plans and the saved 78-plan matrix.
+
 **Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
 against all four combinations of input nullability, plus five grouping-set layouts. Its
 expectations follow the [join and aggregate rules in spec v0.99.0](https://github.com/substrait-io/substrait/blob/v0.99.0/site/docs/relations/logical_relations.md).
