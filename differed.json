@@ -121,7 +121,7 @@
    "triage": {
     "SPARK": {
      "outcome": "open",
-     "note": "the four add/multiply cases match precision and scale but return nullable with ANSI mode disabled. Before reporting, isolate the effect of ANSI mode and overflow options on the imported function contract; the divide precision report does not cover this"
+     "note": "the four add/multiply cases match precision and scale; they return nullable with ANSI disabled and required with ANSI enabled. probe/spark_function_options.py separately evaluates safe and overflowing expressions: explicit overflow=ERROR still returns null with ANSI disabled. The explicit-option behavior is distinct from the saved plans, which omit the option, and from the divide precision report. The original nullability interpretation remains open because omitted options allow consumer choice"
     }
    }
   },
