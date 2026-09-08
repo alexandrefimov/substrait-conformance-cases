@@ -319,6 +319,21 @@ io.open('README.md', 'w', encoding='utf-8').write(s.replace(old, '(METHODS.md)',
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"
 
+mutate "a missing focused JSON plan" "focused structural fixtures are incomplete" \
+  rm probe/structural-cases/validator/one_column.json
+
+mutate "a missing focused binary plan" "focused structural fixtures are incomplete" \
+  rm probe/structural-cases/go/join_common_absent.bin
+
+mutate "a focused group without controls" "focused structural fixtures are incomplete" \
+  python3 -c "
+import json
+from pathlib import Path
+p = Path('probe/structural-cases/expected.json')
+d = json.loads(p.read_text())
+for case in d['go'].values(): case['control'] = False
+p.write_text(json.dumps(d))"
+
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.
 mutate "an absolute path" "absolute path in" \

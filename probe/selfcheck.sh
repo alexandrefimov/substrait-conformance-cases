@@ -428,6 +428,9 @@ LINKPY
 
 echo
 echo "### syntax"
+python3 probe/structural_cases.py --verify-fixtures \
+  && ok "focused structural fixtures and their controls are complete" \
+  || fail "focused structural fixtures are incomplete"
 SYNTAX=0
 for f in probe/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done
 for f in probe/*.sh gen/*.sh; do bash -n "$f" || { fail "bash syntax: $f"; SYNTAX=1; }; done

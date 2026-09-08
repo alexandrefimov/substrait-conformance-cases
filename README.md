@@ -6,9 +6,13 @@
 the matrix as a page, with the expectation and the answer beside each cell.
 
 A plan declares types and a consumer derives them again — or reuses what the plan declared. When
-the two disagree, nothing in the format notices. This repository holds 78 plans built to make such
-disagreements visible, an expected schema for 73 of them, and probes that put the corpus through ten
-implementations.
+the two disagree, nothing in the format notices. The main comparison corpus contains 78 plans built
+to make such disagreements visible, an expected schema for 73 of them, and probes that put the corpus
+through ten implementations.
+
+[Focused diagnostics](probe/README.md#focused-schema-diagnostics) also include
+minimal consumer cases with controls and checks of producer output. These can be
+run separately and are not counted in the saved 78-plan matrix.
 
 The expectations are the part worth being suspicious of, so this is how they are made. Each one is
 written by hand from the spec — the derivation tables, the decimal formulas, the relation rules — in

@@ -115,6 +115,30 @@ async fn main() -> datafusion::error::Result<()> {
     let ctx = SessionContext::new();
     ctx.register_table("t", Arc::new(MemTable::try_new(schema.clone(), vec![vec![]])?))?;
 
+    if std::env::args().any(|arg| arg == "--aggregate-output-types") {
+        let mut missing = 0;
+        for function in ["count", "sum", "avg", "min"] {
+            let sql = format!("SELECT {function}(i) FROM t");
+            let df = ctx.sql(&sql).await?;
+            let proto = to_substrait_plan(df.logical_plan(), &ctx.state())?;
+            let declarations = declared(&proto);
+            assert_eq!(declarations.len(), 1, "expected exactly one aggregate declaration");
+            let has_output_type = !declarations[0].ends_with(" -> none");
+            missing += usize::from(!has_output_type);
+            println!("{}", serde_json::json!({
+                "function": function,
+                "logical_type": df.logical_plan().schema().field(0).data_type().to_string(),
+                "declaration": declarations[0],
+                "has_output_type": has_output_type,
+            }));
+        }
+        println!("{}", serde_json::json!({"cases": 4, "missing_output_types": missing}));
+        if missing > 0 && std::env::args().any(|arg| arg == "--check") {
+            std::process::exit(1);
+        }
+        return Ok(());
+    }
+
     for sql in [
         "SELECT a + b FROM t",
         "SELECT c + d FROM t",

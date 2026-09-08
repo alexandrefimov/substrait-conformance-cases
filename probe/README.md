@@ -106,6 +106,13 @@ derives. The rest of this directory is not on that path, and none of it is run b
 These commands run from the corpus root after setting up the relevant participant.
 They report additional observations separately from the saved matrix.
 
+**Minimal consumer cases.** [Twelve plans with controls](structural-cases/README.md)
+cover missing `RelCommon` in Go, valid `VirtualTable.expressions` in the validator,
+and DuckDB error handling for unsupported join/set operations. Run
+`python3 probe/structural_cases.py duckdb`, `go` or `validator` after setting up that
+participant. Each plan runs in its own process; errors remain visible beside schema
+observations. `--check` makes differences fail the command.
+
 **Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
 against all four combinations of input nullability, plus five grouping-set layouts. Its
 expectations follow the [join and aggregate rules in spec v0.99.0](https://github.com/substrait-io/substrait/blob/v0.99.0/site/docs/relations/logical_relations.md).
@@ -158,6 +165,37 @@ to use the probe's normal installation path. The diagnostic prints `DUCKDB BOUND
 prints `DUCKDB ACCEPTED` or `DUCKDB REJECTED`. Column nullability is not compared for DuckDB.
 
 ### Other probes
+
+**Focused producer checks.** These extend the existing producer probes and do not
+update the saved consumer matrix:
+
+```sh
+SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
+"$SP/venv/bin/python" probe/duckdb_producer.py --load-only --decimal-roundtrip
+```
+
+This compares bound types before and after DuckDB's own export/import for three
+decimal additions and a read control. The input table contains one row so the
+producer cannot replace it with an empty result. Target queries are described,
+not executed. It prints versions, types and a JSON summary; `--check` fails when
+the types differ.
+
+To check required output types on DataFusion-produced aggregates, from a
+DataFusion checkout with its pinned Rust toolchain available:
+
+```sh
+mkdir -p datafusion/substrait/examples
+cp /path/to/substrait-conformance-cases/probe/datafusion_producer_probe.rs \
+  datafusion/substrait/examples/corpus_producer.rs
+cargo run --locked -p datafusion-substrait --example corpus_producer -- --aggregate-output-types
+```
+
+Choose an unused example filename if `corpus_producer.rs` already exists. The mode
+checks `count`, `sum`, `avg` and `min` over an empty named table and reports whether
+each exported call carries `output_type`. It does not infer a missing type or pass
+the plan through a consumer. `--check` fails if a declaration is missing. This
+mode was verified against DataFusion main at `8a9228164`; the matrix's separate
+version pin continues to describe its saved measurements.
 
 **The matrix drawn.** `heatmap.py` turns the saved columns into `docs/matrix.svg` and
 `docs/matrix-dark.svg`, which the README shows, and `docs/index.html`, which the site serves with

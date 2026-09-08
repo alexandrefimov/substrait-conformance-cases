@@ -1,0 +1,152 @@
+{
+  "duckdb": {
+    "read_control": {
+      "columns": [
+        [
+          "x",
+          "INTEGER"
+        ]
+      ],
+      "rows": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "control": true,
+      "allow_unsupported": false
+    },
+    "inner": {
+      "columns": [
+        [
+          "l",
+          "INTEGER"
+        ],
+        [
+          "r",
+          "INTEGER"
+        ]
+      ],
+      "rows": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "control": true,
+      "allow_unsupported": false
+    },
+    "union_all_2": {
+      "columns": [
+        [
+          "x",
+          "INTEGER"
+        ]
+      ],
+      "rows": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "control": true,
+      "allow_unsupported": false
+    },
+    "union_distinct_2": {
+      "columns": [
+        [
+          "x",
+          "INTEGER"
+        ]
+      ],
+      "rows": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "control": false,
+      "allow_unsupported": true
+    },
+    "right_mark": {
+      "columns": [
+        [
+          "r",
+          "INTEGER"
+        ],
+        [
+          "mark",
+          "BOOLEAN"
+        ]
+      ],
+      "rows": [
+        [
+          1,
+          true
+        ],
+        [
+          2,
+          true
+        ]
+      ],
+      "control": false,
+      "allow_unsupported": true
+    }
+  },
+  "go": {
+    "join_common_absent": {
+      "schema": "[l:i32, r:i32]",
+      "control": false
+    },
+    "join_common_empty": {
+      "schema": "[l:i32, r:i32]",
+      "control": true
+    },
+    "join_common_direct": {
+      "schema": "[l:i32, r:i32]",
+      "control": true
+    }
+  },
+  "validator": {
+    "empty_control": {
+      "schema": "[x:i32, s:str]",
+      "control": true
+    },
+    "one_column": {
+      "schema": "[x:i32]",
+      "control": false
+    },
+    "two_columns": {
+      "schema": "[x:i32, s:str]",
+      "control": false
+    },
+    "two_columns_emit": {
+      "schema": "[s:str]",
+      "control": false
+    }
+  }
+}

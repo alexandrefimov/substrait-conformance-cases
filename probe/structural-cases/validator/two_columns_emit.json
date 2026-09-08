@@ -1,0 +1,79 @@
+{
+  "version": {
+    "minorNumber": 87,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  1
+                ]
+              }
+            },
+            "baseSchema": {
+              "names": [
+                "x",
+                "s"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "string": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "virtualTable": {
+              "expressions": [
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 1
+                      }
+                    },
+                    {
+                      "literal": {
+                        "string": "a"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    },
+                    {
+                      "literal": {
+                        "string": "b"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "names": [
+          "s"
+        ]
+      }
+    }
+  ]
+}

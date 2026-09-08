@@ -1,0 +1,50 @@
+{
+  "version": {
+    "minorNumber": 87,
+    "producer": "structural-cases"
+  },
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "common": {
+              "direct": {}
+            },
+            "baseSchema": {
+              "names": [
+                "x"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "virtualTable": {
+              "expressions": [
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 1
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "names": [
+          "x"
+        ]
+      }
+    }
+  ]
+}
