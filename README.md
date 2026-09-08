@@ -172,8 +172,8 @@ encoded rule matches the spec or that every interpretation of a result is correc
   project has run it. CI now retakes all nine on a machine that is not this one, each from the
   versions `probe/versions.env` pins, and otherwise only reads the repository against itself.
   Gluten, the tenth participant, runs in a cluster and its column is still taken by hand.
-- What the columns say is dated. Each is a measurement against one version, and nothing here yet
-  keeps a history of when an answer changed: the weekly `drift` run reports a move against the saved
-  column and uploads the run, but the moves are not accumulated anywhere.
+- What the columns say is dated: each is a measurement against one version. When a release moves
+  an answer, the weekly `drift` run records it in `results/DRIFT.txt`, so the history starts
+  from the day that file was added and says nothing about anything before it.
 
 Apache 2.0.

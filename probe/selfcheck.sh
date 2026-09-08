@@ -479,6 +479,51 @@ raise SystemExit(bad)
 MATRIXPY
 
 echo
+echo "### the drift log says what it claims to say"
+# results/DRIFT.txt is the one file in this repository a workflow writes rather than a person, and
+# it is written a week at a time by a job nobody watches. What can be checked is its shape: that
+# every block names a day, one of the participants the replay accepts and the revision it was built
+# from; that the days do not run backwards; and that each block carries the two lines that let a
+# reader tell a moved answer from a changed corpus. A malformed block would otherwise sit there
+# looking like a record.
+python3 - <<'DRIFTPY' || FAILED=1
+import io, re, sys
+
+LOG = "results/DRIFT.txt"
+script = io.open("probe/replay_column.sh", encoding="utf-8").read()
+known = set(re.findall(r"^\s*([A-Z]+)\)\s+SETUP_KEY=", script, re.M))
+
+lines = io.open(LOG, encoding="utf-8").read().split("\n")
+HEAD = re.compile(r"^##### (\d{4}-\d{2}-\d{2})  ([A-Z]+)  (\S.*)$")
+bad, blocks, previous = 0, 0, ""
+for i, line in enumerate(lines):
+    if not line.startswith("#####"):
+        continue
+    m = HEAD.match(line)
+    if not m:
+        print("FAILED: %s:%d is not a block header: %r" % (LOG, i + 1, line)); bad = 1; continue
+    day, who, revision = m.groups()
+    blocks += 1
+    if who not in known:
+        print("FAILED: %s:%d names %s, which the replay does not accept" % (LOG, i + 1, who)); bad = 1
+    if day < previous:
+        print("FAILED: %s:%d is dated %s, after a block dated %s" % (LOG, i + 1, day, previous)); bad = 1
+    previous = max(previous, day)
+    # The line under the header is what tells a participant that moved from a corpus that changed.
+    if i + 1 >= len(lines) or not re.match(r"^corpus \S+, inputs [0-9a-f]+$", lines[i + 1]):
+        print("FAILED: %s:%d has no corpus and fingerprint line under it"
+              % (LOG, i + 1)); bad = 1
+    # And the block has to end in the summary the comparison prints, or it records no count at all.
+    tail = [l for l in lines[i + 2:] if l.startswith("#####")][:1]
+    stop = lines.index(tail[0]) if tail else len(lines)
+    if not any(re.match(r"^%s: \d+ of \d+ answers moved" % who, l) for l in lines[i + 2:stop]):
+        print("FAILED: the block at %s:%d never says how many answers moved" % (LOG, i + 1)); bad = 1
+if not bad:
+    print("ok      %d recorded move(s), each dated, attributed and counted" % blocks)
+raise SystemExit(bad)
+DRIFTPY
+
+echo
 echo "### the comparison a replayed column is judged by can tell a difference"
 # probe/replay_column.sh rebuilds a participant's environment and requires the answers to be
 # identical to the saved column. Everything about that run - the pinned version, the fresh venv, the

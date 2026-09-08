@@ -260,6 +260,18 @@ json.dump({
     "moved": $MOVED,
 }, open(sys.argv[1], "w"), indent=1, sort_keys=True)
 REC
+  # A drift run that found something leaves a block for results/DRIFT.txt beside the rest. It is
+  # written here rather than appended to that file directly: the workflow runs one job per
+  # participant, in parallel and in separate checkouts, so nine jobs appending to one file would
+  # race. A later job collects the blocks and writes them once, in participant order.
+  if [ "$LATEST" = 1 ] && [ "$MOVED" -ne 0 ]; then
+    {
+      echo "##### $(date -u +%Y-%m-%d)  $NAME  $GOT"
+      echo "corpus $CORPUS_REV, inputs $INPUTS"
+      cat "$REPORT"
+    } > "$OUT/$NAME.drift"
+    echo "   a block for results/DRIFT.txt in $OUT/$NAME.drift"
+  fi
   echo "   run kept in $OUT"
 fi
 

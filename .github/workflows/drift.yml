@@ -55,3 +55,45 @@ jobs:
         with:
           name: drift-${{ matrix.column }}
           path: run/
+
+  # One job writes the log, because the nine above run in parallel in separate checkouts and nine
+  # jobs appending to one file would race. It collects whatever blocks they left - a participant
+  # that did not move leaves none - and writes them in the order the matrix names, so a week's
+  # entries read the same way whichever job finished first.
+  record:
+    needs: drift
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: runs
+          pattern: drift-*
+      - id: collect
+        run: |
+          : > blocks
+          for c in PYTHON GO DUCKDB ACERO VALIDATOR JAVA ISTHMUS SPARK DATAFUSION; do
+            f="runs/drift-$c/$c.drift"
+            [ -s "$f" ] && cat "$f" >> blocks && echo >> blocks
+          done
+          if [ -s blocks ]; then
+            cat blocks >> results/DRIFT.txt
+            echo "moved=yes" >> "$GITHUB_OUTPUT"
+            cat blocks >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "nothing moved; results/DRIFT.txt is unchanged"
+            echo "moved=no" >> "$GITHUB_OUTPUT"
+          fi
+          rm -f blocks
+      # Only when something moved: a commit a week saying nothing happened is a commit a week
+      # nobody reads, and the workflow's own history already records that the run took place.
+      - if: steps.collect.outputs.moved == 'yes'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/DRIFT.txt
+          git commit -m "Record what moved in the drift run of $(date -u +%Y-%m-%d)"
+          git push

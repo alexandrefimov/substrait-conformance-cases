@@ -292,6 +292,55 @@ io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii
 # The triage beside each divergence: what came of it, per participant. An entry may say 'open',
 # and that is allowed on purpose - so what is left to check is that the record
 # is complete, that it means one thing, and that its links go somewhere a reader is sent.
+# results/DRIFT.txt is empty in the repository, so each of these appends a block that is right
+# except for the one thing it breaks: a check with nothing to read passes without reading.
+#
+# Written with python3 and not printf, for the reason recorded further down this file: printf %s
+# does not interpret \n, so the first version of these appended one long line with backslashes in
+# it. Two of the five then fired on a neighbouring invariant and looked like they worked.
+mutate "a drift block with no day" "is not a block header" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### DUCKDB  duckdb 1.6.0
+corpus 5f9d391, inputs 4d7bb168ef648649
+DUCKDB: 1 of 78 answers moved (1 answer), 0 gone, 0 new
+''')"
+
+mutate "a drift block naming nobody the replay retakes" "the replay does not accept" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### 2026-09-14  GLUTEN  velox f7f5f04
+corpus 5f9d391, inputs 4d7bb168ef648649
+GLUTEN: 1 of 78 answers moved (1 answer), 0 gone, 0 new
+''')"
+
+mutate "drift blocks running backwards in time" "after a block dated" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### 2026-09-14  DUCKDB  duckdb 1.6.0
+corpus 5f9d391, inputs 4d7bb168ef648649
+DUCKDB: 1 of 78 answers moved (1 answer), 0 gone, 0 new
+
+##### 2026-01-01  GO  substrait-go/v9 v9.0.1
+corpus 5f9d391, inputs 4d7bb168ef648649
+GO: 1 of 78 answers moved (1 answer), 0 gone, 0 new
+''')"
+
+mutate "a drift block that does not say what it was measured against" "no corpus and fingerprint line" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### 2026-09-14  DUCKDB  duckdb 1.6.0
+DUCKDB: 1 of 78 answers moved (1 answer), 0 gone, 0 new
+''')"
+
+mutate "a drift block with no count in it" "never says how many answers moved" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### 2026-09-14  DUCKDB  duckdb 1.6.0
+corpus 5f9d391, inputs 4d7bb168ef648649
+  emit_read                                      answer
+''')"
+
 # The list of participants CI retakes, which lives in five places and drifts silently.
 mutate "a participant the drift workflow does not retake" "the script accepts" \
   python3 -c "
