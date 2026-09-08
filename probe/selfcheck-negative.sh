@@ -294,10 +294,24 @@ io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii
 # is complete, that it means one thing, and that its links go somewhere a reader is sent.
 # The list of participants CI retakes, which lives in five places and drifts silently.
 mutate "a participant the drift workflow does not retake" "the script accepts" \
-  replace .github/workflows/drift.yml "[PYTHON, GO, DUCKDB, ACERO, VALIDATOR]" "[PYTHON, GO, DUCKDB, ACERO]"
+  python3 -c "
+import io, re
+p = '.github/workflows/drift.yml'
+s = io.open(p, encoding='utf-8').read()
+m = re.search(r'^(\s*column: \[)([^\]]*)(\])', s, re.M)
+names = [n.strip() for n in m.group(2).split(',')]
+io.open(p, 'w', encoding='utf-8').write(
+    s[:m.start()] + m.group(1) + ', '.join(names[:-1]) + m.group(3) + s[m.end():])"
 
 mutate "a participant missing from the usage line" "the script accepts" \
-  replace probe/replay_column.sh "PYTHON|GO|DUCKDB|ACERO|VALIDATOR" "PYTHON|GO|DUCKDB|ACERO"
+  python3 -c "
+import io, re
+p = 'probe/replay_column.sh'
+s = io.open(p, encoding='utf-8').read()
+m = re.search(r'replay_column\.sh ([A-Z|]+)', s)
+names = m.group(1).split('|')
+io.open(p, 'w', encoding='utf-8').write(
+    s[:m.start(1)] + '|'.join(names[:-1]) + s[m.end(1):])"
 
 mutate "a report named in a reason's prose instead of its record" "in its prose" \
   python3 -c "

@@ -21,17 +21,17 @@ jobs:
       # fire; two of them lived in checks.
       - run: bash probe/selfcheck-negative.sh
 
-  # Columns reproduced rather than read. These five participants are the ones a machine that is not
-  # the author's can build from the pinned versions, retake and require to be identical: four are a
-  # pip install or a go get, and the validator is a clone and a cargo build. That is five of the
-  # nine; the other four want a substrait-java or a DataFusion checkout or a JDK 17, and remain
-  # saved measurements until someone automates those too.
+  # Columns reproduced rather than read: built from the pinned versions on a machine that is not the
+  # author's, retaken, and required to be identical. Four are a pip install or a go get, the
+  # validator is a clone and a cargo build, and the substrait-java pair is a clone and a Gradle
+  # build. That is seven of the nine; Spark and DataFusion remain saved measurements until someone
+  # automates those too.
   column:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -52,6 +52,16 @@ jobs:
       # maturin with "File not found", naming neither package.
       - if: matrix.column == 'VALIDATOR'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
+      # The JDK the substrait-java columns were measured with, read from versions.env rather than
+      # written again here: a second copy would let CI pass on a toolchain the file does not name.
+      - id: java
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        with:
+          distribution: temurin
+          java-version: ${{ steps.java.outputs.version }}
       - run: OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # Kept whether the comparison passed or failed: a column that differs is the run worth having.
       - uses: actions/upload-artifact@v4

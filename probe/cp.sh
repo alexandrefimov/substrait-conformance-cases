@@ -9,13 +9,24 @@
 # the probe environment, because only these two probes need them.
 set -e
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SJ="${SUBSTRAIT_JAVA_DIR:?set SUBSTRAIT_JAVA_DIR to a substrait-java checkout}"
 CACHE="${PROBE_CACHE:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 mkdir -p "$CACHE"
+# A workstation points SUBSTRAIT_JAVA_DIR at a checkout it already has; a machine that has none gets
+# the one probe/setup.sh clones at the pinned commit, the way the validator's is found. Without the
+# fallback a column could only be retaken where substrait-java had been cloned by hand.
+SJ="${SUBSTRAIT_JAVA_DIR:-$CACHE/substrait-java}"
+[ -x "$SJ/gradlew" ] || {
+  echo "not a substrait-java checkout: $SJ" >&2
+  echo "set SUBSTRAIT_JAVA_DIR, or let probe/setup.sh clone one into the probe environment" >&2
+  exit 1; }
+export SUBSTRAIT_JAVA_DIR="$SJ"
 case "$1" in
   core)
-    [ -s "$ROOT/gen/classpath.txt" ] || bash "$ROOT/gen/make_classpath.sh" >&2
-    cat "$ROOT/gen/classpath.txt"; exit 0 ;;
+    # The generators write it into the repository by default; a replay puts it in the environment it
+    # built, because a run that writes into the tree it is measuring is not measuring that tree.
+    CP_FILE="${SUBSTRAIT_CLASSPATH:-$ROOT/gen/classpath.txt}"
+    [ -s "$CP_FILE" ] || bash "$ROOT/gen/make_classpath.sh" "$CP_FILE" >&2
+    cat "$CP_FILE"; exit 0 ;;
   isthmus) f="$CACHE/isthmus_cp.txt"; p=":isthmus"; t=printIsthmusCp ;;
   spark)   f="$CACHE/spark_cp.txt";  p=":spark:spark-3.5_2.12"; t=printSparkCp ;;
   *) echo "expected an argument: core|isthmus|spark" >&2; exit 2 ;;

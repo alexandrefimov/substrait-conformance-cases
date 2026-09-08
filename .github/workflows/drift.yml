@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,6 +35,16 @@ jobs:
       # maturin with "File not found", naming neither package.
       - if: matrix.column == 'VALIDATOR'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
+      # The JDK the substrait-java columns were measured with, read from versions.env rather than
+      # written again here: a second copy would let CI pass on a toolchain the file does not name.
+      - id: java
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        if: matrix.column == 'JAVA' || matrix.column == 'ISTHMUS'
+        with:
+          distribution: temurin
+          java-version: ${{ steps.java.outputs.version }}
       - run: LATEST=1 OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # The run, not just the verdict: the record names the versions that were actually installed,
       # the revision this repository was at and a fingerprint of the corpus, the expectations and

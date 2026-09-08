@@ -2,7 +2,7 @@
 # Retakes one participant's column in an environment built from nothing, and compares it with the
 # saved one.
 #
-#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR
+#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS
 #   LATEST=1 bash probe/replay_column.sh <NAME>
 #
 # Everything in results/ is measured on one workstation and saved, and selfcheck.sh only reads those
@@ -70,7 +70,14 @@ case "$NAME" in
   VALIDATOR) SETUP_KEY=substrait-validator; RUNNER=validator_all.sh; CORPUS=derived-schema
           EXT=json; FMT=block; VERDICT=""; GUARD=val/bin/python
           WANT="substrait-validator $SUBSTRAIT_VALIDATOR_VERSION at $SUBSTRAIT_VALIDATOR_COMMIT" ;;
-  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR" >&2; exit 2 ;;
+  # WANT is left empty for these two and worked out after the setup: rev_of abbreviates the commit
+  # the way the checkout does, and versions.env writes it seven characters long where that
+  # repository needs eight. Comparing the two strings would fail on a run that was correct.
+  JAVA)   SETUP_KEY="substrait-java"; RUNNER=java_all.sh;    CORPUS=derived-schema
+          EXT=json; FMT=line;  VERDICT=""; GUARD=classpath.txt; WANT="" ;;
+  ISTHMUS) SETUP_KEY="substrait-java"; RUNNER=isthmus_all.sh; CORPUS=derived-schema
+          EXT=json; FMT=block; VERDICT="^ISTHMUS (ACCEPTED|REJECTED)"; GUARD=classpath.txt; WANT="" ;;
+  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS" >&2; exit 2 ;;
 esac
 
 SAVED="results/$NAME.txt"
@@ -84,16 +91,23 @@ trap 'rm -rf "$WORK"' EXIT
 # fresh one is all it takes to measure an install that has no history on this machine.
 export SUBSTRAIT_PROBE_ENV="$WORK"
 SP="$WORK"
+# rev_of reads SJ for the two columns that come out of a substrait-java checkout, and under a replay
+# that checkout is always the one the setup made, never one the caller happened to have.
+SJ="$WORK/substrait-java"
 # The per-piece overrides are dropped rather than inherited. They exist so that a workstation can
 # point at an environment it already has, which is the opposite of what this script is for: with
 # SUBSTRAIT_PYTHON_ENV still set in the caller's shell, the run would build a fresh venv, measure
 # the old one, and report the fresh one's version.
-unset SUBSTRAIT_PYTHON_ENV SUBSTRAIT_VALIDATOR_ENV PROBE_CACHE SPARK_CP
+unset SUBSTRAIT_PYTHON_ENV SUBSTRAIT_VALIDATOR_ENV PROBE_CACHE SPARK_CP SUBSTRAIT_JAVA_DIR DF_DIR
+# The classpath the substrait-java probes compile against goes into the environment this run built,
+# not into gen/ inside the repository: a run that writes into the tree it is measuring is not
+# measuring that tree.
+export SUBSTRAIT_CLASSPATH="$WORK/classpath.txt"
 
 if [ "$LATEST" = 1 ]; then
   echo "== $NAME from today's release (versions-latest.env), not the pin"
 else
-  echo "== $NAME at the pin: $WANT"
+  echo "== $NAME, in the environment its pin builds"
 fi
 # Built through setup.sh rather than by a pip line of its own: a second copy of a participant's
 # dependencies here is one more thing to keep in step, and substrait-python already needs three
@@ -102,8 +116,13 @@ SETUP_ONLY="$SETUP_KEY" bash "$PROBE/setup.sh" "$WORK" > "$WORK/setup.log" 2>&1
 # The built artefact is what this needs, so that is what is checked. setup.sh reports on every piece
 # of the environment, and treating its exit code as the answer made this fail wherever another piece
 # - the validator, which wants cargo - was absent, even though nothing here asks for that piece.
-[ -x "$WORK/$GUARD" ] || {
+[ -s "$WORK/$GUARD" ] || {
   echo "FAILED: setup.sh built no $GUARD under $WORK" >&2; tail -12 "$WORK/setup.log" >&2; exit 1; }
+
+# The two substrait-java columns learn what to expect only now, from the checkout the setup made.
+case "$NAME" in
+  JAVA|ISTHMUS) WANT="substrait-java $(git -C "$WORK/substrait-java" rev-parse --short "$SUBSTRAIT_JAVA_COMMIT" 2>/dev/null)" ;;
+esac
 
 GOT="$(rev_of "$NAME")"
 if [ "$LATEST" = 1 ]; then

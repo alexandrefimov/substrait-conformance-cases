@@ -297,10 +297,12 @@ optional_column() { # <COLUMN NAME> <block|line> <name> <guard file> <command...
 
 # The substrait-java column is taken by this run too, rather than read from the saved file: the
 # comparison against the expectations has to check what this run got on this corpus.
+#
+# Through probe/java_all.sh, which probe/replay_column.sh runs too: the compile line and the
+# stderr it drops used to live here, so the run that takes this column and the run that replays it
+# were two readings of the same probe.
 JAVA_OUT=$(mktemp)
-javac -nowarn -cp "$CP" -d "$GEN/out" "$PROBE/SchemaOf.java" || fail "javac SchemaOf"
-java -cp "$GEN/out:$CP" SchemaOf $(ls "$CASES"/*.json | grep -v manifest) > "$JAVA_OUT" 2>/dev/null \
-  || fail "SchemaOf returned a non-zero code"
+bash "$PROBE/java_all.sh" "$CASES" > "$JAVA_OUT" || fail "java_all.sh returned a non-zero code"
 column JAVA "$JAVA_OUT" line
 rm -f "$JAVA_OUT"
 
@@ -321,28 +323,12 @@ optional_probe Isthmus "$SJ/isthmus/build.gradle.kts" \
 # The schema Calcite derives is a full column over the whole corpus, not three examples:
 # relation-level divergences (the read mask, set-operation nullability) show up only there.
 if [ -e "$SJ/isthmus/build.gradle.kts" ]; then
-  ISTH_OUT=$(mktemp)
-  bash "$PROBE/isthmus_run.sh" CalciteSchemaOf $(ls "$CASES"/*.json | grep -v manifest) \
-    > "$ISTH_OUT" 2>&1 || fail "Isthmus: the probe returned a non-zero code"
-  # The probe prints two lines per case (declared, then Calcite); the column is the second.
-  python3 - "$ISTH_OUT" > "$RUN/ISTHMUS.raw" <<'PYEOF'
-import re, sys
-name = None
-for line in open(sys.argv[1], encoding="utf-8"):
-    m = re.match(r"^(\S+)\s+declared/POJO: (.*)$", line.rstrip())
-    if m:
-        name = m.group(1)
-        print("##### %s" % name)
-        if "PARSE FAILED" in m.group(2):
-            print("ISTHMUS REJECTED %s" % m.group(2))
-            name = None
-    elif name and "Calcite:" in line:
-        v = line.split("Calcite:", 1)[1].strip()
-        print("ISTHMUS %s %s" % ("ACCEPTED" if v.startswith("[") else "REJECTED", v))
-        name = None
-PYEOF
+  # Through probe/isthmus_all.sh, for the same reason as the Java column: turning two printed lines
+  # per case into one block is a reading of the probe, and it belongs beside the probe rather than
+  # in each caller.
+  bash "$PROBE/isthmus_all.sh" "$CASES" > "$RUN/ISTHMUS.raw" \
+    || fail "Isthmus: the probe returned a non-zero code"
   column ISTHMUS "$RUN/ISTHMUS.raw" block
-  rm -f "$ISTH_OUT"
 else
   echo "SKIPPED Isthmus schema: no $SJ/isthmus/build.gradle.kts"
   SKIPPED_PROBES="$SKIPPED_PROBES Isthmus-schema"

@@ -13,13 +13,15 @@ and could never fire.
 through `setup.sh` (`SETUP_ONLY=<key>`, which builds one piece instead of all of them), puts the
 corpus through it and requires the answers to be identical to the saved column:
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS
 
-Five of the nine columns, retaken on a machine that is not the author's. Four of them are a pip
-install or a go get; the validator is a clone and a cargo build, which is slow but wants nothing
-a runner does not have — protoc and its well-known types come from `protobuf-compiler` and
-`libprotobuf-dev`, which the workflow installs. The other four want a substrait-java or a
-DataFusion checkout or a JDK 17, and remain saved measurements.
+Seven of the nine columns, retaken on a machine that is not the author's. Four are a pip install
+or a go get; the validator is a clone and a cargo build, wanting protoc and its well-known types
+from `protobuf-compiler` and `libprotobuf-dev`; the substrait-java pair is a clone at the pinned
+commit and a Gradle build, wanting the JDK `versions.env` names. Each builds its own checkout,
+so none of them needs one to exist first. The two left — Spark, which wants a JDK 17 beside the
+substrait-java one, and DataFusion, which wants a checkout of its own and the Rust toolchain it
+pins — remain saved measurements.
 
 `LATEST=1` is the same run against today's release rather than the pinned one, through
 `versions-latest.env`. There a difference is the finding rather than the failure — the participant

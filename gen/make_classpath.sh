@@ -9,9 +9,11 @@
 # added and why they are resolved the way they are.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SJ="${SUBSTRAIT_JAVA_DIR:?set SUBSTRAIT_JAVA_DIR to a substrait-java checkout}"
+SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
+# The checkout probe/setup.sh clones when the caller has none of its own, as for the validator.
+SJ="${SUBSTRAIT_JAVA_DIR:-$SP/substrait-java}"
 [ -x "$SJ/gradlew" ] || { echo "not a substrait-java checkout: $SJ" >&2; exit 1; }
-OUT="${1:-$ROOT/gen/classpath.txt}"
+OUT="${1:-${SUBSTRAIT_CLASSPATH:-$ROOT/gen/classpath.txt}}"
 
 CP_RAW="$( cd "$SJ" && ./gradlew -I "$ROOT/gen/cp.init.gradle" -q \
              :core:classes :core:printCoreCp )" \

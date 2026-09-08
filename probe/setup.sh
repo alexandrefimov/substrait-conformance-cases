@@ -156,14 +156,31 @@ else
   FAILED_STEPS="$FAILED_STEPS substrait-validator"
 fi
 
-echo "== classpath for the generators (needs a substrait-java checkout)"
-if ! wanted "classpath"; then
+# The substrait-java checkout and the classpath the generators and the Java, Isthmus and Spark
+# probes compile against. A workstation points SUBSTRAIT_JAVA_DIR at a checkout it already has and
+# nothing is cloned; a machine that has none gets one at the pinned commit, so those columns can be
+# retaken somewhere that has never seen the project. Only the classpath is written; the checkout is
+# left alone, since it is someone else's work even when this script put it there.
+build_substrait_java() {
+  local sj="${SUBSTRAIT_JAVA_DIR:-$SP/substrait-java}"
+  if [ -z "${SUBSTRAIT_JAVA_DIR:-}" ]; then
+    [ -d "$sj/.git" ] || git clone -q https://github.com/substrait-io/substrait-java "$sj" || return 1
+    git -C "$sj" fetch -q --all &&
+    git -C "$sj" checkout -q "$SUBSTRAIT_JAVA_COMMIT" || return 1
+    echo "   cloned at $SUBSTRAIT_JAVA_COMMIT"
+  fi
+  [ -x "$sj/gradlew" ] || { echo "   not a substrait-java checkout: $sj" >&2; return 1; }
+  SUBSTRAIT_JAVA_DIR="$sj" bash "$ROOT/gen/make_classpath.sh" \
+    "${SUBSTRAIT_CLASSPATH:-$ROOT/gen/classpath.txt}"
+}
+echo "== substrait-java checkout and the generator classpath"
+if ! wanted "substrait-java classpath"; then
   echo "   skipped: SETUP_ONLY=$ONLY"
-elif [ -n "${SUBSTRAIT_JAVA_DIR:-}" ]; then
-  bash "$ROOT/gen/make_classpath.sh" || FAILED_STEPS="$FAILED_STEPS generator-classpath"
+elif command -v java >/dev/null; then
+  build_substrait_java || FAILED_STEPS="$FAILED_STEPS substrait-java"
 else
-  echo "   skipped: SUBSTRAIT_JAVA_DIR is not set."
-  echo "   SUBSTRAIT_JAVA_DIR=<checkout> bash gen/make_classpath.sh"
+  echo "   skipped: no java on PATH, and its gradlew needs one"
+  FAILED_STEPS="$FAILED_STEPS substrait-java"
 fi
 
 echo
