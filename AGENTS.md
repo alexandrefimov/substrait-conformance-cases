@@ -39,6 +39,27 @@ git branch --show-current
 - Run generators, formatters, builds, and tests that write files only inside the
   task worktree. Keep temporary outputs out of tracked source directories.
 
+## Repository-specific contracts
+
+- Treat every tracked file as public. Do not commit machine-local absolute
+  paths, credentials, private endpoints, raw local logs, or tool caches.
+  `probe/selfcheck.sh` rejects absolute paths and untranslated text, but it does
+  not replace review for other private material.
+- Follow the artifact ownership documented in [README.md](README.md#what-is-here)
+  and [probe/README.md](probe/README.md#what-a-run-needs-and-what-fails-it).
+  Change the owning source or generator first, then regenerate its outputs. Do
+  not independently hand-edit `derived-schema/`,
+  `derived-schema-virtual-tables/`, `expected.json`, `results/MATRIX.txt`,
+  `docs/matrix*.svg`, or `docs/index.html`.
+- `results/<NAME>.txt` records a measurement against `probe/versions.env`.
+  Update a pin together with the reproduced column and its provenance. A
+  `LATEST=1` drift run is an observation, not a replacement for the pinned
+  saved baseline. Preserve the chronological provenance in `results/DRIFT.txt`.
+- `probe/reverify.sh` is report-only by default. Use `UPDATE_CORPUS=1` or
+  `UPDATE_COLUMNS=1` only when the task explicitly owns those outputs; inspect
+  the complete generated diff afterward. Never use an update flag merely to
+  make a failing check pass.
+
 ## Integration and cleanup
 
 - Keep changes task-scoped and stage explicit paths; do not use `git add .` or
@@ -62,6 +83,10 @@ bash probe/selfcheck-negative.sh
 git diff --check
 ```
 
-Run focused participant or runtime probes when the changed surface requires
-them. `probe/reverify.sh` is the broad consumer sweep and needs external
-toolchains; do not present a partial or skipped sweep as full validation.
+Passing these gates establishes internal consistency only; it does not rerun a
+participant or prove that the expectations match the Substrait specification.
+For changes to a participant runner, setup, normalization, or saved column, run
+`bash probe/replay_column.sh <NAME>` against the pinned version. Use the focused
+runtime probes described in `probe/README.md` when their surface changes.
+`probe/reverify.sh` is the broad consumer sweep and needs external toolchains;
+do not present a partial or skipped sweep as full validation.
