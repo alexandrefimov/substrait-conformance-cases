@@ -1,8 +1,9 @@
-DUCKDB: column from run 2026-09-08T17:49, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T20:22, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
 aggregate_grouping_sets_declared_order         [c:VARCHAR, a:BIGINT]
+aggregate_sum_i64                              [s:HUGEINT]
 control_join_without_relcommon                 [a:BIGINT, b:BIGINT, c:BIGINT, d:BIGINT]
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT]
 cross_preserves_nullability                    [l0:BIGINT, l1:BIGINT, r0:BIGINT, r1:BIGINT]

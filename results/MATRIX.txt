@@ -1,4 +1,4 @@
-Schema derivation matrix: 10 implementations x 85 cases.
+Schema derivation matrix: 10 implementations x 86 cases.
 Built by probe/matrix.py from the columns in results.
 Columns taken 2026-09-08, except: Gluten 2026-09-07.
 Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.
@@ -7,12 +7,13 @@ order are compared. Acero and Spark carry it and are compared on it. Gluten take
 the comparison against the expectations at all.
 String length is lost by DataFusion and DuckDB: their type systems have no string with a length.
 · means the case was not run through that implementation.
-PARTIAL COLUMN: Gluten - 74 of 85, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
+PARTIAL COLUMN: Gluten - 74 of 86, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
 
 case                                          substrait-java                    Isthmus                           python                            validator                         substrait-go                      Spark                             DataFusion                        DuckDB                            Acero                             Gluten                            
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 aggregate_grouping_field_shared_by_sets       {Str{R}, I64{N}]}                 [c:VARCHAR, a:BIGINT?]            [c:str, a:i64]                    [i32, unresolved]                 [c:string, a:i64]                 - IllegalArgumentException: requi…[c:Utf8?, a:Int64?]               [c:VARCHAR, a:BIGINT]             - ArrowNotImplementedError: Group…- Exception: VeloxRuntimeError Er…
 aggregate_grouping_sets_declared_order        {Str{N}, I64{N}]}                 [c:VARCHAR?, a:BIGINT?]           [c:str, a:i64]                    [i32, unresolved]                 [c:string, a:i64]                 - IllegalArgumentException: requi…[c:Utf8?, a:Int64?]               [c:VARCHAR, a:BIGINT]             - ArrowNotImplementedError: Group…- Exception: VeloxRuntimeError Er…
+aggregate_sum_i64                             {I64{N}]}                         [$f0:BIGINT?]                     [s:i64?]                          [i64?]                            [s:i64?]                          - IllegalArgumentException: requi…[s:Int64?]                        [s:HUGEINT]                       [s:int64?]                        ·                                 
 control_join_without_relcommon                {I64{R}, I64{N}, I64{N}, I64{R}]} [c0:BIGINT, c1:BIGINT?, c00:BIGIN…[a:i64, b:i64?, c:i64?, d:i64]    [i64, i64?, i64?, i64]            - panic: runtime error: invalid m…[a:bigint, b:bigint?, c:bigint?, …[a:Int64, b:Int64?, c:Int64?, d:I…[a:BIGINT, b:BIGINT, c:BIGINT, d:…- ArrowInvalid: A join rel's expr…- Exception: VeloxRuntimeError Er…
 control_passthrough_rn                        {I64{R}, I64{N}]}                 [c0:BIGINT, c1:BIGINT?]           [c0:i64, c1:i64?]                 [c0:i64, c1:i64?]                 [c0:i64, c1:i64?]                 [c0:bigint, c1:bigint?]           [c0:Int64, c1:Int64?]             [c0:BIGINT, c1:BIGINT]            [c0:int64, c1:int64?]             ROW<>                             
 cross_preserves_nullability                   {I64{R}, I64{N}, I64{N}, I64{R}]} [c0:BIGINT, c1:BIGINT?, c00:BIGIN…[l0:i64, l1:i64?, r0:i64?, r1:i64][i64, i64?, i64?, i64]            [l0:i64, l1:i64?, r0:i64?, r1:i64][l0:bigint, l1:bigint?, r0:bigint…[l0:Int64, l1:Int64?, r0:Int64?, …[l0:BIGINT, l1:BIGINT, r0:BIGINT,…- ArrowNotImplementedError: conve…·                                 

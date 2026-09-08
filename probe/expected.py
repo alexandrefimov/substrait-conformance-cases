@@ -56,6 +56,9 @@ for case, (op, p1, s1, p2, s2) in DEC.items():
 for case, pattern in SETOP.items():
     expected[case] = {"schema": [["i64", ch == "N"] for ch in pattern],
                       "source": "the Output Type Derivation Examples table in the spec"}
+expected["aggregate_sum_i64"] = {"schema": [["i64", True]],
+                                 "source": "sum(i64) in functions_arithmetic.yaml declares return: i64? with "
+                                           "nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer"}
 expected["phase_final"] = {"schema": [["i64", True]],
                            "source": "the declared return of avg:i64 in functions_arithmetic.yaml"}
 expected["narrowing_is_null"] = {"schema": [["bool", False]],

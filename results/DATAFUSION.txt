@@ -1,8 +1,9 @@
-DATAFUSION: column from run 2026-09-08T17:48, datafusion cc29ea12a
+DATAFUSION: column from run 2026-09-08T20:21, datafusion cc29ea12a
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
 aggregate_grouping_sets_declared_order         [c:Utf8?, a:Int64?]
+aggregate_sum_i64                              [s:Int64?]
 control_join_without_relcommon                 [a:Int64, b:Int64?, c:Int64?, d:Int64]
 control_passthrough_rn                         [c0:Int64, c1:Int64?]
 cross_preserves_nullability                    [l0:Int64, l1:Int64?, r0:Int64?, r1:Int64]

@@ -42,6 +42,22 @@
   }
  },
  {
+  "case": "aggregate_sum_i64",
+  "plan": "aggregate_sum_i64.json",
+  "binary": "aggregate_sum_i64.bin",
+  "generator": "GenSum",
+  "note": "aggregate_sum_i64  sum:i64 over a required i64 column, the spec expects i64?",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer"
+  }
+ },
+ {
   "case": "control_join_without_relcommon",
   "plan": "control_join_without_relcommon.json",
   "binary": "control_join_without_relcommon.bin",

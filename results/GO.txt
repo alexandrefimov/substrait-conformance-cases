@@ -1,7 +1,8 @@
-GO: column from run 2026-09-08T17:49, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
+GO: column from run 2026-09-08T20:22, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_sets_declared_order         [c:string, a:i64]
+aggregate_sum_i64                              [s:i64?]
 control_join_without_relcommon                 ERROR: panic: runtime error: invalid memory address or nil pointer dereference
 control_passthrough_rn                         [c0:i64, c1:i64?]
 cross_preserves_nullability                    [l0:i64, l1:i64?, r0:i64?, r1:i64]

@@ -356,14 +356,14 @@
   },
   "duckdb-sum-returns-hugeint": {
    "kind": "divergence",
-   "what": "functions_arithmetic.yaml declares sum:i64 as returning i64?, and the plan declares it too. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column.",
+   "what": "functions_arithmetic.yaml declares sum:i64 as returning i64? with nullability DECLARED_OUTPUT, and the plan carries that output_type. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column.",
    "check": {
-    "got_matches": "^\\[v:BIGINT, s:HUGEINT\\]$"
+    "got_matches": "^\\[(v:BIGINT, )?s:HUGEINT\\]$"
    },
    "triage": {
     "DUCKDB": {
      "outcome": "open",
-     "note": "the same shape as duckdb-substrait-extension#276, which reports native return types for the decimal functions; whether that issue covers an integer sum has not been established, and the window relation this case reaches it through is separately unfinished there"
+     "note": "aggregate_sum_i64 is a plain aggregate and window_bound_offset the same call inside a window, so the widening is in how sum is bound and not in the window relation, whose support is separately unfinished there. duckdb-substrait-extension#276 reports the same root cause - a native return type in place of the declared one - but is written about the decimal functions and names no integer aggregate"
     }
    }
   },
@@ -428,6 +428,7 @@
    "stringlen_declared": "no-string-with-length"
   },
   "DUCKDB": {
+   "aggregate_sum_i64": "duckdb-sum-returns-hugeint",
    "decimal_divide": "duckdb-decimal-divide-returns-double",
    "decimal_multiply": "decimal-own-derivation",
    "emit_aggregate": "duckdb-emit-ignored-except-on-a-project",

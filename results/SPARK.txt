@@ -1,8 +1,9 @@
-SPARK: column from run 2026-09-08T17:49, spark 3.5.4
+SPARK: column from run 2026-09-08T20:22, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
 aggregate_grouping_sets_declared_order         ERROR: IllegalArgumentException: requirement failed
+aggregate_sum_i64                              ERROR: IllegalArgumentException: requirement failed
 control_join_without_relcommon                 [a:bigint, b:bigint?, c:bigint?, d:bigint]
 control_passthrough_rn                         [c0:bigint, c1:bigint?]
 cross_preserves_nullability                    [l0:bigint, l1:bigint?, r0:bigint?, r1:bigint]
