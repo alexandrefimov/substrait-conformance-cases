@@ -37,7 +37,7 @@ COLS = [("PYTHON", "py"), ("GO", "go"), ("VALIDATOR", "py"), ("ISTHMUS", "calcit
 # answer means.
 src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
 P = {"__file__": os.path.join(ROOT, "probe/check_expected.py")}
-exec(src[:src.index("path, fmt = sys.argv")], P)
+exec(src[:src.index("# --- the command line starts here ---")], P)
 # TYPES_ONLY is assigned after that line, and it is a boundary rather than a detail: it names the
 # participants whose logical types carry no nullability. Taking it from the same file keeps the two
 # checks from drifting into disagreeing about what a participant claims to say.
@@ -334,6 +334,24 @@ for col, cs in doc["cells"].items():
 triage_pairs, triage_open, rules_with_a_report = 0, 0, 0
 REFERENCE = re.compile(r"[\w.-]+/[\w.-]+#\d+|https://github\.com/\S+")
 
+# A note may discuss a report; a report is a number in someone's repository. `#276` in a note reads
+# unambiguously here, beside a DuckDB reason, and stops being unambiguous the moment the sentence
+# travels - quoted into an issue, GitHub turns a bare number into a link to whichever repository the
+# reader is standing in. results/DIFFS.md publishes these notes, so they travel by design.
+def unqualified(note):
+    return [note[max(0, m.start() - 24):m.end()].strip()
+            for m in re.finditer(r"#\d+", note)
+            if not re.search(r"[\w.-]+/[\w.-]+$", note[:m.start()])]
+
+
+def check_notes(rid, triage):
+    for col, entry in sorted((triage or {}).items()):
+        loose = unqualified(entry.get("note", ""))
+        if loose:
+            fail("%s/%s names a report as %s; write it as owner/repo#number, which says whose it is "
+                 "wherever the note is read" % (rid, col, ", ".join(repr(s) for s in loose)))
+
+
 for rid, rule in doc["rules"].items():
     # A report belongs in the triage, not in the sentence beside it. Both carried them until now
     # and nothing compared the two, so a reason could name one issue in its prose and another in
@@ -342,6 +360,7 @@ for rid, rule in doc["rules"].items():
     if stray:
         fail("%s names %s in its prose; a report goes in the triage, where it is checked"
              % (rid, ", ".join(stray)))
+    check_notes(rid, rule.get("triage"))
     triage = rule.get("triage")
     if rule["kind"] != "divergence":
         # A boundary or an unresolved type is a statement about a type system, not something to
@@ -416,6 +435,7 @@ for rid, rule in refused["rules"].items():
     stray = REFERENCE.findall(rule["what"])
     if stray:
         fail("%s names %s in its prose; a report goes in the triage" % (rid, ", ".join(stray)))
+    check_notes(rid, rule.get("triage"))
     covers = {c for c, m in refused["cells"].items() if rid in m.values()}
     triage = rule.get("triage") or {}
     if set(triage) != covers:

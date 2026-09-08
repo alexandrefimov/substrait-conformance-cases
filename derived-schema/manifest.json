@@ -1086,6 +1086,246 @@
   }
  },
  {
+  "case": "physjoin_hash_inner",
+  "plan": "physjoin_hash_inner.json",
+  "binary": "physjoin_hash_inner.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_hash_inner  hash join, inner: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_hash_left",
+  "plan": "physjoin_hash_left.json",
+  "binary": "physjoin_hash_left.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_hash_left  hash join, left: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_hash_left_mark",
+  "plan": "physjoin_hash_left_mark.json",
+  "binary": "physjoin_hash_left_mark.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_hash_left_mark  hash join, left mark: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_merge_inner",
+  "plan": "physjoin_merge_inner.json",
+  "binary": "physjoin_merge_inner.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_merge_inner  merge join, inner: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_merge_left",
+  "plan": "physjoin_merge_left.json",
+  "binary": "physjoin_merge_left.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_merge_left  merge join, left: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_merge_left_mark",
+  "plan": "physjoin_merge_left_mark.json",
+  "binary": "physjoin_merge_left_mark.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_merge_left_mark  merge join, left mark: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_nested_inner",
+  "plan": "physjoin_nested_inner.json",
+  "binary": "physjoin_nested_inner.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_nested_inner  nested join, inner: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_nested_left",
+  "plan": "physjoin_nested_left.json",
+  "binary": "physjoin_nested_left.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_nested_left  nested join, left: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_nested_left_mark",
+  "plan": "physjoin_nested_left_mark.json",
+  "binary": "physjoin_nested_left_mark.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_nested_left_mark  nested join, left mark: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "bool",
+     true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
   "case": "precision_timestamp_p00",
   "plan": "precision_timestamp_p00.json",
   "binary": "precision_timestamp_p00.bin",

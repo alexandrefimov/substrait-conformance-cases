@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-08T20:22, pyarrow 25.0.1
+ACERO: column from run 2026-09-08T22:13, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -51,6 +51,15 @@ narrowing_is_not_null                          [r:bool?]
 narrowing_is_null                              [r:bool?]
 phase_final                                    [r:double?]
 phase_intermediate                             ERROR: ArrowNotImplementedError: Unsupported aggregation phase 'AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE'.  Only INITIAL_TO_RESULT is supported
+physjoin_hash_inner                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
+physjoin_hash_left_mark                        ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
+physjoin_hash_left                             ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
+physjoin_merge_inner                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
+physjoin_merge_left_mark                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
+physjoin_merge_left                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
+physjoin_nested_inner                          ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
+physjoin_nested_left_mark                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
+physjoin_nested_left                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
 precision_timestamp_p00                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 precision_timestamp_p01                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (1)
 precision_timestamp_p02                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (2)

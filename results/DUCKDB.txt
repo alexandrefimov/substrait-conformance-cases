@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-08T20:22, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T22:13, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -51,6 +51,15 @@ narrowing_is_not_null                          [r:BOOLEAN]
 narrowing_is_null                              [r:BOOLEAN]
 phase_final                                    [r:DOUBLE]
 phase_intermediate                             ERROR: BinderException: Binder Error: Positional reference 2 out of range (total 1 columns) LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_hash_inner                            ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_hash_left_mark                        ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_hash_left                             ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_merge_inner                           ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_merge_left_mark                       ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_merge_left                            ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_nested_inner                          ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_nested_left_mark                      ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_nested_left                           ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 precision_timestamp_p00                        [c:TIMESTAMP]
 precision_timestamp_p01                        [c:TIMESTAMP]
 precision_timestamp_p02                        [c:TIMESTAMP]

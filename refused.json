@@ -37,7 +37,7 @@
       "https://github.com/apache/arrow/pull/50635",
       "https://github.com/apache/arrow/issues/51243"
      ],
-     "note": "Arrow #50634 reports that the consumer drops AggregateRel-level grouping expressions referenced by expression_references, and PR #50635 reads them. The exact corpus case passed at PR head 3d2b564f9722a55fe0b74743ffded9378b7a802a with emit [2,0], the expected required bool/int64 schema and all three groups; that change is not merged or present in the pinned PyArrow 25.0.1 measurement. Arrow #51243 is the other half: GetEmitInfo indexes input_schema->field(map_id) with no range check, and ProcessEmitProject does the same on the project path, where ProcessExtensionEmit in the same file already returns Status::Invalid. A read with two fields and emit [5] or [-1] dies with no aggregate anywhere, so #50635 stops this case from crashing without making an out-of-range mapping safe"
+     "note": "apache/arrow#50634 reports that the consumer drops AggregateRel-level grouping expressions referenced by expression_references, and apache/arrow#50635 reads them. The exact corpus case passed at PR head 3d2b564f9722a55fe0b74743ffded9378b7a802a with emit [2,0], the expected required bool/int64 schema and all three groups; that change is not merged or present in the pinned PyArrow 25.0.1 measurement. apache/arrow#51243 is the other half: GetEmitInfo indexes input_schema->field(map_id) with no range check, and ProcessEmitProject does the same on the project path, where ProcessExtensionEmit in the same file already returns Status::Invalid. A read with two fields and emit [5] or [-1] dies with no aggregate anywhere, so apache/arrow#50635 stops this case from crashing without making an out-of-range mapping safe"
     }
    }
   }

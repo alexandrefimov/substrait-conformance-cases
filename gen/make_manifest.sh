@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEST="${1:-$ROOT/derived-schema/manifest.json}"
 [ -s "$ROOT/gen/classpath.txt" ] || bash "$ROOT/gen/make_classpath.sh" >&2
 CP="$(cat "$ROOT/gen/classpath.txt")"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins"
 
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT

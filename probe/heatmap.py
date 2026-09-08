@@ -45,7 +45,10 @@ GROUP_LABEL = {"read": "Column selection at the read", "control": "Controls",
                "setdata": "Set operations: rows", "emit": "Emit mapping",
                "decimal": "Decimal arithmetic", "phase": "Aggregation phase",
                "precision": "precision_timestamp", "narrowing": "Narrowing to required",
-               "stringlen": "String types carrying a length", "ctas": "CTAS"}
+               "stringlen": "String types carrying a length", "ctas": "CTAS",
+               "window": "Window frames and bounds", "expand": "Expand",
+               "cross": "Cross product", "topn": "Top-N",
+               "physjoin": "Physical joins"}
 
 MATCH, DIVERGENCE, BOUNDARY, UNRESOLVED, UNSUPPORTED, NOSPEC = range(6)
 STATE_NAME = {MATCH: "matched", DIVERGENCE: "divergence", BOUNDARY: "type-system boundary",
@@ -69,7 +72,7 @@ def check_expected():
     repository is about."""
     src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
     ns = {"__name__": "check_expected", "__file__": os.path.join(ROOT, "probe/check_expected.py")}
-    exec(compile(src[:src.index("path, fmt = sys.argv[1]")], "check_expected.py", "exec"), ns)
+    exec(compile(src[:src.index("# --- the command line starts here ---")], "check_expected.py", "exec"), ns)
     return ns
 
 
@@ -544,6 +547,9 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     <label class="track-filter" for="f-track">Tracking
       <select id="f-track"><option value="">All statuses</option></select>
     </label>
+    <label class="track-filter" for="f-who">Differs for
+      <select id="f-who"><option value="">Anyone</option></select>
+    </label>
   </div>
   <div class="matrix-meta">
     <span class="tracking-summary" id="tracking-summary"></span>
@@ -741,6 +747,17 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
 
   var all = document.getElementById("f-all"), diff = document.getElementById("f-diff");
   var trackFilter = document.getElementById("f-track"), onlyDiff = false;
+  // A maintainer arriving from their own issue wants one column's differences and nothing else,
+  // which is the row set results/DIFFS.md lists for them. It composes with the other two filters
+  // rather than replacing them.
+  var whoFilter = document.getElementById("f-who");
+  function differs(state) { return state > 0 && state < 4; }
+  D.participants.forEach(function (p, i) {
+    var option = document.createElement("option");
+    option.value = i;
+    option.textContent = p;
+    whoFilter.appendChild(option);
+  });
   var trackingCounts = {}, trackingKinds = {}, linked = {};
   D.tracking.forEach(function (row, r) {
     row.forEach(function (tracked, c) {
@@ -775,10 +792,11 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
         return;
       }
       var r = +tr.dataset.r;
-      var keep = (!onlyDiff || D.cells[r].some(function (s) { return s > 0 && s < 4; })) &&
+      var keep = (!onlyDiff || D.cells[r].some(differs)) &&
         (!trackFilter.value || D.tracking[r].some(function (tracked) {
           return tracked && tracked.outcome === trackFilter.value;
-        }));
+        })) &&
+        (whoFilter.value === "" || differs(D.cells[r][+whoFilter.value]));
       tr.hidden = !keep;
       if (keep) { shown++; }
     });
@@ -787,6 +805,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   all.addEventListener("click", function () { apply(false); });
   diff.addEventListener("click", function () { apply(true); });
   trackFilter.addEventListener("change", function () { apply(onlyDiff); });
+  whoFilter.addEventListener("change", function () { apply(onlyDiff); });
 })();
 </script>
 </body>

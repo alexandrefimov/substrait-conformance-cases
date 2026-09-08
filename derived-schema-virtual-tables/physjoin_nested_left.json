@@ -1,0 +1,93 @@
+{
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "nestedLoopJoin": {
+      "common": {
+       "direct": {}
+      },
+      "left": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "i64": {
+             "nullability": "NULLABILITY_NULLABLE"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": []
+        }
+       }
+      },
+      "right": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_NULLABLE"
+            }
+           },
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": []
+        }
+       }
+      },
+      "expression": {
+       "literal": {
+        "boolean": true
+       }
+      },
+      "type": "JOIN_TYPE_LEFT"
+     }
+    },
+    "names": [
+     "c0",
+     "c1",
+     "c2",
+     "c3"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ }
+}

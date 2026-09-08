@@ -52,7 +52,8 @@ only noticed — but a run that got a different extension is not a reproduction,
 turn out to be.
 
 `selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
-against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every
+against itself — that `expected.json`, `results/MATRIX.txt` and `results/DIFFS.md` are what their
+generators produce, that the numbers the pages state in prose are the numbers the files hold, that every
 saved column is complete and agrees with the expectations, that the numbers in the README match what
 `check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
 has come back. `check_differed.py`, which it calls, is the one part that reads judgements rather
@@ -112,7 +113,7 @@ without `ALLOW_SKIPPED=1`.
 That list is written out rather than summarised as "fail-closed", because the summary was false once
 and read as true: a validator environment with nothing installed produced 78 crashes and a clean
 run, the guard having compared the refusals against the number of cases while the check only ever
-counts the 80 that carry an expectation.
+counts the ones that carry an expectation.
 
 ## The participants and their versions
 
@@ -206,7 +207,7 @@ both explicit-ERROR cases return null when ANSI is disabled and raise an error
 when it is enabled. All four safe controls pass: normal diagnostic mode exits 0
 with two differences, while `--check` exits 1. Missing or malformed observations
 and failed controls always fail the command. These evaluated expressions are
-separate from the 32 structural plans and the saved 78-plan matrix.
+separate from the 32 structural plans and the saved 95-plan matrix.
 
 **Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
 against all four combinations of input nullability, plus five grouping-set layouts. Its
@@ -225,7 +226,7 @@ case, then the number of cases and mismatches. `--area join` selects only the jo
 are reported without a failing exit status; an inference error or mutation of the input does fail
 the run. `--write-plans` exports protobuf-JSON plans with named tables and no data. A consumer that
 resolves those names through its own catalog needs each table registered with the schema from its
-`ReadRel.base_schema`. These 29 checks are separate from the 85 plans in the main corpus. They reproduce
+`ReadRel.base_schema`. These 29 checks are separate from the 95 plans in the main corpus. They reproduce
 [Python #267](https://github.com/substrait-io/substrait-python/issues/267) and
 [#268](https://github.com/substrait-io/substrait-python/issues/268).
 
@@ -336,6 +337,21 @@ each exported call carries `output_type`. It does not infer a missing type or pa
 the plan through a consumer. `--check` fails if a declaration is missing. This
 mode was verified against DataFusion main at `8a9228164`; the matrix's separate
 version pin continues to describe its saved measurements.
+
+**Where each implementation differs.** `diffs.py` writes `results/DIFFS.md`, which is `differed.json`
+joined to the columns and the expectations: per participant, the cases that differ, the expectation,
+the answer, the reason and what came of it. It is built from the same model `heatmap.py` draws, so
+the page and the file cannot disagree, and `selfcheck.sh` compares it with its generator.
+
+**What the corpus covers.** `coverage.py` counts which relations of `algebra.proto` the plans reach
+and writes the block the README carries; `selfcheck.sh` compares that block with this output, and a
+plan using a relation the script's transcribed list does not name fails rather than being counted as
+something else.
+
+**The numbers in the prose.** `check_pages.py` holds every number the pages state about the corpus
+next to the file it comes from. A number gone stale fails; so does a sentence reworded past the
+pattern that watches it, because a guard that quietly stops matching is the failure this repository
+has already had three times.
 
 **The matrix drawn.** `heatmap.py` turns the saved columns into `docs/matrix.svg` and
 `docs/matrix-dark.svg`, which the README shows, and `docs/index.html`, which the site serves with

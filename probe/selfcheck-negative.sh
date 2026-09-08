@@ -22,6 +22,18 @@ cd "$WORK"
 
 PASS=0 MISS=0
 
+# Every result below is read as "the check noticed this mutation". That reading needs the copy to
+# have been clean to begin with: a tree already failing with the substring a mutation expects lets
+# that mutation pass for the wrong reason. The tree is also live - the author may be editing it
+# while this runs - so the baseline is checked here rather than assumed.
+if ! bash probe/selfcheck.sh >/dev/null 2>&1; then
+  echo "FAILED: the copied tree does not pass probe/selfcheck.sh before anything is broken;" >&2
+  echo "        no result below would mean what it says." >&2
+  bash probe/selfcheck.sh 2>&1 | grep -m3 FAILED | sed 's/^/          /' >&2
+  exit 1
+fi
+echo "ok      the copied tree passes before anything is broken"
+
 mutate() { # <name> <expected fragment of the failure> <command that breaks one invariant>
   local name="$1" want="$2"; shift 2
   cp -a "$ROOT/." "$WORK.tmp" 2>/dev/null || { mkdir -p "$WORK.tmp"; cp -a "$ROOT/." "$WORK.tmp"; }
@@ -137,6 +149,56 @@ mutate "the virtual-table corpus against its generator" "generator produces" \
 
 mutate "a case without its binary" "binary protobuf" \
   rm -f derived-schema/decimal_add.bin
+
+# The two ways a sentence stops telling the truth: the number in it goes stale, and the sentence is
+# reworded so that nothing is looking at it any more. The second is the one that hides.
+# These four mutate whatever number is there rather than a number written down here: a mutation
+# that names today's count stops applying the day the corpus grows, and a mutation that cannot
+# apply is reported as MISSED but reads, in a green CI log, like one more guard that works.
+bump() { # <file> <regex with one \d+ group> - change that number to something else
+  python3 - "$1" "$2" <<'PY'
+import io, re, sys
+path, pattern = sys.argv[1:3]
+s = io.open(path, encoding="utf-8").read()
+m = re.search(pattern, s)
+if not m:
+    raise SystemExit(1)
+io.open(path, "w", encoding="utf-8").write(
+    s[:m.start(1)] + str(int(m.group(1)) + 7) + s[m.end(1):])
+PY
+}
+
+mutate "a report named in a note without its repository" "names a report as" \
+  python3 -c "
+import io, json, re
+d = json.load(io.open('differed.json', encoding='utf-8'))
+raw = io.open('differed.json', encoding='utf-8').read()
+for rid, rule in d['rules'].items():
+    for col, entry in (rule.get('triage') or {}).items():
+        note = entry.get('note', '')
+        m = re.search(r'[\\w.-]+/[\\w.-]+(#\\d+)', note)
+        if m:
+            io.open('differed.json', 'w', encoding='utf-8').write(
+                raw.replace(m.group(0), m.group(1), 1))
+            raise SystemExit(0)
+raise SystemExit(1)"
+
+mutate "the per-participant page against its generator" "DIFFS.md differs" \
+  bump results/DIFFS.md '## DuckDB — (\d+) cases'
+
+mutate "a hand-improved coverage block" "coverage block differs" \
+  bump README.md '\| `join` \| (\d+) \|'
+
+mutate "a number in the prose gone stale" "where the files say" \
+  bump README.md 'They answer the (\d+) cases'
+
+mutate "a guarded sentence reworded past its pattern" "was reworded" \
+  python3 -c "
+import io, re
+s = io.open('README.md', encoding='utf-8').read()
+new = re.sub(r'It is (\d+) expectations written by hand', r'It is \\1 expectations, written by hand', s)
+if new == s: raise SystemExit(1)
+io.open('README.md', 'w', encoding='utf-8').write(new)"
 
 mutate "a case missing from the manifest" "does not cover the corpus" \
   python3 -c "
@@ -478,6 +540,14 @@ for name in ('README.md', 'METHOD.md'):
         s[:m.start()] + '%s cases have one so far' % swap + s[m.end():])
     raise SystemExit(0)
 raise SystemExit(1)"
+
+mutate "a link to a section that was renamed" "no heading with that anchor" \
+  python3 -c "
+import io
+s = io.open('METHOD.md', encoding='utf-8').read()
+old = '## The two expand cases'
+if old not in s: raise SystemExit(1)
+io.open('METHOD.md', 'w', encoding='utf-8').write(s.replace(old, '## The expand cases', 1))"
 
 mutate "a link to a page that is not there" "which does not exist" \
   python3 -c "

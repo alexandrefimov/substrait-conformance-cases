@@ -120,8 +120,11 @@
    },
    "triage": {
     "SPARK": {
-     "outcome": "open",
-     "note": "the four add/multiply cases match precision and scale; they return nullable with ANSI disabled and required with ANSI enabled. probe/spark_function_options.py separately evaluates explicit overflow=ERROR, which still returns null with ANSI disabled and is reported in substrait-java #1293. The saved plans omit that option. Their nullability interpretation remains open because omitted options allow consumer choice, whose interaction with the function nullability rule is not settled here"
+     "outcome": "spec-question",
+     "note": "the four add/multiply cases match precision and scale; they return nullable with ANSI disabled and required with ANSI enabled. add and multiply carry only overflow, whose values name no NULL, so substrait-io/substrait#990 as filed does not reach them; what a consumer may return when it omits an option is asked in its thread. probe/spark_function_options.py separately evaluates explicit overflow=ERROR, which still returns null with ANSI disabled and is reported in substrait-io/substrait-java#1293. The saved plans omit that option",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/990"
+     ]
     }
    }
   },
@@ -220,7 +223,7 @@
   },
   "python-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single, and for a mark join it appends the mark column without dropping the right side.",
+   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single, and for a mark join it appends the mark column without dropping the right side. The physical joins answer the same way: HashJoinRel, MergeJoinRel and NestedLoopJoinRel all reach one deriver, so left widens nothing and a mark join keeps both sides there too, while their inner cases match for the reason inner always matches here.",
    "check": {
     "inputs_concatenated": {
      "mark_suffix": true
@@ -233,7 +236,7 @@
       "https://github.com/substrait-io/substrait-python/issues/263",
       "https://github.com/substrait-io/substrait-python/issues/267"
      ],
-     "note": "263 is the four mark joins, reproduced by these cases; 267 is the ten left, right, outer and single ones, reproduced by probe/python_nullability.py"
+     "note": "263 is the four mark joins, reproduced by these cases; 267 is the ten left, right, outer and single ones, reproduced by probe/python_nullability.py. Both reports are written about JoinRel, and the physjoin_* cells show the same two answers arriving through HashJoinRel, MergeJoinRel and NestedLoopJoinRel, which neither report mentions"
     }
    }
   },
@@ -350,7 +353,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: native and Substrait field-reference projects make the required field nullable while preserving rows. Arrow #51231 covers direct field references. Native inner, left and right joins also widen output fields; HashJoinSchema creates nullable fields, and the existing inner-join report Arrow #45557 was closed after a stale notice. Native is_null/is_valid projections and count also return nullable fields while preserving the tested values. General function and aggregate output inference remains outside those reports, so this broader entry stays open"
+     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: native and Substrait field-reference projects make the required field nullable while preserving rows. apache/arrow#51231 covers direct field references. Native inner, left and right joins also widen output fields; HashJoinSchema creates nullable fields, and the existing inner-join report apache/arrow#45557 was closed after a stale notice. Native is_null/is_valid projections and count also return nullable fields while preserving the tested values. General function and aggregate output inference remains outside those reports, so this broader entry stays open"
     }
    }
   },
@@ -366,7 +369,7 @@
      "at": [
       "https://github.com/substrait-io/duckdb-substrait-extension/issues/276"
      ],
-     "note": "reported as a comment on #276 rather than a fourth issue: that one already reports a native return type in place of the declared one, though its body is written about the decimal functions. aggregate_sum_i64 is a plain aggregate and window_bound_offset the same call inside a window, so the widening is in how sum is bound and not in the window relation, whose support is separately unfinished there. The comment also measures the consequence: three rows of 2^62 come back as 13835058055282163712, outside the i64 the plan declared. Whether the decimal and the integer paths are one is asked there and not established here"
+     "note": "reported as a comment on substrait-io/duckdb-substrait-extension#276 rather than a fourth issue: that one already reports a native return type in place of the declared one, though its body is written about the decimal functions. aggregate_sum_i64 is a plain aggregate and window_bound_offset the same call inside a window, so the widening is in how sum is bound and not in the window relation, whose support is separately unfinished there. The comment also measures the consequence: three rows of 2^62 come back as 13835058055282163712, outside the i64 the plan declared. Whether the decimal and the integer paths are one is asked there and not established here"
     }
    }
   },
@@ -380,8 +383,11 @@
    },
    "triage": {
     "JAVA": {
-     "outcome": "open",
-     "note": "not filed. Two implementations read the output order differently and each of them carries one of this relation's two rules and not the other, which may be a question for the spec as much as a defect in either; that has not been settled"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/1296"
+     ],
+     "note": "both normative texts say a column follows the expand fields - physical_relations.md an i32 one, algebra.proto an int64 one - so an answer carrying none is short under either, and substrait-io/substrait#714, which is open on that width, does not reach this. The report covers both cases here; which width a fix should pick is left to substrait-io/substrait#714"
     }
    }
   },
@@ -395,8 +401,27 @@
    },
    "triage": {
     "PYTHON": {
-     "outcome": "open",
-     "note": "not filed. substrait-python#267 and #268 are the join and grouping-key sides of the same shape, a required field that should have widened, and whether an expand switching field belongs with them or on its own has not been established"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-python/issues/269"
+     ],
+     "note": "ExpandRel.SwitchingField in algebra.proto states the rule outright, and substrait-python 0.31.0 takes the first duplicate's type instead. The report shows the answer following the order the duplicates are written in, which this case alone does not: it carries one order only. substrait-io/substrait-python#267 and substrait-io/substrait-python#268 are the join and grouping-key sides of the same shape and neither reaches this relation"
+    }
+   }
+  },
+  "go-physical-join-keeps-input-nullability": {
+   "kind": "divergence",
+   "what": "A left join widens the right side to nullable. substrait-go does that for JoinRel - join_left and joineq_left both match - and not for HashJoinRel or MergeJoinRel, where it returns the two inputs concatenated with their own nullability. Its nested-loop join is unimplemented and its physical mark joins fail on the output-name count instead, so these two cells are where the difference is visible as a schema.",
+   "check": {
+    "inputs_concatenated": {}
+   },
+   "triage": {
+    "GO": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-go/issues/330"
+     ],
+     "note": "the contrast is inside this column: the same rule, the same two inputs and the same join type, right on the logical message and wrong on two physical ones. The report names the cause, HashJoinRel and MergeJoinRel concatenating their inputs without reading the join type. Whether the other nine join types behave the same way is not established here, because these cases carry only inner, left and left mark"
     }
    }
   }
@@ -454,7 +479,9 @@
   },
   "GO": {
    "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
-   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required"
+   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required",
+   "physjoin_hash_left": "go-physical-join-keeps-input-nullability",
+   "physjoin_merge_left": "go-physical-join-keeps-input-nullability"
   },
   "ISTHMUS": {
    "read_projection_mask": "read-projection-ignored",
@@ -481,7 +508,13 @@
    "joineq_right_mark": "python-join-concatenates-the-inputs",
    "joineq_right_single": "python-join-concatenates-the-inputs",
    "read_projection_mask": "read-projection-ignored",
-   "expand_switching_nullability": "python-expand-switching-stays-required"
+   "expand_switching_nullability": "python-expand-switching-stays-required",
+   "physjoin_hash_left": "python-join-concatenates-the-inputs",
+   "physjoin_hash_left_mark": "python-join-concatenates-the-inputs",
+   "physjoin_merge_left": "python-join-concatenates-the-inputs",
+   "physjoin_merge_left_mark": "python-join-concatenates-the-inputs",
+   "physjoin_nested_left": "python-join-concatenates-the-inputs",
+   "physjoin_nested_left_mark": "python-join-concatenates-the-inputs"
   },
   "SPARK": {
    "decimal_add": "spark-decimal-result-nullable",
