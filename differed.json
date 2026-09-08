@@ -253,7 +253,7 @@
    "triage": {
     "VALIDATOR": {
      "outcome": "open",
-     "note": "an i32 where a string was grouped on is a third behaviour, not covered by 579 or 580"
+     "note": "not filed: the validator's three open issues are #579 for set operations, #580 for joins and #584 for virtual-table rows, and none of them is about an aggregate answering i32 where a string was grouped on"
     }
    }
   },
@@ -266,11 +266,11 @@
    "triage": {
     "GO": {
      "outcome": "open",
-     "note": "not filed against substrait-go"
+     "note": "not filed against substrait-go, which returns the same two answers as substrait-python; substrait-go#328 is a different defect"
     },
     "PYTHON": {
      "outcome": "open",
-     "note": "substrait-python#268 reports this behaviour from probe/python_nullability.py; whether it covers these two corpus cases has not been established"
+     "note": "substrait-io/substrait-python#268 is the grouping key absent from a set, and its reproducer has no aggregate function. Three columns differ across the two cases here, and it explains one: the key in aggregate_grouping_sets_declared_order. The key in aggregate_grouping_field_shared_by_sets is in every set and comes back right. The measure, required in both cases where the expectation is nullable, is a separate behaviour and is not filed"
     }
    }
   },
