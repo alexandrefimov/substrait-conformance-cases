@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-08T15:44, duckdb 1.5.5
+DUCKDB: column from run 2026-09-08T16:25, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -28,7 +28,7 @@ join_outer                                     [c0:BIGINT, c1:BIGINT, c2:BIGINT,
 join_right_anti                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet
 join_right_mark                                ERROR: signal/exit 139
 join_right_semi                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet
-join_right_single                              ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
+join_right_single                              ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension LINE 1: SELECT * FROM from_substrait_json(?) ^
 join_right                                     [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 joineq_inner                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 joineq_left_anti                               [c0:BIGINT, c1:BIGINT]
@@ -40,13 +40,13 @@ joineq_outer                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT,
 joineq_right_anti                              [c0:BIGINT, c1:BIGINT]
 joineq_right_mark                              ERROR: signal/exit 139
 joineq_right_semi                              [c0:BIGINT, c1:BIGINT]
-joineq_right_single                            ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
+joineq_right_single                            ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension LINE 1: SELECT * FROM from_substrait_json(?) ^
 joineq_right                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 narrowing_count                                [n:BIGINT]
 narrowing_is_not_null                          [r:BOOLEAN]
 narrowing_is_null                              [r:BOOLEAN]
 phase_final                                    [r:DOUBLE]
-phase_intermediate                             ERROR: BinderException: Binder Error: Positional reference 2 out of range (total 1 columns)  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
+phase_intermediate                             ERROR: BinderException: Binder Error: Positional reference 2 out of range (total 1 columns) LINE 1: SELECT * FROM from_substrait_json(?) ^
 precision_timestamp_p00                        [c:TIMESTAMP]
 precision_timestamp_p01                        [c:TIMESTAMP]
 precision_timestamp_p02                        [c:TIMESTAMP]
@@ -55,20 +55,20 @@ precision_timestamp_p04                        [c:TIMESTAMP]
 precision_timestamp_p06                        [c:TIMESTAMP]
 precision_timestamp_p07                        [c:TIMESTAMP]
 precision_timestamp_p09                        [c:TIMESTAMP]
-precision_timestamp_p12                        ERROR: InvalidInputException: Invalid Input Error: Precision must be between 0 and 9, got 12  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
+precision_timestamp_p12                        ERROR: InvalidInputException: Invalid Input Error: Precision must be between 0 and 9, got 12 LINE 1: SELECT * FROM from_substrait_json(?) ^
 read_projection_mask                           [k0:BOOLEAN, k1:BIGINT]
 setdata_intersection_multiset_all              ERROR: signal/exit 139
 setdata_intersection_multiset                  ERROR: signal/exit 139
-setdata_intersection_primary                   ERROR: NotImplementedException: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported  LINE 1: SELECT * FROM from_substrait_json(?)
-setdata_minus_multiset                         ERROR: NotImplementedException: Not implemented Error: SetOperationType transform not implemented for SetRel_SetOp type inputs  LINE 1: SELECT * FROM from_substrait_json(?)
+setdata_intersection_primary                   ERROR: NotImplementedException: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported LINE 1: SELECT * FROM from_substrait_json(?) ^
+setdata_minus_multiset                         ERROR: NotImplementedException: Not implemented Error: SetOperationType transform not implemented for SetRel_SetOp type inputs LINE 1: SELECT * FROM from_substrait_json(?) ^
 setdata_minus_primary_all                      ERROR: signal/exit 139
 setdata_minus_primary                          [v:BIGINT]
 setdata_union_all                              [v:BIGINT]
 setdata_union_distinct                         ERROR: signal/exit 139
 setop_intersection_multiset_all                ERROR: signal/exit 139
 setop_intersection_multiset                    ERROR: signal/exit 139
-setop_intersection_primary                     ERROR: NotImplementedException: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported  LINE 1: SELECT * FROM from_substrait_json(?)
-setop_minus_multiset                           ERROR: NotImplementedException: Not implemented Error: SetOperationType transform not implemented for SetRel_SetOp type inputs  LINE 1: SELECT * FROM from_substrait_json(?)
+setop_intersection_primary                     ERROR: NotImplementedException: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported LINE 1: SELECT * FROM from_substrait_json(?) ^
+setop_minus_multiset                           ERROR: NotImplementedException: Not implemented Error: SetOperationType transform not implemented for SetRel_SetOp type inputs LINE 1: SELECT * FROM from_substrait_json(?) ^
 setop_minus_primary_all                        ERROR: signal/exit 139
 setop_minus_primary                            [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT, c4:BIGINT, c5:BIGINT, c6:BIGINT, c7:BIGINT]
 setop_union_all                                [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT, c4:BIGINT, c5:BIGINT, c6:BIGINT, c7:BIGINT]
@@ -81,4 +81,4 @@ virtual_table_row_nullable_in_required_column  [c:INTEGER]
 virtual_table_row_required_in_nullable_column  [c:INTEGER]
 window_bound_offset_expr                       ERROR: Error: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON in substrait.Plan @ relations[0].root.input.window.windowFunction
 window_bound_offset                            [v:BIGINT, s:HUGEINT]
-window_output_order                            ERROR: InternalException: INTERNAL Error: Unrecognized FROM in WindowExpression  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
+window_output_order                            ERROR: InternalException: INTERNAL Error: Unrecognized FROM in WindowExpression LINE 1: SELECT * FROM from_substrait_json(?) ^
