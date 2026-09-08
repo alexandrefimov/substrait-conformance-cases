@@ -9,3 +9,7 @@ gen/out/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Where OUT= puts a kept run of probe/replay_column.sh: the column, the raw output and the record.
+# CI uploads that directory as an artifact; locally it is scratch.
+run/

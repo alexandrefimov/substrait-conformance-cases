@@ -45,6 +45,11 @@ FAILED=0
 fail() { echo "FAILED: $*" >&2; FAILED=1; }
 die()  { echo "FAILED: $*" >&2; exit 1; }
 
+# check_blocks() and rev_of() live in probe/columns.sh, which probe/replay_column.sh sources too:
+# the two scripts ask the same questions about the same participants, and two copies of "which
+# command reports substrait-python's version" is how they come to answer them differently.
+. "$PROBE/columns.sh"
+
 echo "### 0. preflight"
 [ -n "$SJ" ] || die "set SUBSTRAIT_JAVA_DIR to a substrait-java checkout"
 [ -n "$DF" ] || die "set DF_DIR to a DataFusion checkout"
@@ -185,62 +190,11 @@ else
 fi
 rm -f "$MAN"
 
-# Every ##### block must carry a verdict. Counting blocks is not enough: a block without a
-# verdict is a case silently lost.
-check_blocks() { # <file> <expected> <name> <verdict-regexp>
-  local got crashes bad
-  got=$(grep -c '^#####' "$1")
-  [ "$got" -eq "$2" ] || fail "$3: $got blocks instead of $2 - the run is incomplete"
-
-  # Per block, not in total. Two independent counters used to be compared here, so a case with two
-  # verdicts covered for a case with none, and a run with a hole passed as complete.
-  # `started` tells "we are inside a block" from "before the first block": without it a blank line
-  # at the top of the output counted as a block without a verdict, and the check failed with an
-  # empty list of names.
-  bad=$(awk -v re="$4" '
-    /^#####/ { if (started && seen != 1) { printf "%s ", name } ; name = $2; seen = 0; started = 1; next }
-    $0 ~ re { seen++ }
-    END { if (started && seen != 1) printf "%s ", name }
-  ' "$1")
-  [ -z "$bad" ] || fail "$3: cases without exactly one verdict: $bad"
-
-  # An engine that failed on EVERY case is a broken environment, not a finding.
-  crashes=$(grep -cE "CRASH" "$1")
-  [ "$crashes" -lt "$2" ] || fail "$3: failed on all $2 cases - that looks like a broken probe, not an engine"
-}
-
 # This run's columns. The comparison against the expectations reads these, not the saved ones: a
 # column not tied to the run that produced it is not evidence.
 RUN="$(mktemp -d)"
 echo "columns from this run: $RUN"
 
-# The revision each column was taken against, written into the column itself. Without it a column
-# taken elsewhere cannot be read: apt and pip give whatever is current there, so a difference from
-# the saved column could be a defect, a platform, or simply another version of the participant, and
-# the file would not say which. Anything that cannot be determined says so rather than guessing.
-rev_of() { # <COLUMN NAME>
-  local v=""
-  case "$1" in
-    JAVA|ISTHMUS)  v="substrait-java $(git -C "$SJ" rev-parse --short HEAD 2>/dev/null)" ;;
-    DATAFUSION)    v="datafusion $(git -C "$DF" rev-parse --short HEAD 2>/dev/null)" ;;
-    DUCKDB)        v="duckdb $("$SP/venv/bin/python" -c 'import duckdb;print(duckdb.__version__)' 2>/dev/null)" ;;
-    ACERO)         v="pyarrow $("$SP/venv/bin/python" -c 'import pyarrow;print(pyarrow.__version__)' 2>/dev/null)" ;;
-    # substrait-python and substrait-validator carry no __version__; the distribution metadata does.
-    PYTHON)        v="substrait $("${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait"))' 2>/dev/null)" ;;
-    VALIDATOR)     v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at $SUBSTRAIT_VALIDATOR_COMMIT" ;;
-    GO)            v="$(grep -m1 -o 'substrait-go/v[0-9]* v[0-9a-z.+-]*' "$SP/gosub9/go.mod" 2>/dev/null)" ;;
-    # Spark's classpath is resolved when its probe runs, so before that there is nothing to read it
-    # from and the pinned value is reported instead, said to be pinned. Reading the jar unconditionally
-    # printed a version here only because a previous run had left the cache behind.
-    SPARK)         local cp_file="${SPARK_CP:-$SP/spark_cp.txt}"
-                   if [ -s "$cp_file" ]; then
-                     v="spark $(basename "$(tr ':' '\n' < "$cp_file" | grep -m1 -E 'spark-core_[0-9.]+-[0-9.]+\.jar')" 2>/dev/null | sed 's/.*-\([0-9][0-9.]*\)\.jar/\1/')"
-                   else
-                     v="spark ${SPARK_35:-} as pinned, not yet resolved"
-                   fi ;;
-  esac
-  case "$v" in ""|*" "|*"  "*) echo "revision unknown" ;; *) echo "$v" ;; esac
-}
 
 column() { # <COLUMN NAME> <raw output> <block|line>
   python3 "$PROBE/normalize.py" "$2" "$3" "$1: column from run $(date +%Y-%m-%dT%H:%M), $(rev_of "$1")" \

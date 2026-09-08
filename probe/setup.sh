@@ -12,9 +12,11 @@
 # failures are collected, and the exit code says whether any of them failed.
 set -u
 FAILED_STEPS=""
-# SETUP_ONLY builds one piece instead of the environment. It exists so that probe/replay_python.sh
-# can install substrait-python from the same line as everyone else rather than keeping its own list
-# of packages - two lists of dependencies for one participant is how they come to differ.
+# SETUP_ONLY builds one piece instead of the environment. It exists so that probe/replay_column.sh
+# can install a participant from the same line as everyone else rather than keeping its own list of
+# packages - two lists of dependencies for one participant is how they come to differ. The key is
+# matched against the step names below, so it is spelled the way the step spells it: "DuckDB" and
+# "Acero" both name the one venv the two of them share.
 ONLY="${SETUP_ONLY:-}"
 wanted() { case "${1:-}" in *"$ONLY"*) return 0;; *) [ -z "$ONLY" ];; esac; }
 step() { # <name> <command...>
@@ -38,8 +40,16 @@ SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 # version check could not fail. Only `set -u` on a machine without the file's values made it visible.
 #
 # Versions come from one file rather than from "whatever is latest": otherwise a second run measures
-# a different environment and the saved columns stop meaning anything.
-. "$(dirname "$0")/versions.env"
+# a different environment and the saved columns stop meaning anything. Which file is the one thing a
+# caller may change: probe/versions-latest.env is the same list with the four installable
+# participants unpinned, and LATEST=1 probe/replay_column.sh passes it here, because the drift run
+# asks what today's release answers rather than whether the saved column reproduces.
+. "${SUBSTRAIT_VERSIONS:-$(dirname "$0")/versions.env}"
+
+# A version of "latest" means install without a pin. It is spelled out rather than left empty
+# because the two have to be told apart: an empty value under `set -u` looks like a variable that
+# was never written, which is the mistake versions.env exists to prevent.
+pin() { case "${1:-}" in ""|latest) : ;; *) printf '==%s' "$1" ;; esac; }
 
 # rustup installs cargo into ~/.cargo/bin and leaves adding it to PATH to a shell profile, which a
 # non-interactive run does not read. Without this the validator step decided cargo was absent and
@@ -70,7 +80,7 @@ mkdir -p "$SP"
 
 build_engines_venv() {
   python3 -m venv "$SP/venv" &&
-  "$SP/venv/bin/pip" install --quiet "duckdb==$DUCKDB_VERSION" "pyarrow==$PYARROW_VERSION"
+  "$SP/venv/bin/pip" install --quiet "duckdb$(pin "$DUCKDB_VERSION")" "pyarrow$(pin "$PYARROW_VERSION")"
 }
 step "python venv (DuckDB + Acero)" build_engines_venv
 
@@ -84,6 +94,7 @@ go $GO_MINIMUM
 G
   ( cd "$SP/gosub9"
     export GOFLAGS=-mod=mod GOTOOLCHAIN=local PATH="$HOME/.cargo/bin:$PATH"
+    # @latest is go's own spelling for "no pin", so the drift run needs nothing extra here.
     go get "$SUBSTRAIT_GO_MODULE@$SUBSTRAIT_GO_COMMIT" &&
     go mod tidy &&
     go build -o probe_go9 . )
@@ -92,8 +103,8 @@ step "substrait-go (the major version is part of the import path!)" build_go_pro
 
 build_python_venv() {
   python3 -m venv "$SP/pysub" &&
-  "$SP/pysub/bin/pip" install --quiet "substrait==$SUBSTRAIT_PYTHON_VERSION" \
-    "substrait-antlr==$SUBSTRAIT_ANTLR_VERSION" "substrait-extensions==$SUBSTRAIT_EXTENSIONS_VERSION" \
+  "$SP/pysub/bin/pip" install --quiet "substrait$(pin "$SUBSTRAIT_PYTHON_VERSION")" \
+    "substrait-antlr$(pin "$SUBSTRAIT_ANTLR_VERSION")" "substrait-extensions$(pin "$SUBSTRAIT_EXTENSIONS_VERSION")" \
     antlr4-python3-runtime pyyaml
 }
 step "substrait-python (its own venv: it conflicts with ibis-substrait)" build_python_venv

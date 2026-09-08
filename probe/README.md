@@ -9,10 +9,34 @@ the repository and requires the check to notice that one, not merely to go red. 
 checks is a comment the interpreter happens to run, and three guards here were written, committed
 and could never fire.
 
-`replay_python.sh` is the one probe CI can run: it builds the substrait-python environment from the
-pinned version through `setup.sh` (`SETUP_ONLY=substrait-python`, which builds one piece instead of
-all of them), puts the corpus through it and requires the result to be identical to
-`results/PYTHON.txt`. One column out of nine, retaken on a machine that is not the author's.
+`replay_column.sh` is the probe CI can run. It builds one participant's environment from nothing
+through `setup.sh` (`SETUP_ONLY=<key>`, which builds one piece instead of all of them), puts the
+corpus through it and requires the answers to be identical to the saved column:
+
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO
+
+Four of the nine columns, retaken on a machine that is not the author's. These four are the
+participants whose entire environment is a pip install or a go get; the other five want a
+substrait-java or a DataFusion checkout, a JDK 17, or a cluster, and remain saved measurements.
+
+`LATEST=1` is the same run against today's release rather than the pinned one, through
+`versions-latest.env`. There a difference is the finding rather than the failure — the participant
+moved since the column was taken — and only a broken harness fails the run. That is what
+`.github/workflows/drift.yml` does weekly; `selfcheck.yml` does the pinned direction on every push.
+
+`OUT=<dir>` keeps the run: the normalized column, the runner's raw output, the report of what moved,
+and a record naming the versions actually installed, the revision this repository was at, and one
+fingerprint over the corpus, `expected.json` and `normalize.py`. Without that record a difference
+between two runs cannot be attributed — a moved answer, a regenerated corpus and an edited
+expectation all look the same in a column.
+
+Two things the pinned run checks besides the answers. The installed version has to be the one
+`versions.env` asked for, because a comparison against another version of the participant says
+nothing about either. And DuckDB's substrait support is a community extension, where `INSTALL` takes
+no version and whatever that repository serves is what arrives: the version is read back out of
+`duckdb_extensions()` and compared with `DUCKDB_SUBSTRAIT_EXTENSION`. That pin cannot be honoured,
+only noticed — but a run that got a different extension is not a reproduction, whatever the answers
+turn out to be.
 
 `selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
 against itself — that `expected.json` and `results/MATRIX.txt` are what their generators produce, that every

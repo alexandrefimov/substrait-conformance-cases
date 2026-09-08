@@ -35,8 +35,16 @@ REFUSING = {"REJECTED", "CRASH", "LOADFAIL", "NOTIMPL"}
 # measurement, and every run that saves columns dirties that file.
 REDACTION = re.compile(r"goo\.gle/debug\w*\s+")
 
+# DuckDB's InternalException carries a stack trace, and the trace is not the answer. On macOS it is
+# mangled symbol names; in a Linux container it is the path of the loaded .so, which in a venv built
+# by the run is a temporary directory with a different name every time. Two cells of the DuckDB
+# column therefore could not reproduce anywhere but the machine they were taken on - found by
+# running probe/replay_column.sh in a container, which is the only way this could have been found.
+# The message before the trace is what the participant said; the raw output keeps the rest.
+TRACE = re.compile(r"\s*Stack Trace:.*$")
+
 def stable(value):
-    return REDACTION.sub("goo.gle/debug ", value)
+    return TRACE.sub("", REDACTION.sub("goo.gle/debug ", value))
 
 def blocks(text):
     name, verdicts = None, []

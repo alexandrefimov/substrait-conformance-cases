@@ -21,15 +21,35 @@ jobs:
       # fire; two of them lived in checks.
       - run: bash probe/selfcheck-negative.sh
 
-  # One column reproduced rather than read: substrait-python is the participant whose whole
-  # environment is a pip install, so a machine that is not the author's can retake its column from
-  # the pinned version and compare. It covers one of nine and says nothing about the other eight -
-  # and it is still the only number here that a second machine produces instead of trusting.
-  python-column:
+  # Columns reproduced rather than read. These four participants are the ones whose entire
+  # environment is a pip install or a go get, so a machine that is not the author's can build them
+  # from the pinned versions, retake the column and require it to be identical. That is four of the
+  # nine: the other five want a substrait-java or a DataFusion checkout, a JDK 17, or a cluster, and
+  # remain saved measurements until someone automates those too.
+  column:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        column: [PYTHON, GO, DUCKDB, ACERO]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: bash probe/replay_python.sh
+      # The go version is the one versions.env calls the minimum, read from that file rather than
+      # written again here: a second copy would let CI pass on a go the file does not promise.
+      - id: go
+        if: matrix.column == 'GO'
+        run: . probe/versions.env && echo "version=$GO_MINIMUM" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-go@v5
+        if: matrix.column == 'GO'
+        with:
+          go-version: ${{ steps.go.outputs.version }}
+      - run: OUT=run bash probe/replay_column.sh ${{ matrix.column }}
+      # Kept whether the comparison passed or failed: a column that differs is the run worth having.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: column-${{ matrix.column }}
+          path: run/

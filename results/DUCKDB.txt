@@ -25,9 +25,9 @@ join_left_semi                                 [c0:BIGINT, c1:BIGINT]
 join_left_single                               [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 join_left                                      [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 join_outer                                     [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
-join_right_anti                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet  Stack Trace:  0        _ZN6duckdb9Exception6ToJSONENS_13ExceptionTypeERKNSt3__112basic_str
+join_right_anti                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet
 join_right_mark                                ERROR: signal/exit 139
-join_right_semi                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet  Stack Trace:  0        _ZN6duckdb9Exception6ToJSONENS_13ExceptionTypeERKNSt3__112basic_str
+join_right_semi                                ERROR: InternalException: INTERNAL Error: RIGHT SEMI/ANTI any join not supported yet
 join_right_single                              ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension  LINE 1: SELECT * FROM from_substrait_json(?)                       ^
 join_right                                     [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
 joineq_inner                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]

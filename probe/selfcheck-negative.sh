@@ -319,6 +319,18 @@ old = '(METHOD.md)'
 if old not in s: raise SystemExit(1)
 io.open('README.md', 'w', encoding='utf-8').write(s.replace(old, '(METHODS.md)', 1))"
 
+# The comparison probe/replay_column.sh judges a replayed column by. A comparison that agrees with
+# everything is the shape of guard this file exists for: the workflow stays green, the artifacts look
+# right, and the four columns CI retakes stop being checked at all.
+mutate "a comparison that reports no difference" "was not reported as a difference" \
+  replace probe/column_diff.py "sys.exit(1 if (moved or gone or added) else 0)" "sys.exit(0)"
+
+# Reporting a difference is not enough: a run that turns answers into refusals is a different
+# finding from one that changes a schema, and both are different from an upstream fix, which arrives
+# as a refusal becoming an answer.
+mutate "a difference reported under the wrong kind" "but not as" \
+  replace probe/column_diff.py 'kind = ("refusal" if was and now else "lost" if now else "gained" if was else "answer")' 'kind = "answer"'
+
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"
 

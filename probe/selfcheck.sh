@@ -438,6 +438,77 @@ raise SystemExit(bad)
 LINKPY
 
 echo
+echo "### the comparison a replayed column is judged by can tell a difference"
+# probe/replay_column.sh rebuilds a participant's environment and requires the answers to be
+# identical to the saved column. Everything about that run - the pinned version, the fresh venv, the
+# workflow - is worth nothing if the comparison at the end cannot report a difference, and a
+# comparison that always agrees looks exactly like a column that always reproduces. So it is given
+# columns that differ in each of the ways a column can differ, and required to say so.
+python3 - <<'DIFFPY' || FAILED=1
+import io, os, subprocess, sys, tempfile
+
+COLUMN = "results/GO.txt"
+
+
+def rows(text):
+    head, _, body = text.partition("\n\n")
+    return head, [l for l in body.split("\n") if l.strip()]
+
+
+def written(tmp, name, lines, head):
+    path = os.path.join(tmp, name)
+    io.open(path, "w", encoding="utf-8").write(head + "\n\n" + "\n".join(lines) + "\n")
+    return path
+
+
+def diff(a, b):
+    p = subprocess.run([sys.executable, "probe/column_diff.py", a, b, "T"],
+                       capture_output=True, text=True)
+    return p.returncode, p.stdout
+
+
+head, body = rows(io.open(COLUMN, encoding="utf-8").read())
+schema = next(i for i, l in enumerate(body) if not l.split(None, 1)[1].startswith("ERROR:"))
+refusal = next(i for i, l in enumerate(body) if l.split(None, 1)[1].startswith("ERROR:"))
+bad = 0
+
+with tempfile.TemporaryDirectory() as tmp:
+    same = written(tmp, "same.txt", body, "T: a second take")
+    rc, out = diff(COLUMN, same)
+    if rc != 0 or "0 of %d answers moved" % len(body) not in out:
+        print("FAILED: two takes of one column were not called identical: %s" % out.strip()); bad = 1
+
+    # The three ways an answer can move. They are not one case: a schema that became a refusal and a
+    # refusal that became a schema are opposite findings, and the second is what an upstream fix
+    # looks like from here.
+    for label, index, value, kind in (
+        ("a changed schema", schema, "[made:up]", "answer"),
+        ("an answer that became a refusal", schema, "ERROR: made up", "lost"),
+        ("a refusal that became an answer", refusal, "[made:up]", "gained"),
+    ):
+        lines = list(body)
+        name = lines[index].split(None, 1)[0]
+        lines[index] = "%-46s %s" % (name, value)
+        rc, out = diff(COLUMN, written(tmp, "moved.txt", lines, "T: a second take"))
+        if rc == 0:
+            print("FAILED: %s was not reported as a difference" % label); bad = 1
+        elif name not in out or "1 %s" % kind not in out:
+            print("FAILED: %s was reported, but not as '%s' against %s: %s"
+                  % (label, kind, name, out.strip().splitlines()[-1])); bad = 1
+
+    # A case that stopped being answered at all. The count guard in replay_column.sh catches a short
+    # column first, but the comparison must not call a missing case an agreement either.
+    lines = [l for i, l in enumerate(body) if i != schema]
+    rc, out = diff(COLUMN, written(tmp, "short.txt", lines, "T: a second take"))
+    if rc == 0 or "1 gone" not in out:
+        print("FAILED: a case dropped from the column was not reported: %s" % out.strip()); bad = 1
+
+if not bad:
+    print("ok      identical columns agree; a changed, lost, gained or dropped answer is reported")
+raise SystemExit(bad)
+DIFFPY
+
+echo
 echo "### syntax"
 python3 probe/structural_cases.py --verify-fixtures \
   && ok "focused structural fixtures and their controls are complete" \

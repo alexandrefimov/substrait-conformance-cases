@@ -84,6 +84,16 @@ correction recorded in a commit. The largest was reading a
 held answer in the swap table as one the consumer derived: the twelve that held are the `joineq_*`
 cases, where the swapped declaration is a join predicate whose type never reaches the output schema.
 
+One of them was about reproducibility rather than about a result, which is why it lasted. Two cells
+of the DuckDB column carried DuckDB's stack trace inside the message, and a stack trace is a fact
+about the machine: mangled symbol names on macOS, the path of the loaded `.so` on Linux, and in a
+virtual environment a run builds for itself, a temporary directory with a different name every time.
+Those two cells could not reproduce anywhere but the workstation they were taken on. The full sweep
+had already run on clean Ubuntu without noticing, because what was compared there was the tallies,
+and the tallies were right. It took `probe/replay_column.sh` in a container, comparing answer
+against answer, one cell at a time. `probe/normalize.py` now keeps the message and drops the trace;
+the raw output a run saves under `OUT=` still has all of it.
+
 Reasons in `differed.json` get rewritten too: ten were corrected after the answers behind them were
 read one by one, and a second reader then found seven more that held for most of their cells and
 described the rest wrongly. That is why a reason there has to carry a test.

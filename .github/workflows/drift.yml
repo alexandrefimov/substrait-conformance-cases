@@ -1,0 +1,40 @@
+# The same four columns against today's release instead of the pinned one. A difference here is not
+# a failure: it says the participant moved since results/<NAME>.txt was taken, and names the cases
+# it moved on. selfcheck.yml is the other direction - the pinned versions, where a difference means
+# something in this repository is wrong.
+#
+# Weekly rather than per-push: nothing in a commit here changes what DuckDB released.
+name: drift
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        column: [PYTHON, GO, DUCKDB, ACERO]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Not the minimum this time: the drift run asks what today's toolchain and today's release do
+      # together, and a substrait-go that has started needing a newer go is itself a finding.
+      - uses: actions/setup-go@v5
+        if: matrix.column == 'GO'
+        with:
+          go-version: stable
+      - run: LATEST=1 OUT=run bash probe/replay_column.sh ${{ matrix.column }}
+      # The run, not just the verdict: the record names the versions that were actually installed,
+      # the revision this repository was at and a fingerprint of the corpus, the expectations and
+      # the normalization, so a later reader can tell a moved answer from a changed input.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drift-${{ matrix.column }}
+          path: run/
