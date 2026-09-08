@@ -31,8 +31,12 @@
    },
    "triage": {
     "ACERO": {
-     "outcome": "open",
-     "note": "not filed. The two Arrow reports in FINDINGS.md are about projection nullability and extension identifiers, neither of them this; a reproducer smaller than the corpus case has not been cut yet"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/arrow/issues/50634",
+      "https://github.com/apache/arrow/pull/50635"
+     ],
+     "note": "Arrow #50634 reports that the consumer drops AggregateRel-level grouping expressions referenced by expression_references, and PR #50635 reads them. The exact corpus case passed at PR head 3d2b564f9722a55fe0b74743ffded9378b7a802a with emit [2,0], the expected required bool/int64 schema and all three groups; that change is not merged or present in the pinned PyArrow 25.0.1 measurement"
     }
    }
   }
