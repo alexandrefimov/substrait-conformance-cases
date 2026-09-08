@@ -69,25 +69,12 @@ git branch --show-current
   branch in its own worktree and rerun the relevant checks.
 - A local commit, push, pull request, merge, and cleanup are separate actions.
   Do not infer authorization for a later action from an earlier one.
-- Treat cleanup as part of the task closeout, not as optional future work. When
-  proposing a merge or direct push, list the exact task worktree, local branch,
-  and remote task branch to remove afterward, and obtain approval for those
-  cleanup mutations.
-- After the approved integration is verified at the remote target, remove the
-  clean task worktree, delete its local branch, and delete its remote branch
-  with `git push origin --delete <branch>` when that branch exists and is not a
-  protected, shared, or still-open PR dependency. Run `git fetch --prune` and
-  verify that `git ls-remote --heads origin <branch>` is empty.
-- A squash merge does not make the source branch an ancestor. Before deleting
-  it, verify the merged result or exact changed-file tree is equivalent; retain
-  the branch and report the gap when equivalence is not proven.
-- Do not retain an integrated worktree or branch merely as evidence; the commit
-  history or merged PR is the evidence. If cleanup is blocked by dirty files,
-  an active process, another owner, or an open dependency, report it as
-  unfinished instead of forcing deletion.
-- Remove only the task worktree you own, and only after its work is integrated
-  or explicitly abandoned, the worktree is clean, and no process uses it. Never
-  force-remove a worktree or force-delete its branch as routine cleanup.
+- After a verified integration, clean up the owned task worktree and its local
+  branch; when remote cleanup was approved, also delete its non-protected remote
+  task branch. Do not retain integrated work merely as evidence or force cleanup
+  when its ownership or state is uncertain.
+- For a squash merge, verify that the merged tree or patch is equivalent before
+  deleting the source branch; retain and report it when equivalence is unclear.
 
 ## Validation
 
