@@ -172,9 +172,9 @@ encoded rule matches the spec or that every interpretation of a result is correc
 [METHOD.md](METHOD.md) records what has already been corrected here; these are open:
 
 - The rules encoded in `probe/expected.py` need independent review against the spec.
-- Five of the twenty-seven divergence-and-participant pairs in `differed.json` still need
+- Four of the twenty-seven divergence-and-participant pairs in `differed.json` still need
   investigation: Acero output nullability beyond direct field projections, Spark decimal nullability,
-  DuckDB's integer sum, Java's missing Expand duplicate index and Python's switching-field nullability.
+  Java's missing Expand duplicate index and Python's switching-field nullability.
   Each says what is missing. Existing reports can cover only part of a linked observation, so
   their notes also matter. `open` is an allowed answer; a link does not prove a fix. The count is
   written down and `probe/check_differed.py` compares it.

@@ -381,7 +381,7 @@ button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .hint { font-size: 12.5px; color: var(--ink-3); }
 .explorer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
 .matrix-pane { min-width: 0; }
-.scroll { overflow: auto; max-height: 72vh; padding-right: 12px; background: var(--surface);
+.scroll { overflow: auto; max-height: 144vh; padding-right: 12px; background: var(--surface);
           border: 1px solid var(--rule); border-radius: 3px; }
 table { border-collapse: separate; border-spacing: 0; font-size: 12px;
         table-layout: fixed; width: 100%%; min-width: 658px; }
@@ -445,7 +445,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   header { padding-top: 28px; }
   .rollup { grid-template-columns: 112px minmax(0, 1fr); }
   .row .num { grid-column: 1 / -1; text-align: left; white-space: normal; margin-bottom: 7px; }
-  .scroll { max-height: 55vh; }
+  .scroll { max-height: 110vh; }
   table { min-width: 558px; }
   thead th.corner { width: 180px; }
   .detail { padding: 16px; }

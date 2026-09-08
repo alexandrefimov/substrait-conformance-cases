@@ -362,8 +362,11 @@
    },
    "triage": {
     "DUCKDB": {
-     "outcome": "open",
-     "note": "aggregate_sum_i64 is a plain aggregate and window_bound_offset the same call inside a window, so the widening is in how sum is bound and not in the window relation, whose support is separately unfinished there. duckdb-substrait-extension#276 reports the same root cause - a native return type in place of the declared one - but is written about the decimal functions and names no integer aggregate"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/276"
+     ],
+     "note": "reported as a comment on #276 rather than a fourth issue: that one already reports a native return type in place of the declared one, though its body is written about the decimal functions. aggregate_sum_i64 is a plain aggregate and window_bound_offset the same call inside a window, so the widening is in how sum is bound and not in the window relation, whose support is separately unfinished there. The comment also measures the consequence: three rows of 2^62 come back as 13835058055282163712, outside the i64 the plan declared. Whether the decimal and the integer paths are one is asked there and not established here"
     }
    }
   },
