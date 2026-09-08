@@ -212,28 +212,20 @@ echo "### 2. the DataFusion side"
 # Plans used to be copied into someone else's testdata and the probe appended to a tracked test
 # file, then reverted in a trap. It is a standalone example now: the checkout is not modified at
 # all, and the cases are read from this repository.
-DF_EX="$DF/datafusion/substrait/examples/corpus_probe.rs"
-[ -e "$DF_EX" ] && die "$DF_EX already exists in the DataFusion checkout - remove it yourself, not touching what is not mine"
-mkdir -p "$(dirname "$DF_EX")"
-cp "$PROBE/datafusion_corpus_probe.rs" "$DF_EX" || die "could not place the probe at $DF_EX"
-# Cleanup removes the directories this script created too, and stops at the first one that is
-# not empty: the whole point of placing an example instead of editing a tracked file is that
-# the checkout is left exactly as it was found.
-cleanup_df() {
-  rm -f "$DF_EX"
-  local d; d="$(dirname "$DF_EX")"
-  while [ "$d" != "$DF" ] && [ "$d" != "/" ] && rmdir "$d" 2>/dev/null; do d="$(dirname "$d")"; done
-}
+# Through probe/datafusion_all.sh, which places the example, runs it and takes it out again;
+# probe/replay_column.sh runs the same script. Placing and removing it used to be written out here,
+# with its own entry in this script's exit trap - so the run that takes this column and the run that
+# replays it were two arrangements of the same probe. cleanup_df stays a no-op above, because
+# cleanup_all still calls it and one trap for the whole script is the point of that.
 DF_OUT=$(mktemp)
-( cd "$DF" && SUBSTRAIT_CORPUS_DIR="$CASES" cargo run -q -p datafusion-substrait \
-    --example corpus_probe 2>&1 ) > "$DF_OUT"
+bash "$PROBE/datafusion_all.sh" "$CASES" > "$DF_OUT"
 DF_RC=$?
 grep -E "^#####|^DATAFUSION|^error" "$DF_OUT"
-[ "$DF_RC" -eq 0 ] || fail "cargo run returned $DF_RC"
+[ "$DF_RC" -eq 0 ] || fail "the DataFusion probe returned $DF_RC"
 check_blocks "$DF_OUT" "$N_JSON" "DataFusion" "^DATAFUSION (ACCEPTED|REJECTED)"
 column DATAFUSION "$DF_OUT" block
 cp "$DF_OUT" "$RUN/DATAFUSION.raw"
-cleanup_df
+rm -f "$DF_OUT"
 
 run_probe() { # <name> <script> <verdict-regexp> <COLUMN NAME>
   local out; out=$(mktemp)

@@ -173,6 +173,32 @@ build_substrait_java() {
   SUBSTRAIT_JAVA_DIR="$sj" bash "$ROOT/gen/make_classpath.sh" \
     "${SUBSTRAIT_CLASSPATH:-$ROOT/gen/classpath.txt}"
 }
+# The DataFusion checkout its probe builds against. Cloned without blobs: the repository is a
+# quarter of a gigabyte of history and the probe needs one commit of it, so a full clone would be
+# minutes spent on nothing. The toolchain comes from that checkout's own rust-toolchain.toml, which
+# rustup fetches and an unmanaged cargo ignores.
+build_datafusion() {
+  local df="${DF_DIR:-$SP/datafusion}"
+  if [ -z "${DF_DIR:-}" ]; then
+    [ -d "$df/.git" ] || \
+      git clone -q --filter=blob:none https://github.com/apache/datafusion "$df" || return 1
+    git -C "$df" fetch -q --filter=blob:none origin "$DATAFUSION_COMMIT" 2>/dev/null ||
+      git -C "$df" fetch -q origin || return 1
+    git -C "$df" checkout -q "$DATAFUSION_COMMIT" || return 1
+    echo "   cloned at $DATAFUSION_COMMIT"
+  fi
+  [ -f "$df/Cargo.toml" ] || { echo "   not a DataFusion checkout: $df" >&2; return 1; }
+}
+echo "== datafusion checkout"
+if ! wanted "datafusion"; then
+  echo "   skipped: SETUP_ONLY=$ONLY"
+elif command -v cargo >/dev/null; then
+  build_datafusion || FAILED_STEPS="$FAILED_STEPS datafusion"
+else
+  echo "   skipped: cargo is not on PATH, and the probe builds that checkout"
+  FAILED_STEPS="$FAILED_STEPS datafusion"
+fi
+
 echo "== substrait-java checkout and the generator classpath"
 if ! wanted "substrait-java classpath"; then
   echo "   skipped: SETUP_ONLY=$ONLY"

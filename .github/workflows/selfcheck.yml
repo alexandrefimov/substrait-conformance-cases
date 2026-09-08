@@ -24,14 +24,15 @@ jobs:
   # Columns reproduced rather than read: built from the pinned versions on a machine that is not the
   # author's, retaken, and required to be identical. Four are a pip install or a go get, the
   # validator is a clone and a cargo build, and the substrait-java pair is a clone and a Gradle
-  # build, which serves the three columns that come out of it. That is eight of the nine; DataFusion
-  # remains a saved measurement until someone automates that one too.
+  # build, which serves the three columns that come out of it, and DataFusion is a clone without
+  # blobs and a cargo build. That is all nine; only Gluten, which runs in a cluster, is still taken
+  # by hand.
   column:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS, SPARK]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR, JAVA, ISTHMUS, SPARK, DATAFUSION]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,11 +47,11 @@ jobs:
         if: matrix.column == 'GO'
         with:
           go-version: ${{ steps.go.outputs.version }}
-      # The validator is built from source. protoc is not on the runner, and its build compiles
-      # .proto files that import google/protobuf/any.proto - which Debian and Ubuntu ship apart from
-      # the compiler, in libprotobuf-dev. Without that second package the build dies deep inside
-      # maturin with "File not found", naming neither package.
-      - if: matrix.column == 'VALIDATOR'
+      # Both of these are built from source and both compile .proto files that import
+      # google/protobuf/any.proto, which Debian and Ubuntu ship apart from the compiler, in
+      # libprotobuf-dev. Without that second package the validator's build dies deep inside maturin
+      # with "File not found", naming neither package.
+      - if: matrix.column == 'VALIDATOR' || matrix.column == 'DATAFUSION'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
       # The JDK the substrait-java columns were measured with, read from versions.env rather than
       # written again here: a second copy would let CI pass on a toolchain the file does not name.

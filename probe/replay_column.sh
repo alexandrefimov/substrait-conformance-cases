@@ -2,7 +2,7 @@
 # Retakes one participant's column in an environment built from nothing, and compares it with the
 # saved one.
 #
-#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK
+#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
 #   LATEST=1 bash probe/replay_column.sh <NAME>
 #
 # Everything in results/ is measured on one workstation and saved, and selfcheck.sh only reads those
@@ -37,6 +37,11 @@ if [ "$LATEST" = 1 ]; then
 fi
 # shellcheck source=versions.env
 . "${SUBSTRAIT_VERSIONS:-$PROBE/versions.env}"
+
+# rustup installs cargo into ~/.cargo/bin and leaves adding it to PATH to a shell profile, which a
+# non-interactive run does not read. probe/setup.sh and probe/reverify.sh each have this line for
+# the same reason; without it here the DataFusion probe came back 127 and the run said only that.
+export PATH="$HOME/.cargo/bin:$PATH"
 
 FAILED=0
 fail() { echo "FAILED: $*" >&2; FAILED=1; }
@@ -82,7 +87,10 @@ case "$NAME" in
   # pins rather than the one it measured.
   SPARK)  SETUP_KEY="substrait-java"; RUNNER=spark_all.sh;    CORPUS=derived-schema
           EXT=json; FMT=line;  VERDICT=""; GUARD=classpath.txt; WANT="spark $SPARK_35" ;;
-  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK" >&2; exit 2 ;;
+  DATAFUSION) SETUP_KEY=datafusion; RUNNER=datafusion_all.sh; CORPUS=derived-schema
+          EXT=json; FMT=block; VERDICT="^DATAFUSION (ACCEPTED|REJECTED)"
+          GUARD=datafusion/Cargo.toml; WANT="" ;;
+  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION" >&2; exit 2 ;;
 esac
 
 SAVED="results/$NAME.txt"
@@ -99,6 +107,7 @@ SP="$WORK"
 # rev_of reads SJ for the two columns that come out of a substrait-java checkout, and under a replay
 # that checkout is always the one the setup made, never one the caller happened to have.
 SJ="$WORK/substrait-java"
+DF="$WORK/datafusion"
 # The per-piece overrides are dropped rather than inherited. They exist so that a workstation can
 # point at an environment it already has, which is the opposite of what this script is for: with
 # SUBSTRAIT_PYTHON_ENV still set in the caller's shell, the run would build a fresh venv, measure
@@ -127,6 +136,7 @@ SETUP_ONLY="$SETUP_KEY" bash "$PROBE/setup.sh" "$WORK" > "$WORK/setup.log" 2>&1
 # The two substrait-java columns learn what to expect only now, from the checkout the setup made.
 case "$NAME" in
   JAVA|ISTHMUS) WANT="substrait-java $(git -C "$WORK/substrait-java" rev-parse --short "$SUBSTRAIT_JAVA_COMMIT" 2>/dev/null)" ;;
+  DATAFUSION) WANT="datafusion $(git -C "$WORK/datafusion" rev-parse --short "$DATAFUSION_COMMIT" 2>/dev/null)" ;;
   SPARK) bash "$PROBE/cp.sh" spark >/dev/null 2>"$WORK/spark_cp.err" ||
            { echo "FAILED: could not resolve the :spark classpath: $(tail -1 "$WORK/spark_cp.err")" >&2
              exit 1; } ;;
@@ -193,7 +203,12 @@ echo "   corpus $CORPUS_REV, inputs $INPUTS"
 echo "== $CASES cases through $RUNNER over $CORPUS"
 bash "$PROBE/$RUNNER" "$ROOT/$CORPUS" > "$WORK/raw" 2>"$WORK/raw.err"
 RC=$?
-[ "$RC" -eq 0 ] || { echo "FAILED: the runner returned $RC: $(head -1 "$WORK/raw.err")" >&2; exit 1; }
+if [ "$RC" -ne 0 ]; then
+  WHY="$(tail -3 "$WORK/raw.err" 2>/dev/null | grep -v '^$' | tail -1)"
+  [ -n "$WHY" ] || WHY="$(tail -3 "$WORK/raw" 2>/dev/null | grep -v '^$' | tail -1)"
+  echo "FAILED: the runner returned $RC: ${WHY:-it said nothing}" >&2
+  exit 1
+fi
 if [ "$FMT" = block ]; then
   check_blocks "$WORK/raw" "$CASES" "$NAME" "$VERDICT"
   # 127 = no such command: the environment fell away, the engine did not crash.
