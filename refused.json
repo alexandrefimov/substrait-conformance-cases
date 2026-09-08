@@ -23,7 +23,7 @@
   },
   "acero-dies-on-an-aggregate-emit": {
    "kind": "crash",
-   "what": "An emit mapping over an aggregate. Acero handles the mapping elsewhere - it answers five of the seven emit cases and refuses the sixth, the join, with a message naming what it wanted - and on this one the process dies on SIGSEGV instead.",
+   "what": "An emit mapping over an aggregate whose grouping keys the consumer never read. Acero applies emit elsewhere - it answers five of the seven emit cases and refuses the sixth, the join, with a message naming what it wanted - and here two defects meet: the grouping references are dropped, so the aggregate's output schema has no fields, and the emit index is not range-checked before it indexes that schema, so the process dies on SIGSEGV instead of refusing.",
    "check": {
     "got_matches": {
      "ACERO": "^ERROR: signal/exit 139$"
@@ -34,9 +34,10 @@
      "outcome": "reported",
      "at": [
       "https://github.com/apache/arrow/issues/50634",
-      "https://github.com/apache/arrow/pull/50635"
+      "https://github.com/apache/arrow/pull/50635",
+      "https://github.com/apache/arrow/issues/51243"
      ],
-     "note": "Arrow #50634 reports that the consumer drops AggregateRel-level grouping expressions referenced by expression_references, and PR #50635 reads them. The exact corpus case passed at PR head 3d2b564f9722a55fe0b74743ffded9378b7a802a with emit [2,0], the expected required bool/int64 schema and all three groups; that change is not merged or present in the pinned PyArrow 25.0.1 measurement"
+     "note": "Arrow #50634 reports that the consumer drops AggregateRel-level grouping expressions referenced by expression_references, and PR #50635 reads them. The exact corpus case passed at PR head 3d2b564f9722a55fe0b74743ffded9378b7a802a with emit [2,0], the expected required bool/int64 schema and all three groups; that change is not merged or present in the pinned PyArrow 25.0.1 measurement. Arrow #51243 is the other half: GetEmitInfo indexes input_schema->field(map_id) with no range check, and ProcessEmitProject does the same on the project path, where ProcessExtensionEmit in the same file already returns Status::Invalid. A read with two fields and emit [5] or [-1] dies with no aggregate anywhere, so #50635 stops this case from crashing without making an out-of-range mapping safe"
     }
    }
   }
