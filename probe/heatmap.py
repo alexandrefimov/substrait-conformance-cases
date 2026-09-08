@@ -381,7 +381,7 @@ button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .hint { font-size: 12.5px; color: var(--ink-3); }
 .explorer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
 .matrix-pane { min-width: 0; }
-.scroll { overflow: auto; max-height: 72vh; background: var(--surface);
+.scroll { overflow: auto; max-height: 72vh; padding-right: 12px; background: var(--surface);
           border: 1px solid var(--rule); border-radius: 3px; }
 table { border-collapse: separate; border-spacing: 0; font-size: 12px;
         table-layout: fixed; width: 100%%; min-width: 658px; }
@@ -501,6 +501,9 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     <p>What each column was taken against:</p>
     <dl>%(versions)s</dl>
     <p>%(boundaries)s</p>
+    <p>A separate <a href="%(repo)s/blob/main/results/impala-types/README.md">Isthmus comparison using
+      Impala's type factory</a> measures schema conversion through Isthmus. It does not run Impala's
+      optimizer or executor.</p>
     <p>Gluten/Velox is a tenth column in the corpus and is not scored here: it runs in a cluster and
       four cases are not expressible in its proto. %(nospec)d cases carry no expectation &mdash; the
       spec does not say whether a virtual table's rows or its declared schema wins, and one case is
@@ -553,7 +556,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     for (var k = 0; k < g.n; k++, at++) {
       var tr = document.createElement("tr");
       tr.dataset.r = at;
-      var cells = '<th class="case">' + D.cases[at] + '</th>';
+      var cells = '<th class="case">' + esc(D.cases[at]).replace(/_/g, "_<wbr>") + '</th>';
       for (var c = 0; c < D.participants.length; c++) {
         var st = D.cells[at][c];
         cells += '<td class="cell st' + st + '" data-r="' + at + '" data-c="' + c + '" title="' +
