@@ -121,7 +121,7 @@
    "triage": {
     "SPARK": {
      "outcome": "open",
-     "note": "the four add/multiply cases match precision and scale; they return nullable with ANSI disabled and required with ANSI enabled. probe/spark_function_options.py separately evaluates safe and overflowing expressions: explicit overflow=ERROR still returns null with ANSI disabled. The explicit-option behavior is distinct from the saved plans, which omit the option, and from the divide precision report. The original nullability interpretation remains open because omitted options allow consumer choice"
+     "note": "the four add/multiply cases match precision and scale; they return nullable with ANSI disabled and required with ANSI enabled. probe/spark_function_options.py separately evaluates explicit overflow=ERROR, which still returns null with ANSI disabled and is reported in substrait-java #1293. The saved plans omit that option. Their nullability interpretation remains open because omitted options allow consumer choice, whose interaction with the function nullability rule is not settled here"
     }
    }
   },
@@ -350,7 +350,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: both Substrait and native Acero field-reference projects make the required field nullable, while Table.select preserves it and all rows agree. ProjectNode creates new fields without carrying input nullability. Arrow #51231 requests preservation for direct field references only. This broader entry remains open because the join and function-result cells still need separate investigation before assigning them the same cause"
+     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: native and Substrait field-reference projects make the required field nullable while preserving rows. Arrow #51231 covers direct field references. Native inner, left and right joins also widen output fields; HashJoinSchema creates nullable fields, and the existing inner-join report Arrow #45557 was closed after a stale notice. Native is_null/is_valid projections and count also return nullable fields while preserving the tested values. General function and aggregate output inference remains outside those reports, so this broader entry stays open"
     }
    }
   },

@@ -1,0 +1,37 @@
+// Compile the selected consumer against an explicit runtime without editing its checkout.
+// Every invocation has a fresh output directory, including the Scala incremental compiler cache.
+gradle.beforeProject { pr ->
+  if (pr.path == ':spark:' + pr.findProperty('corpusSparkModule')) {
+    pr.layout.buildDirectory.set(new File(pr.findProperty('corpusSparkOutput'), 'consumer-build'))
+  }
+}
+gradle.afterProject { pr ->
+  if (pr.path == ':spark:' + pr.findProperty('corpusSparkModule')) {
+    def version = pr.findProperty('corpusSparkVersion')
+    pr.configurations.configureEach {
+      resolutionStrategy.eachDependency { dep ->
+        if (dep.requested.group == 'org.apache.spark') {
+          dep.useVersion(version)
+          dep.because('Explicit Spark runtime profile for the conformance corpus')
+        }
+      }
+    }
+    pr.tasks.register('writeCorpusSparkClasspath') {
+      dependsOn(pr.sourceSets.main.runtimeClasspath)
+      doLast {
+        def output = new File(pr.findProperty('corpusSparkOutput'))
+        output.mkdirs()
+        // Scala-only modules have no Java output directory. Drop absent output directories;
+        // dependency resolution and the runtime identity probe still require the jars and classes.
+        def cp = pr.sourceSets.main.runtimeClasspath.files.findAll { it.exists() }
+        new File(output, 'spark_cp.txt').text = cp.join(File.pathSeparator) + '\n'
+        def artifacts = pr.configurations.getByName('runtimeClasspath').resolvedConfiguration
+          .resolvedArtifacts.collect { a ->
+            [group: a.moduleVersion.id.group, name: a.name, version: a.moduleVersion.id.version]
+          }.sort { a, b -> (a.group + ':' + a.name) <=> (b.group + ':' + b.name) }
+        new File(output, 'dependencies.json').text =
+          groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(artifacts)) + '\n'
+      }
+    }
+  }
+}
