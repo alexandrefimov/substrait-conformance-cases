@@ -159,8 +159,8 @@ encoded rule matches the spec or that every interpretation of a result is correc
 [METHOD.md](METHOD.md) records what has already been corrected here; these are open:
 
 - The rules encoded in `probe/expected.py` need independent review against the spec.
-- Three of the twenty-four divergence-and-participant pairs in `differed.json` still need
-  investigation: Acero decimal division, Acero output nullability and Spark decimal nullability.
+- Two of the twenty-four divergence-and-participant pairs in `differed.json` still need
+  investigation: Acero output nullability beyond direct field projections and Spark decimal nullability.
   Each says what is missing. Existing reports can cover only part of a linked observation, so
   their notes also matter. `open` is an allowed answer; a link does not prove a fix. The count is
   written down and `probe/check_differed.py` compares it.

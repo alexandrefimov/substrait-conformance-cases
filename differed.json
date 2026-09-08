@@ -85,8 +85,11 @@
    },
    "triage": {
     "ACERO": {
-     "outcome": "open",
-     "note": "probe/structural_cases.py acero-functions isolates modern extension URNs reaching the legacy name-only fallback. The decimal URI is rejected, but the decimal URN executes native divide as decimal(16,7), losing the final digit of the exactly representable 1.00 / 256.0 result. An unregistered add URN is also accepted while its legacy URI is rejected. The report candidate concerns extension resolution; nullability remains separate"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/arrow/issues/51234"
+     ],
+     "note": "probe/structural_cases.py acero-functions isolates modern extension URNs reaching the legacy name-only fallback. The decimal URI is rejected, but the decimal URN executes native divide as decimal(16,7), losing the final digit of the exactly representable 1.00 / 256.0 result. An unregistered add URN is also accepted while its legacy URI is rejected. The report concerns extension resolution; nullability remains separate"
     },
     "DATAFUSION": {
      "outcome": "reported",
@@ -347,7 +350,7 @@
    "triage": {
     "ACERO": {
      "outcome": "open",
-     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: both Substrait and native Acero field-reference projects make the required field nullable, while Table.select preserves it and all rows agree. ProjectNode creates new fields without carrying input nullability. The join and function-result cells still need separate investigation before assigning them the same cause"
+     "note": "probe/structural_cases.py acero isolates identity and reordered emit over a required/nullable input: both Substrait and native Acero field-reference projects make the required field nullable, while Table.select preserves it and all rows agree. ProjectNode creates new fields without carrying input nullability. Arrow #51231 requests preservation for direct field references only. This broader entry remains open because the join and function-result cells still need separate investigation before assigning them the same cause"
     }
    }
   }

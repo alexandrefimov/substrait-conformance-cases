@@ -370,7 +370,7 @@ d['rules']['no-string-with-length']['triage'] = {'DUCKDB': {'outcome': 'open', '
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "the count of entries still needing investigation" "still need investigation" \
-  replace METHOD.md "three of those twenty-four still need" "four of those twenty-four still need"
+  replace METHOD.md "two of those twenty-four still need" "four of those twenty-four still need"
 
 mutate "a count the README states about the reasons" "the README does not say" \
   python3 -c "

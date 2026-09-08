@@ -387,7 +387,7 @@ for cs in doc["cells"].values():
 filed = rules_with_a_report
 
 # The README puts these counts in prose, where nothing would notice them going stale.
-WORD = {3: "three", 6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
+WORD = {2: "two", 3: "three", 6: "six", 8: "eight", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen",
         14: "fourteen", 15: "fifteen", 17: "seventeen", 18: "eighteen", 21: "twenty-one", 22: "twenty-two",
         19: "nineteen", 20: "twenty", 23: "twenty-three", 24: "twenty-four", 25: "twenty-five"}
 # README.md and METHOD.md are one page split by audience, and a sentence can move between them; the
