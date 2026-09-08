@@ -21,17 +21,17 @@ jobs:
       # fire; two of them lived in checks.
       - run: bash probe/selfcheck-negative.sh
 
-  # Columns reproduced rather than read. These four participants are the ones whose entire
-  # environment is a pip install or a go get, so a machine that is not the author's can build them
-  # from the pinned versions, retake the column and require it to be identical. That is four of the
-  # nine: the other five want a substrait-java or a DataFusion checkout, a JDK 17, or a cluster, and
-  # remain saved measurements until someone automates those too.
+  # Columns reproduced rather than read. These five participants are the ones a machine that is not
+  # the author's can build from the pinned versions, retake and require to be identical: four are a
+  # pip install or a go get, and the validator is a clone and a cargo build. That is five of the
+  # nine; the other four want a substrait-java or a DataFusion checkout or a JDK 17, and remain
+  # saved measurements until someone automates those too.
   column:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,6 +46,12 @@ jobs:
         if: matrix.column == 'GO'
         with:
           go-version: ${{ steps.go.outputs.version }}
+      # The validator is built from source. protoc is not on the runner, and its build compiles
+      # .proto files that import google/protobuf/any.proto - which Debian and Ubuntu ship apart from
+      # the compiler, in libprotobuf-dev. Without that second package the build dies deep inside
+      # maturin with "File not found", naming neither package.
+      - if: matrix.column == 'VALIDATOR'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
       - run: OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # Kept whether the comparison passed or failed: a column that differs is the run worth having.
       - uses: actions/upload-artifact@v4

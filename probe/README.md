@@ -13,11 +13,13 @@ and could never fire.
 through `setup.sh` (`SETUP_ONLY=<key>`, which builds one piece instead of all of them), puts the
 corpus through it and requires the answers to be identical to the saved column:
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR
 
-Four of the nine columns, retaken on a machine that is not the author's. These four are the
-participants whose entire environment is a pip install or a go get; the other five want a
-substrait-java or a DataFusion checkout, a JDK 17, or a cluster, and remain saved measurements.
+Five of the nine columns, retaken on a machine that is not the author's. Four of them are a pip
+install or a go get; the validator is a clone and a cargo build, which is slow but wants nothing
+a runner does not have — protoc and its well-known types come from `protobuf-compiler` and
+`libprotobuf-dev`, which the workflow installs. The other four want a substrait-java or a
+DataFusion checkout or a JDK 17, and remain saved measurements.
 
 `LATEST=1` is the same run against today's release rather than the pinned one, through
 `versions-latest.env`. There a difference is the finding rather than the failure — the participant

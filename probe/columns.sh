@@ -22,7 +22,12 @@ rev_of() { # <COLUMN NAME>
     ACERO)         v="pyarrow $("$SP/venv/bin/python" -c 'import pyarrow;print(pyarrow.__version__)' 2>/dev/null)" ;;
     # substrait-python and substrait-validator carry no __version__; the distribution metadata does.
     PYTHON)        v="substrait $("${SUBSTRAIT_PYTHON_ENV:-$SP/pysub}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait"))' 2>/dev/null)" ;;
-    VALIDATOR)     v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at ${SUBSTRAIT_VALIDATOR_COMMIT:-}" ;;
+    # The commit that was built, read out of the checkout, rather than the ref that was asked for:
+    # the drift run asks for origin/main, and "at origin/main" is not a revision anyone can return
+    # to. --short=7 rather than --short, so the length is the file's and not the repository's.
+    VALIDATOR)     local at
+                   at="$(git -C "$SP/substrait-validator" rev-parse --short=7 HEAD 2>/dev/null)"
+                   v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at ${at:-${SUBSTRAIT_VALIDATOR_COMMIT:-}}" ;;
     GO)            v="$(grep -m1 -o 'substrait-go/v[0-9]* v[0-9a-z.+-]*' "$SP/gosub9/go.mod" 2>/dev/null)" ;;
     # Spark's classpath is resolved when its probe runs, so before that there is nothing to read it
     # from and the pinned value is reported instead, said to be pinned. Reading the jar unconditionally
@@ -39,10 +44,20 @@ rev_of() { # <COLUMN NAME>
 
 # Every ##### block must carry a verdict. Counting blocks is not enough: a block without a
 # verdict is a case silently lost.
-check_blocks() { # <file> <expected> <name> <verdict-regexp>
+check_blocks() { # <file> <expected> <name> <verdict-regexp, empty for a participant that prints more than one>
   local got crashes bad
   got=$(grep -c '^#####' "$1")
   [ "$got" -eq "$2" ] || fail "$3: $got blocks instead of $2 - the run is incomplete"
+
+  # The validator prints a schema AND diagnostics for one case, so "exactly one verdict" is
+  # unreachable for it by design. Resolving those is normalize.py's job - it fails a column whose
+  # case has no verdict or contradictory ones - and an empty regexp here says so out loud rather
+  # than leaving the caller to skip this function and lose the two checks around it.
+  if [ -z "$4" ]; then
+    crashes=$(grep -cE "CRASH" "$1")
+    [ "$crashes" -lt "$2" ] || fail "$3: failed on all $2 cases - that looks like a broken probe, not an engine"
+    return 0
+  fi
 
   # Per block, not in total. Two independent counters used to be compared here, so a case with two
   # verdicts covered for a case with none, and a run with a hole passed as complete.

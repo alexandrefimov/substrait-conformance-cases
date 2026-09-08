@@ -2,14 +2,14 @@
 # Retakes one participant's column in an environment built from nothing, and compares it with the
 # saved one.
 #
-#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO
+#   bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR
 #   LATEST=1 bash probe/replay_column.sh <NAME>
 #
 # Everything in results/ is measured on one workstation and saved, and selfcheck.sh only reads those
-# files against each other. These four are the participants whose entire environment is a pip
-# install or a go get, so they are the columns a machine that is not the author's can build from
-# nothing and check. The other five want a substrait-java or a DataFusion checkout, a JDK 17, or a
-# cluster, and stay saved measurements until someone automates those too.
+# files against each other. These five are the participants a machine can build from nothing: four
+# of them are a pip install or a go get, and the validator is a clone and a cargo build, slow but
+# wanting nothing a runner does not have. The other four need a substrait-java or a DataFusion
+# checkout or a JDK 17, and stay saved measurements until someone automates those too.
 #
 # The two modes differ in what a difference means.
 #
@@ -65,7 +65,12 @@ case "$NAME" in
   ACERO)  SETUP_KEY=Acero;            RUNNER=acero_all.sh;  CORPUS=derived-schema
           EXT=bin;  FMT=block; VERDICT="^ACERO (ACCEPTED|REJECTED|CRASH)"; GUARD=venv/bin/python
           WANT="pyarrow $PYARROW_VERSION" ;;
-  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO" >&2; exit 2 ;;
+  # An empty VERDICT: the validator answers one case with a schema and a diagnostic at once, so
+  # "exactly one verdict per block" cannot hold for it, and normalize.py is what resolves those.
+  VALIDATOR) SETUP_KEY=substrait-validator; RUNNER=validator_all.sh; CORPUS=derived-schema
+          EXT=json; FMT=block; VERDICT=""; GUARD=val/bin/python
+          WANT="substrait-validator $SUBSTRAIT_VALIDATOR_VERSION at $SUBSTRAIT_VALIDATOR_COMMIT" ;;
+  *) echo "usage: [LATEST=1] bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR" >&2; exit 2 ;;
 esac
 
 SAVED="results/$NAME.txt"

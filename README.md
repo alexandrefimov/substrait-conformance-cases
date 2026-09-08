@@ -48,8 +48,8 @@ Three things, in the order they are worth someone's time:
 
 Whether cases like these belong in the spec repository is the question under discussion in
 [substrait#1164](https://github.com/substrait-io/substrait/issues/1164). This repository is where
-they live meanwhile, kept reproducible: a case is added by adding a generator to `gen/`, four of the
-nine columns are retaken by `probe/replay_column.sh` on any machine and the rest by
+they live meanwhile, kept reproducible: a case is added by adding a generator to `gen/`, five of
+the nine columns are retaken by `probe/replay_column.sh` on any machine and the rest by
 `probe/reverify.sh`, and if a number on this page is wrong, that is a bug here and worth an issue.
 
 ## What the corpus says
@@ -144,7 +144,7 @@ Retaking one column needs nothing but the toolchain that participant installs wi
 environment from the pinned version, puts the corpus through it and requires the answers to be
 identical to the saved column:
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO
+    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR
 
 `LATEST=1` in front of that runs it against today's release instead, and reports what moved rather
 than failing on it; that is the weekly `drift` workflow. Repeating all nine columns is
@@ -169,10 +169,10 @@ encoded rule matches the spec or that every interpretation of a result is correc
   and the rule expected of them.
 - The full sweep has run on this machine and in a container on clean Ubuntu 24.04, cloning this
   repository anonymously: nine columns, every tally matching the ones above. Nobody outside this
-  project has run it. CI retakes four of the nine — substrait-python, substrait-go, DuckDB and
-  Acero, the participants whose whole environment is a pip install or a go get — on a machine that
-  is not this one, and otherwise only reads the repository against itself. The other five need a
-  checkout, a JDK 17 or a cluster and are saved measurements, not reproduced ones.
+  project has run it. CI retakes five of the nine — substrait-python, substrait-go, DuckDB, Acero
+  and the validator — on a machine that is not this one, and otherwise only reads the repository
+  against itself. The other four need a substrait-java or a DataFusion checkout or a JDK 17 and
+  are saved measurements, not reproduced ones.
 - What the columns say is dated. Each is a measurement against one version, and nothing here yet
   keeps a history of when an answer changed: the weekly `drift` run reports a move against the saved
   column and uploads the run, but the moves are not accumulated anywhere.

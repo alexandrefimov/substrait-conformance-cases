@@ -438,6 +438,47 @@ raise SystemExit(bad)
 LINKPY
 
 echo
+echo "### the participants CI retakes are the ones the script accepts"
+# Five places name that list: the case labels in replay_column.sh, the two usage lines beside them,
+# and the matrix of each workflow. Adding a participant to the script and not to a workflow leaves a
+# column nobody retakes while the pages say otherwise, and adding it to one workflow and not the
+# other leaves it checked against the pin but never against a release. Neither is visible in a diff.
+python3 - <<'MATRIXPY' || FAILED=1
+import io, re, sys
+
+script = io.open("probe/replay_column.sh", encoding="utf-8").read()
+# Anchored on SETUP_KEY, so the usage line and the catch-all arm cannot be mistaken for a case.
+cases = set(re.findall(r"^\s*([A-Z]+)\)\s+SETUP_KEY=", script, re.M))
+if not cases:
+    print("FAILED: no participants found in probe/replay_column.sh")
+    raise SystemExit(1)
+
+sources = {"probe/replay_column.sh case labels": cases}
+for m in re.finditer(r"replay_column\.sh ([A-Z|]+)", script):
+    line = script[:m.start()].count("\n") + 1
+    sources["probe/replay_column.sh:%d" % line] = set(m.group(1).split("|"))
+for wf in ("selfcheck", "drift"):
+    path = ".github/workflows/%s.yml" % wf
+    text = io.open(path, encoding="utf-8").read()
+    m = re.search(r"^\s*column:\s*\[([^\]]*)\]", text, re.M)
+    if not m:
+        print("FAILED: %s has no column matrix" % path)
+        raise SystemExit(1)
+    sources[path] = {n.strip() for n in m.group(1).split(",") if n.strip()}
+
+bad = 0
+for name, got in sorted(sources.items()):
+    if got != cases:
+        print("FAILED: %s names %s; the script accepts %s"
+              % (name, ", ".join(sorted(got)) or "nobody", ", ".join(sorted(cases))))
+        bad = 1
+if not bad:
+    print("ok      %d participants, the same in the script, its usage and both workflows: %s"
+          % (len(cases), ", ".join(sorted(cases))))
+raise SystemExit(bad)
+MATRIXPY
+
+echo
 echo "### the comparison a replayed column is judged by can tell a difference"
 # probe/replay_column.sh rebuilds a participant's environment and requires the answers to be
 # identical to the saved column. Everything about that run - the pinned version, the fresh venv, the

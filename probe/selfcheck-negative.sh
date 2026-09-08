@@ -292,6 +292,13 @@ io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii
 # The triage beside each divergence: what came of it, per participant. An entry may say 'open',
 # and that is allowed on purpose - so what is left to check is that the record
 # is complete, that it means one thing, and that its links go somewhere a reader is sent.
+# The list of participants CI retakes, which lives in five places and drifts silently.
+mutate "a participant the drift workflow does not retake" "the script accepts" \
+  replace .github/workflows/drift.yml "[PYTHON, GO, DUCKDB, ACERO, VALIDATOR]" "[PYTHON, GO, DUCKDB, ACERO]"
+
+mutate "a participant missing from the usage line" "the script accepts" \
+  replace probe/replay_column.sh "PYTHON|GO|DUCKDB|ACERO|VALIDATOR" "PYTHON|GO|DUCKDB|ACERO"
+
 mutate "a report named in a reason's prose instead of its record" "in its prose" \
   python3 -c "
 import io, json

@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        column: [PYTHON, GO, DUCKDB, ACERO]
+        column: [PYTHON, GO, DUCKDB, ACERO, VALIDATOR]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -29,6 +29,12 @@ jobs:
         if: matrix.column == 'GO'
         with:
           go-version: stable
+      # The validator is built from source. protoc is not on the runner, and its build compiles
+      # .proto files that import google/protobuf/any.proto - which Debian and Ubuntu ship apart from
+      # the compiler, in libprotobuf-dev. Without that second package the build dies deep inside
+      # maturin with "File not found", naming neither package.
+      - if: matrix.column == 'VALIDATOR'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
       - run: LATEST=1 OUT=run bash probe/replay_column.sh ${{ matrix.column }}
       # The run, not just the verdict: the record names the versions that were actually installed,
       # the revision this repository was at and a fingerprint of the corpus, the expectations and
