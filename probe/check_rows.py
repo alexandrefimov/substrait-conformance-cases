@@ -16,6 +16,17 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 ROWS = json.load(open(os.path.join(ROOT, "expected.json"), encoding="utf-8"))["rows"]
 
 raw, tag = open(sys.argv[1], encoding="utf-8").read(), sys.argv[2]
+# What this file can compare is narrower than what a row expectation could say, and the gap is not
+# harmless. Every probe prints a ROWS line only for a single-column result, so an expectation of
+# another shape arrives here as no line at all - and the branch below reads "no line, plan accepted"
+# as the participant returning nothing, which is a divergence recorded against the participant for a
+# limit of this harness. Refuse instead. probe/selfcheck.sh asserts the same shape, so this is the
+# second line of defence rather than the first.
+for _case, _exp in sorted(ROWS.items()):
+    if not isinstance(_exp["rows"], list) or not all(isinstance(v, int) and not isinstance(v, bool)
+                                                     for v in _exp["rows"]):
+        sys.exit("FAILED: the row expectation for %s is not a multiset of integers; this check "
+                 "compares what the probes print, and they print one column of integers" % _case)
 # Empty input is a broken probe, not "the participant returned no rows": without this check an
 # absence of data gave 0/0/8 and exit 0, which looked like success.
 if not [l for l in raw.splitlines() if l.startswith("##### ")]:

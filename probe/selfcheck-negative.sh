@@ -16,8 +16,22 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
-cp -a "$ROOT/." "$WORK/"
-rm -rf "$WORK/.git"
+# The tracked repository is about 3 MB. The probe environment beside it is several gigabytes of
+# virtualenvs, engine checkouts and jars, and `cp -a` knows nothing about .gitignore, so copying
+# $ROOT wholesale carried all of it into every one of the seventy mutations - which is how a gate
+# AGENTS.md lists as fast came to take the better part of an hour on a working checkout. Nothing in
+# the copy ever reads it: .git is removed right after, so probe/selfcheck.sh takes its non-git
+# branch, whose file list excludes .probe-env in the first place.
+copy_repo() {  # <destination>
+  rm -rf "$1"; mkdir -p "$1"
+  for entry in "$ROOT"/* "$ROOT"/.[!.]*; do
+    [ -e "$entry" ] || continue
+    case "${entry##*/}" in .git|.probe-env) continue ;; esac
+    cp -a "$entry" "$1/"
+  done
+}
+
+copy_repo "$WORK"
 cd "$WORK"
 
 PASS=0 MISS=0
@@ -36,8 +50,8 @@ echo "ok      the copied tree passes before anything is broken"
 
 mutate() { # <name> <expected fragment of the failure> <command that breaks one invariant>
   local name="$1" want="$2"; shift 2
-  cp -a "$ROOT/." "$WORK.tmp" 2>/dev/null || { mkdir -p "$WORK.tmp"; cp -a "$ROOT/." "$WORK.tmp"; }
-  rm -rf "$WORK"; mv "$WORK.tmp" "$WORK"; rm -rf "$WORK/.git"; cd "$WORK"
+  copy_repo "$WORK.tmp"
+  rm -rf "$WORK"; mv "$WORK.tmp" "$WORK"; cd "$WORK"
   if ! "$@" >/dev/null 2>&1; then
     echo "MISSED  $name: the mutation itself did not apply"; MISS=$((MISS + 1)); return
   fi
@@ -509,6 +523,23 @@ import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
 d['rules']['no-string-with-length']['triage'] = {'DUCKDB': {'outcome': 'open', 'note': 'x'}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+# The row half of the corpus can only carry one column of integers, because that is all the three
+# executing probes print. A row expectation of another shape has no path through them, and the
+# failure it produces is a divergence recorded against a participant. So the shape is asserted, and
+# the assertion has to be able to fail.
+mutate "a row expectation the probes cannot produce" "not a list of integers" \
+  python3 -c "
+import io, json, subprocess, sys
+# Through expected.py and then regenerated, so that the mutation trips the shape assertion alone
+# rather than also the check that expected.json is what expected.py prints.
+p = 'probe/expected.py'
+s = io.open(p, encoding='utf-8').read()
+old = 'rows[case] = {\"rows\": sorted(out),'
+assert old in s, 'anchor moved'
+io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'rows[case] = {\"rows\": [chr(120)] + sorted(out),', 1))
+io.open('expected.json', 'w', encoding='utf-8').write(
+    subprocess.run([sys.executable, p], capture_output=True, text=True, check=True).stdout)"
 
 mutate "the count of entries still needing investigation" "still need investigation" \
   python3 -c "

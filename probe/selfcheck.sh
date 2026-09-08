@@ -27,6 +27,27 @@ python3 probe/matrix.py 2>/dev/null | diff -q - results/MATRIX.txt >/dev/null \
 python3 probe/diffs.py 2>/dev/null | diff -q - results/DIFFS.md >/dev/null \
   && ok "results/DIFFS.md is what probe/diffs.py joins out of differed.json and the columns" \
   || fail "results/DIFFS.md differs from probe/diffs.py output"
+# The row half of the corpus is narrower than the schema half, and the narrowness is load-bearing.
+# All three executing probes print a ROWS line only for a single-column result, and the DataFusion
+# one collects Int64 alone; probe/check_rows.py then compares what it reads as a multiset of
+# integers. A row expectation of any other shape has no path: the probes emit nothing, and
+# check_rows.py reports "plan accepted, no rows returned", which lands on the participant as a
+# divergence when the limit is this harness's. So the shape is asserted here, where a new expectation
+# is added, rather than discovered on a full sweep that needs every toolchain to run at all.
+python3 - <<'ROWSPY' || FAILED=1
+import io, json, sys
+rows = json.load(io.open("expected.json", encoding="utf-8"))["rows"]
+bad = [c for c, e in sorted(rows.items())
+       if not isinstance(e["rows"], list) or not all(isinstance(v, int) and not isinstance(v, bool)
+                                                     for v in e["rows"])]
+if bad:
+    print("FAILED: %s carr%s a row expectation that is not a list of integers, which no probe can "
+          "produce and probe/check_rows.py cannot compare" % (", ".join(bad), "ies" if len(bad) == 1 else "y"))
+    raise SystemExit(1)
+print("ok      %d row expectations, each a multiset of integers, which is what the probes emit"
+      % len(rows))
+ROWSPY
+
 # The picture in the README and the page on the site are generated from the same columns. A drawing
 # that has drifted from them is the failure this repository exists to catch, and it drifts silently:
 # nobody rereads an SVG.
