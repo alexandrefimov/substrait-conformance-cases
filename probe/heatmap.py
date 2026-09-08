@@ -77,10 +77,15 @@ def build():
     ns = check_expected()
     expected, disputed = ns["EXPECTED"], ns["DISPUTED"]
     differed = json.load(io.open(os.path.join(ROOT, "differed.json"), encoding="utf-8"))
+    refused = json.load(io.open(os.path.join(ROOT, "refused.json"), encoding="utf-8"))
+    overlap = set(differed["rules"]) & set(refused["rules"])
+    if overlap:
+        raise SystemExit("FAILED: differed.json and refused.json reuse rule ids: %s"
+                         % ", ".join(sorted(overlap)))
     # DuckDB is the one participant compared without nullability; check_expected.py says why.
     types_only = {"duckdb"}
 
-    taken, versions, boundaries, cells, answers = set(), {}, {}, {}, {}
+    taken, versions, boundaries, cells, answers, tracking = set(), {}, {}, {}, {}, {}
     for label, name, fmt in COLUMNS:
         path = os.path.join(ROOT, "results/%s.txt" % name)
         lines = io.open(path, encoding="utf-8").read().splitlines()
@@ -107,11 +112,17 @@ def build():
                 continue
             seen.add(case)
             cell = cells.setdefault(case, {})
+            tracked = tracking.setdefault(case, {})
+            tracked[label] = None
             answers.setdefault(case, {})[label] = [answer, ""]
             if case in disputed:
                 cell[label] = NOSPEC
             elif answer in ("", "—") or answer.startswith(("ERROR", "— ", "—\t")):
                 cell[label] = UNSUPPORTED
+                rule = refused["cells"].get(name, {}).get(case)
+                if rule:
+                    answers[case][label][1] = rule
+                    tracked[label] = refused["rules"].get(rule, {}).get("triage", {}).get(name)
             else:
                 got = parse(answer)
                 if got is None:
@@ -129,6 +140,7 @@ def build():
                     kind = differed["rules"].get(rule, {}).get("kind", "divergence")
                     cell[label] = KIND_STATE[kind] if rule else DIVERGENCE
                     answers[case][label][1] = rule or ""
+                    tracked[label] = differed["rules"].get(rule, {}).get("triage", {}).get(name)
         missing = (set(expected) | set(disputed)) - seen
         if missing:
             raise SystemExit("FAILED: %s.txt has no answer for %d cases: %s"
@@ -149,10 +161,14 @@ def build():
         "cases": [c for g in groups for c in g["cases"]],
         "cells": [[cells[c][p] for p in labels] for g in groups for c in g["cases"]],
         "answers": [[answers[c][p] for p in labels] for g in groups for c in g["cases"]],
+        # Triage is recorded once per reason and participant in differed.json or refused.json. The
+        # page gets a cell-shaped view so it cannot apply one participant's report to another.
+        "tracking": [[tracking[c][p] for p in labels] for g in groups for c in g["cases"]],
         "expected": {c: fmt_schema(expected[c]["schema"]) for c in expected},
         "why": {c: expected[c].get("source", "") for c in expected},
         "disputed": dict(disputed),
-        "rules": {k: {"kind": v["kind"], "what": v["what"]} for k, v in differed["rules"].items()},
+        "rules": {k: {"kind": v["kind"], "what": v["what"]}
+                  for doc in (differed, refused) for k, v in doc["rules"].items()},
     }
 
 
@@ -335,13 +351,15 @@ PAGE = """<!doctype html>
   --ground: #f4f4f1; --surface: #fdfdfc; --rule: #dcdcd6; --rule-strong: #c2c2ba;
   --ink: #14161a; --ink-2: #55575c; --ink-3: #8a8b88;
   --divergence: #d03b3b; --unresolved: #4a3aa7; --boundary: #8a8b88;
-  --match: #d6d6d1; --mono: %(mono)s; --sans: %(sans)s;
+  --match: #d6d6d1; --selected: #f5f5f1; --detail: #fafaf7;
+  --mono: %(mono)s; --sans: %(sans)s;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --ground: #101215; --surface: #171a1e; --rule: #2b2f35; --rule-strong: #3d434b;
     --ink: #eef0ee; --ink-2: #b3b6b3; --ink-3: #7e827f;
     --divergence: #e05a58; --unresolved: #9085e9; --boundary: #7e827f; --match: #363a40;
+    --selected: #20242a; --detail: #1c2025;
   }
 }
 * { box-sizing: border-box; }
@@ -373,33 +391,47 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .key { display: inline-flex; align-items: center; gap: 7px; }
 .sw { width: 15px; height: 15px; flex: none; }
 .sw i { display: block; height: 100%%; border-radius: 2px; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 16px 0 10px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 16px 0 8px; }
 button { font: 12.5px var(--sans); color: var(--ink-2); background: var(--surface);
          border: 1px solid var(--rule-strong); border-radius: 3px; padding: 5px 11px; cursor: pointer; }
 button[aria-pressed="true"] { color: var(--surface); background: var(--ink); border-color: var(--ink); }
-button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.track-filter { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+select { font: 12.5px var(--sans); color: var(--ink); background: var(--surface);
+         border: 1px solid var(--rule-strong); border-radius: 3px; padding: 5px 28px 5px 9px; }
+.matrix-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px;
+               margin: 0 0 10px; }
+.tracking-summary { font-size: 12.5px; color: var(--ink-2); }
+.tracking-summary::before { content: ""; display: inline-block; width: 5px; height: 5px;
+                            margin: 0 7px 1px 1px; background: var(--ink); }
 .hint { font-size: 12.5px; color: var(--ink-3); }
-.explorer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
 .matrix-pane { min-width: 0; }
-.scroll { overflow: auto; max-height: 144vh; padding-right: 12px; background: var(--surface);
+.scroll { overflow-x: auto; padding-right: 12px; background: var(--surface);
           border: 1px solid var(--rule); border-radius: 3px; }
 table { border-collapse: separate; border-spacing: 0; font-size: 12px;
-        table-layout: fixed; width: 100%%; min-width: 658px; }
+        table-layout: auto; width: 100%%; min-width: 658px; }
 thead th { position: sticky; top: 0; z-index: 2; background: var(--surface);
            border-bottom: 1px solid var(--rule-strong); font: 500 11px var(--mono);
-           color: var(--ink-2); padding: 10px 4px; text-align: center; width: 42px; height: 92px;
+           color: var(--ink-2); padding: 10px 4px; text-align: center; height: 92px;
            vertical-align: bottom; }
+thead th:not(.corner) { width: 42px; min-width: 42px; }
 thead th .column-name { display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); }
-thead th.corner { text-align: left; padding-left: 14px; width: 280px; left: 0; z-index: 3; }
+thead th.corner { text-align: left; padding-left: 14px; width: 1%%; white-space: nowrap;
+                  left: 0; z-index: 3; }
+thead th.selected-column { color: var(--ink); background: var(--selected);
+                           box-shadow: inset 0 -3px var(--ink); }
 tbody th.case { position: sticky; left: 0; z-index: 1; background: var(--surface);
                 font: 400 11px var(--mono); color: var(--ink-2); text-align: left;
-                padding: 3px 10px 3px 14px; line-height: 1.4; overflow-wrap: anywhere; }
+                width: 1%%; padding: 3px 30px 3px 14px; line-height: 1.4; white-space: nowrap; }
 tbody tr.group th { position: sticky; left: 0; background: var(--surface);
                     font: 600 11px var(--sans); letter-spacing: 0.05em; text-transform: uppercase;
                     color: var(--ink-3); padding: 16px 14px 5px; text-align: left; }
 tbody tr.group td { border-bottom: 1px solid var(--rule); }
-td.cell { padding: 0 1px; height: 19px; }
-td.cell i { display: block; height: 15px; border-radius: 2px; }
+td.cell { padding: 0 1px; height: 22px; cursor: pointer; }
+td.cell i { display: block; position: relative; height: 18px; border-radius: 2px; }
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+td.cell .github-mark { position: absolute; top: 1px; right: 3px; width: 16px; height: 16px;
+                       fill: var(--ink); }
 .st0 i { background: var(--match); }
 .st1 i { background: var(--divergence); }
 .st2 i { background: repeating-linear-gradient(135deg, var(--boundary) 0 2px, transparent 2px 5px);
@@ -408,24 +440,53 @@ td.cell i { display: block; height: 15px; border-radius: 2px; }
 .st4 i { box-shadow: inset 0 0 0 1px var(--rule); }
 .st5 i { background: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
 tbody tr:hover th.case { color: var(--ink); }
+tbody tr.selected-row th.case { color: var(--ink); font-weight: 600; background: var(--selected);
+                                box-shadow: inset 3px 0 var(--ink); }
+td.cell:focus-visible { outline: none; }
+td.cell:focus-visible i { outline: 2px solid var(--ink); outline-offset: 1px; }
+@media (hover: hover) {
+  td.cell:hover i { outline: 2px solid var(--ink); outline-offset: 1px; }
+}
+td.cell.on { position: relative; z-index: 2; }
 td.cell.on i { outline: 2px solid var(--ink); outline-offset: 1px; }
-.detail { position: sticky; top: 24px; min-width: 0; max-height: calc(100vh - 48px); overflow: auto;
-          background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 5px;
-          padding: 20px; box-shadow: 0 5px 18px #0000000a; }
+td.cell.on::after { content: ""; position: absolute; left: 50%%; bottom: -15px; width: 2px;
+                    height: 15px; background: var(--ink); transform: translateX(-1px); }
+.detail-row td { padding: 14px 10px 15px; background: var(--surface); }
+.detail { width: 82%%; min-width: 0; margin-inline: auto;
+          background: var(--detail); border: 1px solid var(--rule-strong);
+          border-top: 3px solid var(--ink); border-radius: 4px; padding: 18px 20px;
+          box-shadow: 0 5px 18px #0000000a; }
 .detail-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px;
                   border-bottom: 1px solid var(--rule); padding-bottom: 12px; margin-bottom: 14px; }
-.detail h3 { font: 600 17px/1.4 var(--sans); margin: 0; }
-.detail-help { font-size: 12.5px; color: var(--ink-3); margin: 0 0 16px; }
-.detail .head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; font: 13px var(--mono); }
-.detail .head .who { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
-.detail .head .state { font: 13px var(--sans); }
-.detail .status-note { font-size: 12.5px; color: var(--ink-3); margin: 8px 0 0; }
-.detail dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; margin: 20px 0 0;
+.detail h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 9px;
+             font: 600 17px/1.4 var(--sans); margin: 0; }
+.detail h3 .case-name { font-family: var(--mono); overflow-wrap: anywhere; }
+.detail h3 .pair-mark { color: var(--ink-3); font-weight: 400; }
+.detail h3 .state { border-left: 1px solid var(--rule-strong); padding-left: 10px;
+                    font: 500 13px var(--sans); }
+.detail-close { flex: none; }
+.detail-body { display: grid; grid-template-columns: minmax(250px, 0.9fr) minmax(320px, 1.1fr);
+               gap: 18px 28px; align-items: start; }
+.detail .status-note { font-size: 12.5px; color: var(--ink-3); margin: 0 0 14px; }
+.detail dl { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 7px 14px; margin: 0;
              font: 13px/1.5 var(--mono); }
 .detail dt { color: var(--ink-3); }
-.detail dd { margin: 0 0 12px; color: var(--ink); overflow-wrap: anywhere; }
-.detail .why { font: 14px/1.6 var(--sans); color: var(--ink-2); margin: 10px 0 0;
+.detail dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.detail .why { font: 14px/1.6 var(--sans); color: var(--ink-2); margin: 16px 0 0;
                border-top: 1px solid var(--rule); padding-top: 16px; overflow-wrap: anywhere; }
+.detail-explanation > :first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.tracking { border-top: 1px solid var(--rule); margin-top: 16px; padding-top: 14px; }
+.tracking h4 { font: 600 13px/1.4 var(--sans); margin: 0; }
+.tracking-links { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 7px 0 0; padding: 0;
+                  list-style: none; }
+.tracking-links a { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: baseline;
+                    font: 12px/1.5 var(--mono); overflow-wrap: anywhere; }
+.tracking-link-kind { color: var(--ink); font: 600 12px/1.5 var(--sans); }
+.tracking-link-out { text-decoration: none; }
+.tracking-state, .tracking-empty { font: 12px/1.5 var(--sans); color: var(--ink-3); margin: 8px 0 0; }
+.tracking-state span { color: var(--ink-2); font-weight: 600; }
+.tracking-note { font: 13px/1.55 var(--sans); color: var(--ink-2); margin: 9px 0 0;
+                 overflow-wrap: anywhere; }
 .c-div { color: var(--divergence); }
 .c-unr { color: var(--unresolved); }
 .c-bnd { color: var(--ink-3); }
@@ -434,20 +495,16 @@ footer { border-top: 1px solid var(--rule); margin-top: 26px; padding: 18px 0 40
 footer dl { display: grid; grid-template-columns: 150px 1fr; gap: 2px 14px; font: 11.5px var(--mono); margin: 10px 0 16px; }
 footer dt { color: var(--ink-3); }
 footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
-@media (max-width: 1199px) {
-  .explorer { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .detail { position: static; max-height: none; }
-  .detail dl { grid-template-columns: 100px minmax(0, 1fr); gap: 10px 16px; }
-  .detail dd { margin-bottom: 0; }
+@media (max-width: 840px) {
+  .detail-body { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 620px) {
   body { padding: 0 16px; }
   header { padding-top: 28px; }
   .rollup { grid-template-columns: 112px minmax(0, 1fr); }
   .row .num { grid-column: 1 / -1; text-align: left; white-space: normal; margin-bottom: 7px; }
-  .scroll { max-height: 110vh; }
   table { min-width: 558px; }
-  thead th.corner { width: 180px; }
+  .detail-row td { padding-right: 6px; padding-left: 6px; }
   .detail { padding: 16px; }
   .detail dl { grid-template-columns: minmax(0, 1fr); gap: 5px; }
   .detail dd { margin-bottom: 12px; }
@@ -456,6 +513,12 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
+<svg class="svg-defs" aria-hidden="true">
+  <!-- https://github.com/primer/octicons/blob/main/icons/mark-github-16.svg -->
+  <symbol id="github-mark" viewBox="0 0 16 16">
+    <path d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"/>
+  </symbol>
+</svg>
 <div class="page">
   <header>
     <h1>Declared against derived</h1>
@@ -478,23 +541,20 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   <div class="controls">
     <button id="f-all" aria-pressed="true">All %(cases)d cases</button>
     <button id="f-diff" aria-pressed="false">Only rows where someone differs</button>
-    <span class="hint">Hover to preview. Click or tap to pin a cell.</span>
+    <label class="track-filter" for="f-track">Tracking
+      <select id="f-track"><option value="">All statuses</option></select>
+    </label>
+  </div>
+  <div class="matrix-meta">
+    <span class="tracking-summary" id="tracking-summary"></span>
+    <span class="hint">Click or tap a cell to open details below its row. The outlined cell is the
+      source; a GitHub mark means an issue or PR is linked.</span>
   </div>
 
-  <div class="explorer">
-    <div class="matrix-pane">
-      <div class="scroll" tabindex="0" role="region" aria-label="Conformance matrix">
-        <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
-      </div>
+  <div class="matrix-pane">
+    <div class="scroll" tabindex="0" role="region" aria-label="Conformance matrix">
+      <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
     </div>
-    <aside class="detail" aria-labelledby="detail-title">
-      <div class="detail-toolbar">
-        <h3 id="detail-title">Cell details</h3>
-        <button id="unpin" hidden>Unpin</button>
-      </div>
-      <p class="detail-help" id="detail-help">Preview follows the pointer. Click a cell to keep it here.</p>
-      <div id="detail"></div>
-    </aside>
   </div>
 
   <footer>
@@ -512,6 +572,8 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
       <a href="%(repo)s/blob/main/METHOD.md">METHOD.md</a> says where an expectation comes from and
       what a matching answer proves; this page is built by <code>probe/heatmap.py</code> from the
       saved columns.</p>
+    <p>Tracking is the corpus's triage record, not a live GitHub status. Closing a linked issue does
+      not change a cell; only a new saved run that returns the expected answer does.</p>
   </footer>
 </div>
 
@@ -520,6 +582,12 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
 (function () {
   var D = JSON.parse(document.getElementById("data").textContent);
   var STATES = %(states)s;
+  var TRACKING = {
+    "reported": "Reported",
+    "open": "Investigation open",
+    "spec-question": "Spec question",
+    "ours": "Corpus correction"
+  };
 
   var rollup = document.getElementById("rollup");
   D.participants.forEach(function (p, c) {
@@ -556,65 +624,147 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     for (var k = 0; k < g.n; k++, at++) {
       var tr = document.createElement("tr");
       tr.dataset.r = at;
-      var cells = '<th class="case">' + esc(D.cases[at]).replace(/_/g, "_<wbr>") + '</th>';
+      var cells = '<th class="case">' + esc(D.cases[at]) + '</th>';
       for (var c = 0; c < D.participants.length; c++) {
-        var st = D.cells[at][c];
-        cells += '<td class="cell st' + st + '" data-r="' + at + '" data-c="' + c + '" title="' +
-                 D.short[D.participants[c]] + ' \\u00b7 ' + STATES[st].name + '"><i></i></td>';
+        var st = D.cells[at][c], tracked = D.tracking[at][c];
+        var ruleId = D.answers[at][c][1], reason = D.rules[ruleId];
+        var stateName = reason && reason.kind === "crash" ? "crash" : STATES[st].name;
+        var trackingMark = tracked && (tracked.at || []).length ?
+          '<svg class="github-mark" aria-hidden="true" focusable="false"><use href="#github-mark"></use></svg>' : '';
+        var trackingTitle = tracked ? ' \\u00b7 tracking: ' + TRACKING[tracked.outcome].toLowerCase() : '';
+        cells += '<td class="cell st' + st + (tracked ? ' tracked' : '') + '" data-r="' + at +
+                 '" data-c="' + c + '" tabindex="0" aria-controls="cell-detail" aria-expanded="false" title="' +
+                 D.short[D.participants[c]] + ' \\u00b7 ' +
+                 stateName + trackingTitle + '"><i>' + trackingMark + '</i></td>';
       }
       tr.innerHTML = cells;
       body.appendChild(tr);
     }
   });
 
-  var detail = document.getElementById("detail"), pinned = null, current = null;
+  var current = null, activeCell = null, activeHeader = null;
+  var detailRow = document.createElement("tr"), detailCell = document.createElement("td");
+  detailRow.className = "detail-row";
+  detailCell.colSpan = D.participants.length + 1;
+  detailRow.appendChild(detailCell);
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function escAttr(s) { return esc(s).replace(/"/g, "&quot;"); }
+  function githubRef(url) {
+    var m = String(url).match(/^https:\\/\\/github\\.com\\/([^/]+\\/[^/]+)\\/(issues|pull)\\/(\\d+)$/);
+    return m ? { label: m[1] + "#" + m[3], kind: m[2] === "pull" ? "GitHub PR" : "GitHub issue" } :
+      { label: url, kind: "GitHub" };
+  }
+  function trackingHtml(tracked) {
+    if (!tracked) { return ""; }
+    var links = (tracked.at || []).map(function (url) {
+      var ref = githubRef(url);
+      return '<li><a href="' + escAttr(url) + '" target="_blank" rel="noopener noreferrer">' +
+             '<span class="tracking-link-kind">' + ref.kind + '</span><span>' + esc(ref.label) +
+             '</span><span class="tracking-link-out" aria-hidden="true">\\u2197</span></a></li>';
+    }).join("");
+    return '<section class="tracking" aria-label="Issue tracking"><h4>Tracking</h4>' +
+      (links ? '<ul class="tracking-links">' + links + '</ul>' :
+        '<p class="tracking-empty">No GitHub issue or PR yet.</p>') +
+      '<p class="tracking-state"><span>Corpus status</span> \\u00b7 ' + esc(TRACKING[tracked.outcome]) + '</p>' +
+      (tracked.note ? '<p class="tracking-note">' + esc(tracked.note) + '</p>' : '') + '</section>';
+  }
+  function closeDetails(restoreFocus) {
+    if (!current) { return; }
+    if (activeCell) {
+      activeCell.classList.remove("on");
+      activeCell.setAttribute("aria-expanded", "false");
+      if (activeCell.parentElement) { activeCell.parentElement.classList.remove("selected-row"); }
+    }
+    if (activeHeader) { activeHeader.classList.remove("selected-column"); }
+    if (detailRow.parentNode) { detailRow.parentNode.removeChild(detailRow); }
+    var previous = activeCell;
+    current = null;
+    activeCell = null;
+    activeHeader = null;
+    if (restoreFocus && previous) { previous.focus(); }
+  }
   function show(r, c) {
-    if (current && current[0] === r && current[1] === c) { return; }
+    closeDetails(false);
     current = [r, c];
     var name = D.cases[r], p = D.participants[c], st = D.cells[r][c], S = STATES[st];
-    var answer = D.answers[r][c], got = answer[0], rule = answer[1];
+    var answer = D.answers[r][c], got = answer[0], rule = answer[1], tracked = D.tracking[r][c];
     var want = D.expected[name];
-    var why = rule && D.rules[rule] ? D.rules[rule].what : (D.disputed[name] || D.why[name] || "");
-    detail.innerHTML =
-      '<div class="head"><span class="who">' + p + '</span>' +
-      '<span class="state ' + S.tone + '">' + S.name + '</span></div>' +
-      '<p class="status-note">' + S.note + '</p>' +
-      '<dl><dt>Case</dt><dd>' + esc(name).replace(/_/g, "_<wbr>") + '</dd>' +
-      '<dt>Expected</dt><dd>' + (want ? esc(want) : "\\u2014 the spec does not settle this case") + '</dd>' +
-      '<dt>Returned</dt><dd>' + (got ? esc(got) : "\\u2014") + '</dd></dl>' +
-      (why ? '<p class="why">' + esc(why) + '</p>' : "");
-    var prev = document.querySelector("td.cell.on");
-    if (prev) { prev.classList.remove("on"); }
+    var reason = rule && D.rules[rule];
+    if (reason && reason.kind === "crash") {
+      S = { name: "crash", note: "the participant process died instead of returning an answer",
+            tone: "c-div" };
+    }
+    var why = reason ? reason.what : (D.disputed[name] || D.why[name] || "");
     var td = document.querySelector('td.cell[data-r="' + r + '"][data-c="' + c + '"]');
-    if (td) { td.classList.add("on"); }
+    if (!td) { current = null; return; }
+    activeCell = td;
+    activeHeader = document.querySelectorAll("#head th")[c + 1];
+    td.classList.add("on");
+    td.setAttribute("aria-expanded", "true");
+    td.parentElement.classList.add("selected-row");
+    if (activeHeader) { activeHeader.classList.add("selected-column"); }
+    detailCell.innerHTML = '<section class="detail" id="cell-detail" aria-labelledby="detail-title">' +
+      '<div class="detail-toolbar"><h3 id="detail-title"><span class="case-name">' +
+      esc(name).replace(/_/g, "_<wbr>") + '</span><span class="pair-mark">\\u00d7</span><span>' +
+      esc(p) + '</span><span class="state ' + S.tone + '">' + esc(S.name) + '</span></h3>' +
+      '<button class="detail-close" type="button" aria-label="Close cell details">Close</button></div>' +
+      '<div class="detail-body"><div class="detail-values"><p class="status-note">' + esc(S.note) + '</p>' +
+      '<dl><dt>Expected</dt><dd>' + (want ? esc(want) : "\\u2014 the spec does not settle this case") + '</dd>' +
+      '<dt>Returned</dt><dd>' + (got ? esc(got) : "\\u2014") + '</dd></dl></div>' +
+      '<div class="detail-explanation">' + trackingHtml(tracked) +
+      (why ? '<p class="why">' + esc(why) + '</p>' : "") + '</div></div></section>';
+    td.parentElement.insertAdjacentElement("afterend", detailRow);
+    window.requestAnimationFrame(function () { detailRow.scrollIntoView({ block: "nearest" }); });
   }
   var matrix = document.getElementById("matrix");
-  var unpin = document.getElementById("unpin"), help = document.getElementById("detail-help");
-  function pinState() {
-    unpin.hidden = !pinned;
-    help.textContent = pinned ? "Pinned. Select another cell or unpin to follow the pointer." :
-      "Preview follows the pointer. Click a cell to keep it here.";
+  function toggleDetails(td) {
+    var r = +td.dataset.r, c = +td.dataset.c;
+    if (current && current[0] === r && current[1] === c) { closeDetails(false); }
+    else { show(r, c); }
   }
-  unpin.addEventListener("click", function () { pinned = null; pinState(); });
-  matrix.addEventListener("mouseover", function (e) {
-    var td = e.target.closest && e.target.closest("td.cell");
-    if (td && !pinned) { show(+td.dataset.r, +td.dataset.c); }
-  });
   matrix.addEventListener("click", function (e) {
     var td = e.target.closest && e.target.closest("td.cell");
-    if (!td) { return; }
-    var same = pinned && pinned[0] === +td.dataset.r && pinned[1] === +td.dataset.c;
-    pinned = same ? null : [+td.dataset.r, +td.dataset.c];
-    if (pinned) { show(pinned[0], pinned[1]); }
-    pinState();
-    if (window.matchMedia("(max-width: 1199px)").matches) {
-      detail.parentElement.scrollIntoView({ block: "nearest" });
-    }
+    if (td) { toggleDetails(td); }
+  });
+  matrix.addEventListener("keydown", function (e) {
+    var td = e.target.closest && e.target.closest("td.cell");
+    if (!td || (e.key !== "Enter" && e.key !== " ")) { return; }
+    e.preventDefault();
+    toggleDetails(td);
+  });
+  detailRow.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest(".detail-close")) { closeDetails(true); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && current) { closeDetails(true); }
   });
 
   var all = document.getElementById("f-all"), diff = document.getElementById("f-diff");
-  function apply(onlyDiff) {
+  var trackFilter = document.getElementById("f-track"), onlyDiff = false;
+  var trackingCounts = {}, trackingKinds = {}, linked = {};
+  D.tracking.forEach(function (row, r) {
+    row.forEach(function (tracked, c) {
+      if (!tracked) { return; }
+      trackingCounts[tracked.outcome] = (trackingCounts[tracked.outcome] || 0) + 1;
+      var rule = D.answers[r][c][1], kind = D.rules[rule] ? D.rules[rule].kind : "divergence";
+      trackingKinds[kind] = (trackingKinds[kind] || 0) + 1;
+      (tracked.at || []).forEach(function (url) { linked[url] = true; });
+    });
+  });
+  ["reported", "open", "spec-question", "ours"].forEach(function (outcome) {
+    if (!trackingCounts[outcome]) { return; }
+    var option = document.createElement("option");
+    option.value = outcome;
+    option.textContent = TRACKING[outcome] + " (" + trackingCounts[outcome] + ")";
+    trackFilter.appendChild(option);
+  });
+  document.getElementById("tracking-summary").textContent = "Triaged: " +
+    (trackingKinds.divergence || 0) + " divergences and " + (trackingKinds.crash || 0) +
+    " crashes \\u00b7 " + Object.keys(linked).length +
+    " linked issues or PRs \\u00b7 " + (trackingCounts.open || 0) + " still under investigation";
+  function apply(diffOnly) {
+    closeDetails(false);
+    onlyDiff = Boolean(diffOnly);
     all.setAttribute("aria-pressed", String(!onlyDiff));
     diff.setAttribute("aria-pressed", String(onlyDiff));
     var group = null, shown = 0;
@@ -624,7 +774,11 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
         group = tr; shown = 0; tr.hidden = false;
         return;
       }
-      var keep = !onlyDiff || D.cells[+tr.dataset.r].some(function (s) { return s > 0 && s < 4; });
+      var r = +tr.dataset.r;
+      var keep = (!onlyDiff || D.cells[r].some(function (s) { return s > 0 && s < 4; })) &&
+        (!trackFilter.value || D.tracking[r].some(function (tracked) {
+          return tracked && tracked.outcome === trackFilter.value;
+        }));
       tr.hidden = !keep;
       if (keep) { shown++; }
     });
@@ -632,9 +786,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   }
   all.addEventListener("click", function () { apply(false); });
   diff.addEventListener("click", function () { apply(true); });
-
-  var start = D.cases.indexOf("decimal_divide");
-  show(start < 0 ? 0 : start, D.participants.indexOf("DuckDB"));
+  trackFilter.addEventListener("change", function () { apply(onlyDiff); });
 })();
 </script>
 </body>
@@ -666,6 +818,7 @@ def page(model):
         "groups": model["groups"],
         "cells": model["cells"],
         "answers": model["answers"],
+        "tracking": model["tracking"],
         "expected": model["expected"],
         "why": model["why"],
         "disputed": model["disputed"],
