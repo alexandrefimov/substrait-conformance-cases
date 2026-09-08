@@ -1,0 +1,57 @@
+{
+ "kinds": {
+  "crash": "the participant died instead of answering: what came back is a signal, not a message. The corpus counts it with the refusals, because no comparable schema was produced, and that is where it stops being the same thing - an engine that says it does not support a plan and an engine that dies on one are not in the same condition, and only the second is a defect whatever the support"
+ },
+ "rules": {
+  "duckdb-dies-while-refusing": {
+   "kind": "crash",
+   "what": "Two mark joins and eight set operations the extension does not implement. It does not refuse them: the process dies on SIGSEGV, and the corpus sees exit 139 rather than the NotImplementedException the same build raises for the neighbouring cases. Each case runs in a process of its own for exactly this reason, or one of them would take the run with it.",
+   "check": {
+    "got_matches": {
+     "DUCKDB": "^ERROR: signal/exit 139$"
+    }
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/277"
+     ],
+     "note": "that issue reports the crash as happening while the error is formatted, and names unsupported join and set operations, which is these ten cells"
+    }
+   }
+  },
+  "acero-dies-on-an-aggregate-emit": {
+   "kind": "crash",
+   "what": "An emit mapping over an aggregate. Acero handles the mapping elsewhere - it answers five of the seven emit cases and refuses the sixth, the join, with a message naming what it wanted - and on this one the process dies on SIGSEGV instead.",
+   "check": {
+    "got_matches": {
+     "ACERO": "^ERROR: signal/exit 139$"
+    }
+   },
+   "triage": {
+    "ACERO": {
+     "outcome": "open",
+     "note": "not filed. The two Arrow reports in FINDINGS.md are about projection nullability and extension identifiers, neither of them this; a reproducer smaller than the corpus case has not been cut yet"
+    }
+   }
+  }
+ },
+ "cells": {
+  "ACERO": {
+   "emit_aggregate": "acero-dies-on-an-aggregate-emit"
+  },
+  "DUCKDB": {
+   "join_right_mark": "duckdb-dies-while-refusing",
+   "joineq_right_mark": "duckdb-dies-while-refusing",
+   "setdata_intersection_multiset": "duckdb-dies-while-refusing",
+   "setdata_intersection_multiset_all": "duckdb-dies-while-refusing",
+   "setdata_minus_primary_all": "duckdb-dies-while-refusing",
+   "setdata_union_distinct": "duckdb-dies-while-refusing",
+   "setop_intersection_multiset": "duckdb-dies-while-refusing",
+   "setop_intersection_multiset_all": "duckdb-dies-while-refusing",
+   "setop_minus_primary_all": "duckdb-dies-while-refusing",
+   "setop_union_distinct": "duckdb-dies-while-refusing"
+  }
+ }
+}

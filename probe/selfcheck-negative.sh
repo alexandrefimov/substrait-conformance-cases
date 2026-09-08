@@ -362,6 +362,36 @@ names = m.group(1).split('|')
 io.open(p, 'w', encoding='utf-8').write(
     s[:m.start(1)] + '|'.join(names[:-1]) + s[m.end(1):])"
 
+# refused.json: the eleven cells where a participant died rather than refusing. The file and the
+# columns have to name the same cells in both directions, or a crash quietly becomes an absence.
+mutate "a crash the record does not mention" "refused.json does not say so" \
+  python3 -c "
+import io, json
+d = json.load(open('refused.json', encoding='utf-8'))
+del d['cells']['ACERO']['emit_aggregate']
+io.open('refused.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a crash recorded where the column has none" "the column says otherwise" \
+  python3 -c "
+import io, json
+d = json.load(open('refused.json', encoding='utf-8'))
+d['cells']['ACERO']['emit_read'] = 'acero-dies-on-an-aggregate-emit'
+io.open('refused.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a crash reason with nothing to test it" "carries no got_matches" \
+  python3 -c "
+import io, json
+d = json.load(open('refused.json', encoding='utf-8'))
+d['rules']['acero-dies-on-an-aggregate-emit']['check'] = {}
+io.open('refused.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
+mutate "a crash reason whose predicate does not hold" "does not match" \
+  python3 -c "
+import io, json
+d = json.load(open('refused.json', encoding='utf-8'))
+d['rules']['acero-dies-on-an-aggregate-emit']['check']['got_matches']['ACERO'] = '^ERROR: nothing$'
+io.open('refused.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
+
 mutate "a report named in a reason's prose instead of its record" "in its prose" \
   python3 -c "
 import io, json

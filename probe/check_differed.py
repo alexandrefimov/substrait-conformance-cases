@@ -375,6 +375,80 @@ for rid, rule in doc["rules"].items():
             elif url not in findings:
                 fail("%s/%s names %s, which FINDINGS.md does not" % (rid, col, url))
 
+# --- refused.json: the refusals that are defects rather than absences ------------------------------
+#
+# A participant that produced no comparable schema is counted as unsupported, and 201 of those cells
+# carry no reason at all. Most of them do not need one: "this engine does not implement that
+# relation" is what the answer already says, and restating it in a sentence would assert nothing.
+# Eleven are different. There the process died - the answer is a signal, not a message - and an
+# engine that says it cannot do something is not in the same condition as one that dies trying,
+# whatever its support. Those are recorded the way divergences are: a reason with a predicate the
+# answer has to satisfy, and a record of what came of it.
+#
+# Nothing else lives in refused.json yet. The general answer to the other 190 would be to compare a
+# refusal against what the engine declares it supports, and the spec ships no such declaration
+# today: at v0.102.0 dialects/ holds the schema and its fixtures and not one engine's file.
+CRASH = re.compile(r"^ERROR: signal/exit \d+$")
+refused = json.load(open(os.path.join(ROOT, "refused.json"), encoding="utf-8"))
+
+seen_crashes = {}
+for col, _fmt in COLS:
+    for case, answer in answers(col).items():
+        if CRASH.match(answer):
+            seen_crashes.setdefault(col, {})[case] = answer
+
+listed = {c: set(v) for c, v in refused["cells"].items()}
+found = {c: set(v) for c, v in seen_crashes.items()}
+if listed != found:
+    for col in sorted(set(listed) | set(found)):
+        extra, missing = listed.get(col, set()) - found.get(col, set()), found.get(col, set()) - listed.get(col, set())
+        if missing:
+            fail("%s died on %s, and refused.json does not say so" % (col, ", ".join(sorted(missing))))
+        if extra:
+            fail("refused.json says %s died on %s, and the column says otherwise"
+                 % (col, ", ".join(sorted(extra))))
+
+crash_pairs, crash_open = 0, 0
+for rid, rule in refused["rules"].items():
+    if rule["kind"] not in refused["kinds"]:
+        fail("%s is of kind %r, which refused.json does not define" % (rid, rule["kind"]))
+    stray = REFERENCE.findall(rule["what"])
+    if stray:
+        fail("%s names %s in its prose; a report goes in the triage" % (rid, ", ".join(stray)))
+    covers = {c for c, m in refused["cells"].items() if rid in m.values()}
+    triage = rule.get("triage") or {}
+    if set(triage) != covers:
+        fail("%s is triaged for %s and its cells belong to %s"
+             % (rid, ", ".join(sorted(triage)) or "nobody", ", ".join(sorted(covers))))
+    for col, entry in sorted(triage.items()):
+        crash_pairs += 1
+        outcome, at = entry.get("outcome"), entry.get("at", [])
+        if outcome not in OUTCOMES:
+            fail("%s/%s: %r is not one of %s" % (rid, col, outcome, ", ".join(sorted(OUTCOMES))))
+            continue
+        if outcome == "open":
+            crash_open += 1
+        if outcome in NEEDS_URL and not at:
+            fail("%s/%s says %s and names nothing to follow" % (rid, col, outcome))
+        if outcome not in NEEDS_URL and at:
+            fail("%s/%s says %s, which names no report, and carries %s" % (rid, col, outcome, at))
+        for url in at:
+            if not ISSUE_URL.match(url):
+                fail("%s/%s: %s is not an issue or pull request" % (rid, col, url))
+            elif url not in findings:
+                fail("%s/%s names %s, which FINDINGS.md does not" % (rid, col, url))
+    # The predicate, as for a divergence: a reason that cannot be tested against the answer is a
+    # sentence, and this file exists because a sentence was not enough for the differing cells.
+    want = (rule.get("check") or {}).get("got_matches")
+    if not isinstance(want, dict) or not want:
+        fail("%s carries no got_matches, so nothing tests it against the answers" % rid)
+        continue
+    for col, pattern in want.items():
+        for case in sorted(c for c, r in refused["cells"].get(col, {}).items() if r == rid):
+            got = seen_crashes.get(col, {}).get(case, "")
+            if not re.match(pattern, got):
+                fail("%s/%s/%s: %r does not match %r" % (rid, col, case, got, pattern))
+
 kinds, checked = {}, 0
 for cs in doc["cells"].values():
     for rid in cs.values():
@@ -399,6 +473,8 @@ for sentence in ("gives all %d of them a reason and marks %d as something other 
                  "%s are limits of a type system, %s a type the validator never resolved"
                  % (WORD.get(kinds.get("boundary")), WORD.get(kinds.get("unresolved"))),
                  "%s of its %s reasons link an issue or PR" % (WORD.get(filed), WORD.get(len(doc["rules"]))),
+                 "%s cells where a participant died rather than refused"
+                 % WORD.get(sum(len(v) for v in refused["cells"].values())),
                  "%s of those %s still need investigation"
                  % (WORD.get(triage_open), WORD.get(triage_pairs))):
     if sentence not in readme:
@@ -410,4 +486,6 @@ if not bad:
           % (total, len(doc["rules"]), filed,
              ", ".join("%s %d" % kv for kv in sorted(kinds.items())), checked,
              triage_pairs, triage_open))
+    print("ok      %d cells where a participant died rather than refused, %d reasons (%d open)"
+          % (sum(len(v) for v in refused["cells"].values()), len(refused["rules"]), crash_open))
 raise SystemExit(bad)
