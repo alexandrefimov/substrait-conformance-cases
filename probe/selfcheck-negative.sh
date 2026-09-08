@@ -104,11 +104,14 @@ mutate "the date on the results table" "dates the table" \
   python3 -c "
 import io, re
 s = io.open('README.md', encoding='utf-8').read()
-m = re.search(r'taken (\\d{4})-(\\d{2})-(\\d{2}) against', s)
+m = re.search(r'taken (\\d{4})-(\\d{2})-(\\d{2})', s)
 if not m: raise SystemExit(1)
 day = '01' if m.group(3) != '01' else '02'
 io.open('README.md', 'w', encoding='utf-8').write(
-    s[:m.start()] + 'taken %s-%s-%s against' % (m.group(1), m.group(2), day) + s[m.end():])"
+    s[:m.start()] + 'taken %s-%s-%s' % (m.group(1), m.group(2), day) + s[m.end():])"
+
+mutate "an Acero parameterized type normalized to a plain type" "Acero parameterized-type parser" \
+  replace probe/check_expected.py '{"varchar": "vchar", "fixed_char": "fchar"}' '{"varchar": "str", "fixed_char": "str"}'
 
 mutate "a number in the results table" "README says" \
   python3 -c "
@@ -170,7 +173,7 @@ mutate "a reason claiming only nullability is lost" "the types differ too" \
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['acero-drops-a-fixed-size-binary']['check'] = {'nullable_only': True}
+d['rules']['decimal-own-derivation']['check'] = {'nullable_only': True}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "a reason claiming the answer is one input" "which for these inputs means" \

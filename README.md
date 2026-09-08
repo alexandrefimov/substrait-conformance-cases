@@ -54,7 +54,7 @@ an issue.
 
 ## What the corpus says
 
-The columns saved here were taken 2026-09-07 against the versions in `probe/versions.env`, which
+The columns saved here were taken 2026-09-07, 2026-09-08 against the versions in `probe/versions.env`, which
 each column's own first line names again. They answer the 73 cases that carry an expectation:
 
 <picture>
@@ -80,7 +80,7 @@ expectation and the answer beside each cell.
 | DataFusion | 52 | 9 | 12 |
 | DuckDB | 33 | 18 | 22 |
 | Spark | 26 | 6 | 41 |
-| Acero | 2 | 16 | 55 |
+| Acero | 3 | 15 | 55 |
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
 and the same person wrote the generators, the expectations and part of substrait-java. Its 73
@@ -96,7 +96,7 @@ means the probe produced no comparable schema: rejections, errors and crashes. R
 against *matched + differed*; the unsupported count records the rest of the cases.
 
 *Differed* means the answer disagrees with this repository's reading of the spec, and not every such
-cell is a defect. `differed.json` gives all 101 of them a reason and marks 17 as something other than
+cell is a defect. `differed.json` gives all 100 of them a reason and marks 17 as something other than
 a divergence: six are limits of a type system, eleven a type the validator never resolved. Each
 reason carries a property that `probe/check_differed.py` tests against the saved column or the case
 inputs, so a reason cannot quietly describe a cell it does not fit; the cause it states still needs
@@ -126,6 +126,8 @@ for Gluten, which reads only `virtual_table` and `local_files` out of a `ReadRel
 reasons are `differed.json`; the drawings are `docs/matrix.svg`, `docs/matrix-dark.svg` and
 `docs/index.html`, written by `probe/heatmap.py`.
 
+Further reading: [FINDINGS.md](FINDINGS.md) maps reported findings to cases, probes, issues and implementation PRs.
+
 The other three pages: [METHOD.md](METHOD.md) — where an expectation comes from, what a match
 proves, what has been corrected here. [`probe/README.md`](probe/README.md) — the probes, the pinned
 versions, the environment, and what makes a run fail rather than report.
@@ -149,8 +151,6 @@ encoded rule matches the spec or that every interpretation of a result is correc
 [METHOD.md](METHOD.md) records what has already been corrected here; these are open:
 
 - The rules encoded in `probe/expected.py` need independent review against the spec.
-- `differed.json` says why each cell differs but not which divergences were reported upstream: six
-  of its twenty-one reasons name an issue and the rest name none.
 - Rows are compared for three participants and eight cases; schemas for nine participants and 73
   cases. Five of the 78 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.

@@ -79,8 +79,8 @@ only Java, Python, the validator and DuckDB were run through this script at all.
 
 ## What has already been corrected
 
-The claims on these pages have been corrected seven times since the repository was published, each
-correction a commit carrying the measurement that found it. The largest was reading a
+The claims on these pages have been corrected as the measurements were reviewed, with each
+correction recorded in a commit. The largest was reading a
 held answer in the swap table as one the consumer derived: the twelve that held are the `joineq_*`
 cases, where the swapped declaration is a join predicate whose type never reaches the output schema.
 
@@ -91,3 +91,15 @@ described the rest wrongly. That is why a reason there has to carry a test.
 The self-checks verify relationships between committed artifacts. They do not establish that every
 encoded rule matches the spec or that every interpretation of a result is correct. The open items —
 what has not been corrected, only listed — are in the README under *What is not settled*.
+
+## Acero input-schema correction
+
+The Acero table provider now materializes each known synthetic table with the schema requested by the Substrait reader. This is the decoded `ReadRel.base_schema`, as described by the [Arrow callback contract](https://arrow.apache.org/docs/python/generated/pyarrow.substrait.run_query.html); it supplies input types, not an expected output schema.
+
+The previous provider ignored that schema and registered `t_str` with plain string and binary fields. It therefore removed the lengths before Acero executed `stringlen_declared`. With the requested schema, Acero preserves `varchar(10)` and `fixed_char(5)` as Arrow extension types and `fixed_binary(4)` as fixed-size binary. The comparison normalizes those names while retaining widths and nullability.
+
+Retaking all 78 Acero cases with the same pinned PyArrow version changed only `stringlen_declared`; it now matches. The former `acero-drops-a-fixed-size-binary` explanation has been removed. A match on this bare read establishes preservation of the supplied input schema, not independent derivation of a function return type. Each column retains its own measurement date when only one participant is rerun.
+
+## Reports and generator sources
+
+[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: six of its twenty reasons name an issue directly. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.

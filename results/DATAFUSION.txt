@@ -1,5 +1,5 @@
 DATAFUSION: column from run 2026-09-07T12:20, datafusion cc29ea12a
-BOUNDARY: Arrow has no string type with a length, so varchar/fixedchar lose it.
+BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
 aggregate_grouping_sets_declared_order         [c:Utf8?, a:Int64?]

@@ -48,6 +48,10 @@ def provider(names, schema=None):
     s = SCHEMAS.get(key)
     if s is None:
         raise KeyError("no such table %r" % (names,))
+    # The callback schema is the decoded ReadRel.base_schema. Preserve its types
+    # when materializing the synthetic input, including Arrow extension types.
+    if schema is not None:
+        s = schema
     import decimal as _d
     _big = _d.Decimal("9999999999999999999999999999.9999999999")
     rows = {"t_mix": {"c0": [10], "c1": ["x"], "c2": [True]},

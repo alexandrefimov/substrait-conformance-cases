@@ -303,3 +303,7 @@ protobuf-JSON is only built with the tests - then put `SubstraitCorpusProbeTest.
 the virtual-table variant of the corpus (`derived-schema-virtual-tables`, built by `to_virtual_tables.py`).
 Gluten reads only `virtual_table` and `local_files` out of a `ReadRel`, so the canonical corpus
 with its named tables will not do.
+
+## Finding index
+
+[FINDINGS.md](../FINDINGS.md) links each reported contract to the relevant matrix cases or focused probe, with controls and related implementation PRs. It keeps producer checks separate from static consumer plans.

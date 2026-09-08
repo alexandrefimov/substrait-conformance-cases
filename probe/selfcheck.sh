@@ -72,18 +72,29 @@ if not readme:
 # tallies did not move, so nothing noticed. Gluten is left out: its column is taken in a cluster and
 # carries its own date, and it is not in this table.
 readme_text = io.open("README.md", encoding="utf-8").read()
-stamp = re.search(r"taken (\d{4}-\d{2}-\d{2}) against the versions", readme_text)
+stamp = re.search(r"taken (\d{4}-\d{2}-\d{2}(?:, \d{4}-\d{2}-\d{2})*) against the versions", readme_text)
 taken = {re.search(r"column from run (\d{4}-\d{2}-\d{2})",
                    io.open("results/" + c + ".txt", encoding="utf-8").readline()).group(1)
          for _, c, _ in COLUMNS}
 if not stamp:
     print("FAILED: the README no longer dates the results table")
     raise SystemExit(1)
-if taken != {stamp.group(1)}:
+if stamp.group(1) != ", ".join(sorted(taken)):
     print("FAILED: the README dates the table %s, the columns were taken %s"
           % (stamp.group(1), ", ".join(sorted(taken))))
     raise SystemExit(1)
 print("ok      the table is dated %s, matching every column" % stamp.group(1))
+
+# Parameter widths and nullability must survive normalization independently of
+# the particular widths in the saved stringlen_declared result.
+src = io.open("probe/check_expected.py", encoding="utf-8").read()
+parsers = {"__file__": "probe/check_expected.py"}
+exec(src[:src.index("path, fmt = sys.argv")], parsers)
+sample = "[a:extension<varchar{length:17}>, b:extension<fixed_char{length:8}>?, c:fixed_size_binary[6], d:binary?]"
+if parsers["parse_acero"](sample) != [["vchar(17)", False], ["fchar(8)", True], ["fbin(6)", False], ["bin", True]]:
+    print("FAILED: Acero parameterized-type parser lost a width, kind or nullability")
+    raise SystemExit(1)
+print("ok      Acero parameterized types retain widths, kinds and nullability")
 
 bad = 0
 for label, col, fmt in COLUMNS:

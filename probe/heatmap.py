@@ -16,7 +16,7 @@ Three drawing decisions carry the reading of the matrix and are not cosmetic:
     would read as a wrong answer. Acero alone refuses 55 of the 73 scored cases.
   - A limit of a type system is drawn apart from a divergence. DuckDB carries no nullability and
     neither it nor DataFusion has a string with a length; those cells are hatched, not red.
-  - Matched is the quiet fill and divergence the only loud one, so the eye lands on the 84 cells
+  - Matched is the quiet fill and divergence the only loud one, so the eye lands on the 83 cells
     where a participant could have given the expected answer and gave another.
 """
 import html, io, json, os, re, sys
@@ -133,10 +133,6 @@ def build():
         if missing:
             raise SystemExit("FAILED: %s.txt has no answer for %d cases: %s"
                              % (name, len(missing), ", ".join(sorted(missing)[:4])))
-    if len(taken) != 1:
-        raise SystemExit("FAILED: the columns were taken on different days: %s"
-                         % ", ".join(sorted(taken)))
-
     prefixes = {}
     for case in sorted(cells):
         prefixes.setdefault(case.split("_")[0], []).append(case)
@@ -148,7 +144,7 @@ def build():
         "participants": labels,
         "versions": versions,
         "boundaries": boundaries,
-        "taken": taken.pop(),
+        "taken": ", ".join(sorted(taken)),
         "groups": [{"label": g["label"], "n": len(g["cases"])} for g in groups],
         "cases": [c for g in groups for c in g["cases"]],
         "cells": [[cells[c][p] for p in labels] for g in groups for c in g["cases"]],

@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-07T12:20, pyarrow 25.0.1
+ACERO: column from run 2026-09-08T06:03Z, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -73,7 +73,7 @@ setop_minus_primary_all                        ERROR: ArrowInvalid: Unknown unio
 setop_minus_primary                            ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
 setop_union_all                                ERROR: ArrowInvalid: UnionNode input schemas must all match, first schema was: c0: int64 not null c1: int64 not null c2: int64 not null c3: int64 not null c4: int64 c5: in
 setop_union_distinct                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
-stringlen_declared                             [c0:string, c1:string, c2:binary, c3:string]
+stringlen_declared                             [c0:extension<varchar{length:10}>, c1:extension<fixed_char{length:5}>, c2:fixed_size_binary[4], c3:string]
 virtual_table_emit_mapping                     ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_literal_type_differs_from_schema ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_row_null_in_required_column      ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles

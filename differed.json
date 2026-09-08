@@ -75,13 +75,6 @@
     "got_matches": "(?i)(float64|double|fp64)"
    }
   },
-  "acero-drops-a-fixed-size-binary": {
-   "kind": "divergence",
-   "what": "Arrow has fixed_size_binary and DataFusion returns it for this case; Acero returns binary. The two string lengths in the same case are not expressible in Arrow, so only fixedbinary<4> is a divergence here.",
-   "check": {
-    "got_matches": "^\\[c0:string, c1:string, c2:binary, c3:string\\]$"
-   }
-  },
   "duckdb-timestamp-precision-ignored": {
    "kind": "divergence",
    "what": "DuckDB has TIMESTAMP_S, TIMESTAMP_MS and TIMESTAMP_NS, and its reader rejects a precision above 9, so it reads the field; every declared precision still comes back as microseconds.",
@@ -194,8 +187,7 @@
    "narrowing_count": "acero-required-kept-only-on-a-bare-read",
    "narrowing_is_not_null": "acero-required-kept-only-on-a-bare-read",
    "narrowing_is_null": "acero-required-kept-only-on-a-bare-read",
-   "phase_final": "avg-over-integers-returns-float",
-   "stringlen_declared": "acero-drops-a-fixed-size-binary"
+   "phase_final": "avg-over-integers-returns-float"
   },
   "DATAFUSION": {
    "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",

@@ -59,7 +59,7 @@ BOUNDARY = {
     "ACERO":  "Carries nullability (the probe prints f.nullable); it is compared alongside the types.",
     "SPARK":  "Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.",
     "GLUTEN": "BOUNDARY: carries no nullability; types, arity, column order and rows are checked.",
-    "DATAFUSION": "BOUNDARY: Arrow has no string type with a length, so varchar/fixedchar lose it.",
+    "DATAFUSION": "BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.",
 }
 
 def main():

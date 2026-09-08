@@ -222,8 +222,21 @@ def parse_duckdb(s):
     return _mapped(s, DUCKDB_T)
 
 def parse_acero(s):
-    """[c0:int64, c1:string?] - lowercase Arrow names."""
-    return _mapped(s, ACERO_T)
+    """Arrow names, including the length-bearing types used by Substrait."""
+    got = _mapped(s, ACERO_T)
+    if got is None:
+        return None
+    out = []
+    for t, nullable in got:
+        extension = re.fullmatch(r"extension<(varchar|fixed_char)\{length:(\d+)\}>", t)
+        binary = re.fullmatch(r"fixed_size_binary\[(\d+)\]", t)
+        if extension:
+            base = {"varchar": "vchar", "fixed_char": "fchar"}[extension.group(1)]
+            t = "%s(%s)" % (base, extension.group(2))
+        elif binary:
+            t = "fbin(%s)" % binary.group(1)
+        out.append([t, nullable])
+    return out
 
 path, fmt = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else "java")
 parse = {"java": parse_java, "py": parse_py, "df": parse_df,
