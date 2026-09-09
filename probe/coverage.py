@@ -138,13 +138,12 @@ def block():
         ["<!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->"]
         + rows
         + ["",
-           "%s of the %d relations `algebra.proto` defines at spec %s appear in these %d plans. "
-           "The other %d carry no case: %s. %s of the ones that do — %s and `%s` — appear only "
-           "under an emit mapping, where the mapping is the subject and the relation is what it "
-           "sits on."
+           "%s of the %d relations `algebra.proto` defines at spec %s appear in these %d plans; "
+           "%s and `%s` only under an emit mapping, which needs something to sit on. No case "
+           "reaches %s."
            % (WORDS.get(len(covered), len(covered)), len(per), SPEC, total,
-              len(absent), ", ".join("`%s`" % snake(r) for r in absent),
-              WORDS.get(len(carried), len(carried)), names, snake(carried[-1])),
+              names, snake(carried[-1]),
+              ", ".join("`%s`" % snake(r) for r in absent)),
            "<!-- /coverage -->"])
 
 

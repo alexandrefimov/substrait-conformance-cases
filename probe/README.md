@@ -136,6 +136,17 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 Spark and Isthmus need a built `:spark:spark-3.5_2.12` and `:isthmus` in that checkout; `cp.sh`
 resolves their classpaths from Gradle and caches them under the probe environment.
 
+A column is compared only as far as the participant's type system reaches. The head of each
+`results/<NAME>.txt` repeats its own limit:
+
+| | how far the column goes |
+| --- | --- |
+| DuckDB | carries no nullability in its logical types, so only types, arity and column order are compared. Comparing nullability would record the boundary of its type system as a divergence |
+| DataFusion, DuckDB | have no string type with a length. Neither can represent `varchar<10>` or `fixedchar<5>`, which is why `stringlen_declared` differs there — not a defect |
+| Acero, Spark | do carry nullability and are compared on it |
+| Gluten | carries no nullability either, and repeats a function's declared type instead of deriving it |
+| substrait-validator | the pinned revision retains declared function return types; schema output must be read alongside diagnostics. The mutation checks final output schemas, not every expression's type |
+
 These pins describe the saved measurements, not a promise to use every participant's newest release. Update a pin together with a reproduced column and its provenance. Package versions and Substrait spec versions are also distinct: a binding can depend on older packaged definitions even when the binding itself is the latest release.
 
 The Spark runner selects `:spark:spark-3.5_2.12`; its Spark version comes from that module's Gradle build. `SPARK_35` records the expected version but does not override the dependency. `SPARK_34` and `SPARK_40` record the other library variants and do not add corpus runs for them. The saved Spark column and automated replay therefore cover Spark 3.5 only. Focused diagnostics use the same default classpath selection.

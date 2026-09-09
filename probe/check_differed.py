@@ -503,15 +503,16 @@ WORD = _Word()
 # claim has to be somewhere on it, not in a particular file.
 readme = " ".join(" ".join(io.open(os.path.join(ROOT, f), encoding="utf-8").read()
                            for f in ("README.md", "METHOD.md")).split())
-for sentence in ("gives all %d of them a reason and marks %d as something other than"
+for sentence in ("a reason written by hand for all %d of them, %d marked as something other than"
                  % (total, total - kinds.get("divergence", 0)),
                  "%s are limits of a type system, %s a type the validator never resolved"
                  % (WORD.get(kinds.get("boundary")), WORD.get(kinds.get("unresolved"))),
                  "%s of its %s reasons link an issue or PR" % (WORD.get(filed), WORD.get(len(doc["rules"]))),
                  "%s cells where a participant died rather than refused"
                  % WORD.get(sum(len(v) for v in refused["cells"].values())),
-                 "%s of those %s still need investigation"
-                 % (WORD.get(triage_open), WORD.get(triage_pairs))):
+                 "%s of those %s still need%s investigation"
+                 % (WORD.get(triage_open), WORD.get(triage_pairs),
+                    "s" if triage_open == 1 else "")):
     if sentence not in readme:
         fail("the README does not say %r" % sentence)
 
