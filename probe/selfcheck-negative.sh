@@ -542,12 +542,12 @@ io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'rows[case] = {\"rows\": 
 io.open('expected.json', 'w', encoding='utf-8').write(
     subprocess.run([sys.executable, p], capture_output=True, text=True, check=True).stdout)"
 
-mutate "the count of entries still needing investigation" "still need investigation" \
+mutate "the count of entries still needing investigation" "still needs investigation" \
   python3 -c "
 import io, re
 p = 'METHOD.md'
 s = io.open(p, encoding='utf-8').read()
-m = re.search(r'([\w-]+) (of those [\w-]+ still need investigation)', s)
+m = re.search(r'([\w-]+) (of those [\w-]+ still needs? investigation)', s)
 wrong = 'nine' if m.group(1) != 'nine' else 'seven'
 io.open(p, 'w', encoding='utf-8').write(s[:m.start()] + wrong + ' ' + m.group(2) + s[m.end():])"
 

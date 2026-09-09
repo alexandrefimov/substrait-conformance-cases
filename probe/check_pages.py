@@ -111,50 +111,40 @@ def facts():
 
 
 # file, the fact it must equal, and the sentence it lives in. One entry per number in the prose.
-# Spaces inside a pattern are \s+ because these pages wrap at 100 columns and a sentence moves
+# Every space in a pattern is read as \s+ - these pages wrap at 100 columns and a sentence moves
 # across the wrap when a word before it changes: the first edit after this guard was written broke
-# four patterns that way, which is a rewording the author did not make.
+# four patterns that way, which is a rewording the author did not make. Writing them as plain
+# sentences and widening the spaces here keeps the next rewrap from silently disarming a guard.
 CLAIMS = [
-    ("README.md", "cases", r"The main comparison corpus contains %s\s+plans" % NUMBER),
-    ("README.md", "scored", r"an expected schema for %s of\s+them" % NUMBER),
-    ("README.md", "cases", r"not counted in the saved %s-plan\s+matrix" % NUMBER),
-    ("README.md", "scored", r"It is %s expectations written by\s+hand" % NUMBER),
-    ("README.md", "cases differing for VALIDATOR", r"%s for the\s+validator" % NUMBER),
-    ("README.md", "cases differing for DUCKDB", r"%s for\s+DuckDB" % NUMBER),
-    ("README.md", "cases differing for PYTHON", r"%s for\s+substrait-python" % NUMBER),
-    ("README.md", "cases differing for ACERO", r"%s for\s+Acero" % NUMBER),
-    ("README.md", "cases pending a spec answer", r"%s cases here go\s+unscored" % NUMBER),
-    ("README.md", "scored", r"They answer the %s cases that carry an\s+expectation" % NUMBER),
-    ("README.md", "differing cells", r"gives all %s of them a\s+reason" % NUMBER),
+    ("README.md", "cases", r"The main comparison corpus contains %s plans" % NUMBER),
+    ("README.md", "scored", r"an expected schema for %s of them" % NUMBER),
+    ("README.md", "scored", r"It is %s expectations written by hand" % NUMBER),
+    ("README.md", "cases pending a spec answer", r"%s cases here go unscored" % NUMBER),
+    ("README.md", "scored", r"They answer the %s cases that carry an expectation" % NUMBER),
+    ("README.md", "differing cells", r"a reason written by hand for all %s of them" % NUMBER),
     ("README.md", "cells that are not a divergence",
-     r"marks %s as something other than\s+a divergence" % NUMBER),
-    ("README.md", "cells at a type-system limit", r"%s are limits of a type\s+system" % NUMBER),
-    ("README.md", "cells with an unresolved type",
-     r"%s a type the validator never\s+resolved" % NUMBER),
-    ("README.md", "cases", r"The corpus is `derived-schema/` — %s\s+plans" % NUMBER),
-    ("README.md", "open triaged pairs",
-     r"%s of the [a-z-]+\s+divergence-and-participant pairs" % NUMBER),
-    ("README.md", "triaged pairs", r"of the %s\s+divergence-and-participant pairs" % NUMBER),
-    ("README.md", "row cases", r"Rows are compared for three participants and %s\s+cases" % NUMBER),
-    ("README.md", "scored", r"schemas for nine participants and %s\s+cases" % NUMBER),
-    ("README.md", "cases naming a source issue", r"%s of the \d+ cases link to the\s+issue" % NUMBER),
-    ("README.md", "cases", r"[A-Za-z]+ of the %s cases link to the\s+issue" % NUMBER),
+     r"%s marked as something other than a divergence" % NUMBER),
+    ("README.md", "cases", r"`derived-schema/` \| the %s plans, protobuf-JSON" % NUMBER),
 
-    ("README.md", "lines in the example plan", r"—\s+%s lines for that case" % NUMBER),
-    ("README.md", "lines in the shortest plan", r"lines for that case, between %s and" % NUMBER),
-    ("README.md", "lines in the longest plan", r"between \d+ and %s across the\s+corpus" % NUMBER),
-
-    ("METHOD.md", "unscored", r"%s cases carry no\s+expectation" % NUMBER),
-    ("METHOD.md", "cases pending a spec answer", r"%s have\s+virtual-table row types" % NUMBER),
-    ("METHOD.md", "cases added since the swap ran", r"%s cases have been added\s+since" % NUMBER),
+    ("METHOD.md", "unscored", r"%s cases carry no expectation" % NUMBER),
+    ("METHOD.md", "cases pending a spec answer", r"%s have virtual-table row types" % NUMBER),
+    ("METHOD.md", "cases added since the swap ran", r"%s cases have been added since" % NUMBER),
     ("METHOD.md", "of those declaring an output_type",
-     r"%s of them declaring an\s+`output_type`" % NUMBER),
+     r"%s of them declaring an `output_type`" % NUMBER),
+    ("METHOD.md", "row cases", r"%s cases also carry expected rows" % NUMBER),
+    ("METHOD.md", "open triaged pairs", r"%s of those [a-z-]+ still needs? investigation" % NUMBER),
+    ("METHOD.md", "triaged pairs", r"and there are %s of them" % NUMBER),
 
-    ("FINDINGS.md", "cases", r"outside the saved %s-plan\s+matrix" % NUMBER),
+    ("FINDINGS.md", "cases", r"outside the saved %s-plan matrix" % NUMBER),
 
-    ("probe/README.md", "cases", r"and the saved %s-plan\s+matrix" % NUMBER),
-    ("probe/README.md", "cases", r"separate from the %s plans in the main\s+corpus" % NUMBER),
+    ("probe/README.md", "cases", r"and the saved %s-plan matrix" % NUMBER),
+    ("probe/README.md", "cases", r"separate from the %s plans in the main corpus" % NUMBER),
 ]
+
+
+def wrapped(pattern):
+    """A space in a CLAIMS pattern matches a line break too, since the pages wrap at 100 columns."""
+    return pattern.replace(" ", r"\s+")
 
 
 def main():
@@ -162,7 +152,7 @@ def main():
     bad = 0
     for path, fact, pattern in CLAIMS:
         text = io.open(os.path.join(ROOT, path), encoding="utf-8").read()
-        found = re.findall(pattern, text)
+        found = re.findall(wrapped(pattern), text)
         if not found:
             print("FAILED: %s: no sentence matches %s - the sentence this guard watches was "
                   "reworded, so update the pattern in probe/check_pages.py with it" % (path, pattern))

@@ -12,7 +12,10 @@ Derivation table, function return declarations, and relation rules such as join 
 emit order. It reads neither spec files nor plans. `expected.json` is the result. Ten cases also carry
 expected rows: eight set-operation cases whose multisets are transcribed from the spec's examples,
 and the two window-bound cases, whose four rows are in the plan. `probe/check_rows.py` compares
-those separately from schemas.
+those separately from schemas, for three participants, as a multiset of integers one column wide.
+That is the whole reach of the row half: on the `emit_*` cases, where the expectation is two columns
+in reverse order, a consumer can return the right column count filled with another column's data and
+every schema comparison here still passes.
 
 `probe/expected.py` opens by naming every spec file it cites and the release it cites them at —
 [v0.102.0](https://github.com/substrait-io/substrait/tree/v0.102.0), which is what these plans
@@ -38,9 +41,9 @@ is why the first thing the README asks for is somebody else's reading of it.
 Five cases carry no expectation, for two different reasons that `expected.json` keeps apart. Four have
 virtual-table row types or nullability different from the declared schema. They remain unscored
 pending clarification of exact type equality versus compatibility between a row and its schema;
-the `spec_silent` category records this unresolved question. The fifth is a CTAS whose input schema
-does not match its `table_schema`. The spec requires them to match, so this plan is invalid and
-what is worth measuring is whether the violation is reported.
+the `spec_silent` category records this unresolved question. The fifth, under `spec_says_invalid`, is a CTAS whose input
+schema does not match its `table_schema`. The spec requires them to match, so this plan is invalid
+and what is worth measuring is whether the violation is reported.
 
 ## What the corpus is made of
 
@@ -176,8 +179,10 @@ read one by one, and a second reader then found seven more that held for most of
 described the rest wrongly. That is why a reason there has to carry a test.
 
 The self-checks verify relationships between committed artifacts. They do not establish that every
-encoded rule matches the spec or that every interpretation of a result is correct. The open items —
-what has not been corrected, only listed — are in the README under *What is not settled*.
+encoded rule matches the spec or that every interpretation of a result is correct. What has not been
+corrected is listed rather than fixed: the rules encoded in `probe/expected.py` still need an
+independent reading against the spec, and `differed.json` names the one divergence still under
+investigation.
 
 ## Acero input-schema correction
 
@@ -189,10 +194,10 @@ Retaking the whole Acero column — 78 cases then — with the same pinned PyArr
 
 ## Reports and generator sources
 
-[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: twenty of its twenty-four reasons link an issue or PR. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
+[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: twenty of its twenty-four reasons link an issue or PR. Of the seventeen cells it marks as something other than a divergence, six are limits of a type system, eleven a type the validator never resolved. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
 
 A refusal is not recorded that way, and mostly should not be: a participant that says it does not implement a relation has already said everything a reason could, and 201 of the cells are that. [refused.json](refused.json) holds the ones that are not. In eleven cells where a participant died rather than refused — ten in the DuckDB extension, one in Acero — what came back is a signal and not a message, and an engine that cannot do something is not in the condition of one that dies trying, whatever its support. Those carry a reason with a predicate and a triage, exactly as a divergence does, and `probe/check_differed.py` requires the file and the columns to name the same cells in both directions.
 
 The general answer for the other 190 would be to compare a refusal against what the engine declares it supports, which needs no reasons written by hand at all. The spec ships no such declaration today: at v0.102.0 `dialects/` holds the schema and its fixtures and not one engine's file.
 
-What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-eight of them; one of those twenty-eight still need investigation, each saying what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
+What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-eight of them; one of those twenty-eight still needs investigation and says what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
