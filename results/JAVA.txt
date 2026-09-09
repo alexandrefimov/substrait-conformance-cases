@@ -1,4 +1,4 @@
-JAVA: column from run 2026-09-08T22:13, substrait-java fff63906
+JAVA: column from run 2026-09-09T07:35, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}
@@ -53,12 +53,15 @@ phase_intermediate                             Struct{nullable=false, fields=[St
 physjoin_hash_inner                            Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 physjoin_hash_left_mark                        ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_left                             Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+physjoin_hash_right_semi                       Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 physjoin_merge_inner                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 physjoin_merge_left_mark                       ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_left                            Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+physjoin_merge_right_semi                      Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 physjoin_nested_inner                          Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 physjoin_nested_left_mark                      ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_left                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
+physjoin_nested_right_semi                     Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 precision_timestamp_p00                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=0}]}
 precision_timestamp_p01                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=1}]}
 precision_timestamp_p02                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=2}]}
@@ -68,7 +71,7 @@ precision_timestamp_p06                        Struct{nullable=false, fields=[Pr
 precision_timestamp_p07                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=7}]}
 precision_timestamp_p09                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=9}]}
 precision_timestamp_p12                        Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=12}]}
-read_projection_mask                           Struct{nullable=false, fields=[Bool{nullable=false}, I64{nullable=false}]}
+read_projection_mask                           Struct{nullable=false, fields=[I64{nullable=false}, Bool{nullable=false}]}
 setdata_intersection_multiset_all              Struct{nullable=false, fields=[I64{nullable=false}]}
 setdata_intersection_multiset                  Struct{nullable=false, fields=[I64{nullable=false}]}
 setdata_intersection_primary                   Struct{nullable=false, fields=[I64{nullable=false}]}

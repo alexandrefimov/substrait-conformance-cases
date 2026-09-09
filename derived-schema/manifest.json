@@ -17,7 +17,7 @@
      true
     ]
    ],
-   "from": "Aggregate: only fields absent from some grouping set become nullable"
+   "from": "Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps"
   }
  },
  {
@@ -38,7 +38,7 @@
      true
     ]
    ],
-   "from": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable"
+   "from": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps"
   }
  },
  {
@@ -54,7 +54,7 @@
      true
     ]
    ],
-   "from": "sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer"
+   "from": "sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, and algebra.proto requires the plan's output_type to be set to exactly that, so the YAML is the answer and the plan repeats it"
   }
  },
  {
@@ -1166,6 +1166,26 @@
   }
  },
  {
+  "case": "physjoin_hash_right_semi",
+  "plan": "physjoin_hash_right_semi.json",
+  "binary": "physjoin_hash_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_hash_right_semi  hash join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
   "case": "physjoin_merge_inner",
   "plan": "physjoin_merge_inner.json",
   "binary": "physjoin_merge_inner.bin",
@@ -1246,6 +1266,26 @@
   }
  },
  {
+  "case": "physjoin_merge_right_semi",
+  "plan": "physjoin_merge_right_semi.json",
+  "binary": "physjoin_merge_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_merge_right_semi  merge join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
   "case": "physjoin_nested_inner",
   "plan": "physjoin_nested_inner.json",
   "binary": "physjoin_nested_inner.bin",
@@ -1320,6 +1360,26 @@
     [
      "bool",
      true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_nested_right_semi",
+  "plan": "physjoin_nested_right_semi.json",
+  "binary": "physjoin_nested_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_nested_right_semi  nested join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
     ]
    ],
    "from": "physical_relations.md: the same Direct Output Order as the Join operator"
@@ -1474,15 +1534,15 @@
   "plan": "read_projection_mask.json",
   "binary": "read_projection_mask.bin",
   "generator": "GenProjection",
-  "note": "read_projection_mask  the mask selects fields [2, 0], expecting [bool, i64] / (true, 10)",
+  "note": "read_projection_mask  the mask selects fields [0, 2], expecting [i64, bool] / (10, true)",
   "expectation": {
    "schema": [
     [
-     "bool",
+     "i64",
      false
     ],
     [
-     "i64",
+     "bool",
      false
     ]
    ],
@@ -2043,7 +2103,7 @@
   "source": "substrait-java#1065",
   "generator_says": "virtual_table_literal_type_differs_from_schema  (base_schema declares i32, the literal is i8)",
   "expectation": {
-   "none": "an i8 literal in a column the schema declares i32: the spec does not say which wins, the row or the schema",
+   "none": "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but the general one reaches it - type_system.md allows no coercion and requires an explicit cast for all changes in types",
    "because": "the spec is silent"
   }
  },
@@ -2054,7 +2114,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_null_in_required_column  (base_schema declares i32, the value is null)",
   "expectation": {
-   "none": "a null value in a column the schema declares required: the spec does not say which wins, the row or the schema",
+   "none": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
    "because": "the spec is silent"
   }
  },
@@ -2065,7 +2125,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_nullable_in_required_column  (base_schema declares i32, the literal is i32?)",
   "expectation": {
-   "none": "a nullable literal in a column the schema declares required: the spec does not say which wins, the row or the schema",
+   "none": "a nullable literal in a column the schema declares required: nullability is part of a type, so the cast rule would forbid it, yet nullability is also stripped before binding under MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
    "because": "the spec is silent"
   }
  },
@@ -2076,7 +2136,7 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_required_in_nullable_column  (base_schema declares i32?, the literal is i32)",
   "expectation": {
-   "none": "a required literal in a column the schema declares nullable: the spec does not say which wins, the row or the schema",
+   "none": "a required literal in a column the schema declares nullable: the same tension the other way round, and the direction engines widen silently",
    "because": "the spec is silent"
   }
  },

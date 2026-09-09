@@ -225,8 +225,9 @@ io.open('derived-schema/manifest.json', 'w', encoding='utf-8').write(
 # changing only the generator leaves expected.json stale, the earlier check fires instead, and that
 # says nothing about this one.
 back_reference() {
-  replace probe/expected.py '"a nullable literal in a column the schema declares required: the spec does not say which "
-        "wins, the row or the schema"' '"same"' &&
+  replace probe/expected.py '"a nullable literal in a column the schema declares required: nullability is part of a type, "
+        "so the cast rule would forbid it, yet nullability is also stripped before binding under "
+        "MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here"' '"same"' &&
   python3 probe/expected.py > expected.json
 }
 mutate "a reason that only points at its neighbour" "points at another entry" back_reference

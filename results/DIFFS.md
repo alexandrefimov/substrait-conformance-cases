@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-08. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-09. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 2 cases
@@ -56,8 +56,8 @@ The report includes both grouping-set layouts used here: disjoint keys and one s
 
 | case | expected | substrait-python answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:str, a:i64]` | Aggregate: only fields absent from some grouping set become nullable |
-| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:str, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable |
+| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:str, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
+| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:str, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
 ### `python-join-concatenates-the-inputs`
 
@@ -98,7 +98,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-py
 
 | case | expected | substrait-python answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[k0:i64, k1:str, ?:bool]  !! names 2, types 3` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:i64, k1:str, ?:bool]  !! names 2, types 3` | Read / Direct Output Order: the schema after projection is applied |
 
 ## substrait-go — 4 cases
 
@@ -127,8 +127,8 @@ The PR makes each grouping key nullable when absent from any set; the shared key
 
 | case | expected | substrait-go answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:string, a:i64]` | Aggregate: only fields absent from some grouping set become nullable |
-| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:string, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable |
+| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:string, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
+| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:string, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
 ## substrait-validator — 28 cases
 
@@ -144,8 +144,8 @@ The PR parses relation-level grouping expressions and their references, covering
 
 | case | expected | substrait-validator answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[i32, unresolved]` | Aggregate: only fields absent from some grouping set become nullable |
-| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[i32, unresolved]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable |
+| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[i32, unresolved]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
+| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[i32, unresolved]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
 ### `validator-does-not-resolve`
 
@@ -231,7 +231,7 @@ A fix, opened without a separate issue.
 
 | case | expected | Isthmus/Calcite answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
 
 ## DataFusion — 9 cases
 
@@ -281,7 +281,7 @@ Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/
 
 | case | expected | DataFusion answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:Utf8?, a:Int64?]` | Aggregate: only fields absent from some grouping set become nullable |
+| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:Utf8?, a:Int64?]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 
 ### `no-string-with-length`
 
@@ -355,7 +355,7 @@ Reported as a comment on substrait-io/duckdb-substrait-extension#276 rather than
 
 | case | expected | DuckDB answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [aggregate_sum_i64](../derived-schema/aggregate_sum_i64.json) | `[i64?]` | `[s:HUGEINT]` | sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer |
+| [aggregate_sum_i64](../derived-schema/aggregate_sum_i64.json) | `[i64?]` | `[s:HUGEINT]` | sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, and algebra.proto requires the plan's output_type to be set to exactly that, so the YAML is the answer and the plan repeats it |
 | [window_bound_offset](../derived-schema/window_bound_offset.json) | `[i64, i64?]` | `[v:BIGINT, s:HUGEINT]` | the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml |
 
 ### `duckdb-timestamp-is-microseconds`
@@ -432,7 +432,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-ja
 
 | case | expected | Spark answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[k0:bigint, k1:string]` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:bigint, k1:string]` | Read / Direct Output Order: the schema after projection is applied |
 
 ## Acero — 15 cases
 

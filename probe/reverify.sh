@@ -419,21 +419,6 @@ for pair in "JAVA:java" "PYTHON:py" "VALIDATOR:py" "DATAFUSION:df" "DUCKDB:duckd
   fi
 done
 
-# The saved columns are replaced only when explicitly asked for - like the corpus.
-if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
-  for c in "$RUN"/*.txt; do cp "$c" "$ROOT/results/$(basename "$c")"; done
-  # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
-  # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
-  python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
-  python3 "$PROBE/diffs.py" > "$ROOT/results/DIFFS.md" || fail "could not rebuild results/DIFFS.md"
-  # docs/ is the same columns drawn - the picture the README shows and the page the site serves.
-  # Left behind, it keeps showing the previous run to everyone who never opens a column.
-  python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || fail "could not redraw docs/matrix.svg"
-  python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || fail "could not redraw docs/matrix-dark.svg"
-  python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || fail "could not rebuild docs/index.html"
-  echo "saved columns, results/MATRIX.txt, results/DIFFS.md and docs/ updated from this run (UPDATE_COLUMNS=1)"
-fi
-
 echo
 DIRTY=$(git -C "$DF" status --porcelain --untracked-files=no | wc -l | tr -d " ")
 echo "### 11. the DataFusion checkout after cleanup: $DIRTY changes"
@@ -451,5 +436,31 @@ fi
 # Gluten lives in a cluster and this script does not run it. Saying so out loud is mandatory:
 # otherwise "one command re-checks everything" reads as a claim about it too.
 echo "outside this script: Gluten/Velox (run in a cluster; the results/GLUTEN.txt column is taken separately)"
+# The saved columns are replaced only when explicitly asked for - like the corpus - and only by a run
+# that held up. This is the last thing the script does, after every check that can set FAILED, because
+# it used to be the first: a DataFusion probe that exited before writing an answer left an empty column
+# behind, UPDATE_COLUMNS=1 copied it over the saved one, and MATRIX.txt, DIFFS.md and docs/ were rebuilt
+# around the hole - all of it printed under "HARNESS FAILED - do not trust the conclusions". A run that
+# is knowingly partial is a different thing and still writes: ALLOW_SKIPPED=1 leaves FAILED at zero, and
+# the loop copies only the columns this run produced, so a participant that never came up keeps the
+# column it had.
+if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
+  if [ "$FAILED" -ne 0 ]; then
+    echo "columns NOT updated: this run failed, and a failed run does not overwrite a saved column"
+  else
+    for c in "$RUN"/*.txt; do cp "$c" "$ROOT/results/$(basename "$c")"; done
+    # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
+    # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
+    python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
+    python3 "$PROBE/diffs.py" > "$ROOT/results/DIFFS.md" || fail "could not rebuild results/DIFFS.md"
+    # docs/ is the same columns drawn - the picture the README shows and the page the site serves.
+    # Left behind, it keeps showing the previous run to everyone who never opens a column.
+    python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || fail "could not redraw docs/matrix.svg"
+    python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || fail "could not redraw docs/matrix-dark.svg"
+    python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || fail "could not rebuild docs/index.html"
+    echo "saved columns, results/MATRIX.txt, results/DIFFS.md and docs/ updated from this run (UPDATE_COLUMNS=1)"
+  fi
+fi
+
 if [ "$FAILED" -ne 0 ]; then echo "RESULT: HARNESS FAILED - do not trust the conclusions"; exit 1; fi
 echo "RESULT: the harness ran to completion, $N_JSON cases, $RAN columns"

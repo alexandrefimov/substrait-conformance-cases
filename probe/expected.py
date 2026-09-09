@@ -71,7 +71,9 @@ for case, pattern in SETOP.items():
                       "source": "the Output Type Derivation Examples table in the spec"}
 expected["aggregate_sum_i64"] = {"schema": [["i64", True]],
                                  "source": "sum(i64) in functions_arithmetic.yaml declares return: i64? with "
-                                           "nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer"}
+                                           "nullability: DECLARED_OUTPUT, and algebra.proto requires the plan's "
+                                           "output_type to be set to exactly that, so the YAML is the answer and "
+                                           "the plan repeats it"}
 expected["phase_final"] = {"schema": [["i64", True]],
                            "source": "the declared return of avg:i64 in functions_arithmetic.yaml"}
 expected["narrowing_is_null"] = {"schema": [["bool", False]],
@@ -84,9 +86,24 @@ expected["control_passthrough_rn"] = {"schema": [["i64", False], ["i64", True]],
 
 # --- Joins ---------------------------------------------------------------------------------------
 # The inputs: left t_rn = (R, N), right t_nr = (N, R), all columns i64.
-# The spec rules (Join Types + Direct Output Order): semi and anti return one side; mark returns one
-# side plus a nullable boolean; single returns both sides with the opposite one made nullable;
-# left/right/outer add nullability to whichever side can be left without a match.
+#
+# Column order is stated, in Direct Output Order: semi and anti emit "either left or right only",
+# mark emits one side "with a 'mark' column appended at the end", everything else is "the same as
+# Input Order", which is the left input followed by the right. All twelve follow from that sentence.
+#
+# Nullability is not stated the same way, and the difference is worth keeping in view. The spec
+# prints an output-type derivation table for set operations and writes the grouping-set rule out as a
+# sentence; for joins it does neither, and the word "nullable" appears once in the whole Join section
+# - the mark column, "will be of type nullable boolean". That one is quoted, not derived. The rest of
+# what is encoded here reads a row-level phrase as a type rule: outer, left, right and single say the
+# unmatched record comes back "along with nulls for the opposite input", and turning that into "the
+# opposite side is typed nullable" needs type_system.md's definition of REQUIRED as the missing step.
+# Inner, semi and anti assert no change at all, which needs no step.
+#
+# So: semi and anti return one side; mark returns one side plus a nullable boolean; single returns
+# both sides with the opposite one made nullable; left/right/outer add nullability to whichever side
+# can be left without a match. The first two are the spec's words. The last two are this reading of
+# them, and a consumer that declined it would not be contradicting a sentence.
 LEFT_IN = [False, True]    # t_rn
 RIGHT_IN = [True, False]   # t_nr
 
@@ -115,20 +132,38 @@ for kind in ["inner", "outer", "left", "right", "left_semi", "left_anti", "right
 
 # The three physical join messages take the same rule and the same inputs: "Direct Output Order: Same
 # as the Join operator" is what physical_relations.md gives HashJoin, MergeJoin and NestedLoopJoin,
-# and each carries its own copy of JoinRel's twelve-member JoinType enum. So these expectations are
+# and each carries a JoinType enum with the same twelve names JoinRel's has. So these expectations are
 # not a second reading of the spec - they are join_expected again, and a case that disagrees with one
 # here disagrees with the same sentence its join_ counterpart already asserts. What they add is the
 # entry point: everything above is a JoinRel, so a consumer that derives the rule once and wires it
 # to one message of four looks correct until asked through another.
-for kind in ["inner", "left", "left_mark"]:
+#
+# The names match; four of the numbers do not. In algebra.proto at v0.102.0 LEFT_ANTI is 6 in JoinRel
+# and 7 in all three physical messages, LEFT_SINGLE 7 and 9, RIGHT_SEMI 8 and 6, RIGHT_ANTI 9 and 8.
+# right_semi is here because it is the one of those four that is mapped everywhere today: it returns
+# t_nr and answers (N, R), while JoinRel's 6 is left_anti, which returns t_rn and answers (R, N).
+# Same arity, so the nullability pattern is the only thing that separates them. inner, left and
+# left_mark cannot see this at all - they are 1, 3 and 11 in both enums.
+for kind in ["inner", "left", "left_mark", "right_semi"]:
     for message in ("hash", "merge", "nested"):
         expected["physjoin_%s_%s" % (message, kind)] = {
             "schema": join_expected(kind),
             "source": "physical_relations.md: the same Direct Output Order as the Join operator"}
 
 # --- emit ---------------------------------------------------------------------------------------
-# All of these carry the same outputMapping [2, 0] over t_mix = (i64 R, string R, bool R), so by
-# the spec the output is two columns in reverse order.
+# All of these carry the same outputMapping [2, 0], and all seven answer [bool, i64] - but not all of
+# them for the same reason, and the short version of this note used to say they did. Only read,
+# filter, sort and fetch put t_mix = (i64 R, string R, bool R) directly under the emit, where [2, 0]
+# is that schema reversed. emit_project's relation derives four columns (the input plus the projected
+# expression), emit_join's six (t_mix concatenated with itself), and emit_aggregate's three, which is
+# three only because it has one grouping set and no measures. In each of those the mapping still
+# lands on a bool and an i64, so the expectation holds; it is index arithmetic over the relation's
+# own direct output, not a reversal of the read.
+#
+# One consequence worth recording: indices 2 and 0 point at columns that also sit at those positions
+# in the bare read, so none of the seven can tell a consumer that applies emit against the input
+# schema apart from one that applies it against the relation's output. emit_project with [3, 0], or
+# emit_join with an index in 3..5, would.
 for rel in ["read", "filter", "project", "sort", "fetch", "aggregate", "join"]:
     expected["emit_" + rel] = {
         "schema": [["bool", False], ["i64", False]],
@@ -138,10 +173,19 @@ for rel in ["read", "filter", "project", "sort", "fetch", "aggregate", "join"]:
 # --- The rest, derivable from the spec mechanically ----------------------------------------------
 
 # The ReadRel.projection mask over t_mix (i64 R, string R, bool R) selects structItems
-# [{field:2},{}], that is column 2 then column 0: by the spec, Read's Direct Output Order is the
+# [{field:0},{field:2}], that is columns 0 and 2: by the spec, Read's Direct Output Order is the
 # schema after the mask.
+#
+# The fields are listed in ascending order so that the case does not turn on a question v0.102.0
+# leaves open. algebra.proto calls a MaskExpression a reference that "selectively removes fields" and
+# says it "does not fundamentally alter the structure of data beyond the elimination of unnecessary
+# elements"; field_references.md asks "Should we support column reordering/positioning using a masked
+# complex expression? (Right now, you can only mask things out.)" Under that reading a mask cannot
+# reorder, so [{field:2},{field:0}] would have made this expectation assert an order the spec does
+# not give. Ascending, both readings agree on [i64, bool], and the case still measures the thing it
+# was built for: a consumer that ignores the projection answers with all three columns.
 expected["read_projection_mask"] = {
-    "schema": [["bool", False], ["i64", False]],
+    "schema": [["i64", False], ["bool", False]],
     "source": "Read / Direct Output Order: the schema after projection is applied"}
 
 # A read with no operations: the schema equals the declared base_schema.
@@ -167,33 +211,57 @@ for p_ in ["00", "01", "02", "03", "04", "06", "07", "09", "12"]:
 # expectations DIFFER, which is the whole point of the spec rule:
 #   ..._field_shared_by_sets: sets ((c,a),(c)) - c is in both, so it stays required;
 #   ..._sets_declared_order:  sets ((c),(a))   - no field is in all of them, so both are nullable.
+#
+# Both are two columns and the relation derives three. Two grouping sets mean the spec appends one
+# more: "an aggregate relation with more than one grouping set receives an extra i32 column on the
+# right-hand side" (logical_relations.md, Aggregate Operation), which is also why Direct Output Order
+# ends "(if applicable)". Each plan carries emit [0, 1], which drops that index column. Without the
+# emit these expectations would be one column short of the rule they cite.
 expected["aggregate_grouping_field_shared_by_sets"] = {
     "schema": [["str", False], ["i64", True]],
-    "source": "Aggregate: only fields absent from some grouping set become nullable"}
+    "source": "Aggregate: only fields absent from some grouping set become nullable, over the two "
+              "grouping expressions emit [0, 1] keeps"}
 expected["aggregate_grouping_sets_declared_order"] = {
     "schema": [["str", True], ["i64", True]],
-    "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable"}
+    "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two "
+              "grouping expressions emit [0, 1] keeps"}
 
-# Cases without an expectation come in two different kinds and must not be merged. For the first the
-# spec really gives no answer - a hole the corpus has to name rather than quietly patch. For the
-# second the spec does answer, with "this plan is invalid", and what is measured there is not the
+# Cases without an expectation come in two different kinds and must not be merged. For the first no
+# rule in the spec reaches the case - a hole the corpus has to name rather than quietly patch. For
+# the second the spec does answer, with "this plan is invalid", and what is measured there is not the
 # type but whether anyone reports the violation.
+#
+# What "silent" means for the four below is narrower than it used to say here, and the narrowing
+# matters. It is not that the spec fails to say which schema a consumer reports: Direct Schema
+# "defines the schema of the output of the read" (logical_relations.md, Read Properties), so the
+# declared schema is what comes out. What no sentence settles is whether a plan whose rows disagree
+# with it is well-formed at all, and who has to say so. The spec writes a field-specific match rule
+# whenever it wants one - WriteRel's table_schema, DynamicParameter's literal - and wrote none
+# between VirtualTable's rows and base_schema. That absence is the claim; substrait-io/substrait#1211
+# asks for it to be closed.
+#
+# Two of the four are closer to answered than the other two, and the reasons say so rather than
+# sharing one sentence. Whether the first should move to SPEC_SAYS_INVALID is a live question, not
+# something to settle quietly here while #1211 is open on all four together.
 SPEC_SILENT = {
     # Each reason stands on its own. They used to say "same", which reads off the entry above it -
     # and expected.json is written sorted by key, so the literal-type one ended up under the CTAS
     # entry and its "same" said the plan was invalid, which is not the question there at all.
     "virtual_table_row_null_in_required_column":
-        "a null value in a column the schema declares required: the spec does not say which wins, "
-        "the row or the schema",
+        "a null value in a column the schema declares required: no rule covers a virtual table's "
+        "rows against its base_schema, but this one is barely a question - type_system.md defines "
+        "REQUIRED as a type whose values cannot be null, and the row supplies one",
     "virtual_table_row_nullable_in_required_column":
-        "a nullable literal in a column the schema declares required: the spec does not say which "
-        "wins, the row or the schema",
+        "a nullable literal in a column the schema declares required: nullability is part of a type, "
+        "so the cast rule would forbid it, yet nullability is also stripped before binding under "
+        "MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
     "virtual_table_row_required_in_nullable_column":
-        "a required literal in a column the schema declares nullable: the spec does not say which "
-        "wins, the row or the schema",
+        "a required literal in a column the schema declares nullable: the same tension the other way "
+        "round, and the direction engines widen silently",
     "virtual_table_literal_type_differs_from_schema":
-        "an i8 literal in a column the schema declares i32: the spec does not say which wins, the "
-        "row or the schema",
+        "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but "
+        "the general one reaches it - type_system.md allows no coercion and requires an explicit "
+        "cast for all changes in types",
 }
 SPEC_SAYS_INVALID = {
     "ctas_keeps_declared_schema":
@@ -229,9 +297,13 @@ for op, (p_, s1, s2, out) in SETDATA.items():
 
 # On ctas_keeps_declared_schema, which is listed above as SPEC_SAYS_INVALID: on a well-formed plan
 # the input type and the declared table_schema agree, so the spec has no third answer here that
-# differs from both. substrait-java returns the input type and Isthmus the declared schema, and both
-# positions are defensible. What is worth measuring is whether anyone reports the mismatch, and that
-# is what the swapped-declaration corpus does (probe/lie_matrix.sh), not this table.
+# differs from both. substrait-java returns the input type and Isthmus the declared schema. Those are
+# not equally supported, as this note used to say: the Write Operator's Direct Output Order is
+# "Unchanged from input" (logical_relations.md), which is substrait-java's answer. It is a weak thing
+# to score a participant on, though, because the plan is invalid before that rule is reached and the
+# spec never restates the table_schema requirement outside algebra.proto. What is worth measuring is
+# whether anyone reports the mismatch, and that is what the swapped-declaration corpus does
+# (probe/lie_matrix.sh), not this table.
 
 # emit over a virtual table: outputMapping selects a single column.
 expected["virtual_table_emit_mapping"] = {
@@ -294,10 +366,18 @@ for _case in ("window_bound_offset", "window_bound_offset_expr"):
 # nothing has yet answered i64 - and a participant that does answer i64 is not diverging from the
 # spec while that issue is open, whatever this expectation says.
 #
-# Its nullability is not a reading. The docs write the column as a type, and a type written without
-# a "?" is REQUIRED: type_system.md gives nullability as "Either NULLABLE (? suffix) or REQUIRED (no
-# suffix)" and type_parsing.md makes the indicator "Optional, defaults to non-nullable". The proto
-# comment says "int64 field" in prose rather than in that notation, so it settles nothing there.
+# Its nullability is a reading too, and the argument that reached it first does not hold. That
+# argument was that the docs write the column as a type and a type without a "?" is REQUIRED, citing
+# type_system.md ("Either NULLABLE (? suffix) or REQUIRED (no suffix)") and type_parsing.md ("Optional,
+# defaults to non-nullable"). Both quotes are there, but the "?" marker appears nowhere in
+# site/docs/relations/ - not once, in either file - so its absence on this column carries nothing. The
+# objection raised against the proto's "int64 field" above, that it is prose and not that notation,
+# applies to "an i32 column describing the index" in the same way.
+#
+# Two things do support REQUIRED. Where these docs mean a nullable added column they say so in words:
+# the mark column "will be of type nullable boolean" (logical_relations.md, Join Types), and nothing
+# of the kind is said here or of the aggregate grouping-set index. And the proto calls this column "a
+# zero-indexed ordinal corresponding to the duplicate definition" - an ordinal every row has.
 #
 # Neither plan carries Plan.Root.names. With three names - what this expectation implies - substrait-
 # java refuses on the count before reporting any schema, because it derives two columns, and the

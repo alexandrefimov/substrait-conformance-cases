@@ -1,4 +1,4 @@
-GO: column from run 2026-09-08T22:13, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
+GO: column from run 2026-09-09T07:34, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_sets_declared_order         [c:string, a:i64]
@@ -53,12 +53,15 @@ phase_intermediate                             [r:struct<i64, i64>]
 physjoin_hash_inner                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_hash_left_mark                        ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 4
 physjoin_hash_left                             [c0:i64, c1:i64?, c2:i64?, c3:i64]
+physjoin_hash_right_semi                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
 physjoin_merge_inner                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_merge_left_mark                       ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 4
 physjoin_merge_left                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
+physjoin_merge_right_semi                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
 physjoin_nested_inner                          ERROR: not implemented
 physjoin_nested_left_mark                      ERROR: not implemented
 physjoin_nested_left                           ERROR: not implemented
+physjoin_nested_right_semi                     ERROR: not implemented
 precision_timestamp_p00                        [c:precision_timestamp<0>]
 precision_timestamp_p01                        [c:precision_timestamp<1>]
 precision_timestamp_p02                        [c:precision_timestamp<2>]

@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-08T22:13, duckdb 1.5.5
+DUCKDB: column from run 2026-09-09T07:34, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -54,12 +54,15 @@ phase_intermediate                             ERROR: BinderException: Binder Er
 physjoin_hash_inner                            ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_hash_left_mark                        ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_hash_left                             ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_hash_right_semi                       ERROR: NotImplementedException: Not implemented Error: Unsupported relation type hash_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_merge_inner                           ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_merge_left_mark                       ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_merge_left                            ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_merge_right_semi                      ERROR: NotImplementedException: Not implemented Error: Unsupported relation type merge_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_nested_inner                          ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_nested_left_mark                      ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 physjoin_nested_left                           ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
+physjoin_nested_right_semi                     ERROR: NotImplementedException: Not implemented Error: Unsupported relation type nested_loop_join LINE 1: SELECT * FROM from_substrait_json(?) ^
 precision_timestamp_p00                        [c:TIMESTAMP]
 precision_timestamp_p01                        [c:TIMESTAMP]
 precision_timestamp_p02                        [c:TIMESTAMP]
@@ -69,7 +72,7 @@ precision_timestamp_p06                        [c:TIMESTAMP]
 precision_timestamp_p07                        [c:TIMESTAMP]
 precision_timestamp_p09                        [c:TIMESTAMP]
 precision_timestamp_p12                        ERROR: InvalidInputException: Invalid Input Error: Precision must be between 0 and 9, got 12 LINE 1: SELECT * FROM from_substrait_json(?) ^
-read_projection_mask                           [k0:BOOLEAN, k1:BIGINT]
+read_projection_mask                           [k0:BIGINT, k1:BOOLEAN]
 setdata_intersection_multiset_all              ERROR: signal/exit 139
 setdata_intersection_multiset                  ERROR: signal/exit 139
 setdata_intersection_primary                   ERROR: NotImplementedException: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported LINE 1: SELECT * FROM from_substrait_json(?) ^

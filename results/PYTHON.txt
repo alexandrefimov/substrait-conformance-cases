@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-09-08T22:13, substrait 0.31.0
+PYTHON: column from run 2026-09-09T07:35, substrait 0.31.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64]
 aggregate_grouping_sets_declared_order         [c:str, a:i64]
@@ -53,12 +53,15 @@ phase_intermediate                             [r:[i64, i64]]  !! names 3, types
 physjoin_hash_inner                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_hash_left_mark                        [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
 physjoin_hash_left                             [c0:i64, c1:i64?, c2:i64?, c3:i64]
+physjoin_hash_right_semi                       [c0:i64?, c1:i64]
 physjoin_merge_inner                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_merge_left_mark                       [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
 physjoin_merge_left                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
+physjoin_merge_right_semi                      [c0:i64?, c1:i64]
 physjoin_nested_inner                          [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_nested_left_mark                      [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
 physjoin_nested_left                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
+physjoin_nested_right_semi                     [c0:i64?, c1:i64]
 precision_timestamp_p00                        [c:precision_timestamp(0)]
 precision_timestamp_p01                        [c:precision_timestamp(1)]
 precision_timestamp_p02                        [c:precision_timestamp(2)]

@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-08T22:13, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-09T07:35, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_sets_declared_order         [i32, unresolved]
@@ -53,12 +53,15 @@ phase_intermediate                             [[i64, i64]]
 physjoin_hash_inner                            —
 physjoin_hash_left_mark                        —
 physjoin_hash_left                             —
+physjoin_hash_right_semi                       —
 physjoin_merge_inner                           —
 physjoin_merge_left_mark                       —
 physjoin_merge_left                            —
+physjoin_merge_right_semi                      —
 physjoin_nested_inner                          —
 physjoin_nested_left_mark                      —
 physjoin_nested_left                           —
+physjoin_nested_right_semi                     —
 precision_timestamp_p00                        [c:unresolved]
 precision_timestamp_p01                        [c:unresolved]
 precision_timestamp_p02                        [c:unresolved]
@@ -68,7 +71,7 @@ precision_timestamp_p06                        [c:unresolved]
 precision_timestamp_p07                        [c:unresolved]
 precision_timestamp_p09                        [c:unresolved]
 precision_timestamp_p12                        [c:unresolved]
-read_projection_mask                           [bool, i64]
+read_projection_mask                           [i64, bool]
 setdata_intersection_multiset_all              i64
 setdata_intersection_multiset                  i64
 setdata_intersection_primary                   i64

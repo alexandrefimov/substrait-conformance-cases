@@ -49,7 +49,8 @@ EXPECTED_PARTIAL = {
     "Gluten": "four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)",
 }
 
-header = "%-46s" % "case" + "".join("%-*s" % (WIDTH, label) for label, _ in COLUMNS)
+header = ("%-46s" % "case"
+          + "".join("%-*s" % (WIDTH, label) for label, _ in COLUMNS)).rstrip()
 missing = [label for label, _ in COLUMNS if not data[label]]
 partial = [(label, len(data[label])) for label, _ in COLUMNS
            if data[label] and len(data[label]) < len(corpus)]
@@ -93,8 +94,12 @@ print()
 print(header)
 print("-" * len(header))
 for case in corpus:
-    print("%-46s" % case + "".join("%-*s" % (WIDTH, short(data[label].get(case, "·")))
-                                   for label, _ in COLUMNS))
+    # rstrip, because every column is padded to WIDTH including the last, so a short answer there -
+    # "·", or a one-word rejection - left the line ending in spaces. `git diff --check` is a
+    # repository gate and reads only added lines, so a file already carrying them passed until a new
+    # case was added, and then the gate failed on a row nobody had written by hand.
+    print(("%-46s" % case + "".join("%-*s" % (WIDTH, short(data[label].get(case, "·")))
+                                    for label, _ in COLUMNS)).rstrip())
 
 if missing or undeclared:
     sys.exit("the matrix is incomplete: %s" % ", ".join(missing + [l for l, _ in undeclared]))

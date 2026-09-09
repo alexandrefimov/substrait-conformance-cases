@@ -7,21 +7,39 @@ import java.util.*;
  * The same join rule down the three physical join messages.
  *
  * <p>`physical_relations.md` gives HashJoin, MergeJoin and NestedLoopJoin one Direct Output Order
- * each: "Same as the Join operator". Each of the three carries its own copy of the twelve-member
- * JoinType enum, identical to JoinRel's. So the rule these cases assert is not a new one - it is
- * the rule the twenty-four GenJoins cases already assert, arriving through a different message.
+ * each: "Same as the Join operator". Each of the three carries its own JoinType enum with the same
+ * twelve names JoinRel's has, so the rule these cases assert is not a new one - it is the rule the
+ * twenty-four GenJoins cases already assert, arriving through a different message.
  *
- * <p>That is what makes them worth having. A consumer derives the join rule once and then has to
- * wire it to four entry points, and the corpus could not see whether it did: every join case in it
- * is a JoinRel. Three join types are enough to tell the wiring apart, and only three are used, so
- * that this stays a check on the wiring rather than a second copy of the join matrix:
+ * <p>The enums are not identical, though, and that is the sharper reason to have these. Four of the
+ * twelve sit at a different number in the physical messages than in JoinRel (algebra.proto at
+ * v0.102.0, JoinRel:287 against HashJoin:938, MergeJoin:1002, NestedLoopJoin:1032):
+ *
+ * <pre>
+ *   LEFT_ANTI     6 -> 7
+ *   LEFT_SINGLE   7 -> 9
+ *   RIGHT_SEMI    8 -> 6
+ *   RIGHT_ANTI    9 -> 8
+ * </pre>
+ *
+ * <p>A consumer derives the join rule once and then has to wire it to four entry points, and the
+ * corpus could not see whether it did: every join case in it is a JoinRel. A consumer that carries
+ * a numeric join type across that boundary reads a left anti join as a left single, or a right semi
+ * as a left anti, and nothing in the format notices. Four join types are used, no more, so that this
+ * stays a check on the wiring rather than a second copy of the join matrix:
  *
  * <ul>
  *   <li>inner, where the answer is the two inputs concatenated - a control, because a consumer that
  *       does nothing at all is right here;
  *   <li>left, where the right side widens to nullable - the cheapest type that separates deriving
  *       from concatenating;
- *   <li>left mark, which returns the left side plus a nullable boolean, so the arity changes too.
+ *   <li>left mark, which returns the left side plus a nullable boolean, so the arity changes too;
+ *   <li>right semi, the one of the four renumbered types that is mapped everywhere today. It returns
+ *       t_nr, so the answer is (N, R); read through JoinRel's numbering it is a left anti, which
+ *       returns t_rn and answers (R, N). Same arity either way, so only the nullability pattern
+ *       separates them - which is what the asymmetric leaves are for. The other three renumbered
+ *       types would not isolate an ordinal bug: substrait-java maps neither SINGLE nor MARK at all
+ *       (substrait-java#1295), so a case on those reproduces a filed defect instead.
  * </ul>
  *
  * <p>The predicate differs by message because the messages differ: NestedLoopJoinRel carries an
@@ -32,8 +50,10 @@ import java.util.*;
 public class GenPhysJoins {
   static Path OUT;
 
-  /** The three join types, and the output arity each one implies over two two-column inputs. */
-  static final String[][] KINDS = {{"inner", "4"}, {"left", "4"}, {"left_mark", "3"}};
+  /** The four join types, and the output arity each one implies over two two-column inputs. */
+  static final String[][] KINDS = {
+    {"inner", "4"}, {"left", "4"}, {"left_mark", "3"}, {"right_semi", "2"}
+  };
 
   public static void main(String[] args) throws Exception {
     OUT = Paths.get(args[0]);

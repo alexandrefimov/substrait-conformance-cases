@@ -15,7 +15,12 @@ SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 DF="${DF_DIR:-$SP/datafusion}"
 CASES="${1:-$ROOT/derived-schema}"
 D="$(cd "$(dirname "$0")" && pwd)"
-[ -d "$DF/.git" ] || { echo "not a DataFusion checkout: $DF" >&2; exit 1; }
+# A worktree carries .git as a file, not a directory, and reverify.sh documents DF_DIR as "a
+# DataFusion checkout or worktree" and admits both at its own preflight. Accepting only a directory
+# here rejected the worktree the pinned commit has to be taken from, after preflight had passed:
+# the probe exited before writing a single answer, and the empty column that produced was copied
+# over the saved one by UPDATE_COLUMNS.
+[ -d "$DF/.git" ] || [ -f "$DF/.git" ] || { echo "not a DataFusion checkout: $DF" >&2; exit 1; }
 
 EX="$DF/datafusion/substrait/examples/corpus_probe.rs"
 [ -e "$EX" ] && {

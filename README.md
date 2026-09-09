@@ -6,13 +6,13 @@
 the matrix as a page, with the expectation and the answer beside each cell.
 
 A plan declares types and a consumer derives them again — or reuses what the plan declared. When
-the two disagree, nothing in the format notices. The main comparison corpus contains 95 plans built
-to make such disagreements visible, an expected schema for 90 of them, and probes that put the corpus
+the two disagree, nothing in the format notices. The main comparison corpus contains 98 plans built
+to make such disagreements visible, an expected schema for 93 of them, and probes that put the corpus
 through ten implementations.
 
 [Focused diagnostics](probe/README.md#focused-schema-diagnostics) also include
 minimal consumer cases with controls and checks of producer output. These can be
-run separately and are not counted in the saved 95-plan matrix.
+run separately and are not counted in the saved 98-plan matrix.
 
 The expectations are the part worth being suspicious of, so this is how they are made. Each one is
 written by hand from the spec — the derivation tables, the decimal formulas, the relation rules — in
@@ -45,7 +45,7 @@ anyone should have to read to judge whether a case says what it claims.
 
 Three things, in the order they are worth someone's time:
 
-- **A reading of `probe/expected.py` against the spec.** It is 90 expectations written by hand from
+- **A reading of `probe/expected.py` against the spec.** It is 93 expectations written by hand from
   the spec text; nobody outside this repository has checked them, and an expectation that is wrong
   turns into a divergence reported against an implementation that was right.
 - **For a participant's maintainer: the cases that differ for you.**
@@ -73,8 +73,8 @@ generator rather than protobuf.
 
 ## What the corpus says
 
-The columns saved here were taken 2026-09-08 against the versions in `probe/versions.env`, which
-each column's own first line names again. They answer the 90 cases that carry an expectation:
+The columns saved here were taken 2026-09-09 against the versions in `probe/versions.env`, which
+each column's own first line names again. They answer the 93 cases that carry an expectation:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/matrix-dark.svg">
@@ -91,18 +91,18 @@ expectation and the answer beside each cell.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
-| substrait-java | 85 | 2 | 3 |
-| substrait-python | 65 | 24 | 1 |
-| substrait-go | 59 | 4 | 27 |
-| substrait-validator | 47 | 28 | 15 |
-| Isthmus/Calcite | 51 | 5 | 34 |
-| DataFusion | 54 | 9 | 27 |
-| DuckDB | 34 | 20 | 36 |
-| Spark | 29 | 6 | 55 |
-| Acero | 4 | 15 | 71 |
+| substrait-java | 88 | 2 | 3 |
+| substrait-python | 68 | 24 | 1 |
+| substrait-go | 59 | 4 | 30 |
+| substrait-validator | 47 | 28 | 18 |
+| Isthmus/Calcite | 51 | 5 | 37 |
+| DataFusion | 54 | 9 | 30 |
+| DuckDB | 34 | 20 | 39 |
+| Spark | 29 | 6 | 58 |
+| Acero | 4 | 15 | 74 |
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
-and the same person wrote the generators, the expectations and part of substrait-java. Its 85
+and the same person wrote the generators, the expectations and part of substrait-java. Its 88
 matches say the two encodings of a spec rule agree. They do not say the consumer derived anything:
 swap a declared `output_type` for a false one and Java's answer follows it on ten of the 22 scored
 cases that carry one, as do substrait-python and the validator. [METHOD.md](METHOD.md) has that
@@ -150,16 +150,16 @@ counts that from the plans themselves:
 <!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->
 | relation | cases | | relation | cases |
 | --- | ---: | --- | --- | ---: |
-| `read` | 95 | | `cross` | 1 |
+| `read` | 98 | | `cross` | 1 |
 | `filter` | 1 | | `write` | 1 |
-| `fetch` | 1 | | `hash_join` | 3 |
-| `aggregate` | 7 | | `merge_join` | 3 |
-| `sort` | 1 | | `nested_loop_join` | 3 |
+| `fetch` | 1 | | `hash_join` | 4 |
+| `aggregate` | 7 | | `merge_join` | 4 |
+| `sort` | 1 | | `nested_loop_join` | 4 |
 | `join` | 26 | | `window` | 3 |
 | `project` | 9 | | `expand` | 2 |
 | `set` | 16 | | `top_n` | 1 |
 
-16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 95 plans. The other 8 carry no case: `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`. Three of the ones that do — `filter`, `fetch` and `sort` — appear only under an emit mapping, where the mapping is the subject and the relation is what it sits on.
+16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 98 plans. The other 8 carry no case: `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`. Three of the ones that do — `filter`, `fetch` and `sort` — appear only under an emit mapping, where the mapping is the subject and the relation is what it sits on.
 <!-- /coverage -->
 
 ## What is here
@@ -170,7 +170,7 @@ required one. The plans carry protobuf type messages, and `results/<NAME>.txt` k
 implementation calls the same type; `probe/check_expected.py` is where the three meet, and an
 implementation taking these cases has that mapping to do for itself.
 
-The corpus is `derived-schema/` — 95 plans as protobuf-JSON and as binary protobuf, with a
+The corpus is `derived-schema/` — 98 plans as protobuf-JSON and as binary protobuf, with a
 `manifest.json` describing every one — plus `derived-schema-virtual-tables/`, the same cases carrying
 their own rows in a `virtual_table`, so a case runs with nothing registered first. Gluten needs that
 form, reading only `virtual_table` and `local_files` out of a `ReadRel`, and it is also the form to
@@ -228,8 +228,8 @@ these are open:
   has become a question asked of the spec instead. Existing reports can cover only part of a linked
   observation, so their notes also matter. `open` is an allowed answer; a link does not prove a fix.
   The count is written down and `probe/check_differed.py` compares it.
-- Rows are compared for three participants and ten cases; schemas for nine participants and 90
-  cases. Five of the 95 cases link to the issue they came from; the rest record only their generator
+- Rows are compared for three participants and ten cases; schemas for nine participants and 93
+  cases. Five of the 98 cases link to the issue they came from; the rest record only their generator
   and the rule expected of them.
 - Those ten row cases are all a single column of integers, and that is the whole reach of the row
   half: each executing probe prints a row line only for a one-column result, and

@@ -1,6 +1,6 @@
 # Reported findings and their reproducers
 
-This map links findings from the [Substrait #1164 investigation](https://github.com/substrait-io/substrait/issues/1164) to their reproducers and upstream issues or PRs, including work that already covered a finding. It includes the focused diagnostics outside the saved 95-plan matrix.
+This map links findings from the [Substrait #1164 investigation](https://github.com/substrait-io/substrait/issues/1164) to their reproducers and upstream issues or PRs, including work that already covered a finding. It includes the focused diagnostics outside the saved 98-plan matrix.
 
 An implementation PR link identifies work on the report; it does not mean that the change is merged or included in the pinned measurements. Follow the issue and PR for current status. A missing PR link means none is recorded here, not that nobody is working on it.
 
