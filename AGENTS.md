@@ -21,8 +21,13 @@ git branch --show-current
   worktree as a sibling of the primary checkout, never inside it:
 
   ```sh
-  git worktree add <worktree-path> -b <agent>/<short-task>-<date> <base-sha>
+  git worktree add <worktree-path> -b <topic>-<date> <base-sha>
   ```
+
+  Name the branch after the task, not after the tool that runs it. A merge commit
+  keeps the branch name forever, so `codex/...` or `claude/...` puts the tool in
+  the permanent history of a repository people read to learn what the cases say.
+  Which agent did the work belongs in the run, not in `git log`.
 
 - Use the base named by the task. If none is named, resolve `origin/main`, record
   its exact SHA, and say whether the remote-tracking ref was refreshed before
