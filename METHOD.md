@@ -137,7 +137,7 @@ For substrait-java the eleven that move are the five decimal cases, `narrowing_c
 predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
 expectation.
 
-Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. Seventeen cases have been added since that run — three window cases, two expand, cross, top-N, the integer sum and the nine physical joins — four of them declaring an `output_type`. For Java, ten
+Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. Twenty cases have been added since that run — three window cases, two expand, cross, top-N, the integer sum and the twelve physical joins — four of them declaring an `output_type`. For Java, ten
 scored output schemas change and twelve hold. In those twelve cases the altered declaration belongs
 to a join predicate, whose type is absent from the output schema. The predicate's declaration can
 be copied without changing the join's output. The other 51 scored plans have no `output_type`.

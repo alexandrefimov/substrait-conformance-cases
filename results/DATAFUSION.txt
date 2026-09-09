@@ -1,4 +1,4 @@
-DATAFUSION: column from run 2026-09-08T22:13, datafusion cc29ea12a
+DATAFUSION: column from run 2026-09-09T07:34, datafusion cc29ea12a
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
@@ -54,12 +54,15 @@ phase_intermediate                             ERROR: Substrait error: Names lis
 physjoin_hash_inner                            ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
 physjoin_hash_left                             ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
 physjoin_hash_left_mark                        ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
+physjoin_hash_right_semi                       ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
 physjoin_merge_inner                           ERROR: This feature is not implemented: MergeJoin(MergeJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), lef
 physjoin_merge_left                            ERROR: This feature is not implemented: MergeJoin(MergeJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), lef
 physjoin_merge_left_mark                       ERROR: This feature is not implemented: MergeJoin(MergeJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), lef
+physjoin_merge_right_semi                      ERROR: This feature is not implemented: MergeJoin(MergeJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), lef
 physjoin_nested_inner                          ERROR: This feature is not implemented: NestedLoopJoin(NestedLoopJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct
 physjoin_nested_left                           ERROR: This feature is not implemented: NestedLoopJoin(NestedLoopJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct
 physjoin_nested_left_mark                      ERROR: This feature is not implemented: NestedLoopJoin(NestedLoopJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct
+physjoin_nested_right_semi                     ERROR: This feature is not implemented: NestedLoopJoin(NestedLoopJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct
 precision_timestamp_p00                        [c:Timestamp(Second, None)]
 precision_timestamp_p01                        ERROR: This feature is not implemented: Unsupported Substrait precision 1, for PrecisionTimestamp
 precision_timestamp_p02                        ERROR: This feature is not implemented: Unsupported Substrait precision 2, for PrecisionTimestamp
@@ -69,7 +72,7 @@ precision_timestamp_p06                        [c:Timestamp(Microsecond, None)]
 precision_timestamp_p07                        ERROR: This feature is not implemented: Unsupported Substrait precision 7, for PrecisionTimestamp
 precision_timestamp_p09                        [c:Timestamp(Nanosecond, None)]
 precision_timestamp_p12                        ERROR: This feature is not implemented: Unsupported Substrait precision 12, for PrecisionTimestamp
-read_projection_mask                           [k0:Boolean, k1:Int64]
+read_projection_mask                           [k0:Int64, k1:Boolean]
 setdata_intersection_multiset                  [v:Int64]
 setdata_intersection_multiset_all              [v:Int64]
 setdata_intersection_primary                   [v:Int64]

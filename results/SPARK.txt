@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-08T22:14, spark 3.5.4
+SPARK: column from run 2026-09-09T07:35, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -54,12 +54,15 @@ phase_intermediate                             ERROR: IllegalArgumentException: 
 physjoin_hash_inner                            ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
 physjoin_hash_left_mark                        ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_left                             ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
+physjoin_hash_right_semi                       ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
 physjoin_merge_inner                           ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
 physjoin_merge_left_mark                       ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_left                            ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
+physjoin_merge_right_semi                      ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
 physjoin_nested_inner                          ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
 physjoin_nested_left_mark                      ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_left                           ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
+physjoin_nested_right_semi                     ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
 precision_timestamp_p00                        ERROR: UnsupportedOperationException: Unsupported precision: 0. Spark stores time values as microseconds, so a type must declare
 precision_timestamp_p01                        ERROR: UnsupportedOperationException: Unsupported precision: 1. Spark stores time values as microseconds, so a type must declare
 precision_timestamp_p02                        ERROR: UnsupportedOperationException: Unsupported precision: 2. Spark stores time values as microseconds, so a type must declare

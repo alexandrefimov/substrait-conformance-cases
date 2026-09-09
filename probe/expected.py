@@ -137,7 +137,14 @@ for kind in ["inner", "outer", "left", "right", "left_semi", "left_anti", "right
 # here disagrees with the same sentence its join_ counterpart already asserts. What they add is the
 # entry point: everything above is a JoinRel, so a consumer that derives the rule once and wires it
 # to one message of four looks correct until asked through another.
-for kind in ["inner", "left", "left_mark"]:
+#
+# The names match; four of the numbers do not. In algebra.proto at v0.102.0 LEFT_ANTI is 6 in JoinRel
+# and 7 in all three physical messages, LEFT_SINGLE 7 and 9, RIGHT_SEMI 8 and 6, RIGHT_ANTI 9 and 8.
+# right_semi is here because it is the one of those four that is mapped everywhere today: it returns
+# t_nr and answers (N, R), while JoinRel's 6 is left_anti, which returns t_rn and answers (R, N).
+# Same arity, so the nullability pattern is the only thing that separates them. inner, left and
+# left_mark cannot see this at all - they are 1, 3 and 11 in both enums.
+for kind in ["inner", "left", "left_mark", "right_semi"]:
     for message in ("hash", "merge", "nested"):
         expected["physjoin_%s_%s" % (message, kind)] = {
             "schema": join_expected(kind),
@@ -166,10 +173,19 @@ for rel in ["read", "filter", "project", "sort", "fetch", "aggregate", "join"]:
 # --- The rest, derivable from the spec mechanically ----------------------------------------------
 
 # The ReadRel.projection mask over t_mix (i64 R, string R, bool R) selects structItems
-# [{field:2},{}], that is column 2 then column 0: by the spec, Read's Direct Output Order is the
+# [{field:0},{field:2}], that is columns 0 and 2: by the spec, Read's Direct Output Order is the
 # schema after the mask.
+#
+# The fields are listed in ascending order so that the case does not turn on a question v0.102.0
+# leaves open. algebra.proto calls a MaskExpression a reference that "selectively removes fields" and
+# says it "does not fundamentally alter the structure of data beyond the elimination of unnecessary
+# elements"; field_references.md asks "Should we support column reordering/positioning using a masked
+# complex expression? (Right now, you can only mask things out.)" Under that reading a mask cannot
+# reorder, so [{field:2},{field:0}] would have made this expectation assert an order the spec does
+# not give. Ascending, both readings agree on [i64, bool], and the case still measures the thing it
+# was built for: a consumer that ignores the projection answers with all three columns.
 expected["read_projection_mask"] = {
-    "schema": [["bool", False], ["i64", False]],
+    "schema": [["i64", False], ["bool", False]],
     "source": "Read / Direct Output Order: the schema after projection is applied"}
 
 # A read with no operations: the schema equals the declared base_schema.

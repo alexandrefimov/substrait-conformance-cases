@@ -7,8 +7,18 @@ import java.util.List;
  * ReadRel.projection - masking columns at the read. By the spec the projection masks the read's
  * columns before anything else, so emit's indexes count the columns that are left.
  *
- * <p>t_mix is (c0 i64 = 10, c1 string = "x", c2 bool = true). The mask selects fields 2 and 0, so
- * the expectation is [bool, i64] with the row (true, 10) - the same as emit_read.
+ * <p>t_mix is (c0 i64 = 10, c1 string = "x", c2 bool = true). The mask selects fields 0 and 2, so
+ * the expectation is [i64, bool] with the row (10, true).
+ *
+ * <p>The mask lists its fields in ascending order on purpose. v0.102.0 does not settle whether a
+ * mask may reorder at all: algebra.proto describes a MaskExpression as one that "selectively removes
+ * fields" and adds that it "does not fundamentally alter the structure of data beyond the
+ * elimination of unnecessary elements", while field_references.md raises reordering as an open
+ * question - "Right now, you can only mask things out." A mask listing [2, 0] makes this case assert
+ * an output order the spec does not give, and its answer then depends on which reading a participant
+ * took. Listing [0, 2] gives [i64, bool] under either reading, and what the case is for - whether the
+ * projection is applied at all - is unchanged, because a consumer that ignores it answers with all
+ * three columns either way.
  */
 public class GenProjection {
   public static void main(String[] args) throws Exception {
@@ -19,8 +29,8 @@ public class GenProjection {
         Expression.MaskExpression.newBuilder()
             .setSelect(
                 Expression.MaskExpression.StructSelect.newBuilder()
-                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(2))
-                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(0)))
+                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(0))
+                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(2)))
             .build();
 
     Rel read =
@@ -44,7 +54,7 @@ public class GenProjection {
 
     Files.writeString(
         out.resolve("read_projection_mask.json"), JsonFormat.printer().print(plan) + "\n");
-    System.out.println("=== read_projection_mask  the mask selects fields [2, 0], expecting [bool, i64] / (true, 10)");
+    System.out.println("=== read_projection_mask  the mask selects fields [0, 2], expecting [i64, bool] / (10, true)");
     try {
       System.out.println(
           "    substrait-java: "

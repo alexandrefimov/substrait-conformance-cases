@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-08. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-09. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 2 cases
@@ -98,7 +98,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-py
 
 | case | expected | substrait-python answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[k0:i64, k1:str, ?:bool]  !! names 2, types 3` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:i64, k1:str, ?:bool]  !! names 2, types 3` | Read / Direct Output Order: the schema after projection is applied |
 
 ## substrait-go — 4 cases
 
@@ -231,7 +231,7 @@ A fix, opened without a separate issue.
 
 | case | expected | Isthmus/Calcite answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
 
 ## DataFusion — 9 cases
 
@@ -432,7 +432,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-ja
 
 | case | expected | Spark answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[bool, i64]` | `[k0:bigint, k1:string]` | Read / Direct Output Order: the schema after projection is applied |
+| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:bigint, k1:string]` | Read / Direct Output Order: the schema after projection is applied |
 
 ## Acero — 15 cases
 

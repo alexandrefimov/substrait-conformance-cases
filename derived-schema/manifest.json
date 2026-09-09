@@ -1166,6 +1166,26 @@
   }
  },
  {
+  "case": "physjoin_hash_right_semi",
+  "plan": "physjoin_hash_right_semi.json",
+  "binary": "physjoin_hash_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_hash_right_semi  hash join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
   "case": "physjoin_merge_inner",
   "plan": "physjoin_merge_inner.json",
   "binary": "physjoin_merge_inner.bin",
@@ -1246,6 +1266,26 @@
   }
  },
  {
+  "case": "physjoin_merge_right_semi",
+  "plan": "physjoin_merge_right_semi.json",
+  "binary": "physjoin_merge_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_merge_right_semi  merge join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
   "case": "physjoin_nested_inner",
   "plan": "physjoin_nested_inner.json",
   "binary": "physjoin_nested_inner.bin",
@@ -1320,6 +1360,26 @@
     [
      "bool",
      true
+    ]
+   ],
+   "from": "physical_relations.md: the same Direct Output Order as the Join operator"
+  }
+ },
+ {
+  "case": "physjoin_nested_right_semi",
+  "plan": "physjoin_nested_right_semi.json",
+  "binary": "physjoin_nested_right_semi.bin",
+  "generator": "GenPhysJoins",
+  "note": "physjoin_nested_right_semi  nested join, right semi: the Join operator's rule through a different message",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
     ]
    ],
    "from": "physical_relations.md: the same Direct Output Order as the Join operator"
@@ -1474,15 +1534,15 @@
   "plan": "read_projection_mask.json",
   "binary": "read_projection_mask.bin",
   "generator": "GenProjection",
-  "note": "read_projection_mask  the mask selects fields [2, 0], expecting [bool, i64] / (true, 10)",
+  "note": "read_projection_mask  the mask selects fields [0, 2], expecting [i64, bool] / (10, true)",
   "expectation": {
    "schema": [
     [
-     "bool",
+     "i64",
      false
     ],
     [
-     "i64",
+     "bool",
      false
     ]
    ],

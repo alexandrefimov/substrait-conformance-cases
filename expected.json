@@ -795,6 +795,19 @@
    ],
    "source": "physical_relations.md: the same Direct Output Order as the Join operator"
   },
+  "physjoin_hash_right_semi": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
   "physjoin_merge_inner": {
    "schema": [
     [
@@ -854,6 +867,19 @@
    ],
    "source": "physical_relations.md: the same Direct Output Order as the Join operator"
   },
+  "physjoin_merge_right_semi": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
   "physjoin_nested_inner": {
    "schema": [
     [
@@ -909,6 +935,19 @@
     [
      "bool",
      true
+    ]
+   ],
+   "source": "physical_relations.md: the same Direct Output Order as the Join operator"
+  },
+  "physjoin_nested_right_semi": {
+   "schema": [
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
     ]
    ],
    "source": "physical_relations.md: the same Direct Output Order as the Join operator"
@@ -997,11 +1036,11 @@
   "read_projection_mask": {
    "schema": [
     [
-     "bool",
+     "i64",
      false
     ],
     [
-     "i64",
+     "bool",
      false
     ]
    ],

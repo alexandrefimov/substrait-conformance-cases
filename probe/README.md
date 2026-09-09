@@ -207,7 +207,7 @@ both explicit-ERROR cases return null when ANSI is disabled and raise an error
 when it is enabled. All four safe controls pass: normal diagnostic mode exits 0
 with two differences, while `--check` exits 1. Missing or malformed observations
 and failed controls always fail the command. These evaluated expressions are
-separate from the 32 structural plans and the saved 95-plan matrix.
+separate from the 32 structural plans and the saved 98-plan matrix.
 
 **Python join and grouping nullability.** `python_nullability.py` checks six logical join kinds
 against all four combinations of input nullability, plus five grouping-set layouts. Its
@@ -226,7 +226,7 @@ case, then the number of cases and mismatches. `--area join` selects only the jo
 are reported without a failing exit status; an inference error or mutation of the input does fail
 the run. `--write-plans` exports protobuf-JSON plans with named tables and no data. A consumer that
 resolves those names through its own catalog needs each table registered with the schema from its
-`ReadRel.base_schema`. These 29 checks are separate from the 95 plans in the main corpus. They reproduce
+`ReadRel.base_schema`. These 29 checks are separate from the 98 plans in the main corpus. They reproduce
 [Python #267](https://github.com/substrait-io/substrait-python/issues/267) and
 [#268](https://github.com/substrait-io/substrait-python/issues/268).
 

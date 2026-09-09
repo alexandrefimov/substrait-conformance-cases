@@ -37,10 +37,10 @@
       "projection": {
        "select": {
         "structItems": [
+         {},
          {
           "field": 2
-         },
-         {}
+         }
         ]
        }
       },
