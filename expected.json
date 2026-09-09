@@ -1,10 +1,10 @@
 {
  "disputed": {
   "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
-  "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: the spec does not say which wins, the row or the schema",
-  "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: the spec does not say which wins, the row or the schema",
-  "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: the spec does not say which wins, the row or the schema",
-  "virtual_table_row_required_in_nullable_column": "a required literal in a column the schema declares nullable: the spec does not say which wins, the row or the schema"
+  "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but the general one reaches it - type_system.md allows no coercion and requires an explicit cast for all changes in types",
+  "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
+  "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: nullability is part of a type, so the cast rule would forbid it, yet nullability is also stripped before binding under MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
+  "virtual_table_row_required_in_nullable_column": "a required literal in a column the schema declares nullable: the same tension the other way round, and the direction engines widen silently"
  },
  "expected": {
   "aggregate_grouping_field_shared_by_sets": {
@@ -18,7 +18,7 @@
      true
     ]
    ],
-   "source": "Aggregate: only fields absent from some grouping set become nullable"
+   "source": "Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps"
   },
   "aggregate_grouping_sets_declared_order": {
    "schema": [
@@ -31,7 +31,7 @@
      true
     ]
    ],
-   "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable"
+   "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps"
   },
   "aggregate_sum_i64": {
    "schema": [
@@ -40,7 +40,7 @@
      true
     ]
    ],
-   "source": "sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, so the output_type the plan carries is the answer"
+   "source": "sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, and algebra.proto requires the plan's output_type to be set to exactly that, so the YAML is the answer and the plan repeats it"
   },
   "control_join_without_relcommon": {
    "schema": [
