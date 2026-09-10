@@ -1,0 +1,45 @@
+id: join_physical/hash_left_single/wire-9
+spec_ref: relations/physical_relations.md#hash-join-operator
+kind: KIND_POSITIVE
+notes: >-
+  HashJoinRel, MergeJoinRel and NestedLoopJoinRel number their JoinType enum
+  differently from JoinRel for four values. On the wire this case carries 9, which
+  these three messages read as LEFT_SINGLE and JoinRel reads as RIGHT_ANTI. A tool
+  that rewrites a logical join into a physical one by copying the number, or that
+  resolves a physical join with JoinRel's enum, changes the join without changing
+  anything else about the plan. Left single emits every left record with at most one
+  right match, padding the right side with nulls. Under the logical numbering the same
+  wire value is a right anti join, which emits the right input alone. The key
+  references are per input, not over the concatenation: the Hash Join Properties table
+  calls them the field to compare from the left input and the field to compare from
+  the right input, so the right key here is the right table's own column 0.
+inputs:
+  t_left:
+    schema: "a0:i64, a1:i64?"
+    rows: [["1::i64", "null::i64?"], ["2::i64", "2::i64?"]]
+  t_right:
+    schema: "b0:i64, b1:i64?"
+    rows: [["2::i64", "20::i64?"], ["5::i64", "50::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [a0, a1, b0, b1]
+        input:
+          hash_join:
+            common: {direct: {}}
+            type: JOIN_TYPE_LEFT_SINGLE
+            left: {read: {common: {direct: {}}, $table: t_left}}
+            right: {read: {common: {direct: {}}, $table: t_right}}
+            keys:
+              - left: {direct_reference: {struct_field: {field: 0}}, root_reference: {}}
+                right: {direct_reference: {struct_field: {field: 0}}, root_reference: {}}
+                comparison: {simple: SIMPLE_COMPARISON_TYPE_EQ}
+expect:
+  schema: "a0:i64, a1:i64?, b0:i64?, b1:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "null::i64?", "null::i64?", "null::i64?"]
+      - ["2::i64", "2::i64?", "2::i64?", "20::i64?"]
