@@ -37,18 +37,41 @@ SQL = {"i8": "TINYINT", "i16": "SMALLINT", "i32": "INTEGER", "i64": "BIGINT",
 CORPUS = {"TINYINT": "i8", "SMALLINT": "i16", "INTEGER": "i32", "BIGINT": "i64",
           "BOOLEAN": "bool", "VARCHAR": "string", "FLOAT": "fp32", "DOUBLE": "fp64",
           "DATE": "date", "BLOB": "binary", "HUGEINT": "i128"}
+# A precision_timestamp names its precision in the type, and DuckDB has one SQL type per width
+# rather than a parameter. Only the widths DuckDB actually carries are here: a case at another
+# precision stops rather than being stored at a neighbouring one, which would make the answer be
+# about a type nobody wrote.
+TIMESTAMP = {0: "TIMESTAMP_S", 3: "TIMESTAMP_MS", 6: "TIMESTAMP", 9: "TIMESTAMP_NS"}
+TIMESTAMP_BACK = {"TIMESTAMP_S": 0, "TIMESTAMP_MS": 3, "TIMESTAMP": 6, "TIMESTAMP_NS": 9}
 
 
 class Unbindable(Exception):
     """The harness cannot put this case to DuckDB at all. Not a finding about DuckDB."""
 
 
-def sql_type(t):
+def sql_type(t, names=None):
+    """The DuckDB spelling of a case's column type.
+
+    `names` is the flat, depth-first name list of the NamedStruct this type came from; a struct
+    takes one name per field out of it, because DuckDB's STRUCT names its fields and the case
+    already says what they are called.
+    """
     kind = t.WhichOneof("kind")
     if kind == "decimal":
         return "DECIMAL(%d,%d)" % (t.decimal.precision, t.decimal.scale)
+    if kind == "struct":
+        fields = []
+        for member in t.struct.types:
+            name = names.pop(0) if names else "f%d" % len(fields)
+            fields.append('"%s" %s' % (name, sql_type(member, names)))
+        return "STRUCT(%s)" % ", ".join(fields)
+    if kind == "precision_timestamp":
+        precision = t.precision_timestamp.precision
+        if precision not in TIMESTAMP:
+            raise Unbindable("no DuckDB timestamp of precision %d" % precision)
+        return TIMESTAMP[precision]
     if kind not in SQL:
-        raise Unbindable("no DuckDB type for %s" % corpus.render_type(t))
+        raise Unbindable("no DuckDB type for %s" % kind)
     return SQL[kind]
 
 
@@ -58,7 +81,38 @@ def corpus_type(sql):
     name = str(sql).upper()
     if name.startswith("DECIMAL"):
         return name.lower().replace(" ", "").replace("(", "<").replace(")", ">")
+    if name.startswith("STRUCT("):
+        inner = str(sql)[len("STRUCT("):-1]
+        members = []
+        for field in split_fields(inner):
+            field_name, _, field_type = field.strip().partition(" ")
+            members.append("%s:%s" % (field_name.strip('"'), corpus_type(field_type)))
+        return "struct<%s>" % ", ".join(members)
+    if name in TIMESTAMP_BACK:
+        return "precision_timestamp<%d>" % TIMESTAMP_BACK[name]
     return CORPUS.get(name, name.lower())
+
+
+def split_fields(text):
+    """`x BIGINT, y STRUCT(a INTEGER, b VARCHAR)` into its top-level fields.
+
+    A plain split on the comma cuts a nested STRUCT in half, and the corpus has one three levels
+    deep, so the depth is counted.
+    """
+    parts, depth, current = [], 0, ""
+    for ch in text:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        if ch == "," and depth == 0:
+            parts.append(current)
+            current = ""
+            continue
+        current += ch
+    if current.strip():
+        parts.append(current)
+    return parts
 
 
 def bind(con, case):
@@ -67,9 +121,13 @@ def bind(con, case):
     for table in case.tables:
         name = ".".join(table.name)
         declared[name] = table.schema
-        cols = ", ".join(
-            "%s %s%s" % (n, sql_type(t), "" if t_nullable(t) else " NOT NULL")
-            for n, t in zip(table.schema.names, table.schema.struct.types))
+        pending = list(table.schema.names)
+        parts = []
+        for t in table.schema.struct.types:
+            column = pending.pop(0) if pending else "c%d" % len(parts)
+            parts.append('"%s" %s%s' % (column, sql_type(t, pending),
+                                        "" if t_nullable(t) else " NOT NULL"))
+        cols = ", ".join(parts)
         con.execute('CREATE TABLE "%s" (%s)' % (name, cols))
         for row in table.rows:
             values = [corpus.literal_value(f) for f in row.fields]

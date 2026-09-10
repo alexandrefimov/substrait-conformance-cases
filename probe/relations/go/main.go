@@ -46,7 +46,7 @@ var short = map[string]string{"fixed_char": "fixedchar", "fixed_binary": "fixedb
 // through the descriptor rather than switching on every known kind keeps this the same procedure
 // probe/relations/corpus.py follows, so a type neither of them has met is still named and not
 // dropped.
-func renderType(t *spb.Type) string {
+func renderType(t *spb.Type, names *[]string) string {
 	if t == nil {
 		return "?"
 	}
@@ -63,6 +63,16 @@ func renderType(t *spb.Type) string {
 	q := ""
 	if field(sub, "nullability") == nullable {
 		q = "?"
+	}
+	// A struct column takes one name per field out of the flat, depth-first list a NamedStruct
+	// carries, and everything after it moves. Pairing names with top-level types instead was wrong
+	// the moment a column was a struct, which is what the cases under names/ are for.
+	if name == "struct" {
+		members := []string{}
+		for _, member := range t.GetStruct().GetTypes() {
+			members = append(members, takeName(names)+":"+renderType(member, names))
+		}
+		return "struct<" + strings.Join(members, ", ") + ">" + q
 	}
 	switch {
 	case name == "decimal":
@@ -99,24 +109,27 @@ func field(m protoreflect.Message, name string) int64 {
 // A name without a type and a type without a name are both kept as `?` rather than dropped: a
 // participant may return more types than root names or fewer, and substrait-go refuses several
 // cases on exactly that mismatch. An answer that quietly shortened itself to the smaller of the
-// two counts would hide the disagreement it is there to record.
-func renderSchema(ns *spb.NamedStruct) string {
-	names := ns.GetNames()
-	types := ns.GetStruct().GetTypes()
-	n := len(names)
-	if len(types) > n {
-		n = len(types)
+// two counts would hide the disagreement it is there to record. The names are consumed from the
+// front rather than indexed, because a struct column takes one per field.
+// takeName pops the next name, or says there was none rather than inventing one.
+func takeName(names *[]string) string {
+	if names == nil || len(*names) == 0 {
+		return "?"
 	}
-	cols := make([]string, 0, n)
-	for i := 0; i < n; i++ {
-		name, ty := "?", "?"
-		if i < len(names) {
-			name = names[i]
-		}
-		if i < len(types) {
-			ty = renderType(types[i])
-		}
-		cols = append(cols, name+":"+ty)
+	name := (*names)[0]
+	*names = (*names)[1:]
+	return name
+}
+
+func renderSchema(ns *spb.NamedStruct) string {
+	pending := append([]string{}, ns.GetNames()...)
+	cols := []string{}
+	for _, t := range ns.GetStruct().GetTypes() {
+		name := takeName(&pending)
+		cols = append(cols, name+":"+renderType(t, &pending))
+	}
+	for _, leftover := range pending {
+		cols = append(cols, leftover+":?")
 	}
 	return "[" + strings.Join(cols, ", ") + "]"
 }

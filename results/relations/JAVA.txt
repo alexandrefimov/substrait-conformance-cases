@@ -1,17 +1,30 @@
-JAVA: relations column from run 2026-09-10T19:15, substrait-java fff63906, substrait protos 0.102.0, JDK 17.0.20.1
-Corpus tests/relations at fingerprint 249d3d09bb78, 39 cases.
+JAVA: relations column from run 2026-09-10T20:40, substrait-java fff63906, substrait protos 0.102.0, JDK 17.0.20.1
+Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
 BOUNDARY: substrait-java derives a schema and does not execute, so every case here is answered on its schema alone, including the 26 that declare rows.
-score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 4 of the 39 cases.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
 
 score   aggregate/grouping_sets/index-column                      [g0:i64?, g1:string?, total:i64?, grouping_set:i32]
 score   aggregate/grouping_sets/overlapping-sets                  [g0:i64, g1:string?, total:i64?, grouping_set:i32]
 score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i64?]
 score   aggregate/sum/measure-nullability                         [g0:i64, total:i64?]
+score   cross/output/preserves-nullability                        [l0:i64, l1:i64?, r0:i64?, r1:i64]
 score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64?]
 score   emit/drop/leave-columns-out                               [only:string]
+score   emit/on_aggregate/mapping-on-an-aggregate                 [total:i64?, g:string]
+score   emit/on_fetch/mapping-on-a-fetch                          [v:string, k:i64?]
+score   emit/on_join/mapping-on-a-join                            [r0:bool, l0:i64]
+score   emit/on_sort/mapping-on-a-sort                            [only_v:string]
 score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64]
 score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64?]
+score   exchange/round-robin/output-is-the-input                  [c0:i64, c1:string?]
+score   expand/consistent/index-column                            ERROR: IllegalArgumentException: Plan.Root names count (4) must match input record type depth-first named-field count (3)
+score   expand/fields/beyond-the-definitions                      ERROR: IllegalArgumentException: Plan.Root names count (4) must match input record type depth-first named-field count (1)
+score   expand/switching/nullability-is-the-union                 ERROR: IllegalArgumentException: Plan.Root names count (4) must match input record type depth-first named-field count (3)
+score   fetch/count/unset-means-all                               [k:i64?, v:string]
+score   fetch/offset-and-count/window                             [k:i64?, v:string]
 observe invalid/declaration/output-type-disagrees-with-extension  [r:decimal<20,2>]
+observe invalid/emit/maps-a-column-that-is-not-there              CRASH: IndexOutOfBoundsException: Index 5 out of bounds for length 2
+observe invalid/set/inputs-differ-in-width                        ERROR: IllegalArgumentException: Set's input records have different number of fields
 score   join/inner/output-nullability                             [a0:i64, a1:i64?, b0:i64, b1:i64?]
 score   join/left/output-nullability                              [a0:i64, a1:i64?, b0:i64?, b1:i64?]
 score   join/left_mark/output-mark-column                         [a0:i64, a1:i64?, mark:bool?]
@@ -24,14 +37,22 @@ score   join_physical/hash_left_anti/wire-7                       [a0:i64, a1:i6
 score   join_physical/hash_left_single/wire-9                     ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_SINGLE
 score   join_physical/hash_right_anti/wire-8                      [b0:i64, b1:i64?]
 score   join_physical/hash_right_semi/wire-6                      [b0:i64, b1:i64?]
+score   join_physical/merge_left_anti/wire-7                      [a0:i64, a1:i64?]
+score   join_physical/nested_loop_left_anti/wire-7                [a0:i64, a1:i64?]
+score   names/nested_nullability/a-nullable-struct-keeps-its-fields [outer:struct<inner:i64, other:string?>?]
+score   names/nested_struct/depth-first-name-order                [a:i64, s:struct<x:i64, y:i64?>]
+score   names/struct_of_structs/seven-names-for-two-columns       [a:struct<b:i64, c:i64>, d:struct<e:i64, f:i64, g:i64>]
 score   project/decimal_add/return-type                           [r:decimal<11,2>]
 score   project/decimal_divide/return-type                        [r:decimal<21,8>]
 score   project/decimal_multiply/return-type                      [r:decimal<16,3>]
 score   project/output-order/appends-computed-columns             [a:i64, b:i64?, sum:i64]
+score   read/mask/keeps-a-column-whole                            [s:struct<x:i64, y:string, z:bool>]
+score   read/mask/narrows-a-struct-from-inside                    [s:struct<x:i64, z:bool>]
 score   read/named_table/direct-schema                            [a:i64, b:i64?]
 score   read/projection/mask-drops-a-column                       [c0:i64, c2:bool]
 observe read/projection/mask-reorders                             [first:bool, second:i64]
 score   read/virtual_table/literal-rows                           [n:i64, s:string?]
+score   reference/subtree/maintains-the-referred-output           ERROR: UnsupportedOperationException: Unsupported RelTypeCase of RELTYPE_NOT_SET
 score   set/intersection_multiset/output-nullability              [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
 score   set/intersection_multiset_all/output-nullability          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
 score   set/intersection_primary/output-nullability               [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64?, c6:i64?, c7:i64?]
@@ -40,5 +61,16 @@ score   set/minus_primary/output-nullability                      [c0:i64, c1:i6
 score   set/minus_primary_all/output-nullability                  [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 score   set/union_all/output-nullability                          [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 score   set/union_distinct/output-nullability                     [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   sort/nulls_first/sequence                                 [k:i64?, v:string]
+score   sort/nulls_last/sequence                                  [k:i64?, v:string]
+score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date?]
+score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]
+score   temporal/precision_timestamp/precision-is-part-of-the-type [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]
+observe unresolved/ddl/declares-no-output                         [?:i64, ?:string?]
+observe unresolved/update/output-type-is-not-stated               ERROR: IllegalArgumentException: Plan.Root names count (1) must match input record type depth-first named-field count (2)
 observe unresolved/virtual_table/row-required-in-nullable-column  ERROR: IllegalArgumentException: Row field type (I64{nullable=false}) does not match schema field type (I64{nullable=true})
 observe unresolved/virtual_table/row-type-differs-from-schema     ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})
+score   window/lead/nullable-whatever-the-argument                [c0:i64, c1:i64?, c2:string, nxt:i64?]
+score   window/output-order/appends-after-the-input               [c0:i64, c1:i64?, c2:string, rn:i64?]
+score   write/modified_records/returns-the-after-image            [id:i64, note:string?]
+score   write/no_output/returns-nothing                           [id:i64, note:string?]

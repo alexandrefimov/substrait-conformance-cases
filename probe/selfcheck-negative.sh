@@ -623,7 +623,7 @@ mutate "a stale count of the relation cases" "relation cases" \
   python3 -c "
 p = 'README.md'
 t = open(p, encoding='utf-8').read()
-open(p, 'w', encoding='utf-8').write(t.replace('corpus: 39 cases written by hand', 'corpus: 41 cases written by hand'))"
+open(p, 'w', encoding='utf-8').write(t.replace('corpus: 71 cases written by hand', 'corpus: 73 cases written by hand'))"
 
 # The relations corpus is measured against an extract of its own bundles, and the tie between the
 # two is a hash rather than a rerun of the generator, because the generator needs protobuf and this

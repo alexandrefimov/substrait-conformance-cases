@@ -1,7 +1,7 @@
 {
   "corpus": "tests/relations/bundles",
   "generator": "probe/relations/expected.py",
-  "fingerprint": "249d3d09bb78",
+  "fingerprint": "996a7b806bf4",
   "cases": [
     {
       "id": "aggregate/grouping_sets/index-column",
@@ -44,6 +44,16 @@
       "rows": "(1, 30)"
     },
     {
+      "id": "cross/output/preserves-nullability",
+      "bundle": "cross/preserves_nullability.pb",
+      "sha256": "c1d05b21332e976100d0a513801e5804faa7abb6c2583dc65ba863cd3c66cd51",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#cross-product-operation",
+      "schema": "[l0:i64, l1:i64?, r0:i64?, r1:i64]",
+      "rows": "(1, null, 7, 8) (1, null, 9, 10)"
+    },
+    {
       "id": "emit/direct_explicit/direct-equivalence",
       "bundle": "emit/direct_explicit.pb",
       "sha256": "2de1e448bf138c44c3dfe7bea857b19a37ac84d508ad29b5e9f8016036c517c7",
@@ -62,6 +72,46 @@
       "spec_ref": "relations/common_fields.md#emit",
       "schema": "[only:string]",
       "rows": "('x')"
+    },
+    {
+      "id": "emit/on_aggregate/mapping-on-an-aggregate",
+      "bundle": "emit/on_aggregate.pb",
+      "sha256": "9d309ef43f21099ff77baaa428b0391505f3829a106fc59caa342e60fec4df77",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/common_fields.md#emit",
+      "schema": "[total:i64?, g:string]",
+      "rows": "(30, 'a')"
+    },
+    {
+      "id": "emit/on_fetch/mapping-on-a-fetch",
+      "bundle": "emit/on_fetch.pb",
+      "sha256": "3fee2db78922520b0480b5ef0a3a1ff844012515d3e1e15e00a327c3da0d00c5",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/common_fields.md#emit",
+      "schema": "[v:string, k:i64?]",
+      "rows": "('b', 2) ('c', 3)"
+    },
+    {
+      "id": "emit/on_join/mapping-on-a-join",
+      "bundle": "emit/on_join.pb",
+      "sha256": "92d5b58025af6afde5c5619cd4e93e74117abbab804b5dc72cf4215c08799c5b",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/common_fields.md#emit",
+      "schema": "[r0:bool, l0:i64]",
+      "rows": "(true, 1)"
+    },
+    {
+      "id": "emit/on_sort/mapping-on-a-sort",
+      "bundle": "emit/on_sort.pb",
+      "sha256": "511711673968fcf0fdc47522eca8c99e4b9c257b9acd105e1b10107a470fcd75",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/common_fields.md#emit",
+      "schema": "[only_v:string]",
+      "rows": "('a') ('b') ('c')"
     },
     {
       "id": "emit/reorder/project-output-mapping",
@@ -84,12 +134,92 @@
       "rows": "(7, null)"
     },
     {
+      "id": "exchange/round-robin/output-is-the-input",
+      "bundle": "exchange/round_robin.pb",
+      "sha256": "e1e5e891f0cce6d4f0e9165319b8e94cb26a6b83131119ed7f585308d3ad9086",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#exchange-operator",
+      "schema": "[c0:i64, c1:string?]",
+      "rows": "(1, 'a') (2, null)"
+    },
+    {
+      "id": "expand/consistent/index-column",
+      "bundle": "expand/consistent_fields.pb",
+      "sha256": "e3f5bec56613856ac79de64c3b3ae837611a05cf5636e40d68bd5dce80047683",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#expand-operation",
+      "schema": "[f2:string, f0:i64, f1:i64?, duplicate:i32]",
+      "rows": "('x', 1, null, 0)"
+    },
+    {
+      "id": "expand/fields/beyond-the-definitions",
+      "bundle": "expand/fields_beyond_definitions.pb",
+      "sha256": "afa135c2de9901d8e9b75fdfbd201949f0f0046d3b4e43884550e3dc9303f201",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#expand-operation",
+      "schema": "[f1:i64?, c1:i64?, c2:string, duplicate:i32]",
+      "rows": "(null, null, 'x', 0)"
+    },
+    {
+      "id": "expand/switching/nullability-is-the-union",
+      "bundle": "expand/switching_nullability.pb",
+      "sha256": "3175e93cd3997165c370b51c0651efd97a2bfab28348e1ec164b3cc0ddb30b6c",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#expand-operation",
+      "schema": "[s:i64?, c1:i64?, c2:string, duplicate:i32]",
+      "rows": "(1, null, 'x', 0) (null, null, 'x', 1)"
+    },
+    {
+      "id": "fetch/count/unset-means-all",
+      "bundle": "fetch/unset_count_means_all.pb",
+      "sha256": "5927841a2b3bfc1c2c9e3d0b88116b5253754d4424d907d844778f7fa317b023",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#fetch-properties",
+      "schema": "[k:i64?, v:string]",
+      "rows": "(3, 'c') (null, 'n')"
+    },
+    {
+      "id": "fetch/offset-and-count/window",
+      "bundle": "fetch/offset_and_count.pb",
+      "sha256": "7155e1649a633e22d475ed566d47ff6dbb2afa049a88699dde86246b2e71706b",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#fetch-operation",
+      "schema": "[k:i64?, v:string]",
+      "rows": "(2, 'b') (3, 'c')"
+    },
+    {
       "id": "invalid/declaration/output-type-disagrees-with-extension",
       "bundle": "invalid/false_declared_output_type.pb",
       "sha256": "41c18962c1cebc80f3f76ce7cec98c732396f12b9c9b69485140f6ac63110702",
       "kind": "KIND_INVALID_PLAN",
       "mark": "observe",
       "spec_ref": "proto/substrait/algebra.proto#Expression.ScalarFunction.output_type",
+      "schema": null,
+      "rows": null
+    },
+    {
+      "id": "invalid/emit/maps-a-column-that-is-not-there",
+      "bundle": "invalid/emit_maps_a_column_that_is_not_there.pb",
+      "sha256": "06f2efd3219f9935403084b13b7006636b41dfb057c0551a8d76a3d9f7ce17bb",
+      "kind": "KIND_INVALID_PLAN",
+      "mark": "observe",
+      "spec_ref": "relations/common_fields.md#emit",
+      "schema": null,
+      "rows": null
+    },
+    {
+      "id": "invalid/set/inputs-differ-in-width",
+      "bundle": "invalid/set_inputs_differ_in_width.pb",
+      "sha256": "3730ad987072a5cdf0e192ae61519c31bc3dbdcdcc8793f8f76f343e8fed3962",
+      "kind": "KIND_INVALID_PLAN",
+      "mark": "observe",
+      "spec_ref": "relations/logical_relations.md#set-operation",
       "schema": null,
       "rows": null
     },
@@ -214,6 +344,56 @@
       "rows": "(2, 20)"
     },
     {
+      "id": "join_physical/merge_left_anti/wire-7",
+      "bundle": "join_physical/merge_left_anti.pb",
+      "sha256": "460a1a3af6277ef66e06a1087a992451e39d504b8b16105ef6e5fe9f6df2f215",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#merge-join-operator",
+      "schema": "[a0:i64, a1:i64?]",
+      "rows": "(1, null)"
+    },
+    {
+      "id": "join_physical/nested_loop_left_anti/wire-7",
+      "bundle": "join_physical/nested_loop_left_anti.pb",
+      "sha256": "08b9e0f63847d05e78882fd1ff53202d68a64a87d8510384e14505803dccf5c3",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#nlj-nested-loop-join-operator",
+      "schema": "[a0:i64, a1:i64?]",
+      "rows": "(1, null)"
+    },
+    {
+      "id": "names/nested_nullability/a-nullable-struct-keeps-its-fields",
+      "bundle": "names/nested_nullability.pb",
+      "sha256": "48a8cb7e66df2c492554752dcaec89306efe14a1be0ca41d86d0b680b0905ed3",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/named_structs.md#determining-names",
+      "schema": "[outer:struct<inner:i64, other:string?>?]",
+      "rows": null
+    },
+    {
+      "id": "names/nested_struct/depth-first-name-order",
+      "bundle": "names/nested_struct.pb",
+      "sha256": "e4f2c44185db52210c52b7f4fc670a7ca61963b1d86bf26e19135f49ada1bc4a",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/named_structs.md#determining-names",
+      "schema": "[a:i64, s:struct<x:i64, y:i64?>]",
+      "rows": null
+    },
+    {
+      "id": "names/struct_of_structs/seven-names-for-two-columns",
+      "bundle": "names/struct_of_structs.pb",
+      "sha256": "3185311dbc0af857418ca96cba425683035bdab6b3181a8814201a234f18de91",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/named_structs.md#determining-names",
+      "schema": "[a:struct<b:i64, c:i64>, d:struct<e:i64, f:i64, g:i64>]",
+      "rows": null
+    },
+    {
       "id": "project/decimal_add/return-type",
       "bundle": "project/decimal_add.pb",
       "sha256": "eac729153c266006faad38bc2969af661b5e2797d562928b04733d2e1dbf2330",
@@ -254,6 +434,26 @@
       "rows": "(7, null, 14)"
     },
     {
+      "id": "read/mask/keeps-a-column-whole",
+      "bundle": "read/mask_whole_struct.pb",
+      "sha256": "77caf4080c1a2a56964a4d8c52b2f3fc75ff10062b9cbc1cf15e081d8cb8bfa4",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "expressions/field_references.md#masked-complex-expression",
+      "schema": "[s:struct<x:i64, y:string, z:bool>]",
+      "rows": null
+    },
+    {
+      "id": "read/mask/narrows-a-struct-from-inside",
+      "bundle": "read/mask_nested_fields.pb",
+      "sha256": "f63832b3e559bb24a9763f2c1d83c0220f2af7967361be7a55a66d4169610e76",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "expressions/field_references.md#masked-complex-expression",
+      "schema": "[s:struct<x:i64, z:bool>]",
+      "rows": null
+    },
+    {
       "id": "read/named_table/direct-schema",
       "bundle": "read/named_table.pb",
       "sha256": "14780e20f7e52aa67d12c39638f75fde6d7a37a35f3ae02b47be455660bdf6e6",
@@ -292,6 +492,16 @@
       "spec_ref": "relations/logical_relations.md#virtual-table",
       "schema": "[n:i64, s:string?]",
       "rows": "(1, 'a') (2, null)"
+    },
+    {
+      "id": "reference/subtree/maintains-the-referred-output",
+      "bundle": "reference/shared_subtree.pb",
+      "sha256": "a4757b514f24806f7e44078992c590437213d2fec2521a24a0c0d2fbac28c8d5",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#reference-operator",
+      "schema": "[a:i64, b:string?]",
+      "rows": "(1, 'x') (2, null)"
     },
     {
       "id": "set/intersection_multiset/output-nullability",
@@ -374,6 +584,76 @@
       "rows": null
     },
     {
+      "id": "sort/nulls_first/sequence",
+      "bundle": "sort/nulls_first.pb",
+      "sha256": "250f1ffb90070807d448262891f673a61cd9730421a20beedbed148d59c5fee5",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#sort-operation",
+      "schema": "[k:i64?, v:string]",
+      "rows": "(1, 'a') (2, 'b') (3, 'c') (null, 'n')"
+    },
+    {
+      "id": "sort/nulls_last/sequence",
+      "bundle": "sort/nulls_last.pb",
+      "sha256": "14757221bfdb9781ffefa4ebec13885d5776e51aaddcf3eba38c1f4ee8c4d40c",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#sort-operation",
+      "schema": "[k:i64?, v:string]",
+      "rows": "(1, 'a') (2, 'b') (3, 'c') (null, 'n')"
+    },
+    {
+      "id": "temporal/date/days-since-the-epoch",
+      "bundle": "temporal/date_and_null.pb",
+      "sha256": "a1e74e40a1df73c66b7ab945075e3eb24a6a737acf0b90028f87cc733dcbeec9",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/type_classes.md#simple-types",
+      "schema": "[d:date, epoch:date, missing:date?]",
+      "rows": "(2024-03-01, 1970-01-01, null)"
+    },
+    {
+      "id": "temporal/literals/precision-carried-in-the-plan",
+      "bundle": "temporal/literals_in_the_plan.pb",
+      "sha256": "599daa1c028a44e34bd4c661f6490ede4f1fbdc1c5e08a0f71cd4ff18c529bb7",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/type_classes.md#simple-types",
+      "schema": "[s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]",
+      "rows": "(2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)"
+    },
+    {
+      "id": "temporal/precision_timestamp/precision-is-part-of-the-type",
+      "bundle": "temporal/precision_is_part_of_the_type.pb",
+      "sha256": "66ba0535e5d83c59ac07058e98bb9d18ee9d7d3fb3ea5adf1a1ba14272e2e04e",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "types/type_classes.md#simple-types",
+      "schema": "[s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]",
+      "rows": "(2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)"
+    },
+    {
+      "id": "unresolved/ddl/declares-no-output",
+      "bundle": "unresolved/ddl_output.pb",
+      "sha256": "8c13ae9afdfe16e2d0d2a119b83a9ce2dff5141081ec84b536c570688ad00229",
+      "kind": "KIND_UNRESOLVED",
+      "mark": "observe",
+      "spec_ref": "relations/logical_relations.md#ddl-data-definition-language-operator",
+      "schema": null,
+      "rows": null
+    },
+    {
+      "id": "unresolved/update/output-type-is-not-stated",
+      "bundle": "unresolved/update_output_type.pb",
+      "sha256": "caf6e494821f264c2e015e5652f2317cfaa45bfcd81dc1f17ac2598fe0103f93",
+      "kind": "KIND_UNRESOLVED",
+      "mark": "observe",
+      "spec_ref": "relations/logical_relations.md#update-operator",
+      "schema": null,
+      "rows": null
+    },
+    {
       "id": "unresolved/virtual_table/row-required-in-nullable-column",
       "bundle": "unresolved/virtual_table_row_required_in_nullable_column.pb",
       "sha256": "f7f7b6c5dd5df820908fd20934c580ab26d77f1de5a531fd4621352c6e5da8a3",
@@ -392,6 +672,46 @@
       "spec_ref": "relations/logical_relations.md#virtual-table",
       "schema": null,
       "rows": null
+    },
+    {
+      "id": "window/lead/nullable-whatever-the-argument",
+      "bundle": "window/lead_is_nullable.pb",
+      "sha256": "4152f1af1961b3ba5b351f44b5652e16a87b7c13e09cb1e678da5a2ec94c7e4a",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#consistent-partition-window-operation",
+      "schema": "[c0:i64, c1:i64?, c2:string, nxt:i64?]",
+      "rows": null
+    },
+    {
+      "id": "window/output-order/appends-after-the-input",
+      "bundle": "window/row_number.pb",
+      "sha256": "94d9fbc1279900696c50b2e12a2fb3d58b3d694435238c6f164fc701a7a08018",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/physical_relations.md#consistent-partition-window-operation",
+      "schema": "[c0:i64, c1:i64?, c2:string, rn:i64?]",
+      "rows": null
+    },
+    {
+      "id": "write/modified_records/returns-the-after-image",
+      "bundle": "write/modified_records.pb",
+      "sha256": "272b62a943178f1f34177bce9a9444e3e2aca4d232d8b7f37d01b4cb742cab35",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#write-operator",
+      "schema": "[id:i64, note:string?]",
+      "rows": "(1, 'a') (2, 'b')"
+    },
+    {
+      "id": "write/no_output/returns-nothing",
+      "bundle": "write/no_output.pb",
+      "sha256": "cfe0e60c4b02d908ebfa472807f1038e6bdc033775b06c2d385c3dd2a556246b",
+      "kind": "KIND_POSITIVE",
+      "mark": "score",
+      "spec_ref": "relations/logical_relations.md#write-operator",
+      "schema": "[id:i64, note:string?]",
+      "rows": ""
     }
   ]
 }

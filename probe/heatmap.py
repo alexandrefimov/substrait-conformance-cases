@@ -399,7 +399,9 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .rel-legend .sw i.u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
 .rel-legend .sw i.o { background-image: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
 .rel-note { margin: 12px 0 4px; }
-.rel-grid { display: block; width: 100%%; max-width: 503px; height: auto; margin: 8px 0 6px; }
+/* No width in pixels: the relation picture sizes its name column from the longest case name, so a
+   number written here would rot the next time the corpus grows. The SVG carries its own. */
+.rel-grid { display: block; max-width: 100%%; height: auto; margin: 8px 0 6px; }
 .row .num { font: 11.5px var(--mono); color: var(--ink-3); font-variant-numeric: tabular-nums;
             text-align: right; white-space: nowrap; }
 .row .num b { color: var(--divergence); font-weight: 500; }

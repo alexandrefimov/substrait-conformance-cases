@@ -21,7 +21,9 @@ import io.substrait.type.proto.TypeProtoConverter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,7 @@ public final class RelationCase {
    * procedure probe/relations/corpus.py follows, so a type neither of them has met is still named
    * and not dropped.
    */
-  static String renderType(io.substrait.proto.Type t) {
+  static String renderType(io.substrait.proto.Type t, Deque<String> names) {
     Descriptors.FieldDescriptor fd = oneof(t, "kind");
     if (fd == null) {
       return "?";
@@ -87,6 +89,16 @@ public final class RelationCase {
     Message sub = (Message) t.getField(fd);
     String name = SHORT.getOrDefault(fd.getName(), fd.getName());
     String q = number(sub, "nullability") == NULLABLE ? "?" : "";
+    // A struct column takes one name per field out of the flat, depth-first list a NamedStruct
+    // carries, and everything after it moves. Pairing names with top-level types instead was wrong
+    // the moment a column was a struct, which is what the cases under names/ are for.
+    if (name.equals("struct")) {
+      List<String> members = new ArrayList<>();
+      for (io.substrait.proto.Type member : t.getStruct().getTypesList()) {
+        members.add(takeName(names) + ":" + renderType(member, names));
+      }
+      return "struct<" + String.join(", ", members) + ">" + q;
+    }
     if (name.equals("decimal")) {
       return String.format("decimal<%d,%d>%s", number(sub, "precision"), number(sub, "scale"), q);
     }
@@ -104,19 +116,25 @@ public final class RelationCase {
    *
    * <p>A name without a type and a type without a name are both kept as {@code ?} rather than
    * dropped: an answer that quietly shortened itself to the smaller of the two counts would hide
-   * the arity disagreement it is there to record.
+   * the arity disagreement it is there to record. The names are consumed from the front rather
+   * than indexed, because a struct column takes one per field.
    */
+  /** The next name, or {@code ?} rather than an invented one. */
+  static String takeName(Deque<String> names) {
+    return names.isEmpty() ? "?" : names.removeFirst();
+  }
+
   static String renderSchema(List<String> names, List<io.substrait.proto.Type> types) {
-    StringBuilder sb = new StringBuilder("[");
-    int n = Math.max(names.size(), types.size());
-    for (int i = 0; i < n; i++) {
-      if (i > 0) {
-        sb.append(", ");
-      }
-      sb.append(i < names.size() ? names.get(i) : "?").append(':');
-      sb.append(i < types.size() ? renderType(types.get(i)) : "?");
+    Deque<String> pending = new ArrayDeque<>(names);
+    List<String> cols = new ArrayList<>();
+    for (io.substrait.proto.Type t : types) {
+      String name = takeName(pending);
+      cols.add(name + ":" + renderType(t, pending));
     }
-    return sb.append(']').toString();
+    while (!pending.isEmpty()) {
+      cols.add(pending.removeFirst() + ":?");
+    }
+    return "[" + String.join(", ", cols) + "]";
   }
 
   /**
@@ -210,16 +228,6 @@ public final class RelationCase {
               || t instanceof IllegalStateException;
       String message = t.getClass().getSimpleName() + ": " + oneLine(String.valueOf(t.getMessage()));
       return (refused ? "ERROR: " : "CRASH: ") + message;
-    }
-    // Root names are flat here because every column in the corpus is a scalar or a decimal.
-    // substrait-java names a nested struct's fields depth first, so pairing them positionally
-    // would be wrong the day a case has one - which is a wrong answer rather than a missing one,
-    // and worth stopping for.
-    for (io.substrait.proto.Type t : derived.getTypesList()) {
-      Descriptors.FieldDescriptor fd = oneof(t, "kind");
-      if (fd != null && fd.getName().equals("struct")) {
-        return "HARNESS-ERROR: this runner cannot pair root names with a nested struct column";
-      }
     }
     return renderSchema(root.getNames(), derived.getTypesList());
   }

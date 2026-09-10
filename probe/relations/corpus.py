@@ -50,16 +50,28 @@ _PARAM_PREC = ("precision_timestamp", "precision_time", "interval_day")
 _SHORT = {"fixed_char": "fixedchar", "fixed_binary": "fixedbinary"}
 
 
-def render_type(t, nullability=True):
-    """`i64`, `i64?`, `decimal<11,2>` - the spelling a case is written in.
+def render_type(t, nullability=True, names=None):
+    """`i64`, `i64?`, `decimal<11,2>`, `struct<x:i64, y:string>` - the spelling a case is written in.
 
     `nullability=False` drops the marker for a participant whose type system has none. Such an
     answer is not "required": it is silent about nullability, and the column's head says so.
+
+    `names` is the flat, depth-first list of column names a NamedStruct carries, and a struct type
+    consumes one entry per field from the front of it. Pairing names with top-level types instead
+    was wrong the moment a column was a struct: the names after it all shifted by one, and the
+    cases under names/ are there to catch exactly that.
     """
     kind = t.WhichOneof("kind")
     if kind is None:
         return "?"
     sub = getattr(t, kind)
+    if kind == "struct":
+        q = "?" if nullability and sub.nullability == Type.NULLABILITY_NULLABLE else ""
+        members = []
+        for member in sub.types:
+            name = names.pop(0) if names else "?"
+            members.append("%s:%s" % (name, render_type(member, nullability, names)))
+        return "struct<%s>%s" % (", ".join(members), q)
     q = "?" if nullability and sub.nullability == Type.NULLABILITY_NULLABLE else ""
     name = _SHORT.get(kind, kind)
     if kind == "decimal":
@@ -76,13 +88,18 @@ def render_schema(names, types, nullability=True):
 
     A participant may return more types than root names or the other way round - substrait-go
     refuses several cases on exactly that mismatch - so an unnamed column is rendered `?:i64`
-    rather than left out, and a name with no type `s:?`.
+    rather than left out, and a name left over after every type is rendered `<name>:?`.
+
+    The names are consumed from the front rather than indexed, because a struct column takes one
+    name per field and everything after it moves.
     """
+    pending = list(names)
     cols = []
-    for i in range(max(len(names), len(types))):
-        name = names[i] if i < len(names) else "?"
-        ty = render_type(types[i], nullability) if i < len(types) else "?"
-        cols.append("%s:%s" % (name, ty))
+    for t in types:
+        name = pending.pop(0) if pending else "?"
+        cols.append("%s:%s" % (name, render_type(t, nullability, pending)))
+    for leftover in pending:
+        cols.append("%s:?" % leftover)
     return "[%s]" % ", ".join(cols)
 
 
@@ -92,11 +109,20 @@ def render_named_struct(ns, nullability=True):
 
 def render_value(v):
     """One cell of a row, as text. Engines answer in their host language's values, not in literals,
-    so a row observation is compared as text and this is the only place that decides its spelling."""
+    so a row observation is compared as text and this is the only place that decides its spelling.
+
+    A date and a timestamp reach here as the host's own date and datetime, from an engine and from
+    literal_value alike, so the two sides compare without either knowing how the other stores them.
+    """
+    import datetime
     import decimal
 
     if v is None:
         return "null"
+    if isinstance(v, datetime.datetime):
+        return v.isoformat(sep=" ")
+    if isinstance(v, datetime.date):
+        return v.isoformat()
     if isinstance(v, bool):
         return "true" if v else "false"
     if isinstance(v, str):
@@ -120,9 +146,23 @@ def render_rows(rows):
     return " ".join(sorted("(%s)" % ", ".join(render_value(v) for v in r) for r in rows))
 
 
+EPOCH = None  # filled in on first use; see literal_value
+
+
 def literal_value(lit):
-    """A substrait literal as a host value, so an expectation and an engine's answer compare."""
+    """A substrait literal as a host value, so an expectation and an engine's answer compare.
+
+    The temporal kinds are the ones that cannot be handed over as they are stored. A date is a
+    count of days and a precision_timestamp is a count of sub-second units, and returning either
+    number would compare a schema-shaped integer against the date an engine actually returned -
+    or, for the timestamp, print the protobuf message itself into the column.
+    """
+    import datetime
     import decimal
+
+    global EPOCH
+    if EPOCH is None:
+        EPOCH = datetime.datetime(1970, 1, 1)
 
     kind = lit.WhichOneof("literal_type")
     if kind is None or kind == "null":
@@ -132,6 +172,18 @@ def literal_value(lit):
         with decimal.localcontext() as ctx:
             ctx.prec = 60
             return decimal.Decimal(unscaled).scaleb(-lit.decimal.scale)
+    if kind == "date":
+        return (EPOCH + datetime.timedelta(days=lit.date)).date()
+    if kind == "precision_timestamp":
+        precision = lit.precision_timestamp.precision
+        value = lit.precision_timestamp.value
+        if precision > 6:
+            # datetime stops at microseconds; a finer literal would be silently rounded, and a
+            # rounded expectation is worse than none.
+            raise ValueError("precision_timestamp<%d> is finer than a datetime holds" % precision)
+        seconds, fraction = divmod(value, 10 ** precision) if precision else (value, 0)
+        return EPOCH + datetime.timedelta(seconds=seconds,
+                                          microseconds=fraction * 10 ** (6 - precision))
     return getattr(lit, kind)
 
 

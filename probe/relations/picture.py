@@ -44,14 +44,20 @@ import heatmap as base     # noqa: E402
 COLUMNS = [("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")]
 
 GROUP_LABEL = {
-    "read": "Read: schema and projection", "project": "Project: appended columns, decimals",
+    "read": "Read: schema, projection and masks", "names": "Names, depth first through a struct",
+    "project": "Project: appended columns, decimals", "temporal": "Dates and timestamps",
     "aggregate": "Aggregate: grouping sets", "join": "Joins, logical",
-    "join_physical": "Joins, physical: the four numbers that mean two things",
-    "set": "Set operations", "emit": "Emit mapping",
+    "join_physical": "Joins, physical: numbers that mean two things",
+    "cross": "Cross product", "set": "Set operations", "emit": "Emit mapping",
+    "sort": "Sort", "fetch": "Fetch", "window": "Window", "expand": "Expand",
+    "exchange": "Exchange", "reference": "Reference to a shared subtree", "write": "Write",
     "invalid": "Invalid on purpose", "unresolved": "Unsettled by the specification",
 }
-GROUP_ORDER = ["read", "project", "aggregate", "join", "join_physical", "set", "emit",
-               "invalid", "unresolved"]
+# A group with no entry above still gets its own heading under its own name, so a case added later
+# is visible in the picture without editing this list.
+GROUP_ORDER = ["read", "names", "project", "temporal", "aggregate", "join", "join_physical",
+               "cross", "set", "emit", "sort", "fetch", "window", "expand", "exchange",
+               "reference", "write", "invalid", "unresolved"]
 
 STATE_NOTE = {
     cc.MATCHED: "the answer is the one the case asserts, rows included where it asserts rows",
@@ -63,8 +69,17 @@ STATE_NOTE = {
 
 # GUTTER is the strip left of the names where a case that asserts rows is marked. It is a column of
 # its own rather than a mark beside the first cell, which is what it looked like when it sat there.
-NAME_W, COL_W, ROW_H, GROUP_H, PAD, HEAD_H, GUTTER = 268, 66, 13, 18, 14, 118, 9
+COL_W, ROW_H, GROUP_H, PAD, HEAD_H, GUTTER = 66, 13, 18, 14, 118, 9
 CELL_W, CELL_H = COL_W - 8, ROW_H - 3
+# The width of the name column is measured from the names rather than picked, because a case added
+# later is not going to be shorter on request: at a fixed width the longest name ran under the
+# first cell, and nothing failed - a drawing has no way to notice that it overflowed.
+NAME_CHAR_W, NAME_MIN = 5.15, 240
+
+
+def name_width(groups):
+    longest = max((len(short_name(c)) for g in groups for c in g["cases"]), default=0)
+    return max(NAME_MIN, int(longest * NAME_CHAR_W) + 12)
 
 
 def build():
@@ -134,6 +149,7 @@ def tally(model, label):
 
 def svg(model, theme):
     t = base.THEMES[theme]
+    NAME_W = name_width(model["groups"])
     width = PAD * 2 + GUTTER + NAME_W + COL_W * len(COLUMNS)
     rows = sum(len(g["cases"]) for g in model["groups"])
     # The footer is built before the height so a wrapped version line cannot fall off the bottom.
