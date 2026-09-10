@@ -1,0 +1,28 @@
+id: invalid/set/inputs-differ-in-width
+spec_ref: relations/logical_relations.md#set-operation
+kind: KIND_INVALID_PLAN
+notes: >-
+  A union of a two-column input and a three-column one. Direct Output Order for Set
+  says all inputs must have identical field types and only their nullabilities may
+  vary, so a difference in arity is not a difference the operation is allowed to have.
+  Nothing about this needs an extension file or a type rule: the plan can be refused
+  by counting. Whether a given consumer API must reject it is not settled by this
+  corpus, so a harness records what it observed.
+inputs:
+  s_two:
+    schema: "c0:i64, c1:i64"
+  s_three:
+    schema: "c0:i64, c1:i64, c2:i64"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [c0, c1]
+        input:
+          set:
+            common: {direct: {}}
+            op: SET_OP_UNION_ALL
+            inputs:
+              - {read: {common: {direct: {}}, $table: s_two}}
+              - {read: {common: {direct: {}}, $table: s_three}}

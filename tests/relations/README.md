@@ -87,7 +87,7 @@ reports whichever the consumer picked as a pass.
 
 ## What the checks establish
 
-Eleven checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
+Twelve checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
 in turn and requires that check, by name, to catch it. A check that has never been shown
 to fail is a comment the interpreter happens to run.
 
@@ -118,10 +118,15 @@ those as a multiset is not running them. A sort that ignores where nulls go pass
 multiset comparison and fails the sequence one, which is the whole difference between the
 two cases under `sort/`.
 
-`KIND_INVALID_PLAN` currently covers one class of invalidity: a declared `output_type`
-that disagrees with the extension the function resolves to. A case may not claim
-invalidity the corpus cannot demonstrate, so widening that class means teaching the
-checker first.
+`KIND_INVALID_PLAN` covers two classes of invalidity: a declared `output_type` that
+disagrees with the extension the function resolves to, and the structural rules in
+`lib/validity.py`, which need nothing but the plan. Those are set inputs that differ in
+arity, an emit mapping naming an output the relation does not have, and a project
+expression reading a field beyond its input. A case may not claim invalidity the corpus
+cannot demonstrate, so widening the class further means teaching the checker first.
+
+The same rules run over every positive case, which is the half that matters more: it is
+what stops a case from asserting a schema for a plan that should never have derived one.
 
 ## Running this outside the specification repository
 

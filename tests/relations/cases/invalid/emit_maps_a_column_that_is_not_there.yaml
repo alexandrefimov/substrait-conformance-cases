@@ -1,0 +1,23 @@
+id: invalid/emit/maps-a-column-that-is-not-there
+spec_ref: relations/common_fields.md#emit
+kind: KIND_INVALID_PLAN
+notes: >-
+  An emit mapping naming output five of a relation that has two columns. The mapping
+  selects from the relation's own direct output, so an index at or beyond its width
+  names nothing. This is the cheapest invalid plan there is to check and the one most
+  likely to be produced by an off-by-one in a producer, which is why it is worth
+  having a case that says so.
+inputs:
+  t_two:
+    schema: "a:i64, b:string"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [x]
+        input:
+          filter:
+            common: {emit: {output_mapping: [5]}}
+            input: {read: {common: {direct: {}}, $table: t_two}}
+            condition: "true::bool"

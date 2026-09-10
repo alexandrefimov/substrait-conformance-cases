@@ -18,7 +18,7 @@ from collections import Counter
 import yaml
 from google.protobuf import json_format
 
-from . import check_decl, deriver, lower, paths, render
+from . import check_decl, deriver, lower, paths, render, validity
 
 SKIP = "skip"
 
@@ -232,12 +232,32 @@ def check_signature_arity(case):
 
 
 def check_kind(case):
-    """A case claiming to be invalid must actually violate a stated validity rule."""
+    """A case claiming to be invalid must actually violate a stated validity rule.
+
+    Two classes count. A declared `output_type` that disagrees with the extension the
+    function resolves to, which `check_decl` finds, and the structural rules in
+    `validity`, which need nothing but the plan. A case that violates neither is making
+    a claim the corpus cannot demonstrate, and that is the failure this reports.
+    """
     if case.kind != "KIND_INVALID_PLAN":
         return SKIP
-    if not check_decl.check(case.plan_dict, case.ext_dir):
-        return "KIND_INVALID_PLAN but no plan-validity violation found"
-    return None
+    if check_decl.check(case.plan_dict, case.ext_dir):
+        return None
+    if validity.violations(case.plan, case.ext_dir):
+        return None
+    return "KIND_INVALID_PLAN but no plan-validity violation found"
+
+
+def check_valid_plans_are_valid(case):
+    """A case that does not claim invalidity must not be structurally invalid either.
+
+    The mirror of check_kind, and the half that matters more: it is what stops a case
+    from asserting a schema for a plan that should never have been derived at all.
+    """
+    if case.kind != "KIND_POSITIVE":
+        return SKIP
+    found = validity.violations(case.plan, case.ext_dir)
+    return "; ".join(found[:2]) if found else None
 
 
 def _cell_class(lit):
@@ -373,6 +393,7 @@ CHECKS = [
     check_declarations,
     check_signature_arity,
     check_kind,
+    check_valid_plans_are_valid,
     check_rows,
     check_vt_arity,
     check_names,

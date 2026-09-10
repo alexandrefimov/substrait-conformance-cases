@@ -136,6 +136,30 @@ def test_declarations_catches_a_falsified_output_type(corpus):
     )
 
 
+def test_valid_plans_are_valid_catches_an_out_of_range_emit(corpus):
+    """The structural checker on a case that does not claim to be invalid."""
+    assert_caught(
+        corpus,
+        "emit/drop",
+        gate.check_valid_plans_are_valid,
+        lambda: edit(corpus, "emit/drop", "output_mapping: [1]", "output_mapping: [9]"),
+    )
+
+
+def test_valid_plans_are_valid_catches_mismatched_set_widths(corpus):
+    assert_caught(
+        corpus,
+        "set/union_all",
+        gate.check_valid_plans_are_valid,
+        lambda: edit(
+            corpus,
+            "set/union_all",
+            's3: {schema: "c0:i64, c1:i64?, c2:i64, c3:i64?, c4:i64, c5:i64?, c6:i64, c7:i64?"}',
+            's3: {schema: "c0:i64, c1:i64?, c2:i64"}',
+        ),
+    )
+
+
 def test_kind_catches_a_valid_plan_labelled_invalid(corpus):
     """A case may not claim invalidity it cannot demonstrate."""
     assert_caught(
