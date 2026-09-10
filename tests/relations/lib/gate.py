@@ -174,6 +174,63 @@ def check_declarations(case):
     return None
 
 
+def check_signature_arity(case):
+    """A declared compound signature must name as many arguments as the call supplies.
+
+    `function-signature = function-name ":" argument-signature` in the extensions
+    documentation, and the argument signature is the short type names of each argument
+    joined with underscores, empty for a zero-argument implementation. This compares the
+    count only, not the type names: a case naming `lead:any_i64` while supplying one
+    argument is the mistake it catches, and one naming `lead:i64` for a string argument
+    is not. Writing these cases, that first mistake passed every other check here and was
+    caught by a consumer instead.
+    """
+    declared = {}
+    for e in case.plan.extensions:
+        if e.HasField("extension_function"):
+            declared[e.extension_function.function_anchor] = e.extension_function.name
+
+    problems = []
+
+    def named(anchor):
+        return declared.get(anchor)
+
+    def check_call(kind, anchor, n_args):
+        name = named(anchor)
+        if name is None:
+            problems.append(f"{kind} references anchor {anchor}, which is not declared")
+            return
+        if ":" not in name:
+            problems.append(f"{kind} {name!r} is a bare name, not a function signature")
+            return
+        args = name.split(":", 1)[1]
+        want = 0 if args == "" else len(args.split("_"))
+        if want != n_args:
+            problems.append(f"{kind} {name!r} names {want} argument(s) for {n_args}")
+
+    def walk_expr(msg):
+        for f, v in msg.ListFields():
+            for item in v if f.is_repeated else [v]:
+                if f.message_type is None:
+                    continue
+                full = f.message_type.full_name
+                if full == "substrait.Expression.ScalarFunction":
+                    check_call("scalar", item.function_reference, len(item.arguments))
+                if full in (
+                    "substrait.AggregateFunction",
+                    "substrait.Expression.WindowFunction",
+                ):
+                    check_call("measure", item.function_reference, len(item.arguments))
+                if full == ("substrait.ConsistentPartitionWindowRel.WindowRelFunction"):
+                    check_call("window", item.function_reference, len(item.arguments))
+                if hasattr(item, "ListFields"):
+                    walk_expr(item)
+
+    for pr in case.plan.relations:
+        walk_expr(pr)
+    return "; ".join(problems[:2]) if problems else None
+
+
 def check_kind(case):
     """A case claiming to be invalid must actually violate a stated validity rule."""
     if case.kind != "KIND_INVALID_PLAN":
@@ -310,6 +367,7 @@ CHECKS = [
     check_schema,
     check_unresolved,
     check_declarations,
+    check_signature_arity,
     check_kind,
     check_rows,
     check_vt_arity,

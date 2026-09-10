@@ -519,14 +519,20 @@ class Deriver:
     def rel_expand(self, n):
         inp = self.rel(n["input"])
         out = []
-        for f in n["fields"]:
+        fields = n.get("fields", [])
+        for f in fields:
             if "consistentField" in f:
                 out.append(self.expr_type(f["consistentField"], inp))
             else:
                 dups = [
                     self.expr_type(d, inp) for d in f["switchingField"]["duplicates"]
                 ]
+                # SwitchingField in algebra.proto: all duplicates return the same type
+                # class, and the output field is nullable if any duplicate is.
                 out.append((dups[0][0], dups[0][1], any(d[2] for d in dups)))
+        # ExpandRel in algebra.proto: fields beyond the provided definitions are emitted
+        # as is, as if a consistent field with an identity expression had been given.
+        out += inp[len(fields) :]
         return out + [T("i32", (), False)]
 
     def rel_window(self, n):

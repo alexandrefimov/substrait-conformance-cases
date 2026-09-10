@@ -81,7 +81,7 @@ reports whichever the consumer picked as a pass.
 
 ## What the checks establish
 
-Ten checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
+Eleven checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
 in turn and requires that check, by name, to catch it. A check that has never been shown
 to fail is a comment the interpreter happens to run.
 

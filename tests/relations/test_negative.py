@@ -256,6 +256,33 @@ def test_vt_arity_catches_a_row_with_an_extra_cell(corpus):
     )
 
 
+def test_signature_arity_catches_an_extra_argument_in_the_name(corpus):
+    """The mistake this check exists for: I made it, and a consumer caught it, not the gate."""
+    assert_caught(
+        corpus,
+        "window/lead_is_nullable",
+        gate.check_signature_arity,
+        lambda: edit(
+            corpus,
+            "window/lead_is_nullable",
+            'name: "lead:any"',
+            'name: "lead:any_i64"',
+        ),
+    )
+
+
+def test_signature_arity_catches_a_bare_name(corpus):
+    """`rank` is not a function signature; `rank:` is."""
+    assert_caught(
+        corpus,
+        "window/row_number",
+        gate.check_signature_arity,
+        lambda: edit(
+            corpus, "window/row_number", 'name: "row_number:"', 'name: "row_number"'
+        ),
+    )
+
+
 def test_drift_catches_a_tampered_bundle(corpus):
     def tamper():
         p = corpus / "bundles" / "join" / "left.pb"
