@@ -1,0 +1,260 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="503" height="886" viewBox="0 0 503 886">
+<defs><pattern id="hatch" width="4" height="4" patternTransform="rotate(135)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#8a8b88" stroke-width="1.1"/></pattern><pattern id="dots" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#c2c2ba" stroke-width="0.8"/></pattern></defs>
+<rect x="0.0" y="0.0" width="503.0" height="886.0" rx="1.5" fill="#fdfdfc"/>
+<text x="14.0" y="24.0" fill="#14161a" font-size="15.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">The relation corpus, case by participant</text>
+<text x="14.0" y="40.0" fill="#55575c" font-size="9.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">39 cases, 26 of which assert rows as well as a schema.</text>
+<rect x="14.0" y="54.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="77.0" y="62.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">matched</text>
+<rect x="123.2" y="54.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="123.2" y="54.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<text x="186.2" y="62.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">matched, rows not observed</text>
+<rect x="319.8" y="54.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<text x="382.8" y="62.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">differed</text>
+<rect x="14.0" y="69.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="77.0" y="77.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">not accepted</text>
+<rect x="146.2" y="69.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="209.2" y="77.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">observed, never scored</text>
+<text x="320.0" y="110.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif">substrait-java</text>
+<text x="386.0" y="110.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif">substrait-go</text>
+<text x="452.0" y="110.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif">DuckDB</text>
+<text x="14.0" y="129.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Read: schema and projection</text>
+<rect x="14.0" y="137.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="144.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">named_table/direct-schema</text>
+<rect x="291.0" y="136.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="136.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="136.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="136.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="136.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="150.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="157.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">projection/mask-drops-a-column</text>
+<rect x="291.0" y="149.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="149.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="149.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="149.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="23.0" y="170.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">projection/mask-reorders</text>
+<rect x="291.0" y="162.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="357.0" y="162.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="423.0" y="162.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="14.0" y="176.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="183.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">virtual_table/literal-rows</text>
+<rect x="291.0" y="175.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="175.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="175.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="175.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="175.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="14.0" y="199.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Project: appended columns, decimals</text>
+<rect x="14.0" y="207.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="214.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">decimal_add/return-type</text>
+<rect x="291.0" y="206.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="206.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="206.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="206.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="206.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="23.0" y="227.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">decimal_divide/return-type</text>
+<rect x="291.0" y="219.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="219.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="423.0" y="219.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="14.0" y="233.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="240.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">decimal_multiply/return-type</text>
+<rect x="291.0" y="232.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="232.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="232.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="232.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="232.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="14.0" y="246.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="253.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">output-order/appends-computed-columns</text>
+<rect x="291.0" y="245.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="245.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="245.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="245.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="245.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="14.0" y="269.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Aggregate: grouping sets</text>
+<rect x="14.0" y="277.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="284.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">grouping_sets/index-column</text>
+<rect x="291.0" y="276.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="276.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="276.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="276.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="14.0" y="290.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="297.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">grouping_sets/overlapping-sets</text>
+<rect x="291.0" y="289.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="289.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="289.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="423.0" y="289.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="14.0" y="303.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="310.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">grouping_sets/single-set-keeps-key-type</text>
+<rect x="291.0" y="302.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="302.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="302.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="302.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="302.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="14.0" y="316.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="323.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">sum/measure-nullability</text>
+<rect x="291.0" y="315.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="315.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="315.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="315.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="315.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<text x="14.0" y="339.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Joins, logical</text>
+<rect x="14.0" y="347.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="354.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">inner/output-nullability</text>
+<rect x="291.0" y="346.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="346.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="346.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="346.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="346.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="360.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="367.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">left/output-nullability</text>
+<rect x="291.0" y="359.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="359.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="359.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="359.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="359.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="373.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="380.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">left_mark/output-mark-column</text>
+<rect x="291.0" y="372.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="372.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="372.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="372.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="386.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="393.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">left_semi/output-columns</text>
+<rect x="291.0" y="385.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="385.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="385.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="385.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="385.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="399.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="406.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">left_single/output-nullability</text>
+<rect x="291.0" y="398.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="398.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="398.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="398.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="398.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="412.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="419.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">outer/output-nullability</text>
+<rect x="291.0" y="411.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="411.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="411.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="411.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="411.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="425.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="432.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">right/output-nullability</text>
+<rect x="291.0" y="424.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="424.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="424.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="424.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="424.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="438.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="445.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">right_anti/output-columns</text>
+<rect x="291.0" y="437.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="437.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="437.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="437.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="437.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="14.0" y="461.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Joins, physical: the four numbers that mean two things</text>
+<rect x="14.0" y="469.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="476.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_left_anti/wire-7</text>
+<rect x="291.0" y="468.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="468.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="468.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="468.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="14.0" y="482.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="489.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_left_single/wire-9</text>
+<rect x="291.0" y="481.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="357.0" y="481.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="423.0" y="481.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="14.0" y="495.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="502.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_right_anti/wire-8</text>
+<rect x="291.0" y="494.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="494.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="494.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="494.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="14.0" y="508.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="515.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_right_semi/wire-6</text>
+<rect x="291.0" y="507.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="507.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="507.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="507.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="531.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Set operations</text>
+<text x="23.0" y="546.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_multiset/output-nullability</text>
+<rect x="291.0" y="538.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="538.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="538.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="23.0" y="559.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_multiset_all/output-nullability</text>
+<rect x="291.0" y="551.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="551.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="551.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="23.0" y="572.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_primary/output-nullability</text>
+<rect x="291.0" y="564.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="564.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="564.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="23.0" y="585.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">minus_multiset/output-nullability</text>
+<rect x="291.0" y="577.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="577.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="577.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="23.0" y="598.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">minus_primary/output-nullability</text>
+<rect x="291.0" y="590.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="590.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="590.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="23.0" y="611.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">minus_primary_all/output-nullability</text>
+<rect x="291.0" y="603.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="603.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="603.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="23.0" y="624.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">union_all/output-nullability</text>
+<rect x="291.0" y="616.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="616.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="616.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="23.0" y="637.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">union_distinct/output-nullability</text>
+<rect x="291.0" y="629.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="629.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="423.0" y="629.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="653.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Emit mapping</text>
+<rect x="14.0" y="661.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="668.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">direct_explicit/direct-equivalence</text>
+<rect x="291.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="674.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="681.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">drop/leave-columns-out</text>
+<rect x="291.0" y="673.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="673.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="673.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="673.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="673.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="14.0" y="687.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="694.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">reorder/project-output-mapping</text>
+<rect x="291.0" y="686.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="686.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="686.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="686.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="686.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="14.0" y="700.0" width="3.0" height="8.0" rx="1.5" fill="#8a8b88"/>
+<text x="23.0" y="707.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">unset_is_direct/direct-equivalence</text>
+<rect x="291.0" y="699.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="291.0" y="699.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="357.0" y="699.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="357.0" y="699.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
+<rect x="423.0" y="699.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<text x="14.0" y="723.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Invalid on purpose</text>
+<text x="23.0" y="738.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">declaration/output-type-disagrees-with-extension</text>
+<rect x="291.0" y="730.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="357.0" y="730.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="423.0" y="730.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="14.0" y="754.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Unsettled by the specification</text>
+<text x="23.0" y="769.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">virtual_table/row-required-in-nullable-column</text>
+<rect x="291.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="357.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="423.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="23.0" y="782.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">virtual_table/row-type-differs-from-schema</text>
+<rect x="291.0" y="774.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="357.0" y="774.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="423.0" y="774.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="14.0" y="805.0" fill="#8a8b88" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">the bar left of a case marks one that asserts rows</text>
+<text x="14.0" y="818.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-java  fff63906, substrait protos 0.102.0, JDK 17.0.20.1</text>
+<text x="14.0" y="829.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-go    substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0,</text>
+<text x="14.0" y="840.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" xml:space="preserve">                substrait-protobuf/go v0.85.0, pinning substrait v0.87.0</text>
+<text x="14.0" y="851.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB          1.5.5, substrait extension 4ea63dd</text>
+<text x="14.0" y="862.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-10; probe/relations/replay.sh reproduces one</text>
+</svg>

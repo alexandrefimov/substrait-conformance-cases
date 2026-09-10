@@ -386,6 +386,20 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .bar .m { background: var(--match); }
 .bar .d { background: var(--divergence); }
 .bar .u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
+/* The relation corpus's fourth tone: agreement on the schema of a case that also asserts rows.
+   Hatched rather than a shade of the match colour, because it is a limit of what was measured and
+   not a weaker agreement - the same distinction the matrix above draws for a type-system boundary. */
+.bar .s { background: var(--match);
+          background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+.rel-legend { margin: 14px 0 0; }
+.rel-legend .sw i.m { background: var(--match); }
+.rel-legend .sw i.s { background: var(--match);
+                      background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+.rel-legend .sw i.d { background: var(--divergence); }
+.rel-legend .sw i.u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
+.rel-legend .sw i.o { background-image: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
+.rel-note { margin: 12px 0 4px; }
+.rel-grid { display: block; width: 100%%; max-width: 503px; height: auto; margin: 8px 0 6px; }
 .row .num { font: 11.5px var(--mono); color: var(--ink-3); font-variant-numeric: tabular-nums;
             text-align: right; white-space: nowrap; }
 .row .num b { color: var(--divergence); font-weight: 500; }
@@ -562,6 +576,8 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
       <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
     </div>
   </div>
+
+  <section class="relations">%(relations)s</section>
 
   <footer>
     <p>What each column was taken against:</p>
@@ -859,7 +875,15 @@ def page(model):
 
     versions = "".join("<dt>%s</dt><dd>%s</dd>" % (html.escape(p), html.escape(build(p)))
                        for p in model["participants"])
+    # The relation corpus is a second measurement on a second set of cases, and its verdicts are
+    # formed by probe/relations/check_column.py rather than here. Imported inside the function
+    # because that module imports this one for the palette, and at module level the two would each
+    # be waiting for the other.
+    sys.path.insert(0, os.path.join(ROOT, "probe", "relations"))
+    import picture
+
     return PAGE % {
+        "relations": picture.section(REPO),
         "mono": MONO, "sans": SANS, "favicon": FAVICON,
         "cases": len(model["cases"]),
         "scored": len([c for c in model["cases"] if c in model["expected"]]),

@@ -120,9 +120,16 @@ def compare_schema(got, want, caps):
     return got == want
 
 
-def main():
-    path = sys.argv[1]
-    verbose = "--cases" in sys.argv[2:]
+# What a scored case came to. The picture draws these and the summary counts them, out of one
+# procedure: a second loop over the same columns is exactly how a drawing comes to disagree with the
+# numbers beside it, which is the failure this repository is about.
+MATCHED, SCHEMA_ONLY, DIFFERED, UNSUPPORTED, OBSERVED = range(5)
+STATE_NAME = {MATCHED: "matched", SCHEMA_ONLY: "matched, rows not observed",
+              DIFFERED: "differed", UNSUPPORTED: "not accepted", OBSERVED: "observed, never scored"}
+
+
+def score(path):
+    """Reads a saved column and returns what each case came to, with the head that names the run."""
     extract = load_extract()
     cases = extract["cases"]
     head, answers = read_column(path)
@@ -146,6 +153,7 @@ def main():
 
     matched, differed, unsupported, observed = [], [], [], []
     rows_compared, rows_unreached, rows_unobserved = [], [], []
+    state = {}
     for case in cases:
         mark, text = answers[case["id"]]
         if mark != case["mark"]:
@@ -153,10 +161,12 @@ def main():
                      % (os.path.relpath(path, ROOT), case["id"], mark, case["mark"]))
         if mark == "observe":
             observed.append((case["id"], text))
+            state[case["id"]] = OBSERVED
             continue
         got_schema, got_rows = split_answer(text)
         if got_schema is None:
             unsupported.append((case["id"], text))
+            state[case["id"]] = UNSUPPORTED
             if case["rows"] is not None:
                 rows_unreached.append(case["id"])
             continue
@@ -172,6 +182,30 @@ def main():
             else:
                 rows_compared.append(case["id"])
         (differed if why else matched).append((case["id"], "; ".join(why) or got_schema))
+        # A case whose rows the participant never looked at is not the same agreement as one it
+        # answered whole, and the two must not share a colour: 26 cases assert rows, and one pair
+        # is separated by nothing else.
+        state[case["id"]] = (DIFFERED if why
+                             else SCHEMA_ONLY if case["id"] in rows_unobserved
+                             else MATCHED)
+
+    return {
+        "name": name, "head": head, "caps": caps, "cases": cases, "answers": answers,
+        "state": state, "matched": matched, "differed": differed, "unsupported": unsupported,
+        "observed": observed, "rows_compared": rows_compared, "rows_unreached": rows_unreached,
+        "rows_unobserved": rows_unobserved,
+    }
+
+
+def main():
+    path = sys.argv[1]
+    verbose = "--cases" in sys.argv[2:]
+    model = score(path)
+    name, caps, cases, head = model["name"], model["caps"], model["cases"], model["head"]
+    matched, differed = model["matched"], model["differed"]
+    unsupported, observed = model["unsupported"], model["observed"]
+    rows_compared, rows_unreached = model["rows_compared"], model["rows_unreached"]
+    rows_unobserved = model["rows_unobserved"]
 
     scored = len(matched) + len(differed) + len(unsupported)
     declaring_rows = sum(1 for c in cases if c["rows"] is not None)

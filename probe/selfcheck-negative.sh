@@ -601,6 +601,30 @@ mutate "a comparison that reports no difference" "was not reported as a differen
 mutate "a difference reported under the wrong kind" "but not as" \
   replace probe/column_diff.py 'kind = ("refusal" if was and now else "lost" if now else "gained" if was else "answer")' 'kind = "answer"'
 
+# The picture and the page are drawn from the same verdicts as the counts beside them. Breaking the
+# drawing alone is what tells the two checks apart: one says the committed file is the generator's
+# output, the other says the generator drew a shape per cell.
+mutate "a relations picture that is not what its generator draws" "differs from probe/relations/picture.py" \
+  python3 -c "
+p = 'docs/relations.svg'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('The relation corpus', 'The relation corpora', 1))"
+
+mutate "a relations cell drawn as agreement where the column differs" "draws" \
+  python3 -c "
+import re
+for p in ('docs/relations.svg', 'docs/relations-dark.svg'):
+    t = open(p, encoding='utf-8').read()
+    for old, new in (('#d03b3b', '#d6d6d1'), ('#e05a58', '#363a40')):
+        t = t.replace(old, new)
+    open(p, 'w', encoding='utf-8').write(t)"
+
+mutate "a stale count of the relation cases" "relation cases" \
+  python3 -c "
+p = 'README.md'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('corpus: 39 cases written by hand', 'corpus: 41 cases written by hand'))"
+
 # The relations corpus is measured against an extract of its own bundles, and the tie between the
 # two is a hash rather than a rerun of the generator, because the generator needs protobuf and this
 # gate needs python3. So the hash is the thing to break.

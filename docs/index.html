@@ -44,6 +44,20 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .bar .m { background: var(--match); }
 .bar .d { background: var(--divergence); }
 .bar .u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
+/* The relation corpus's fourth tone: agreement on the schema of a case that also asserts rows.
+   Hatched rather than a shade of the match colour, because it is a limit of what was measured and
+   not a weaker agreement - the same distinction the matrix above draws for a type-system boundary. */
+.bar .s { background: var(--match);
+          background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+.rel-legend { margin: 14px 0 0; }
+.rel-legend .sw i.m { background: var(--match); }
+.rel-legend .sw i.s { background: var(--match);
+                      background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+.rel-legend .sw i.d { background: var(--divergence); }
+.rel-legend .sw i.u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
+.rel-legend .sw i.o { background-image: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
+.rel-note { margin: 12px 0 4px; }
+.rel-grid { display: block; width: 100%; max-width: 503px; height: auto; margin: 8px 0 6px; }
 .row .num { font: 11.5px var(--mono); color: var(--ink-3); font-variant-numeric: tabular-nums;
             text-align: right; white-space: nowrap; }
 .row .num b { color: var(--divergence); font-weight: 500; }
@@ -220,6 +234,32 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
       <table id="matrix"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table>
     </div>
   </div>
+
+  <section class="relations">
+  <h2>The relation corpus</h2>
+  <p class="lede">A second measurement, on a second corpus: 39 cases written by hand against
+    the sentences of the relation documentation, compiled to protobuf and read by 3
+    implementations. It shares no case with the matrix above, so it shares no column.</p>
+  <div class="rollup"><div class="row"><span class="name">substrait-java</span>
+      <span class="bar"><span class="m" style="width:46.8px"></span><span class="s" style="width:130.0px"></span><span class="u" style="width:5.2px"></span></span>
+      <span class="num">34 matched (25 on the schema alone), 1 not accepted</span></div>
+      <div class="row"><span class="name">substrait-go</span>
+      <span class="bar"><span class="m" style="width:5.2px"></span><span class="s" style="width:93.6px"></span><span class="d" style="width:10.4px"></span><span class="u" style="width:72.8px"></span></span>
+      <span class="num">19 matched (18 on the schema alone), <b>2 differed</b>, 14 not accepted</span></div>
+      <div class="row"><span class="name">DuckDB</span>
+      <span class="bar"><span class="m" style="width:93.6px"></span><span class="d" style="width:26.0px"></span><span class="u" style="width:62.4px"></span></span>
+      <span class="num">18 matched, <b>5 differed</b>, 12 not accepted</span></div></div>
+  <div class="legend rel-legend"><span class="key"><span class="sw"><i class="m"></i></span>matched</span><span class="key"><span class="sw"><i class="s"></i></span>matched, rows not observed</span><span class="key"><span class="sw"><i class="d"></i></span>differed</span><span class="key"><span class="sw"><i class="u"></i></span>not accepted</span><span class="key"><span class="sw"><i class="o"></i></span>observed, never scored</span></div>
+  <p class="lede rel-note">26 of the 39 cases assert rows as well as a schema, and only DuckDB executes, so every other agreement on those is an agreement about half of what the case says. Two of them, a right semi join and a right anti join, emit the same columns with the same nullability and are separated by nothing but their rows.</p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="relations-dark.svg">
+    <img class="rel-grid" src="relations.svg" alt="The relation corpus as a grid, cases down and participants across: agreement in a quiet grey, agreement on the schema of a case that also asserts rows hatched, divergence in red, a plan the participant does not accept left as an outline, and a case that carries no expectation dotted.">
+  </picture>
+  <p class="meta">The saved columns are
+    <a href="https://github.com/alexandrefimov/substrait-conformance-cases/blob/main/results/relations">results/relations/</a>, one file per
+    participant; <code>probe/relations/replay.sh</code> rebuilds one from nothing and requires it
+    back. The cases are <a href="https://github.com/alexandrefimov/substrait-conformance-cases/blob/main/tests/relations">tests/relations/</a>.</p>
+</section>
 
   <footer>
     <p>What each column was taken against:</p>
