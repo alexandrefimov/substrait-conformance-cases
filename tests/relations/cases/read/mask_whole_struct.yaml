@@ -1,0 +1,28 @@
+id: read/mask/keeps-a-column-whole
+spec_ref: expressions/field_references.md#masked-complex-expression
+kind: KIND_POSITIVE
+notes: >-
+  A mask that names the struct column and nothing inside it. The column survives with
+  all three of its fields, and the scalar column beside it is gone. This is the
+  control for its sibling: without a child select nothing below the top level is
+  touched, so any difference between the two cases is the child doing its work.
+inputs:
+  t_mask:
+    schema: "a:i64, s:struct<x:i64, y:string, z:bool>"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [s, x, y, z]
+        input:
+          read:
+            common: {direct: {}}
+            $table: t_mask
+            projection:
+              select:
+                struct_items:
+                  - {field: 1}
+              maintain_singular_struct: false
+expect:
+  schema: "s:struct<x:i64, y:string, z:bool>"

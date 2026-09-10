@@ -419,12 +419,40 @@ class Deriver:
             direct = [direct[i] for i in emit.get("outputMapping", [])]
         return direct
 
+    @staticmethod
+    def apply_select(t, sel):
+        """Narrow a type by a MaskExpression Select, keeping only what it names.
+
+        Only struct selects are handled. A list or map select would also have to say
+        what happens to the elements around the ones it keeps, and no case here reaches
+        one, so an unhandled kind is an error rather than a silent pass-through.
+        """
+        if "struct" not in sel:
+            raise NotImplementedError(f"mask select kind {list(sel)}")
+        if t[0] != "struct":
+            raise ValueError(f"a struct select applied to {t[0]}")
+        kept = []
+        for item in sel["struct"]["structItems"]:
+            sub = t[1][item.get("field", 0)]
+            kept.append(
+                Deriver.apply_select(sub, item["child"]) if "child" in item else sub
+            )
+        return ("struct", tuple(kept), t[2])
+
     def rel_read(self, n):
         schema = schema_from_named_struct(n["baseSchema"])
         proj = n.get("projection")
         if proj:
-            items = proj["select"]["structItems"]
-            schema = [schema[it.get("field", 0)] for it in items]
+            # "Defaults to the schema of the data read after the optional projection
+            # (masked complex expression) is applied", and a struct item's child narrows
+            # that column further rather than replacing it.
+            out = []
+            for it in proj["select"]["structItems"]:
+                col = schema[it.get("field", 0)]
+                out.append(
+                    self.apply_select(col, it["child"]) if "child" in it else col
+                )
+            schema = out
         return schema
 
     def rel_filter(self, n):
