@@ -334,7 +334,11 @@ def coverage(plan, counter=None):
         counter[f"rel:{which}"] += 1
         node = getattr(rel, which)
         if which in ("join", "hash_join", "merge_join", "nested_loop_join"):
-            counter[f"join_type:{_enum_name(node, 'type')}"] += 1
+            # The relation kind belongs in the key. JoinRel and the three physical join
+            # messages give the same names different numbers, so counting by name alone
+            # merges two wire values and lets the last case for either one be deleted
+            # without the ratchet noticing.
+            counter[f"join_type:{which}:{_enum_name(node, 'type')}"] += 1
         if which == "set":
             counter[f"set_op:{_enum_name(node, 'op')}"] += 1
         if which == "read":

@@ -1,0 +1,45 @@
+id: join_physical/hash_left_anti/wire-7
+spec_ref: relations/physical_relations.md#hash-join-operator
+kind: KIND_POSITIVE
+notes: >-
+  HashJoinRel, MergeJoinRel and NestedLoopJoinRel number their JoinType enum
+  differently from JoinRel for four values. On the wire this case carries 7, which
+  these three messages read as LEFT_ANTI and JoinRel reads as LEFT_SINGLE. A tool that
+  rewrites a logical join into a physical one by copying the number, or that resolves
+  a physical join with JoinRel's enum, changes the join without changing anything else
+  about the plan. Left anti emits the left input, and only records without a partner
+  on the right. Under the logical numbering the same wire value is a left single join,
+  which emits four columns instead of two, so this substitution changes the arity as
+  well. The key references are per input, not over the concatenation: the Hash Join
+  Properties table calls them the field to compare from the left input and the field
+  to compare from the right input, so the right key here is the right table's own
+  column 0.
+inputs:
+  t_left:
+    schema: "a0:i64, a1:i64?"
+    rows: [["1::i64", "null::i64?"], ["2::i64", "2::i64?"]]
+  t_right:
+    schema: "b0:i64, b1:i64?"
+    rows: [["2::i64", "20::i64?"], ["5::i64", "50::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [a0, a1]
+        input:
+          hash_join:
+            common: {direct: {}}
+            type: JOIN_TYPE_LEFT_ANTI
+            left: {read: {common: {direct: {}}, $table: t_left}}
+            right: {read: {common: {direct: {}}, $table: t_right}}
+            keys:
+              - left: {direct_reference: {struct_field: {field: 0}}, root_reference: {}}
+                right: {direct_reference: {struct_field: {field: 0}}, root_reference: {}}
+                comparison: {simple: SIMPLE_COMPARISON_TYPE_EQ}
+expect:
+  schema: "a0:i64, a1:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "null::i64?"]

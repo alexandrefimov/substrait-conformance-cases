@@ -68,6 +68,17 @@ Three kinds of case:
   question the specification has not answered is recorded as a case rather than as an
   argument, and it must name where the question is tracked.
 
+One case family is about the wire and not about a relation's rules. `JoinRel` and the three
+physical join messages number their `JoinType` enum differently for four values: 6, 7, 8 and 9
+mean left anti, left single, right semi and right anti in the logical message and right semi,
+left anti, right anti and left single in the physical ones. The cases under `join_physical/`
+carry those four numbers on a `HashJoinRel` and assert what the physical numbering says they
+are, so a tool that rewrites a logical join into a physical one by copying the number, or that
+resolves a physical join with `JoinRel`'s enum, answers them differently. `hash_right_anti` is
+the one worth reading: right anti and right semi emit the same columns with the same
+nullability, so nothing but the rows tells them apart, and a harness comparing types alone
+reports whichever the consumer picked as a pass.
+
 ## What the checks establish
 
 Ten checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
