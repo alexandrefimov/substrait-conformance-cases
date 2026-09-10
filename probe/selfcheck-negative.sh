@@ -625,6 +625,19 @@ p = 'README.md'
 t = open(p, encoding='utf-8').read()
 open(p, 'w', encoding='utf-8').write(t.replace('corpus: 71 cases written by hand', 'corpus: 73 cases written by hand'))"
 
+# The page's own table is drawn from its own JSON, which nothing else reads. Breaking one cell in
+# it leaves the file byte-identical to its generator, which is why the data is checked separately.
+mutate "a relation cell the page draws as agreement" "the column makes it" \
+  python3 -c "
+import json, re
+p = 'docs/index.html'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'(<script type=\"application/json\" id=\"relations-data\">)(.*?)(</script>)', t, re.S)
+d = json.loads(m.group(2))
+d['cells']['DuckDB']['read/mask/narrows-a-struct-from-inside'] = 0
+open(p, 'w', encoding='utf-8').write(
+    t[:m.start(2)] + json.dumps(d, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + t[m.end(2):])"
+
 # The reasons behind the differing cells: a judgement is worth what its test is worth, so the test
 # is what gets broken here - the cell that no longer has one, the reason that no longer describes
 # the answer, and the reason left behind after the cell stopped differing.

@@ -25,6 +25,7 @@ Three of that grammar's decisions carry over unchanged.
 
 import html
 import io
+import json
 import os
 import sys
 
@@ -250,26 +251,189 @@ def svg(model, theme):
 # ------------------------------------------------------------------------------------- page ----
 
 SECTION = """
-  <h2>The relation corpus</h2>
+  <h2 id="relations">The relation corpus</h2>
   <p class="lede">A second measurement, on a second corpus: %(cases)d cases written by hand against
     the sentences of the relation documentation, compiled to protobuf and read by %(participants)d
     implementations. It shares no case with the matrix above, so it shares no column.</p>
   <div class="rollup">%(rollup)s</div>
   <div class="legend rel-legend">%(legend)s</div>
   <p class="lede rel-note">%(note)s</p>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="relations-dark.svg">
-    <img class="rel-grid" src="relations.svg" alt="%(alt)s">
-  </picture>
+  <div class="controls">
+    <button id="rel-all" aria-pressed="true">All %(cases)d cases</button>
+    <button id="rel-differs" aria-pressed="false">Only rows where someone differs</button>
+  </div>
+  <div class="matrix-meta">
+    <span class="hint">Click or tap a cell to open what that participant answered, what the case
+      asserts, and where they differ, why.</span>
+  </div>
+  <div class="matrix-pane">
+    <div class="scroll" tabindex="0" role="region" aria-label="Relation corpus">
+      <table id="rel-matrix"><thead><tr id="rel-head"></tr></thead><tbody id="rel-body"></tbody></table>
+    </div>
+  </div>
   <p class="meta">The saved columns are
     <a href="%(repo)s/blob/main/results/relations">results/relations/</a>, one file per
     participant; <code>probe/relations/replay.sh</code> rebuilds one from nothing and requires it
-    back. The cases are <a href="%(repo)s/blob/main/tests/relations">tests/relations/</a>.</p>
+    back. The cases are <a href="%(repo)s/blob/main/tests/relations">tests/relations/</a>, and the
+    reasons behind the differing cells are
+    <a href="%(repo)s/blob/main/results/relations/differed.json">differed.json</a>.</p>
+  <script type="application/json" id="relations-data">%(data)s</script>
+  <script>
+  (function () {
+    const D = JSON.parse(document.getElementById("relations-data").textContent);
+    const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c =>
+      ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+    // The five states are the ones probe/relations/check_column.py forms, in its own order, and the
+    // fill for each is .rst0 to .rst4 in the stylesheet. Named here so a state added there without
+    // a fill here shows as an unstyled cell rather than as a wrong colour.
+    const MATCHED = 0, SCHEMA_ONLY = 1, DIFFERED = 2, UNSUPPORTED = 3, OBSERVED = 4;
+    let onlyDiffering = false, open = null;
+
+    function differs(caseId) {
+      return D.participants.some(p => D.cells[p][caseId] === DIFFERED);
+    }
+
+    function detail(caseId, participant) {
+      const state = D.cells[participant][caseId];
+      const c = D.cases[caseId], answer = D.answers[participant][caseId];
+      const reason = (D.reasons[participant] || {})[caseId];
+      let out = '<div class="detail"><div class="detail-toolbar">' +
+        '<h3><span class="case-name">' + esc(caseId) + '</span>' +
+        '<span class="pair-mark">' + esc(participant) + '</span>' +
+        '<span class="state">' + esc(D.states[state].name) + '</span></h3>' +
+        '<button class="detail-close" type="button">Close</button></div>' +
+        '<p class="status-note">' + esc(D.states[state].note) + '</p><dl>';
+      out += "<dt>answered</dt><dd>" + esc(answer) + "</dd>";
+      if (c.mark === "score") {
+        out += "<dt>asserts</dt><dd>" + esc(c.schema) +
+               (c.rows === null ? "" : " rows " + esc(c.rows || "(none)")) + "</dd>";
+      } else {
+        out += "<dt>asserts</dt><dd>nothing; this case ships without an expectation on purpose</dd>";
+      }
+      out += "<dt>spec</dt><dd>" + esc(c.spec_ref) + "</dd>";
+      if (reason) {
+        out += "<dt>why</dt><dd>" + esc(reason.what) +
+               (reason.same_as ? ' <em>The same cause the 98-plan corpus records as ' +
+                 esc(reason.same_as) + ".</em>" : "") +
+               (reason.outcome ? " <em>Triaged " + esc(reason.outcome) + ".</em>" : "") + "</dd>";
+      }
+      return out + "</dl></div>";
+    }
+
+    function closeDetail() {
+      if (!open) return;
+      const row = document.getElementById("rel-detail-row");
+      if (row) row.remove();
+      open.classList.remove("on");
+      open = null;
+    }
+
+    function toggle(td, caseId, participant) {
+      const same = open === td;
+      closeDetail();
+      if (same) return;
+      const tr = document.createElement("tr");
+      tr.id = "rel-detail-row";
+      tr.className = "detail-row";
+      tr.innerHTML = '<td colspan="' + (D.participants.length + 1) + '">' +
+                     detail(caseId, participant) + "</td>";
+      td.closest("tr").after(tr);
+      td.classList.add("on");
+      open = td;
+      tr.querySelector(".detail-close").addEventListener("click", closeDetail);
+    }
+
+    function draw() {
+      const head = document.getElementById("rel-head");
+      head.innerHTML = '<th class="corner">case</th>' +
+        D.participants.map(p => '<th><span class="column-name">' + esc(p) + "</span></th>").join("");
+      const body = document.getElementById("rel-body");
+      let html = "";
+      for (const group of D.groups) {
+        const rows = group.cases.filter(id => !onlyDiffering || differs(id));
+        if (!rows.length) continue;
+        // The same row shape the matrix above uses: a sticky <th class="case"> that does not wrap,
+        // and a group heading in its own <th>. Built out of a <td class="corner"> instead, the case
+        // names wrapped onto two lines and the cells stretched to fill what was left.
+        html += '<tr class="group"><th>' + esc(group.label) + '</th><td colspan="' +
+                D.participants.length + '"></td></tr>';
+        for (const id of rows) {
+          const short = id.includes("/") ? id.slice(id.indexOf("/") + 1) : id;
+          html += '<tr><th class="case" title="' + esc(id) + '">' +
+                  '<span class="rel-rowmark">' + (D.declares_rows[id] ? "|" : "&nbsp;") + "</span>" +
+                  esc(short) + "</th>";
+          for (const p of D.participants) {
+            html += '<td class="cell rst' + D.cells[p][id] + '" data-case="' + esc(id) +
+                    '" data-p="' + esc(p) + '"><i></i></td>';
+          }
+          html += "</tr>";
+        }
+      }
+      body.innerHTML = html;
+      body.querySelectorAll("td.cell").forEach(td =>
+        td.addEventListener("click", () => toggle(td, td.dataset.case, td.dataset.p)));
+      open = null;
+    }
+
+    document.getElementById("rel-all").addEventListener("click", () => {
+      onlyDiffering = false;
+      document.getElementById("rel-all").setAttribute("aria-pressed", "true");
+      document.getElementById("rel-differs").setAttribute("aria-pressed", "false");
+      draw();
+    });
+    document.getElementById("rel-differs").addEventListener("click", () => {
+      onlyDiffering = true;
+      document.getElementById("rel-all").setAttribute("aria-pressed", "false");
+      document.getElementById("rel-differs").setAttribute("aria-pressed", "true");
+      draw();
+    });
+    draw();
+  })();
+  </script>
 """
 
 ROLLUP_ROW = """<div class="row"><span class="name">%(name)s</span>
       <span class="bar">%(bar)s</span>
       <span class="num">%(num)s</span></div>"""
+
+
+def page_model():
+    """Everything the page's own table needs, from the same verdicts the picture draws.
+
+    The page carries a table rather than the picture: a reader who wants to know why a cell is red
+    can open it there, and the picture cannot answer that. The SVG stays what the README shows,
+    where nothing runs.
+    """
+    model = build()
+    triage_path = os.path.join(ROOT, "results", "relations", "differed.json")
+    with io.open(triage_path, encoding="utf-8") as fh:
+        triage = json.load(fh)
+
+    cases, cells, answers, reasons = {}, {}, {}, {}
+    for case in model["cases"]:
+        cases[case["id"]] = {"mark": case["mark"], "schema": case["schema"],
+                             "rows": case["rows"], "spec_ref": case["spec_ref"]}
+    for label, name in COLUMNS:
+        one = model["models"][label]
+        cells[label] = model["cells"][label]
+        answers[label] = {case_id: text for case_id, (_, text) in one["answers"].items()}
+        reasons[label] = {}
+        for case_id, rule_id in triage["cells"].get(name, {}).items():
+            rule = triage["rules"][rule_id]
+            reasons[label][case_id] = {
+                "id": rule_id, "kind": rule["kind"], "what": rule["what"],
+                "same_as": rule.get("same_as"),
+                "outcome": rule.get("triage", {}).get(name, {}).get("outcome"),
+            }
+    return {
+        "participants": [label for label, _ in COLUMNS],
+        "groups": [{"label": g["label"], "cases": g["cases"]} for g in model["groups"]],
+        "cases": cases, "cells": cells, "answers": answers, "reasons": reasons,
+        "states": [{"name": cc.STATE_NAME[s], "note": STATE_NOTE[s]}
+                   for s in (cc.MATCHED, cc.SCHEMA_ONLY, cc.DIFFERED, cc.UNSUPPORTED, cc.OBSERVED)],
+        "declares_rows": model["declares_rows"],
+        "versions": model["versions"], "taken": model["taken"],
+    }
 
 
 def section(repo):
@@ -308,13 +472,11 @@ def section(repo):
             " nullability and are separated by nothing but their rows."
             % (rows_declared, len(model["cases"]), ", ".join(executing) or "no participant here"))
 
-    alt = ("The relation corpus as a grid, cases down and participants across: agreement in a quiet"
-           " grey, agreement on the schema of a case that also asserts rows hatched, divergence in"
-           " red, a plan the participant does not accept left as an outline, and a case that"
-           " carries no expectation dotted.")
     return SECTION % {"cases": len(model["cases"]), "participants": len(COLUMNS),
                       "rollup": "\n      ".join(rows), "legend": legend,
-                      "note": html.escape(note), "alt": html.escape(alt), "repo": repo}
+                      "note": html.escape(note), "repo": repo,
+                      "data": json.dumps(page_model(), ensure_ascii=False, sort_keys=True,
+                                         separators=(",", ":"))}
 
 
 if __name__ == "__main__":

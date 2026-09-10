@@ -383,6 +383,48 @@ echo "### every differing cell is classified"
 python3 probe/check_differed.py || FAILED=1
 
 echo
+echo "### the relation table on the page carries the verdicts the columns hold"
+# The page draws its own table from its own JSON, and nobody rereads that JSON. A cell drawn from a
+# stale model would keep index.html byte-identical to the generator and agree with every number
+# beside it, so the data is compared with probe/relations/check_column.py, which is where a verdict
+# comes from.
+python3 - <<'RELPAGE' || FAILED=1
+import io, json, re, sys
+sys.path.insert(0, "probe/relations")
+import check_column as cc
+
+page = io.open("docs/index.html", encoding="utf-8").read()
+found = re.search(r'<script type="application/json" id="relations-data">(.*?)</script>', page, re.S)
+if not found:
+    print("FAILED: docs/index.html carries no data for the relation table")
+    raise SystemExit(1)
+drawn = json.loads(found.group(1))
+
+bad = 0
+for label, name in (("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")):
+    model = cc.score("results/relations/%s.txt" % name)
+    if label not in drawn["cells"]:
+        print("FAILED: the page draws no column for %s" % label)
+        bad = 1
+        continue
+    off = {c: (drawn["cells"][label].get(c), s) for c, s in model["state"].items()
+           if drawn["cells"][label].get(c) != s}
+    if off:
+        case_id, (page_state, real) = sorted(off.items())[0]
+        print("FAILED: the page has %s/%s as %s, the column makes it %s (%d cells differ)"
+              % (label, case_id, page_state, real, len(off)))
+        bad = 1
+    answers = {c: t for c, (_, t) in model["answers"].items()}
+    if drawn["answers"][label] != answers:
+        print("FAILED: the page's answers for %s are not the ones in its column" % label)
+        bad = 1
+if not bad:
+    print("ok      %d cells and their answers, the same on the page as in the columns"
+          % sum(len(v) for v in drawn["cells"].values()))
+raise SystemExit(bad)
+RELPAGE
+
+echo
 echo "### the relation corpus picture is what its generator draws"
 # Two checks, and the second is the one that matters. The first says the committed SVGs are the
 # generator's output; that alone would stay true if the drawing loop skipped a state, since the

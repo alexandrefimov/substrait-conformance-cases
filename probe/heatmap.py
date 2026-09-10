@@ -399,6 +399,21 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .rel-legend .sw i.u { box-shadow: inset 0 0 0 1px var(--rule-strong); }
 .rel-legend .sw i.o { background-image: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
 .rel-note { margin: 12px 0 4px; }
+/* The relation table's five states, in the order probe/relations/check_column.py numbers them.
+   Its own prefix, because the matrix above has six states of its own under .st0 to .st5 and the
+   two sets mean different things. */
+.rst0 i { background: var(--match); }
+.rst1 i { background: var(--match);
+          background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+.rst2 i { background: var(--divergence); }
+.rst3 i { box-shadow: inset 0 0 0 1px var(--rule); }
+.rst4 i { background: repeating-linear-gradient(45deg, var(--rule-strong) 0 1px, transparent 1px 4px); }
+/* The bar that marks a case asserting rows, in the gutter of its name, the way the picture draws
+   it. A space when the case asserts none, so the names still line up. */
+#rel-matrix .rel-rowmark { display: inline-block; width: 8px; color: var(--ink-3); }
+/* The relation table's own name column is wider than the matrix's: its case names carry a group
+   prefix and a rule, where the other corpus names a case in one word. */
+#rel-matrix tbody th.case { padding-right: 22px; }
 /* No width in pixels: the relation picture sizes its name column from the longest case name, so a
    number written here would rot the next time the corpus grows. The SVG carries its own. */
 .rel-grid { display: block; max-width: 100%%; height: auto; margin: 8px 0 6px; }
@@ -548,6 +563,9 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     <p class="lede"><strong>An empty cell is silence, not a wrong answer.</strong> It means the
       implementation does not accept that plan at all &mdash; which is why silence is drawn as an
       outline and never as a colour.</p>
+    <p class="lede">A second corpus is measured below the matrix: %(relcases)d relation cases
+      written by hand against the sentences of the relation documentation, read by
+      %(relparticipants)d implementations &mdash; <a href="#relations">what they answer</a>.</p>
     <p class="meta">%(cases)d cases &middot; %(scored)d with an expectation &middot; columns taken
       %(taken)s &middot; <a href="%(repo)s">substrait-conformance-cases</a></p>
   </header>
@@ -884,8 +902,11 @@ def page(model):
     sys.path.insert(0, os.path.join(ROOT, "probe", "relations"))
     import picture
 
+    rel = picture.page_model()
     return PAGE % {
         "relations": picture.section(REPO),
+        "relcases": len(rel["cases"]),
+        "relparticipants": len(rel["participants"]),
         "mono": MONO, "sans": SANS, "favicon": FAVICON,
         "cases": len(model["cases"]),
         "scored": len([c for c in model["cases"] if c in model["expected"]]),
