@@ -1,0 +1,44 @@
+JAVA: relations column from run 2026-09-10T19:15, substrait-java fff63906, substrait protos 0.102.0, JDK 17.0.20.1
+Corpus tests/relations at fingerprint 249d3d09bb78, 39 cases.
+BOUNDARY: substrait-java derives a schema and does not execute, so every case here is answered on its schema alone, including the 26 that declare rows.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 4 of the 39 cases.
+
+score   aggregate/grouping_sets/index-column                      [g0:i64?, g1:string?, total:i64?, grouping_set:i32]
+score   aggregate/grouping_sets/overlapping-sets                  [g0:i64, g1:string?, total:i64?, grouping_set:i32]
+score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i64?]
+score   aggregate/sum/measure-nullability                         [g0:i64, total:i64?]
+score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64?]
+score   emit/drop/leave-columns-out                               [only:string]
+score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64]
+score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64?]
+observe invalid/declaration/output-type-disagrees-with-extension  [r:decimal<20,2>]
+score   join/inner/output-nullability                             [a0:i64, a1:i64?, b0:i64, b1:i64?]
+score   join/left/output-nullability                              [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/left_mark/output-mark-column                         [a0:i64, a1:i64?, mark:bool?]
+score   join/left_semi/output-columns                             [a0:i64, a1:i64?]
+score   join/left_single/output-nullability                       [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/outer/output-nullability                             [a0:i64?, a1:i64?, b0:i64?, b1:i64?]
+score   join/right/output-nullability                             [a0:i64?, a1:i64?, b0:i64, b1:i64?]
+score   join/right_anti/output-columns                            [b0:i64, b1:i64?]
+score   join_physical/hash_left_anti/wire-7                       [a0:i64, a1:i64?]
+score   join_physical/hash_left_single/wire-9                     ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_SINGLE
+score   join_physical/hash_right_anti/wire-8                      [b0:i64, b1:i64?]
+score   join_physical/hash_right_semi/wire-6                      [b0:i64, b1:i64?]
+score   project/decimal_add/return-type                           [r:decimal<11,2>]
+score   project/decimal_divide/return-type                        [r:decimal<21,8>]
+score   project/decimal_multiply/return-type                      [r:decimal<16,3>]
+score   project/output-order/appends-computed-columns             [a:i64, b:i64?, sum:i64]
+score   read/named_table/direct-schema                            [a:i64, b:i64?]
+score   read/projection/mask-drops-a-column                       [c0:i64, c2:bool]
+observe read/projection/mask-reorders                             [first:bool, second:i64]
+score   read/virtual_table/literal-rows                           [n:i64, s:string?]
+score   set/intersection_multiset/output-nullability              [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+score   set/intersection_multiset_all/output-nullability          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+score   set/intersection_primary/output-nullability               [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64?, c6:i64?, c7:i64?]
+score   set/minus_multiset/output-nullability                     [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/minus_primary/output-nullability                      [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/minus_primary_all/output-nullability                  [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/union_all/output-nullability                          [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/union_distinct/output-nullability                     [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+observe unresolved/virtual_table/row-required-in-nullable-column  ERROR: IllegalArgumentException: Row field type (I64{nullable=false}) does not match schema field type (I64{nullable=true})
+observe unresolved/virtual_table/row-type-differs-from-schema     ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})

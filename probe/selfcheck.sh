@@ -383,6 +383,27 @@ echo "### every differing cell is classified"
 python3 probe/check_differed.py || FAILED=1
 
 echo
+echo "### the relations columns agree with the corpus they were taken on"
+# The bundles under tests/relations are protobuf and this check needs python3 and nothing else, so
+# the tie runs through results/relations/expected.json: probe/relations/check_column.py hashes every
+# committed bundle against the extract before it scores anything. An edited case, a case the extract
+# does not name and a column with a hole all fail here rather than in a number nobody recomputes.
+if [ -d results/relations ]; then
+  cols=$(find results/relations -name '*.txt' | sort)
+  if [ -z "$cols" ]; then
+    fail "results/relations holds an expectation extract and no column: nothing measures the corpus"
+  else
+    for col in $cols; do
+      if out=$(python3 probe/relations/check_column.py "$col" 2>&1); then
+        ok "$(echo "$out" | sed -n '2p' | sed 's/^  //') - $(basename "$col" .txt)"
+      else
+        fail "$col: $(echo "$out" | head -3 | tr '\n' ' ')"
+      fi
+    done
+  fi
+fi
+
+echo
 echo "### the corpus is whole"
 python3 - <<'PY' || FAILED=1
 import json, os, sys

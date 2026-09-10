@@ -1,0 +1,44 @@
+GO: relations column from run 2026-09-10T19:10, github.com/substrait-io/substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0, github.com/substrait-io/substrait-protobuf/go v0.85.0, pinning github.com/substrait-io/substrait v0.87.0
+Corpus tests/relations at fingerprint 249d3d09bb78, 39 cases.
+BOUNDARY: substrait-go derives a schema and does not execute, so every case here is answered on its schema alone, including the 26 that declare rows.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 4 of the 39 cases.
+
+score   aggregate/grouping_sets/index-column                      ERROR: invalid relation: root relation has 4 output name(s) but the output schema requires 3
+score   aggregate/grouping_sets/overlapping-sets                  [g0:i64, g1:i64, total:string, grouping_set:i64?]
+score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i64?]
+score   aggregate/sum/measure-nullability                         [g0:i64, total:i64?]
+score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64?]
+score   emit/drop/leave-columns-out                               [only:string]
+score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64]
+score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64?]
+observe invalid/declaration/output-type-disagrees-with-extension  [r:decimal<20,2>]
+score   join/inner/output-nullability                             [a0:i64, a1:i64?, b0:i64, b1:i64?]
+score   join/left/output-nullability                              [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/left_mark/output-mark-column                         ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
+score   join/left_semi/output-columns                             [a0:i64, a1:i64?]
+score   join/left_single/output-nullability                       [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/outer/output-nullability                             [a0:i64?, a1:i64?, b0:i64?, b1:i64?]
+score   join/right/output-nullability                             [a0:i64?, a1:i64?, b0:i64, b1:i64?]
+score   join/right_anti/output-columns                            [b0:i64, b1:i64?]
+score   join_physical/hash_left_anti/wire-7                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/hash_left_single/wire-9                     [a0:i64, a1:i64?, b0:i64, b1:i64?]
+score   join_physical/hash_right_anti/wire-8                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/hash_right_semi/wire-6                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   project/decimal_add/return-type                           [r:decimal<11,2>]
+score   project/decimal_divide/return-type                        [r:decimal<21,8>]
+score   project/decimal_multiply/return-type                      [r:decimal<16,3>]
+score   project/output-order/appends-computed-columns             [a:i64, b:i64?, sum:i64]
+score   read/named_table/direct-schema                            [a:i64, b:i64?]
+score   read/projection/mask-drops-a-column                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
+observe read/projection/mask-reorders                             ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
+score   read/virtual_table/literal-rows                           [n:i64, s:string?]
+score   set/intersection_multiset/output-nullability              ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/intersection_multiset_all/output-nullability          ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/intersection_primary/output-nullability               ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_multiset/output-nullability                     ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_primary/output-nullability                      ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_primary_all/output-nullability                  ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/union_all/output-nullability                          ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/union_distinct/output-nullability                     ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+observe unresolved/virtual_table/row-required-in-nullable-column  [n:i64?]
+observe unresolved/virtual_table/row-type-differs-from-schema     [n:i32]
