@@ -8,6 +8,7 @@ notes: >-
   exercised here: every literal matches its column.
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
   relations:
     - root:
         names: [n, s]

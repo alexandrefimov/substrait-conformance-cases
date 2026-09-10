@@ -168,7 +168,9 @@ def test_unresolved_catches_a_missing_issue(corpus):
         corpus,
         case,
         gate.check_unresolved,
-        lambda: edit(corpus, case, "issue: substrait-io/substrait#1211", 'issue: ""'),
+        lambda: edit(
+            corpus, case, "tracked_in: substrait-io/substrait#1211", 'tracked_in: ""'
+        ),
     )
 
 

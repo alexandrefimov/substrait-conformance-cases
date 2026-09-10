@@ -156,7 +156,7 @@ def check_unresolved(case):
         return SKIP
     if case.expect:
         return "an unresolved case must carry no expectation"
-    if not (case.doc.get("unresolved") or {}).get("issue"):
+    if not (case.doc.get("unresolved") or {}).get("tracked_in"):
         return "an unresolved case must name what is unsettled"
     return None
 

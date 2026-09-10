@@ -14,6 +14,7 @@ inputs:
     rows: [["1::i64", "'a'::string", "10::i64"], ["1::i64", "'b'::string", "20::i64"]]
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
   relations:
     - root:
         names: [g0, total]
@@ -34,3 +35,6 @@ plan:
   extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "sum:i64"}}]
 expect:
   schema: "g0:i64, total:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values: [["1::i64", "30::i64?"]]

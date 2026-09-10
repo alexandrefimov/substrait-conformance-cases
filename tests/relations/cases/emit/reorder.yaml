@@ -12,6 +12,7 @@ inputs:
     rows: [["10::i64", "'x'::string", "true::bool"]]
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
   relations:
     - root:
         names: [k0, k1]

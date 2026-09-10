@@ -13,6 +13,7 @@ inputs:
     rows: [["7::i64", "null::i64?"]]
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
   relations:
     - root:
         names: [a, b]
