@@ -1,0 +1,27 @@
+id: set/minus_primary_all/output-nullability
+spec_ref: relations/logical_relations.md#output-type-derivation-examples
+kind: KIND_POSITIVE
+notes: >-
+  The specification's own worked example. Its three inputs, R for required and N for
+  nullable, are RRRRNNNN as the primary and then RRNNRRNN and RNRNRNRN; for this
+  operation it prints the output R R R R N N N N. The stated rule is: "The same as the
+  primary input."
+inputs:
+  s1: {schema: "c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?"}
+  s2: {schema: "c0:i64, c1:i64, c2:i64?, c3:i64?, c4:i64, c5:i64, c6:i64?, c7:i64?"}
+  s3: {schema: "c0:i64, c1:i64?, c2:i64, c3:i64?, c4:i64, c5:i64?, c6:i64, c7:i64?"}
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [c0, c1, c2, c3, c4, c5, c6, c7]
+        input:
+          set:
+            common: {direct: {}}
+            op: SET_OP_MINUS_PRIMARY_ALL
+            inputs:
+              - {read: {common: {direct: {}}, $table: s1}}
+              - {read: {common: {direct: {}}, $table: s2}}
+              - {read: {common: {direct: {}}, $table: s3}}
+expect:
+  schema: "c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?"

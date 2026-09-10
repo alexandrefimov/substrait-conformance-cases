@@ -1,0 +1,28 @@
+id: project/output-order/appends-computed-columns
+spec_ref: relations/logical_relations.md#project-operation
+kind: KIND_POSITIVE
+notes: >-
+  Project without an emit mapping outputs all of its input columns followed by the
+  columns it computes. The computed column is appended, not substituted, which is the
+  default a plan relies on whenever it omits `emit`.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_pair:
+    schema: "a:i64, b:i64?"
+    rows: [["7::i64", "null::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [a, b, sum]
+        input:
+          project:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_pair}}
+            expressions: ["arith.add:i64_i64($0, $0):i64"]
+expect:
+  schema: "a:i64, b:i64?, sum:i64"
+  rows:
+    order: ORDER_MULTISET
+    values: [["7::i64", "null::i64?", "14::i64"]]

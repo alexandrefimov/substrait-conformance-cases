@@ -1,0 +1,36 @@
+id: aggregate/grouping_sets/single-set-keeps-key-type
+spec_ref: relations/logical_relations.md#aggregate-operation
+kind: KIND_POSITIVE
+notes: >-
+  The control for the grouping-set case: both grouping expressions appear in the one
+  grouping set, so neither is widened to nullable, and with a single set there is no
+  trailing index column. The pair isolates what having more than one grouping set
+  changes.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_group:
+    schema: "g0:i64, g1:string, v:i64"
+    rows: [["1::i64", "'a'::string", "10::i64"], ["1::i64", "'b'::string", "20::i64"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [g0, g1, total]
+        input:
+          aggregate:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_group}}
+            grouping_expressions: ["$0", "$1"]
+            groupings: [{expression_references: [0, 1]}]
+            measures:
+              - measure:
+                  function_reference: 1
+                  phase: AGGREGATION_PHASE_INITIAL_TO_RESULT
+                  invocation: AGGREGATION_INVOCATION_ALL
+                  output_type: "i64?"
+                  arguments: [{value: "$2"}]
+  extension_urns: [{extension_urn_anchor: 1, urn: "extension:io.substrait:functions_arithmetic"}]
+  extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "sum:i64"}}]
+expect:
+  schema: "g0:i64, g1:string, total:i64?"

@@ -1,0 +1,27 @@
+id: project/decimal_add/return-type
+spec_ref: extensions/functions_arithmetic_decimal.yaml#add
+kind: KIND_POSITIVE
+notes: >-
+  The return type of decimal addition is computed by the return expression in the
+  extension file, not by a rule in the relation: for decimal(10,2) and decimal(5,1) it
+  gives decimal(11,2). The declared output_type in the plan is what algebra.proto
+  requires it to be, so a consumer deriving something else disagrees with the
+  extension it claims to implement.
+extensions:
+  arith_dec: extension:io.substrait:functions_arithmetic_decimal
+inputs:
+  t_dec:
+    schema: "c0:decimal<10,2>, c1:decimal<5,1>"
+    rows: [["1.00::decimal<10,2>", "3.0::decimal<5,1>"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [r]
+        input:
+          project:
+            common: {emit: {output_mapping: [2]}}
+            input: {read: {common: {direct: {}}, $table: t_dec}}
+            expressions: ["arith_dec.add:dec_dec($0, $1):decimal<11,2>"]
+expect:
+  schema: "r:decimal<11,2>"

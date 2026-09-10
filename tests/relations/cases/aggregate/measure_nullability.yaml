@@ -1,0 +1,36 @@
+id: aggregate/sum/measure-nullability
+spec_ref: extensions/functions_arithmetic.yaml#sum
+kind: KIND_POSITIVE
+notes: >-
+  The output is the grouping expressions in declaration order followed by the
+  measures. Sum over a required i64 is nullable because the extension declares its
+  return as i64? with DECLARED_OUTPUT nullability, so the measure does not mirror its
+  argument: an empty group has no value to return.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_group:
+    schema: "g0:i64, g1:string, v:i64"
+    rows: [["1::i64", "'a'::string", "10::i64"], ["1::i64", "'b'::string", "20::i64"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [g0, total]
+        input:
+          aggregate:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_group}}
+            grouping_expressions: ["$0"]
+            groupings: [{expression_references: [0]}]
+            measures:
+              - measure:
+                  function_reference: 1
+                  phase: AGGREGATION_PHASE_INITIAL_TO_RESULT
+                  invocation: AGGREGATION_INVOCATION_ALL
+                  output_type: "i64?"
+                  arguments: [{value: "$2"}]
+  extension_urns: [{extension_urn_anchor: 1, urn: "extension:io.substrait:functions_arithmetic"}]
+  extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "sum:i64"}}]
+expect:
+  schema: "g0:i64, total:i64?"

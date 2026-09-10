@@ -1,0 +1,29 @@
+id: project/decimal_divide/return-type
+spec_ref: extensions/functions_arithmetic_decimal.yaml#divide
+kind: KIND_POSITIVE
+notes: >-
+  The expectation follows the return expression in
+  extensions/functions_arithmetic_decimal.yaml, which gives decimal(21,8) for
+  decimal(10,2) divided by decimal(5,1). The worked example under Example Type
+  Expressions in site/docs/expressions/scalar_functions.md writes the same derivation
+  with S2 where the extension file uses P2, and yields decimal(17,8). The two cannot
+  both be right; this case pins the extension file because that is the artifact a
+  consumer resolves the function against.
+extensions:
+  arith_dec: extension:io.substrait:functions_arithmetic_decimal
+inputs:
+  t_dec:
+    schema: "c0:decimal<10,2>, c1:decimal<5,1>"
+    rows: [["1.00::decimal<10,2>", "3.0::decimal<5,1>"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [r]
+        input:
+          project:
+            common: {emit: {output_mapping: [2]}}
+            input: {read: {common: {direct: {}}, $table: t_dec}}
+            expressions: ["arith_dec.divide:dec_dec($0, $1):decimal<21,8>"]
+expect:
+  schema: "r:decimal<21,8>"

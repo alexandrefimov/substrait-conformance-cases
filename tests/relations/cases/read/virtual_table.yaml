@@ -1,0 +1,26 @@
+id: read/virtual_table/literal-rows
+spec_ref: relations/logical_relations.md#virtual-table
+kind: KIND_POSITIVE
+notes: >-
+  A virtual table carries its data in the plan, so this case needs no external fixture
+  and a consumer needs no catalog to run it. Whether a row literal may differ in
+  nullability from the declared base_schema is unsettled and is deliberately not
+  exercised here: every literal matches its column.
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [n, s]
+        input:
+          read:
+            common: {direct: {}}
+            base_schema: "n:i64, s:string?"
+            virtual_table:
+              expressions:
+                - {fields: ["1::i64", "'a'::string?"]}
+                - {fields: ["2::i64", "null::string?"]}
+expect:
+  schema: "n:i64, s:string?"
+  rows:
+    order: ORDER_MULTISET
+    values: [["1::i64", "'a'::string?"], ["2::i64", "null::string?"]]

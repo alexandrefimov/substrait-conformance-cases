@@ -1,0 +1,24 @@
+id: project/decimal_multiply/return-type
+spec_ref: extensions/functions_arithmetic_decimal.yaml#multiply
+kind: KIND_POSITIVE
+notes: >-
+  Decimal multiplication adds the scales and the precisions plus one: decimal(10,2) by
+  decimal(5,1) gives decimal(16,3).
+extensions:
+  arith_dec: extension:io.substrait:functions_arithmetic_decimal
+inputs:
+  t_dec:
+    schema: "c0:decimal<10,2>, c1:decimal<5,1>"
+    rows: [["1.00::decimal<10,2>", "3.0::decimal<5,1>"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [r]
+        input:
+          project:
+            common: {emit: {output_mapping: [2]}}
+            input: {read: {common: {direct: {}}, $table: t_dec}}
+            expressions: ["arith_dec.multiply:dec_dec($0, $1):decimal<16,3>"]
+expect:
+  schema: "r:decimal<16,3>"

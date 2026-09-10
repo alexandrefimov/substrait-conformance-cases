@@ -1,0 +1,27 @@
+id: emit/direct_explicit/direct-equivalence
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  The same program as the unset-emit case with `emit_kind` set explicitly to Direct.
+  The spec calls the two semantically identical and requires consumers to treat them
+  the same way, so any consumer answering these two cases differently has found a real
+  disagreement rather than a formatting difference.
+inputs:
+  t_pair:
+    schema: "a:i64, b:i64?"
+    rows: [["7::i64", "null::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [a, b]
+        input:
+          filter:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_pair}}
+            condition: "true::bool"
+expect:
+  schema: "a:i64, b:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values: [["7::i64", "null::i64?"]]

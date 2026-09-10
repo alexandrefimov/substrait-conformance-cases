@@ -1,0 +1,22 @@
+id: unresolved/virtual_table/row-type-differs-from-schema
+spec_ref: relations/logical_relations.md#virtual-table
+kind: KIND_UNRESOLVED
+unresolved:
+  issue: substrait-io/substrait#1211
+  why: >-
+    The row supplies an i8 literal for a column the base_schema declares i32. No rule
+    names virtual table rows specifically, and the general rule in type_system.md allows
+    no coercion and requires an explicit cast for every change of type, so the answer
+    turns on whether that general rule reaches a virtual table row at all.
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [n]
+        input:
+          read:
+            common: {direct: {}}
+            base_schema: "n:i32"
+            virtual_table:
+              expressions:
+                - {fields: ["1::i8"]}

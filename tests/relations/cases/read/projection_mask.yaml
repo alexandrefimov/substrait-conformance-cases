@@ -1,0 +1,29 @@
+id: read/projection/select-and-reorder
+spec_ref: relations/logical_relations.md#read-properties
+kind: KIND_POSITIVE
+notes: >-
+  The read output defaults to the direct schema after the projection is applied, so
+  the masked complex expression, not just emit, can drop and reorder columns. A
+  consumer that treats the projection as a hint answers this case with three columns
+  in their declared order.
+inputs:
+  t_mix:
+    schema: "c0:i64, c1:string, c2:bool"
+    rows: [["10::i64", "'x'::string", "true::bool"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [c2, c0]
+        input:
+          read:
+            common: {direct: {}}
+            $table: t_mix
+            projection:
+              select: {struct_items: [{field: 2}, {field: 0}]}
+              maintain_singular_struct: false
+expect:
+  schema: "c2:bool, c0:i64"
+  rows:
+    order: ORDER_MULTISET
+    values: [["true::bool", "10::i64"]]

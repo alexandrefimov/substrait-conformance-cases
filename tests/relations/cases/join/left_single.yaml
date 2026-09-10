@@ -1,0 +1,35 @@
+id: join/left_single/output-nullability
+spec_ref: relations/logical_relations.md#join-types
+kind: KIND_POSITIVE
+notes: >-
+  Left single has the output type of a left join. It differs at runtime, not in its
+  schema: more than one right match is an error rather than an expansion, and this
+  fixture gives each left record at most one partner.
+extensions:
+  cmp: extension:io.substrait:functions_comparison
+inputs:
+  t_left:
+    schema: "a0:i64, a1:i64?"
+    rows: [["1::i64", "null::i64?"], ["2::i64", "2::i64?"]]
+  t_right:
+    schema: "b0:i64, b1:i64?"
+    rows: [["2::i64", "20::i64?"], ["5::i64", "50::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [a0, a1, b0, b1]
+        input:
+          join:
+            common: {direct: {}}
+            type: JOIN_TYPE_LEFT_SINGLE
+            expression: "cmp.equal:any_any($0, $2):bool"
+            left: {read: {common: {direct: {}}, $table: t_left}}
+            right: {read: {common: {direct: {}}, $table: t_right}}
+expect:
+  schema: "a0:i64, a1:i64?, b0:i64?, b1:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "null::i64?", "null::i64?", "null::i64?"]
+      - ["2::i64", "2::i64?", "2::i64", "20::i64?"]

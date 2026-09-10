@@ -1,0 +1,27 @@
+id: invalid/declaration/output-type-disagrees-with-extension
+spec_ref: proto/substrait/algebra.proto#Expression.ScalarFunction.output_type
+kind: KIND_INVALID_PLAN
+notes: >-
+  algebra.proto requires output_type to be "the return type of the function, exactly
+  as derived using the declaration in the extension". This plan is the decimal-divide
+  case with one field changed: it declares decimal(20,2) where the extension derives
+  decimal(21,8), and nothing else about it is wrong. Whether a given consumer API has
+  to reject such a plan is not settled, so a harness reports what it observed rather
+  than scoring a pass. What the case does establish is whether a consumer reads the
+  declaration at all or derives the type and ignores what the plan says.
+extensions:
+  arith_dec: extension:io.substrait:functions_arithmetic_decimal
+inputs:
+  t_dec:
+    schema: "c0:decimal<10,2>, c1:decimal<5,1>"
+    rows: [["1.00::decimal<10,2>", "3.0::decimal<5,1>"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  relations:
+    - root:
+        names: [r]
+        input:
+          project:
+            common: {emit: {output_mapping: [2]}}
+            input: {read: {common: {direct: {}}, $table: t_dec}}
+            expressions: ["arith_dec.divide:dec_dec($0, $1):decimal<20,2>"]
