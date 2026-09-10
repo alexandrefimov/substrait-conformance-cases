@@ -1,0 +1,34 @@
+id: temporal/literals/precision-carried-in-the-plan
+spec_ref: types/type_classes.md#simple-types
+kind: KIND_POSITIVE
+notes: >-
+  The same three precisions as the sibling case, but the values arrive as literals
+  inside the plan rather than as rows of a named table. That is a different path
+  through a consumer: the fixture case exercises whatever binds external data, this
+  one exercises the literal decoder, and a consumer can normalise on one without
+  touching the other. Each literal counts units of its own declared precision, so
+  reading all three as microseconds moves two of the three values.
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [s, ms, us]
+        input:
+          read:
+            common: {direct: {}}
+            base_schema: "s:pts<0>, ms:pts<3>, us:pts<6>"
+            virtual_table:
+              expressions:
+                - fields:
+                    - "'2024-03-01T12:00:00'::pts<0>"
+                    - "'2024-03-01T12:00:00.500'::pts<3>"
+                    - "'2024-03-01T12:00:00.123456'::pts<6>"
+expect:
+  schema: "s:pts<0>, ms:pts<3>, us:pts<6>"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - - "'2024-03-01T12:00:00'::pts<0>"
+        - "'2024-03-01T12:00:00.500'::pts<3>"
+        - "'2024-03-01T12:00:00.123456'::pts<6>"

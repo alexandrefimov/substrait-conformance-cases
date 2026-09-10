@@ -20,6 +20,7 @@ Refusals (each is a red-team finding turned into an error):
 """
 
 import base64
+import datetime as _dt
 import re
 from decimal import Decimal, localcontext
 
@@ -225,6 +226,60 @@ def split_top(text, sep):
 LIT_RE = re.compile(r"^\s*(.*?)\s*::\s*(.+?)\s*$", re.S)
 
 
+EPOCH = _dt.date(1970, 1, 1)
+
+
+def unquote(value, text):
+    if not (len(value) >= 2 and value[0] == value[-1] == "'"):
+        raise CaseError(f"temporal literal must be single-quoted: {text!r}")
+    return value[1:-1]
+
+
+def date_to_days(text):
+    """An ISO date to the day count Literal.date holds."""
+    try:
+        d = _dt.date.fromisoformat(text)
+    except ValueError as e:
+        raise CaseError(f"date literal {text!r}: {e}") from e
+    return (d - EPOCH).days
+
+
+def days_to_date(days):
+    return (EPOCH + _dt.timedelta(days=days)).isoformat()
+
+
+def timestamp_to_units(text, precision):
+    """An ISO timestamp to the count of 10^-precision second units since the epoch.
+
+    Written and read at the declared precision on purpose: a corpus about what a
+    consumer does with `precision_timestamp<3>` cannot express itself in microseconds.
+    """
+    whole, _, frac = text.partition(".")
+    try:
+        dt = _dt.datetime.fromisoformat(whole)
+    except ValueError as e:
+        raise CaseError(f"timestamp literal {text!r}: {e}") from e
+    if len(frac) > precision:
+        raise CaseError(
+            f"timestamp literal {text!r} has {len(frac)} fractional digits, "
+            f"more than the declared precision {precision}"
+        )
+    seconds = int(dt.replace(tzinfo=_dt.timezone.utc).timestamp())
+    return seconds * 10**precision + int(
+        (frac or "0").ljust(precision or 1, "0")[:precision] or 0
+    )
+
+
+def units_to_timestamp(units, precision):
+    """The one spelling `timestamp_to_units` reads back unchanged."""
+    seconds, rest = divmod(units, 10**precision) if precision else (units, 0)
+    dt = _dt.datetime.fromtimestamp(seconds, _dt.timezone.utc).replace(tzinfo=None)
+    out = dt.isoformat()
+    if precision and rest:
+        out += "." + str(rest).rjust(precision, "0")
+    return out
+
+
 def parse_literal(text):
     if not isinstance(text, str):
         raise CaseError(
@@ -273,6 +328,13 @@ def parse_literal(text):
             )
         lit.decimal.value = unscaled.to_bytes(16, "little", signed=True)
         lit.decimal.precision, lit.decimal.scale = sub.precision, sub.scale
+    elif kind == "date":
+        lit.date = date_to_days(unquote(value, text))
+    elif kind == "precision_timestamp":
+        lit.precision_timestamp.value = timestamp_to_units(
+            unquote(value, text), sub.precision
+        )
+        lit.precision_timestamp.precision = sub.precision
     else:
         raise CaseError(
             f"literal of type {kind} not supported by the sugar; use raw proto-JSON"

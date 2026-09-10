@@ -1,0 +1,32 @@
+id: temporal/precision_timestamp/precision-is-part-of-the-type
+spec_ref: types/type_classes.md#simple-types
+kind: KIND_POSITIVE
+notes: >-
+  Three timestamp columns of the same instant at three declared precisions. The
+  precision is a parameter of the type, so these are three different types and the
+  values that inhabit them count different units: seconds, milliseconds and
+  microseconds since the epoch. A consumer that normalises every timestamp to one
+  precision on the way in answers this case with three columns of the same type, and
+  its values for the two it converted no longer mean what the plan said.
+inputs:
+  t_time:
+    schema: "s:pts<0>, ms:pts<3>, us:pts<6>"
+    rows:
+      - - "'2024-03-01T12:00:00'::pts<0>"
+        - "'2024-03-01T12:00:00.500'::pts<3>"
+        - "'2024-03-01T12:00:00.123456'::pts<6>"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [s, ms, us]
+        input: {read: {common: {direct: {}}, $table: t_time}}
+expect:
+  schema: "s:pts<0>, ms:pts<3>, us:pts<6>"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - - "'2024-03-01T12:00:00'::pts<0>"
+        - "'2024-03-01T12:00:00.500'::pts<3>"
+        - "'2024-03-01T12:00:00.123456'::pts<6>"

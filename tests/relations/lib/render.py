@@ -71,7 +71,7 @@ def try_literal(lit):
     try:
         if kind == "null":
             text = f"null::{lower.render_type(lit.null)}"
-        if kind in ("i8", "i16", "i32", "i64"):
+        elif kind in ("i8", "i16", "i32", "i64"):
             text = f"{getattr(lit, kind)}::{kind}{q}"
         elif kind == "boolean":
             text = f"{'true' if lit.boolean else 'false'}::bool{q}"
@@ -89,6 +89,16 @@ def try_literal(lit):
             text = (
                 f"{value:.{lit.decimal.scale}f}::"
                 f"decimal<{lit.decimal.precision},{lit.decimal.scale}>{q}"
+            )
+        elif kind == "date":
+            text = f"'{lower.days_to_date(lit.date)}'::date{q}"
+        elif kind == "precision_timestamp":
+            # precision_timestamp_tz has the same shape but no shorthand type name, so
+            # it falls through to the raw form rather than being written unparseably
+            sub = lit.precision_timestamp
+            text = (
+                f"'{lower.units_to_timestamp(sub.value, sub.precision)}'::"
+                f"pts<{sub.precision}>{q}"
             )
         else:
             return None
