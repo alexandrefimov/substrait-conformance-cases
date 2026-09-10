@@ -167,7 +167,13 @@ def answer(case):
         described = con.execute("DESCRIBE SELECT * FROM from_substrait_json(?)", [plan_json]).fetchall()
         rows = con.execute("SELECT * FROM from_substrait_json(?)", [plan_json]).fetchall()
     except Exception as exc:
-        return "ERROR: " + str(exc).splitlines()[0].strip()
+        # Runs of spaces are collapsed, and not for tidiness. DuckDB hands protobuf's JSON parse
+        # error back with whitespace that falls differently from one run to the next - the same
+        # plan, the same build, two spellings - so a column keeping it verbatim could not be
+        # reproduced anywhere, including on the machine that took it. The message is the answer;
+        # the spacing inside it is not. Found by replaying the column in a checkout with no probe
+        # environment, which is the only place the difference shows.
+        return "ERROR: " + " ".join(str(exc).splitlines()[0].split())
     # DESCRIBE hands back a name and a type together, so the schema is assembled here rather than
     # through corpus.render_schema, which pairs names with substrait Type messages this side has
     # none of. No `?` ever appears: DuckDB's logical types carry no nullability.

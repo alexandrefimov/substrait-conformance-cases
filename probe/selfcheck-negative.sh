@@ -625,6 +625,39 @@ p = 'README.md'
 t = open(p, encoding='utf-8').read()
 open(p, 'w', encoding='utf-8').write(t.replace('corpus: 71 cases written by hand', 'corpus: 73 cases written by hand'))"
 
+# The reasons behind the differing cells: a judgement is worth what its test is worth, so the test
+# is what gets broken here - the cell that no longer has one, the reason that no longer describes
+# the answer, and the reason left behind after the cell stopped differing.
+mutate "a differing relation cell with no reason" "no reason says why" \
+  python3 -c "
+import json
+p = 'results/relations/differed.json'
+d = json.load(open(p))
+del d['cells']['GO']['write/no_output/returns-nothing']
+json.dump(d, open(p, 'w'), indent=2)"
+
+mutate "a reason that no longer describes its cell" "no longer matches its reason" \
+  python3 -c "
+import json
+p = 'results/relations/differed.json'
+d = json.load(open(p))
+d['rules']['go-hash-join-ignores-the-join-type']['check']['got_matches']['GO'] = '^this-answer-never-appears$'
+json.dump(d, open(p, 'w'), indent=2)"
+
+mutate "a reason kept after its cell stopped differing" "no longer differs" \
+  python3 -c "
+import json
+p = 'results/relations/differed.json'
+d = json.load(open(p))
+d['cells']['GO']['join/inner/output-nullability'] = 'go-hash-join-ignores-the-join-type'
+json.dump(d, open(p, 'w'), indent=2)"
+
+mutate "a relation participant CI does not retake" "probe/relations/replay.sh accepts" \
+  python3 -c "
+p = '.github/workflows/selfcheck.yml'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('column: [DUCKDB, GO, JAVA]', 'column: [DUCKDB, GO]'))"
+
 # The relations corpus is measured against an extract of its own bundles, and the tie between the
 # two is a hash rather than a rerun of the generator, because the generator needs protobuf and this
 # gate needs python3. So the hash is the thing to break.

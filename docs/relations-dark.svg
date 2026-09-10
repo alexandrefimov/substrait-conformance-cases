@@ -442,5 +442,5 @@
 <text x="14.0" y="1425.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-go    substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0, substrait-protobuf/go v0.85.0,</text>
 <text x="14.0" y="1436.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" xml:space="preserve">                pinning substrait v0.87.0</text>
 <text x="14.0" y="1447.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB          1.5.5, substrait extension 4ea63dd</text>
-<text x="14.0" y="1458.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-10; probe/relations/replay.sh reproduces one</text>
+<text x="14.0" y="1458.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-11; probe/relations/replay.sh reproduces one</text>
 </svg>

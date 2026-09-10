@@ -1,0 +1,166 @@
+{
+  "kinds": {
+    "divergence": "the participant can express the expected answer and gives another",
+    "boundary": "the expectation cannot be expressed in the participant's type system, so no answer of its could have matched; that is a statement about the expectation, not a finding that the answer it did give was the best available to it",
+    "unresolved": "the participant returned no type rather than a different one"
+  },
+  "rules": {
+    "duckdb-sum-returns-hugeint": {
+      "kind": "divergence",
+      "same_as": "duckdb-sum-returns-hugeint",
+      "what": "The same answer these cases reach on their own plans: SUM over BIGINT binds DuckDB's own aggregate, whose result is HUGEINT, rather than the i64? the function was called under.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": "total:i128"
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "duckdb-decimal-divide-returns-double": {
+      "kind": "divergence",
+      "same_as": "duckdb-decimal-divide-returns-double",
+      "what": "divide:dec is declared to return a decimal and DuckDB returns DOUBLE, so the result is not a decimal of another precision but not a decimal at all.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": "^\\[r:fp64\\]$"
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "decimal-own-derivation": {
+      "kind": "divergence",
+      "same_as": "decimal-own-derivation",
+      "what": "functions_arithmetic_decimal.yaml fixes the precision and scale of the result; DuckDB returns a decimal and computes its own.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": "^\\[r:decimal<15,3>\\]"
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "duckdb-emit-ignored-except-on-a-project": {
+      "kind": "divergence",
+      "same_as": "duckdb-emit-ignored-except-on-a-project",
+      "what": "RelCommon.emit names which columns a relation returns and in what order, and DuckDB applies it on a ProjectRel and not elsewhere, returning the leading columns of the input instead. These five cases put a mapping on a filter, an aggregate, a fetch, a join and a sort, which is four relations more than the other corpus reaches, and the answer is the same on all five. The rows show it too, so this is not a question of how a type is spelled.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": {
+            "emit/drop/leave-columns-out": "^\\[only:i64\\] rows \\(10\\)$",
+            "emit/on_aggregate/mapping-on-an-aggregate": "^\\[total:string, g:i128\\] rows \\('a', 30\\)$",
+            "emit/on_fetch/mapping-on-a-fetch": "^\\[v:i64, k:string\\] rows \\(2, 'b'\\) \\(3, 'c'\\)$",
+            "emit/on_join/mapping-on-a-join": "^\\[r0:i64, l0:string\\] rows \\(1, 'x'\\)$",
+            "emit/on_sort/mapping-on-a-sort": "^\\[only_v:i64\\] rows \\(1\\) \\(2\\) \\(3\\)$"
+          }
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "duckdb-timestamp-precision-ignored": {
+      "kind": "divergence",
+      "same_as": "duckdb-timestamp-precision-ignored",
+      "what": "Every declared precision comes back as microseconds. Here all three columns are declared in one plan, at precision 0, 3 and 6, and all three come back as precision_timestamp<6>.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": "^\\[s:precision_timestamp<6>, ms:precision_timestamp<6>, us:precision_timestamp<6>\\]"
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "duckdb-mask-not-applied-inside-a-struct": {
+      "kind": "divergence",
+      "what": "A mask that selects fields 0 and 2 of a struct column comes back with all three fields. DuckDB does apply ReadRel.projection at the top level, which the case beside this one shows, so this is the mask being read one level deep and no further rather than being ignored.",
+      "check": {
+        "got_matches": {
+          "DUCKDB": "^\\[s:struct<x:i64, y:string, z:bool>\\]$"
+        }
+      },
+      "triage": {
+        "DUCKDB": {
+          "outcome": "open"
+        }
+      }
+    },
+    "go-hash-join-ignores-the-join-type": {
+      "kind": "divergence",
+      "what": "HashJoinRel.directOutputSchema at plan/relations.go:2111 is left.RecordType().Concat(right.RecordType()) and never reads the join type, so every physical join returns both inputs with their own nullability. Three of the four cases emit one side only and are refused on arity instead; this one asks for four columns, so it is accepted, and b0 comes back required where left single makes the right side nullable.",
+      "check": {
+        "got_matches": {
+          "GO": "^\\[a0:i64, a1:i64\\?, b0:i64, b1:i64\\?\\]$"
+        }
+      },
+      "triage": {
+        "GO": {
+          "outcome": "open"
+        }
+      }
+    },
+    "go-grouping-sets-one-column-per-pair": {
+      "kind": "divergence",
+      "what": "AggregateRel.directOutputSchema at plan/relations.go:1175 walks the grouping references of every set and appends the referenced expression's type for each, so an expression named by two sets contributes two columns and everything after it shifts. It also never appends the trailing i32 of the grouping set index, and does not widen a grouping column absent from some set. With disjoint sets the two orders coincide and only the missing i32 shows, as an arity refusal on the case beside this one.",
+      "check": {
+        "got_matches": {
+          "GO": "^\\[g0:i64, g1:i64, total:string, grouping_set:i64\\?\\]$"
+        }
+      },
+      "triage": {
+        "GO": {
+          "outcome": "open"
+        }
+      }
+    },
+    "go-write-returns-names-without-types": {
+      "kind": "divergence",
+      "what": "NamedTableWriteRel.directOutputSchema at plan/relations.go:2400 returns an empty RecordType for OUTPUT_MODE_NO_OUTPUT, while the root still carries the two names the plan declares. The answer is therefore two names and no types at all, which the column records as [id:?, note:?] rather than shortening itself into agreement. The specification's own table gives this mode the schema of the modified records.",
+      "check": {
+        "got_matches": {
+          "GO": "^\\[id:\\?, note:\\?\\]$"
+        }
+      },
+      "triage": {
+        "GO": {
+          "outcome": "open"
+        }
+      }
+    }
+  },
+  "cells": {
+    "DUCKDB": {
+      "aggregate/grouping_sets/single-set-keeps-key-type": "duckdb-sum-returns-hugeint",
+      "aggregate/sum/measure-nullability": "duckdb-sum-returns-hugeint",
+      "emit/drop/leave-columns-out": "duckdb-emit-ignored-except-on-a-project",
+      "emit/on_aggregate/mapping-on-an-aggregate": "duckdb-emit-ignored-except-on-a-project",
+      "emit/on_fetch/mapping-on-a-fetch": "duckdb-emit-ignored-except-on-a-project",
+      "emit/on_join/mapping-on-a-join": "duckdb-emit-ignored-except-on-a-project",
+      "emit/on_sort/mapping-on-a-sort": "duckdb-emit-ignored-except-on-a-project",
+      "project/decimal_divide/return-type": "duckdb-decimal-divide-returns-double",
+      "project/decimal_multiply/return-type": "decimal-own-derivation",
+      "read/mask/narrows-a-struct-from-inside": "duckdb-mask-not-applied-inside-a-struct",
+      "temporal/literals/precision-carried-in-the-plan": "duckdb-timestamp-precision-ignored"
+    },
+    "GO": {
+      "aggregate/grouping_sets/overlapping-sets": "go-grouping-sets-one-column-per-pair",
+      "join_physical/hash_left_single/wire-9": "go-hash-join-ignores-the-join-type",
+      "write/no_output/returns-nothing": "go-write-returns-names-without-types"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-DUCKDB: relations column from run 2026-09-10T20:39, duckdb 1.5.5, substrait extension 4ea63dd
+DUCKDB: relations column from run 2026-09-11T00:29, duckdb 1.5.5, substrait extension 4ea63dd
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
 BOUNDARY: DuckDB's logical types carry no nullability, so no answer below carries `?`; names, types, arity and order are what a `score` line is compared on.
 It executes, so a case that declares rows is answered with rows too, unless the plan was refused before it ran.
@@ -68,7 +68,7 @@ score   temporal/date/days-since-the-epoch                        [d:date, epoch
 score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<6>, ms:precision_timestamp<6>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
 score   temporal/precision_timestamp/precision-is-part-of-the-type [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
 observe unresolved/ddl/declares-no-output                         ERROR: Not implemented Error: Unsupported relation type ddl
-observe unresolved/update/output-type-is-not-stated               ERROR: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON  in substrait.Plan @ relations[0].root.input.update: message  substrait.UpdateRel,  near 49:22   (offset 1205):   no such field:  'common'
+observe unresolved/update/output-type-is-not-stated               ERROR: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON in substrait.Plan @ relations[0].root.input.update: message substrait.UpdateRel, near 49:22 (offset 1205): no such field: 'common'
 observe unresolved/virtual_table/row-required-in-nullable-column  [n:i64]
 observe unresolved/virtual_table/row-type-differs-from-schema     [n:i8]
 score   window/lead/nullable-whatever-the-argument                ERROR: INTERNAL Error: Unrecognized FROM in WindowExpression
