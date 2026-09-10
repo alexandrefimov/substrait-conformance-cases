@@ -1,0 +1,35 @@
+id: window/lead/nullable-whatever-the-argument
+spec_ref: relations/physical_relations.md#consistent-partition-window-operation
+kind: KIND_POSITIVE
+notes: >-
+  lead over the required column c0. The extension declares lead as returning any1?
+  with DECLARED_OUTPUT nullability, so the result is nullable even though its argument
+  is not: the last row of a partition has no next row. A consumer that mirrors the
+  argument's nullability, as it would for an ordinary scalar function, returns a
+  required column here.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_exp:
+    schema: "c0:i64, c1:i64?, c2:string"
+    rows: [["1::i64", "null::i64?", "'x'::string"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [c0, c1, c2, nxt]
+        input:
+          window:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_exp}}
+            window_functions:
+              - function_reference: 1
+                phase: AGGREGATION_PHASE_INITIAL_TO_RESULT
+                invocation: AGGREGATION_INVOCATION_ALL
+                output_type: "i64?"
+                arguments: [{value: "$0"}]
+  extension_urns: [{extension_urn_anchor: 1, urn: "extension:io.substrait:functions_arithmetic"}]
+  extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "lead:any"}}]
+expect:
+  schema: "c0:i64, c1:i64?, c2:string, nxt:i64?"

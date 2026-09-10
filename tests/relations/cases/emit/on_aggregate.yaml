@@ -1,0 +1,42 @@
+id: emit/on_aggregate/mapping-on-an-aggregate
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  An emit mapping on an aggregate. The mapping is chosen so that a consumer taking the
+  leading columns instead of the mapped ones answers with a different type, not merely
+  a different order, so a schema comparison catches it and an executor catches it
+  twice. The measure comes out before the grouping key, which is the opposite of the
+  declared output order the mapping is applied to.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_g:
+    schema: "g:string, v:i64"
+    rows: [["'a'::string", "10::i64"], ["'a'::string", "20::i64"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [total, g]
+        input:
+          aggregate:
+            common: {emit: {output_mapping: [1, 0]}}
+            input: {read: {common: {direct: {}}, $table: t_g}}
+            grouping_expressions: ["$0"]
+            groupings: [{expression_references: [0]}]
+            measures:
+              - measure:
+                  function_reference: 1
+                  phase: AGGREGATION_PHASE_INITIAL_TO_RESULT
+                  invocation: AGGREGATION_INVOCATION_ALL
+                  output_type: "i64?"
+                  arguments: [{value: "$1"}]
+  extension_urns: [{extension_urn_anchor: 1, urn: "extension:io.substrait:functions_arithmetic"}]
+  extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "sum:i64"}}]
+expect:
+  schema: "total:i64?, g:string"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["30::i64?", "'a'::string"]

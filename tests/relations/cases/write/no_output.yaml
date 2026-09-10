@@ -1,0 +1,37 @@
+id: write/no_output/returns-nothing
+spec_ref: relations/logical_relations.md#write-operator
+kind: KIND_POSITIVE
+notes: >-
+  The same insert as its pair, asked to return nothing. The schema is still the
+  input's: Direct Output Order for a write is unchanged from the input and says so
+  without qualification, while the Property Maintenance row, which is about
+  distribution and orderedness for every other relation, is what says whether records
+  come back. What changes is that no record comes back at all, so only the rows
+  separate this case from its pair. The two rows can be read as disagreeing, and
+  implementations do: substrait-java returns the input's schema here and substrait-go
+  returns no columns at all. The case follows Direct Output Order because that is the
+  row defining the output type everywhere else in the document, and because the other
+  reading leaves it as dead text.
+inputs:
+  t_w:
+    schema: "id:i64, note:string?"
+    rows: [["1::i64", "'a'::string?"], ["2::i64", "'b'::string?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [id, note]
+        input:
+          write:
+            common: {direct: {}}
+            named_table: {names: [target]}
+            table_schema: "id:i64, note:string?"
+            op: WRITE_OP_INSERT
+            output: OUTPUT_MODE_NO_OUTPUT
+            input: {read: {common: {direct: {}}, $table: t_w}}
+expect:
+  schema: "id:i64, note:string?"
+  rows:
+    order: ORDER_MULTISET
+    values: []

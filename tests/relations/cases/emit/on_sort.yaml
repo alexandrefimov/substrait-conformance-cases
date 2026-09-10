@@ -1,0 +1,37 @@
+id: emit/on_sort/mapping-on-a-sort
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  An emit mapping on a sort. The mapping is chosen so that a consumer taking the
+  leading columns instead of the mapped ones answers with a different type, not merely
+  a different order, so a schema comparison catches it and an executor catches it
+  twice. The mapping keeps the second column only, so the sort key itself does not
+  reach the output while still ordering it.
+inputs:
+  t_ord:
+    schema: "k:i64?, v:string"
+    rows:
+      - ["3::i64?", "'c'::string"]
+      - ["1::i64?", "'a'::string"]
+      - ["2::i64?", "'b'::string"]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [only_v]
+        input:
+          sort:
+            common: {emit: {output_mapping: [1]}}
+            input: {read: {common: {direct: {}}, $table: t_ord}}
+            sorts:
+              - expr: "$0"
+                direction: SORT_DIRECTION_ASC_NULLS_LAST
+expect:
+  schema: "only_v:string"
+  rows:
+    order: ORDER_SEQUENCE
+    values:
+      - ["'a'::string"]
+      - ["'b'::string"]
+      - ["'c'::string"]

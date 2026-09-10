@@ -1,0 +1,33 @@
+id: cross/output/preserves-nullability
+spec_ref: relations/logical_relations.md#cross-product-operation
+kind: KIND_POSITIVE
+notes: >-
+  Every record of the left paired with every record of the right, and the output is
+  the input order: the left columns then the right, each keeping the nullability it
+  had. Nothing here is widened, which is what separates a cross product from an outer
+  join that happens to match everything.
+inputs:
+  t_l:
+    schema: "l0:i64, l1:i64?"
+    rows: [["1::i64", "null::i64?"]]
+  t_r:
+    schema: "r0:i64?, r1:i64"
+    rows: [["7::i64?", "8::i64"], ["9::i64?", "10::i64"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [l0, l1, r0, r1]
+        input:
+          cross:
+            common: {direct: {}}
+            left: {read: {common: {direct: {}}, $table: t_l}}
+            right: {read: {common: {direct: {}}, $table: t_r}}
+expect:
+  schema: "l0:i64, l1:i64?, r0:i64?, r1:i64"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "null::i64?", "7::i64?", "8::i64"]
+      - ["1::i64", "null::i64?", "9::i64?", "10::i64"]
