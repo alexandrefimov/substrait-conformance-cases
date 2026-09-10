@@ -332,7 +332,11 @@ def check_names(case):
     """
     if not case.expect or case.kind != "KIND_POSITIVE":
         return SKIP
-    root_names = list(case.plan.relations[0].root.names) if case.plan.relations else []
+    # A plan may hold bare relations for a ReferenceRel to name; only a root has names.
+    roots = [r.root for r in case.plan.relations if r.WhichOneof("rel_type") == "root"]
+    if len(roots) != 1:
+        return f"a case must have exactly one root relation, found {len(roots)}"
+    root_names = list(roots[0].names)
     if not root_names:
         return SKIP
     want = list(case.env.expect.schema.names)
@@ -403,7 +407,12 @@ def coverage(plan, counter=None):
             counter[f"read:{node.WhichOneof('read_type')}"] += 1
             if node.HasField("projection"):
                 counter["read:projection"] += 1
-        if node.HasField("common") and node.common.WhichOneof("emit_kind") == "emit":
+        # ReferenceRel carries no common section at all, so ask the descriptor first
+        if (
+            "common" in node.DESCRIPTOR.fields_by_name
+            and node.HasField("common")
+            and node.common.WhichOneof("emit_kind") == "emit"
+        ):
             counter["emit"] += 1
         for f, v in node.ListFields():
             if f.message_type and f.message_type.full_name == "substrait.Rel":

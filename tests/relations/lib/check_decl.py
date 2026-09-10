@@ -93,5 +93,12 @@ def check(plan, ext_dir):
                     )
                 )
 
-    walk_rel(plan["relations"][0]["root"]["input"])
+    # A plan may hold bare relations for a ReferenceRel to name. Every one of them is
+    # walked: a false declaration inside a shared subtree is still a false declaration,
+    # and it reaches the output through whatever references it.
+    for pr in plan.get("relations", []):
+        if "root" in pr:
+            walk_rel(pr["root"]["input"])
+        elif "rel" in pr:
+            walk_rel(pr["rel"])
     return findings

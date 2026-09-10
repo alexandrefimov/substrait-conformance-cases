@@ -1,0 +1,36 @@
+id: reference/subtree/maintains-the-referred-output
+spec_ref: relations/logical_relations.md#reference-operator
+kind: KIND_POSITIVE
+notes: >-
+  A plan with two relations. The first is a bare Rel that exists only to be pointed
+  at, a filter over the fixture; the second is the root, and its input is a
+  ReferenceRel naming position zero. Reference maintains all properties of what it
+  refers to, so the root has the filtered relation's schema. This is the shape the
+  specification describes for sharing a subtree between queries, and it is the only
+  case here where Plan.relations holds more than one entry, which is worth exercising
+  on its own: a consumer that assumes relations[0] is the root reads this plan inside
+  out.
+inputs:
+  t_ref:
+    schema: "a:i64, b:string?"
+    rows: [["1::i64", "'x'::string?"], ["2::i64", "null::string?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - rel:
+        filter:
+          common: {direct: {}}
+          input: {read: {common: {direct: {}}, $table: t_ref}}
+          condition: "true::bool"
+    - root:
+        names: [a, b]
+        input:
+          reference: {subtree_ordinal: 0}
+expect:
+  schema: "a:i64, b:string?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "'x'::string?"]
+      - ["2::i64", "null::string?"]
