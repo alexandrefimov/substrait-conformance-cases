@@ -23,6 +23,10 @@ def check(plan, ext_dir):
             inp = d.rel(node["left"]) + d.rel(node["right"])
         elif "input" in node:
             inp = d.rel(node["input"])
+        elif kind == "update" and "tableSchema" in node:
+            # UpdateRel has no relational input: its condition and transformations are
+            # over the named table, whose full schema the relation carries itself.
+            inp = D.schema_from_named_struct(node["tableSchema"])
         else:
             inp = []
 
