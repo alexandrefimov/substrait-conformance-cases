@@ -1,0 +1,35 @@
+id: emit/on_join/mapping-on-a-join
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  An emit mapping on a join. The mapping is chosen so that a consumer taking the
+  leading columns instead of the mapped ones answers with a different type, not merely
+  a different order, so a schema comparison catches it and an executor catches it
+  twice. The mapping is over the join output, left columns then right, and it takes
+  the first right column before the first left one.
+inputs:
+  t_l:
+    schema: "l0:i64, l1:string"
+    rows: [["1::i64", "'x'::string"]]
+  t_r:
+    schema: "r0:bool, r1:i64?"
+    rows: [["true::bool", "9::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [r0, l0]
+        input:
+          join:
+            common: {emit: {output_mapping: [2, 0]}}
+            type: JOIN_TYPE_INNER
+            expression: "true::bool"
+            left: {read: {common: {direct: {}}, $table: t_l}}
+            right: {read: {common: {direct: {}}, $table: t_r}}
+expect:
+  schema: "r0:bool, l0:i64"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["true::bool", "1::i64"]

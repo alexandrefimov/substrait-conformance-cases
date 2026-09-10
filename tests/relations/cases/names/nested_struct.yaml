@@ -1,0 +1,21 @@
+id: names/nested_struct/depth-first-name-order
+spec_ref: types/named_structs.md#determining-names
+kind: KIND_POSITIVE
+notes: >-
+  A struct column takes one name for itself and then one per field, in depth-first
+  order, so four names for two columns. All struct fields must be named, nested ones
+  included. A consumer that counts names against the top-level columns rejects this
+  plan, and one that pairs names with columns positionally puts the wrong name on the
+  struct.
+inputs:
+  t_nest:
+    schema: "a:i64, s:struct<x:i64, y:i64?>"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [a, s, x, y]
+        input: {read: {common: {direct: {}}, $table: t_nest}}
+expect:
+  schema: "a:i64, s:struct<x:i64, y:i64?>"

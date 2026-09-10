@@ -1,0 +1,32 @@
+id: exchange/round-robin/output-is-the-input
+spec_ref: relations/physical_relations.md#exchange-operator
+kind: KIND_POSITIVE
+notes: >-
+  An exchange redistributes records across partitions and changes nothing about them:
+  Direct Output Order is the order of the input, and orderedness is maintained while
+  distribution is overwritten. So the schema is the input's and so are the rows,
+  whatever the exchange kind. Round robin is the kind with nothing else to configure,
+  which keeps the case about the output rather than about bucketing.
+inputs:
+  t_x:
+    schema: "c0:i64, c1:string?"
+    rows: [["1::i64", "'a'::string?"], ["2::i64", "null::string?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [c0, c1]
+        input:
+          exchange:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_x}}
+            partition_count: 2
+            round_robin: {}
+expect:
+  schema: "c0:i64, c1:string?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "'a'::string?"]
+      - ["2::i64", "null::string?"]

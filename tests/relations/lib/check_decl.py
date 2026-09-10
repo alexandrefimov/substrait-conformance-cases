@@ -23,6 +23,10 @@ def check(plan, ext_dir):
             inp = d.rel(node["left"]) + d.rel(node["right"])
         elif "input" in node:
             inp = d.rel(node["input"])
+        elif kind == "update" and "tableSchema" in node:
+            # UpdateRel has no relational input: its condition and transformations are
+            # over the named table, whose full schema the relation carries itself.
+            inp = D.schema_from_named_struct(node["tableSchema"])
         else:
             inp = []
 
@@ -93,5 +97,12 @@ def check(plan, ext_dir):
                     )
                 )
 
-    walk_rel(plan["relations"][0]["root"]["input"])
+    # A plan may hold bare relations for a ReferenceRel to name. Every one of them is
+    # walked: a false declaration inside a shared subtree is still a false declaration,
+    # and it reaches the output through whatever references it.
+    for pr in plan.get("relations", []):
+        if "root" in pr:
+            walk_rel(pr["root"]["input"])
+        elif "rel" in pr:
+            walk_rel(pr["rel"])
     return findings

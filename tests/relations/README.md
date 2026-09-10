@@ -55,6 +55,12 @@ misspelled field name is an error rather than a silently ignored key, and so is 
 duplicate YAML key. `$table: t_left` binds a read to a named fixture so a schema case is
 not also a virtual-table support test.
 
+A struct column carries the names of its fields inside the type, as
+`s:struct<x:i64, y:i64?>`, because `NamedStruct.names` is one depth-first list over the
+whole tree rather than one name per column. Writing them where they belong is what keeps
+the count right: the specification's own example, `a:struct<b:i64, c:i64>,
+d:struct<e:i64, f:i64, g:i64>`, is two columns and seven names.
+
 Input data lives outside the plan in `inputs`, and reaches a consumer as
 `RelationTestCase.tables`. A harness that cannot bind external tables may build a
 virtual-table plan from the same rows.
@@ -81,7 +87,7 @@ reports whichever the consumer picked as a pass.
 
 ## What the checks establish
 
-Ten checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
+Twelve checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
 in turn and requires that check, by name, to catch it. A check that has never been shown
 to fail is a comment the interpreter happens to run.
 
@@ -104,13 +110,23 @@ a committed file rather than a number nobody looks at.
 ## Limits
 
 The row expectations are the rows the specification's rules imply, computed by hand, not
-output captured from an engine. Where the rules do not fix an order, `ORDER_MULTISET`
-says so and a harness must compare as a multiset.
+output captured from an engine. Most cases declare `ORDER_MULTISET`, because most
+relations fix no order and a harness must compare as a multiset there. The cases under
+`sort/` and `fetch/` declare `ORDER_SEQUENCE` instead: a sort sets the orderedness and a
+fetch maintains it, so the plan fixes which row comes first and a harness that compares
+those as a multiset is not running them. A sort that ignores where nulls go passes the
+multiset comparison and fails the sequence one, which is the whole difference between the
+two cases under `sort/`.
 
-`KIND_INVALID_PLAN` currently covers one class of invalidity: a declared `output_type`
-that disagrees with the extension the function resolves to. A case may not claim
-invalidity the corpus cannot demonstrate, so widening that class means teaching the
-checker first.
+`KIND_INVALID_PLAN` covers two classes of invalidity: a declared `output_type` that
+disagrees with the extension the function resolves to, and the structural rules in
+`lib/validity.py`, which need nothing but the plan. Those are set inputs that differ in
+arity, an emit mapping naming an output the relation does not have, and a project
+expression reading a field beyond its input. A case may not claim invalidity the corpus
+cannot demonstrate, so widening the class further means teaching the checker first.
+
+The same rules run over every positive case, which is the half that matters more: it is
+what stops a case from asserting a schema for a plan that should never have derived one.
 
 ## Running this outside the specification repository
 

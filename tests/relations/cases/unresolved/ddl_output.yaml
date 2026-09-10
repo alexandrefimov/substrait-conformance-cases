@@ -1,0 +1,30 @@
+id: unresolved/ddl/declares-no-output
+spec_ref: relations/logical_relations.md#ddl-data-definition-language-operator
+kind: KIND_UNRESOLVED
+unresolved:
+  tracked_in: relations/logical_relations.md#ddl-data-definition-language-operator
+  why: >-
+    DDL is the one relation whose table says Outputs 0, with Property Maintenance and
+    Direct Output Order both N/A. A DdlRel can still be the input of a RelRoot, because
+    Rel lists it like any other, and then the root has a schema by construction. N/A is
+    not the same answer as a struct with no fields: one says the question does not
+    apply, the other says the answer is zero columns, and a consumer has to produce
+    something. The same table also says Inputs 1 while DdlRel has no input field, only
+    view_definition, so the row is describing something other than a relational input.
+    The case ships the plan without an expectation. What one implementation does with
+    it: substrait-java returns the table schema, i64 and string?, so a third answer is
+    in play beyond N/A and zero columns. substrait-go has no rule for the relation at
+    all.
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: []
+        input:
+          ddl:
+            common: {direct: {}}
+            named_object: {names: [new_table]}
+            table_schema: "id:i64, note:string?"
+            object: DDL_OBJECT_TABLE
+            op: DDL_OP_CREATE

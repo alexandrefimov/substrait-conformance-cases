@@ -1,0 +1,33 @@
+id: unresolved/update/output-type-is-not-stated
+spec_ref: relations/logical_relations.md#update-operator
+kind: KIND_UNRESOLVED
+unresolved:
+  tracked_in: relations/logical_relations.md#update-operator
+  why: >-
+    The Update table says the output is the number of modified records, and no text
+    anywhere says of what type. Every other relation either has a Direct Output Order
+    row naming its output or, like DDL, declares no output at all; Update has neither a
+    Direct Output Order row nor a type for the count it promises. UpdateRel in
+    algebra.proto adds nothing: it carries the target, the table schema, a condition and
+    the transformations, and says nothing about what comes back. So a harness cannot
+    check this plan against a schema without inventing one, and i64, i32 and an unsigned
+    count are all defensible. The case ships the plan so that consumers can be asked
+    what they return, and carries no expectation. What one implementation does with it:
+    substrait-java derives two columns for this relation and refuses the plan because
+    the root carries one name, so it is returning the table schema rather than a count
+    of anything. substrait-go has no rule for the relation at all.
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [modified]
+        input:
+          update:
+            common: {direct: {}}
+            named_table: {names: [target]}
+            table_schema: "id:i64, note:string?"
+            condition: "true::bool"
+            transformations:
+              - column_target: 1
+                transformation: "'updated'::string?"

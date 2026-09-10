@@ -1,0 +1,38 @@
+id: sort/nulls_first/sequence
+spec_ref: relations/logical_relations.md#sort-operation
+kind: KIND_POSITIVE
+notes: >-
+  The same rows and the same ascending direction as its pair, differing only in where
+  the null goes. Ascending and null placement are one enum value in Substrait, not two
+  settings, so a consumer that maps the direction onto its own sort and handles nulls
+  by its own default answers one of this pair correctly and the other by luck.
+inputs:
+  t_ord:
+    schema: "k:i64?, v:string"
+    rows:
+      - ["3::i64?", "'c'::string"]
+      - ["null::i64?", "'n'::string"]
+      - ["1::i64?", "'a'::string"]
+      - ["2::i64?", "'b'::string"]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [k, v]
+        input:
+          sort:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_ord}}
+            sorts:
+              - expr: "$0"
+                direction: SORT_DIRECTION_ASC_NULLS_FIRST
+expect:
+  schema: "k:i64?, v:string"
+  rows:
+    order: ORDER_SEQUENCE
+    values:
+      - ["null::i64?", "'n'::string"]
+      - ["1::i64?", "'a'::string"]
+      - ["2::i64?", "'b'::string"]
+      - ["3::i64?", "'c'::string"]

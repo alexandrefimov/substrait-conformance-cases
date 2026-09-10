@@ -1,0 +1,35 @@
+id: write/modified_records/returns-the-after-image
+spec_ref: relations/logical_relations.md#write-operator
+kind: KIND_POSITIVE
+notes: >-
+  An insert asked to return what it changed. Direct Output Order for a write is
+  unchanged from the input, so the schema is the same whichever output mode is set;
+  what the mode decides is whether any record comes back. Here the mode says to return
+  the after-image of every inserted record, so both rows do. Its pair sets NO_OUTPUT
+  over the same insert and expects none, which means a harness comparing schemas alone
+  cannot tell the two apart.
+inputs:
+  t_w:
+    schema: "id:i64, note:string?"
+    rows: [["1::i64", "'a'::string?"], ["2::i64", "'b'::string?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [id, note]
+        input:
+          write:
+            common: {direct: {}}
+            named_table: {names: [target]}
+            table_schema: "id:i64, note:string?"
+            op: WRITE_OP_INSERT
+            output: OUTPUT_MODE_MODIFIED_RECORDS
+            input: {read: {common: {direct: {}}, $table: t_w}}
+expect:
+  schema: "id:i64, note:string?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "'a'::string?"]
+      - ["2::i64", "'b'::string?"]

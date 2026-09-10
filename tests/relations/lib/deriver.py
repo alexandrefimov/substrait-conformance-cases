@@ -364,6 +364,9 @@ class Extensions:
 class Deriver:
     def __init__(self, plan, ext_dir):
         self.ext = Extensions(plan, ext_dir)
+        # ReferenceRel names a position in Plan.relations, so the whole plan has to be
+        # reachable from the relation walk rather than only the subtree being walked.
+        self.plan = plan
 
     # --- expressions ---
     def expr_type(self, e, inp):
@@ -416,12 +419,40 @@ class Deriver:
             direct = [direct[i] for i in emit.get("outputMapping", [])]
         return direct
 
+    @staticmethod
+    def apply_select(t, sel):
+        """Narrow a type by a MaskExpression Select, keeping only what it names.
+
+        Only struct selects are handled. A list or map select would also have to say
+        what happens to the elements around the ones it keeps, and no case here reaches
+        one, so an unhandled kind is an error rather than a silent pass-through.
+        """
+        if "struct" not in sel:
+            raise NotImplementedError(f"mask select kind {list(sel)}")
+        if t[0] != "struct":
+            raise ValueError(f"a struct select applied to {t[0]}")
+        kept = []
+        for item in sel["struct"]["structItems"]:
+            sub = t[1][item.get("field", 0)]
+            kept.append(
+                Deriver.apply_select(sub, item["child"]) if "child" in item else sub
+            )
+        return ("struct", tuple(kept), t[2])
+
     def rel_read(self, n):
         schema = schema_from_named_struct(n["baseSchema"])
         proj = n.get("projection")
         if proj:
-            items = proj["select"]["structItems"]
-            schema = [schema[it.get("field", 0)] for it in items]
+            # "Defaults to the schema of the data read after the optional projection
+            # (masked complex expression) is applied", and a struct item's child narrows
+            # that column further rather than replacing it.
+            out = []
+            for it in proj["select"]["structItems"]:
+                col = schema[it.get("field", 0)]
+                out.append(
+                    self.apply_select(col, it["child"]) if "child" in it else col
+                )
+            schema = out
         return schema
 
     def rel_filter(self, n):
@@ -439,9 +470,23 @@ class Deriver:
     def rel_write(self, n):
         return self.rel(n["input"])  # "Unchanged from input"
 
+    def rel_exchange(self, n):
+        return self.rel(n["input"])  # "Order of the input"
+
     def rel_project(self, n):
         inp = self.rel(n["input"])
         return inp + [self.expr_type(e, inp) for e in n.get("expressions", [])]
+
+    def rel_reference(self, n):
+        """ReferenceRel maintains all properties of what it refers to, output included."""
+        i = n.get("subtreeOrdinal", 0)
+        rels = self.plan.get("relations", [])
+        if not 0 <= i < len(rels):
+            raise ValueError(f"subtree_ordinal {i} is outside Plan.relations")
+        target = rels[i]
+        if "rel" not in target:
+            raise ValueError(f"subtree_ordinal {i} names a root, not a bare relation")
+        return self.rel(target["rel"])
 
     def rel_cross(self, n):
         return self.rel(n["left"]) + self.rel(n["right"])
@@ -519,14 +564,20 @@ class Deriver:
     def rel_expand(self, n):
         inp = self.rel(n["input"])
         out = []
-        for f in n["fields"]:
+        fields = n.get("fields", [])
+        for f in fields:
             if "consistentField" in f:
                 out.append(self.expr_type(f["consistentField"], inp))
             else:
                 dups = [
                     self.expr_type(d, inp) for d in f["switchingField"]["duplicates"]
                 ]
+                # SwitchingField in algebra.proto: all duplicates return the same type
+                # class, and the output field is nullable if any duplicate is.
                 out.append((dups[0][0], dups[0][1], any(d[2] for d in dups)))
+        # ExpandRel in algebra.proto: fields beyond the provided definitions are emitted
+        # as is, as if a consistent field with an identity expression had been given.
+        out += inp[len(fields) :]
         return out + [T("i32", (), False)]
 
     def rel_window(self, n):
@@ -547,6 +598,16 @@ class Deriver:
 
 
 def derive(plan, ext_dir):
+    """The schema of the plan's single root.
+
+    A Plan may hold several relations, of which the bare ones exist to be referenced;
+    only a root is an output. The corpus carries one expectation per case, so a case
+    with more than one root would not say which one it is about.
+    """
     d = Deriver(plan, ext_dir)
-    root = plan["relations"][0]["root"]
-    return [render(t) for t in d.rel(root["input"])]
+    roots = [r["root"] for r in plan.get("relations", []) if "root" in r]
+    if len(roots) != 1:
+        raise ValueError(
+            f"a case must have exactly one root relation, found {len(roots)}"
+        )
+    return [render(t) for t in d.rel(roots[0]["input"])]

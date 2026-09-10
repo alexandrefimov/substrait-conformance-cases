@@ -1,0 +1,20 @@
+id: names/nested_nullability/a-nullable-struct-keeps-its-fields
+spec_ref: types/named_structs.md#determining-names
+kind: KIND_POSITIVE
+notes: >-
+  A nullable struct whose first field is required. Nullability belongs to each type in
+  the tree separately: the struct may be absent, and when it is present its first
+  field is not. A consumer that pushes the outer nullability down returns a nullable
+  inner field.
+inputs:
+  t_nn:
+    schema: "outer:struct<inner:i64, other:string?>?"
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [outer, inner, other]
+        input: {read: {common: {direct: {}}, $table: t_nn}}
+expect:
+  schema: "outer:struct<inner:i64, other:string?>?"

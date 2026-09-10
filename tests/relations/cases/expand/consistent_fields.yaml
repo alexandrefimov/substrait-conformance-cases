@@ -1,0 +1,31 @@
+id: expand/consistent/index-column
+spec_ref: relations/physical_relations.md#expand-operation
+kind: KIND_POSITIVE
+notes: >-
+  One consistent field per input column, reordered. Direct Output Order for expand is the expand
+  fields followed by an i32 holding the index of the duplicate a row came from, and
+  the column is there even when every field is consistent and each input row yields
+  one output row.
+inputs:
+  t_exp:
+    schema: "c0:i64, c1:i64?, c2:string"
+    rows: [["1::i64", "null::i64?", "'x'::string"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [f2, f0, f1, duplicate]
+        input:
+          expand:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_exp}}
+            fields:
+              - consistent_field: "$2"
+              - consistent_field: "$0"
+              - consistent_field: "$1"
+expect:
+  schema: "f2:string, f0:i64, f1:i64?, duplicate:i32"
+  rows:
+    order: ORDER_MULTISET
+    values: [["'x'::string", "1::i64", "null::i64?", "0::i32"]]

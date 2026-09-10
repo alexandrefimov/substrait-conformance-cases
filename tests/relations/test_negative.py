@@ -136,6 +136,30 @@ def test_declarations_catches_a_falsified_output_type(corpus):
     )
 
 
+def test_valid_plans_are_valid_catches_an_out_of_range_emit(corpus):
+    """The structural checker on a case that does not claim to be invalid."""
+    assert_caught(
+        corpus,
+        "emit/drop",
+        gate.check_valid_plans_are_valid,
+        lambda: edit(corpus, "emit/drop", "output_mapping: [1]", "output_mapping: [9]"),
+    )
+
+
+def test_valid_plans_are_valid_catches_mismatched_set_widths(corpus):
+    assert_caught(
+        corpus,
+        "set/union_all",
+        gate.check_valid_plans_are_valid,
+        lambda: edit(
+            corpus,
+            "set/union_all",
+            's3: {schema: "c0:i64, c1:i64?, c2:i64, c3:i64?, c4:i64, c5:i64?, c6:i64, c7:i64?"}',
+            's3: {schema: "c0:i64, c1:i64?, c2:i64"}',
+        ),
+    )
+
+
 def test_kind_catches_a_valid_plan_labelled_invalid(corpus):
     """A case may not claim invalidity it cannot demonstrate."""
     assert_caught(
@@ -252,6 +276,33 @@ def test_vt_arity_catches_a_row_with_an_extra_cell(corpus):
             "read/virtual_table",
             '{fields: ["1::i64", "\'a\'::string?"]}',
             '{fields: ["1::i64", "\'a\'::string?", "9::i64"]}',
+        ),
+    )
+
+
+def test_signature_arity_catches_an_extra_argument_in_the_name(corpus):
+    """The mistake this check exists for: I made it, and a consumer caught it, not the gate."""
+    assert_caught(
+        corpus,
+        "window/lead_is_nullable",
+        gate.check_signature_arity,
+        lambda: edit(
+            corpus,
+            "window/lead_is_nullable",
+            'name: "lead:any"',
+            'name: "lead:any_i64"',
+        ),
+    )
+
+
+def test_signature_arity_catches_a_bare_name(corpus):
+    """`rank` is not a function signature; `rank:` is."""
+    assert_caught(
+        corpus,
+        "window/row_number",
+        gate.check_signature_arity,
+        lambda: edit(
+            corpus, "window/row_number", 'name: "row_number:"', 'name: "row_number"'
         ),
     )
 

@@ -18,7 +18,7 @@ from collections import Counter
 import yaml
 from google.protobuf import json_format
 
-from . import check_decl, deriver, lower, paths, render
+from . import check_decl, deriver, lower, paths, render, validity
 
 SKIP = "skip"
 
@@ -174,13 +174,90 @@ def check_declarations(case):
     return None
 
 
+def check_signature_arity(case):
+    """A declared compound signature must name as many arguments as the call supplies.
+
+    `function-signature = function-name ":" argument-signature` in the extensions
+    documentation, and the argument signature is the short type names of each argument
+    joined with underscores, empty for a zero-argument implementation. This compares the
+    count only, not the type names: a case naming `lead:any_i64` while supplying one
+    argument is the mistake it catches, and one naming `lead:i64` for a string argument
+    is not. Writing these cases, that first mistake passed every other check here and was
+    caught by a consumer instead.
+    """
+    declared = {}
+    for e in case.plan.extensions:
+        if e.HasField("extension_function"):
+            declared[e.extension_function.function_anchor] = e.extension_function.name
+
+    problems = []
+
+    def named(anchor):
+        return declared.get(anchor)
+
+    def check_call(kind, anchor, n_args):
+        name = named(anchor)
+        if name is None:
+            problems.append(f"{kind} references anchor {anchor}, which is not declared")
+            return
+        if ":" not in name:
+            problems.append(f"{kind} {name!r} is a bare name, not a function signature")
+            return
+        args = name.split(":", 1)[1]
+        want = 0 if args == "" else len(args.split("_"))
+        if want != n_args:
+            problems.append(f"{kind} {name!r} names {want} argument(s) for {n_args}")
+
+    def walk_expr(msg):
+        for f, v in msg.ListFields():
+            for item in v if f.is_repeated else [v]:
+                if f.message_type is None:
+                    continue
+                full = f.message_type.full_name
+                if full == "substrait.Expression.ScalarFunction":
+                    check_call("scalar", item.function_reference, len(item.arguments))
+                if full in (
+                    "substrait.AggregateFunction",
+                    "substrait.Expression.WindowFunction",
+                ):
+                    check_call("measure", item.function_reference, len(item.arguments))
+                if full == ("substrait.ConsistentPartitionWindowRel.WindowRelFunction"):
+                    check_call("window", item.function_reference, len(item.arguments))
+                if hasattr(item, "ListFields"):
+                    walk_expr(item)
+
+    for pr in case.plan.relations:
+        walk_expr(pr)
+    return "; ".join(problems[:2]) if problems else None
+
+
 def check_kind(case):
-    """A case claiming to be invalid must actually violate a stated validity rule."""
+    """A case claiming to be invalid must actually violate a stated validity rule.
+
+    Two classes count. A declared `output_type` that disagrees with the extension the
+    function resolves to, which `check_decl` finds, and the structural rules in
+    `validity`, which need nothing but the plan. A case that violates neither is making
+    a claim the corpus cannot demonstrate, and that is the failure this reports.
+    """
     if case.kind != "KIND_INVALID_PLAN":
         return SKIP
-    if not check_decl.check(case.plan_dict, case.ext_dir):
-        return "KIND_INVALID_PLAN but no plan-validity violation found"
-    return None
+    if check_decl.check(case.plan_dict, case.ext_dir):
+        return None
+    if validity.violations(case.plan, case.ext_dir):
+        return None
+    return "KIND_INVALID_PLAN but no plan-validity violation found"
+
+
+def check_valid_plans_are_valid(case):
+    """A case that does not claim invalidity must not be structurally invalid either.
+
+    The mirror of check_kind, and the half that matters more: it is what stops a case
+    from asserting a schema for a plan that should never have been derived at all.
+    """
+    if case.kind != "KIND_POSITIVE":
+        return SKIP
+    found = validity.violations(case.plan, case.ext_dir)
+    return "; ".join(found[:2]) if found else None
 
 
 def _cell_class(lit):
@@ -275,7 +352,11 @@ def check_names(case):
     """
     if not case.expect or case.kind != "KIND_POSITIVE":
         return SKIP
-    root_names = list(case.plan.relations[0].root.names) if case.plan.relations else []
+    # A plan may hold bare relations for a ReferenceRel to name; only a root has names.
+    roots = [r.root for r in case.plan.relations if r.WhichOneof("rel_type") == "root"]
+    if len(roots) != 1:
+        return f"a case must have exactly one root relation, found {len(roots)}"
+    root_names = list(roots[0].names)
     if not root_names:
         return SKIP
     want = list(case.env.expect.schema.names)
@@ -310,7 +391,9 @@ CHECKS = [
     check_schema,
     check_unresolved,
     check_declarations,
+    check_signature_arity,
     check_kind,
+    check_valid_plans_are_valid,
     check_rows,
     check_vt_arity,
     check_names,
@@ -345,7 +428,12 @@ def coverage(plan, counter=None):
             counter[f"read:{node.WhichOneof('read_type')}"] += 1
             if node.HasField("projection"):
                 counter["read:projection"] += 1
-        if node.HasField("common") and node.common.WhichOneof("emit_kind") == "emit":
+        # ReferenceRel carries no common section at all, so ask the descriptor first
+        if (
+            "common" in node.DESCRIPTOR.fields_by_name
+            and node.HasField("common")
+            and node.common.WhichOneof("emit_kind") == "emit"
+        ):
             counter["emit"] += 1
         for f, v in node.ListFields():
             if f.message_type and f.message_type.full_name == "substrait.Rel":
