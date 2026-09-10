@@ -1,0 +1,38 @@
+id: sort/nulls_last/sequence
+spec_ref: relations/logical_relations.md#sort-operation
+kind: KIND_POSITIVE
+notes: >-
+  Sort leaves the field order of the input alone and sets the orderedness, so this is
+  the first thing in the corpus whose row order the plan actually fixes: the
+  expectation is a sequence, not a multiset. Its pair sorts the same rows the other
+  way round for nulls.
+inputs:
+  t_ord:
+    schema: "k:i64?, v:string"
+    rows:
+      - ["3::i64?", "'c'::string"]
+      - ["null::i64?", "'n'::string"]
+      - ["1::i64?", "'a'::string"]
+      - ["2::i64?", "'b'::string"]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [k, v]
+        input:
+          sort:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_ord}}
+            sorts:
+              - expr: "$0"
+                direction: SORT_DIRECTION_ASC_NULLS_LAST
+expect:
+  schema: "k:i64?, v:string"
+  rows:
+    order: ORDER_SEQUENCE
+    values:
+      - ["1::i64?", "'a'::string"]
+      - ["2::i64?", "'b'::string"]
+      - ["3::i64?", "'c'::string"]
+      - ["null::i64?", "'n'::string"]

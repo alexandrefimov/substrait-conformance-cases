@@ -104,8 +104,13 @@ a committed file rather than a number nobody looks at.
 ## Limits
 
 The row expectations are the rows the specification's rules imply, computed by hand, not
-output captured from an engine. Where the rules do not fix an order, `ORDER_MULTISET`
-says so and a harness must compare as a multiset.
+output captured from an engine. Most cases declare `ORDER_MULTISET`, because most
+relations fix no order and a harness must compare as a multiset there. The cases under
+`sort/` and `fetch/` declare `ORDER_SEQUENCE` instead: a sort sets the orderedness and a
+fetch maintains it, so the plan fixes which row comes first and a harness that compares
+those as a multiset is not running them. A sort that ignores where nulls go passes the
+multiset comparison and fails the sequence one, which is the whole difference between the
+two cases under `sort/`.
 
 `KIND_INVALID_PLAN` currently covers one class of invalidity: a declared `output_type`
 that disagrees with the extension the function resolves to. A case may not claim
