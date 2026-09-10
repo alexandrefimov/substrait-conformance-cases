@@ -442,6 +442,9 @@ class Deriver:
     def rel_write(self, n):
         return self.rel(n["input"])  # "Unchanged from input"
 
+    def rel_exchange(self, n):
+        return self.rel(n["input"])  # "Order of the input"
+
     def rel_project(self, n):
         inp = self.rel(n["input"])
         return inp + [self.expr_type(e, inp) for e in n.get("expressions", [])]
