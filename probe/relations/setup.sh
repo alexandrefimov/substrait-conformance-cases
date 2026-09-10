@@ -105,8 +105,21 @@ GRADLE
   fi
   [ -s "$pbjar" ] || { echo "protobuf-java $RELATIONS_PROTOBUF_JAVA_VERSION did not resolve" >&2; exit 1; }
   CP="$(cat "$pbjar"):$CP"
-  JAVA_HOME_17="${JAVA17_HOME:-$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null || true)}"
-  [ -n "$JAVA_HOME_17" ] || { echo "no JDK $JAVA_VERSION; set JAVA17_HOME" >&2; exit 1; }
+  # JAVA17_HOME if the caller named one, then the JAVA_HOME it already has when that is the version
+  # versions.env asks for, and only then the macOS locator. The middle step is the one that was
+  # missing: /usr/libexec/java_home is a Mac, so this passed here and failed on the first Linux
+  # runner it met, where the right JDK had been on JAVA_HOME the whole time.
+  JAVA_HOME_17="${JAVA17_HOME:-}"
+  if [ -z "$JAVA_HOME_17" ] && [ -x "${JAVA_HOME:-/nonexistent}/bin/javac" ]; then
+    case "$("$JAVA_HOME/bin/javac" -version 2>&1)" in
+      *" $JAVA_VERSION."*) JAVA_HOME_17="$JAVA_HOME" ;;
+    esac
+  fi
+  [ -n "$JAVA_HOME_17" ] || \
+    JAVA_HOME_17="$(/usr/libexec/java_home -v "$JAVA_VERSION" 2>/dev/null || true)"
+  [ -n "$JAVA_HOME_17" ] || {
+    echo "no JDK $JAVA_VERSION: not in JAVA17_HOME, not in JAVA_HOME, not known to java_home" >&2
+    exit 1; }
   rm -rf "$SP/reljava"
   mkdir -p "$SP/reljava/gen" "$SP/reljava/out"
   # Only relation_test.proto is generated. Its imports resolve to io.substrait.proto.* out of the
