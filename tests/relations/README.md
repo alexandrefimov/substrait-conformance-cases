@@ -55,6 +55,12 @@ misspelled field name is an error rather than a silently ignored key, and so is 
 duplicate YAML key. `$table: t_left` binds a read to a named fixture so a schema case is
 not also a virtual-table support test.
 
+A struct column carries the names of its fields inside the type, as
+`s:struct<x:i64, y:i64?>`, because `NamedStruct.names` is one depth-first list over the
+whole tree rather than one name per column. Writing them where they belong is what keeps
+the count right: the specification's own example, `a:struct<b:i64, c:i64>,
+d:struct<e:i64, f:i64, g:i64>`, is two columns and seven names.
+
 Input data lives outside the plan in `inputs`, and reaches a consumer as
 `RelationTestCase.tables`. A harness that cannot bind external tables may build a
 virtual-table plan from the same rows.

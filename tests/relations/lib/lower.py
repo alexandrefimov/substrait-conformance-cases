@@ -97,7 +97,26 @@ PARAM1 = {
 TYPE_RE = re.compile(r"^\s*([A-Za-z_][A-Za-z_0-9]*)\s*(?:<([^>]*)>)?\s*(\?)?\s*$")
 
 
-def parse_type(text):
+def parse_type(text, names=None):
+    """`names` collects the depth-first name list when a struct carries inline names."""
+    text = text.strip()
+    body = struct_body(text)
+    if body is not None:
+        t = Type()
+        t.struct.nullability = (
+            Type.NULLABILITY_NULLABLE
+            if text.endswith("?")
+            else Type.NULLABILITY_REQUIRED
+        )
+        for member in split_top(body, ","):
+            if ":" not in member:
+                raise CaseError(f"struct member {member.strip()!r} must be name:type")
+            n, ty = member.split(":", 1)
+            if names is None:
+                raise CaseError("a struct type is only valid where names are collected")
+            names.append(n.strip())
+            t.struct.types.append(parse_type(ty, names))
+        return t
     m = TYPE_RE.match(text)
     if not m:
         raise CaseError(f"cannot parse type {text!r}")
@@ -124,9 +143,28 @@ def parse_type(text):
     raise CaseError(f"unsupported type {text!r} (raw proto-JSON is the escape hatch)")
 
 
-def render_type(t):
+def struct_body(text):
+    """The inside of a `struct<...>`, or None when this is not one.
+
+    A regular expression cannot do this: struct members are themselves types and nest.
+    """
+    head = text[:-1].rstrip() if text.endswith("?") else text
+    if not head.lower().startswith("struct<") or not head.endswith(">"):
+        return None
+    return head[len("struct<") : -1]
+
+
+def render_type(t, names=None):
     """Reverse direction, used by the round-trip check."""
     kind = t.WhichOneof("kind")
+    if kind == "struct":
+        if names is None:
+            raise CaseError("a struct type needs the names to render")
+        q = "?" if t.struct.nullability == Type.NULLABILITY_NULLABLE else ""
+        members = []
+        for sub in t.struct.types:
+            members.append(f"{names.pop(0)}:{render_type(sub, names)}")
+        return "struct<" + ", ".join(members) + ">" + q
     sub = getattr(t, kind)
     q = "?" if sub.nullability == Type.NULLABILITY_NULLABLE else ""
     short = {"fixed_char": "fixedchar", "fixed_binary": "fixedbinary"}.get(kind, kind)
@@ -147,16 +185,23 @@ def parse_named_struct(text):
             raise CaseError(f"column {col!r} must be name:type")
         name, ty = col.split(":", 1)
         ns.names.append(name.strip())
-        ns.struct.types.append(parse_type(ty))
+        ns.struct.types.append(parse_type(ty, ns.names))
     return ns
 
 
 def render_named_struct(ns):
-    # Names run depth first, so a nested struct has more names than the top level has
-    # types; pairing stops at the top-level types on purpose.
-    return ", ".join(
-        f"{n}:{render_type(t)}" for n, t in zip(ns.names, ns.struct.types, strict=False)
-    )
+    """Reverse of parse_named_struct, names and all.
+
+    Names run depth first over the whole tree, so a column that is a struct consumes its
+    own name and then one per field, at any depth. The list is walked, not indexed.
+    """
+    rest = list(ns.names)
+    cols = []
+    for t in ns.struct.types:
+        cols.append(f"{rest.pop(0)}:{render_type(t, rest)}")
+    if rest:
+        raise CaseError(f"{len(rest)} name(s) left over: {rest}")
+    return ", ".join(cols)
 
 
 def split_top(text, sep):
