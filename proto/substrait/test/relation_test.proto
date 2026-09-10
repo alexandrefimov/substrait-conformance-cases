@@ -1,0 +1,75 @@
+// SPDX-License-Identifier: Apache-2.0
+
+// The machine-readable form of a relation conformance case.
+//
+// Deliberately small: identity, a pristine substrait.Plan, the input data bound
+// outside it, and the assertion. A consumer reading this needs its own protobuf
+// bindings and nothing else: no authoring parser, no YAML, no text format.
+//
+// The file carries no version-specific content of its own, so a consumer compiles
+// it against whatever Substrait protos its own bindings already use.
+syntax = "proto3";
+
+package substrait.test;
+
+import "substrait/algebra.proto";
+import "substrait/plan.proto";
+import "substrait/type.proto";
+
+option csharp_namespace = "Substrait.Protobuf.Test";
+option go_package = "github.com/substrait-io/substrait-protobuf/go/substraitpb/test";
+option java_multiple_files = true;
+option java_package = "io.substrait.proto.test";
+
+message RelationTestCase {
+  // Stable identity and the exact spec text this case pins.
+  string id = 1;
+  string spec_ref = 2;
+  Kind kind = 3;
+
+  // The program under test, byte-identical whatever the authoring format was.
+  substrait.Plan plan = 4;
+
+  // Input data bound outside the plan, so a schema/row test is not also a
+  // VirtualTable support test. A packager may additionally emit a plan whose
+  // reads are VirtualTables built from these rows.
+  repeated InputTable tables = 5;
+
+  Expectation expect = 6;
+
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    // Assert the schema and, when present, the rows.
+    KIND_POSITIVE = 1;
+    // The plan violates a stated plan-validity rule. Whether a given consumer
+    // API must reject it is not settled by this corpus; harnesses report the
+    // observed outcome rather than pass/fail.
+    KIND_INVALID_PLAN = 2;
+    // The spec does not settle this behaviour yet; shipped, never scored.
+    KIND_UNRESOLVED = 3;
+  }
+
+  message InputTable {
+    repeated string name = 1;
+    substrait.NamedStruct schema = 2;
+    repeated substrait.Expression.Literal.Struct rows = 3;
+  }
+
+  message Expectation {
+    substrait.NamedStruct schema = 1;
+    RowSet rows = 2;
+  }
+
+  message RowSet {
+    Order order = 1;
+    repeated substrait.Expression.Literal.Struct values = 2;
+
+    enum Order {
+      ORDER_UNSPECIFIED = 0;
+      // Compare complete typed tuples as a multiset.
+      ORDER_MULTISET = 1;
+      // Compare the sequence; only valid where the plan fixes a total order.
+      ORDER_SEQUENCE = 2;
+    }
+  }
+}

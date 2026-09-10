@@ -13,3 +13,6 @@ __pycache__/
 # Where OUT= puts a kept run of probe/replay_column.sh: the column, the raw output and the record.
 # CI uploads that directory as an artifact; locally it is scratch.
 run/
+
+# Protobuf bindings for tests/relations, written by tests/relations/bootstrap.sh.
+tests/relations/.bindings/

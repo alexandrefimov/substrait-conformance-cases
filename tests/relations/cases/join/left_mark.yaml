@@ -1,0 +1,37 @@
+id: join/left_mark/output-mark-column
+spec_ref: relations/logical_relations.md#join-types
+kind: KIND_POSITIVE
+notes: >-
+  A mark join emits one record per left record and appends one column, listed after
+  all columns of the left side and typed nullable boolean. It is true where a partner
+  satisfies the condition, null where a partner makes it null, and false otherwise;
+  here the keys are required, so no null arises.
+extensions:
+  cmp: extension:io.substrait:functions_comparison
+inputs:
+  t_left:
+    schema: "a0:i64, a1:i64?"
+    rows: [["1::i64", "null::i64?"], ["2::i64", "2::i64?"]]
+  t_right:
+    schema: "b0:i64, b1:i64?"
+    rows: [["2::i64", "20::i64?"], ["5::i64", "50::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [a0, a1, mark]
+        input:
+          join:
+            common: {direct: {}}
+            type: JOIN_TYPE_LEFT_MARK
+            expression: "cmp.equal:any_any($0, $2):bool"
+            left: {read: {common: {direct: {}}, $table: t_left}}
+            right: {read: {common: {direct: {}}, $table: t_right}}
+expect:
+  schema: "a0:i64, a1:i64?, mark:bool?"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64", "null::i64?", "false::bool?"]
+      - ["2::i64", "2::i64?", "true::bool?"]

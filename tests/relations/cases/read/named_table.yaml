@@ -1,0 +1,22 @@
+id: read/named_table/direct-schema
+spec_ref: relations/logical_relations.md#named-table
+kind: KIND_POSITIVE
+notes: >-
+  The baseline every other read case is read against: a named table with no projection
+  and no emit outputs its direct schema unchanged.
+inputs:
+  t_pair:
+    schema: "a:i64, b:i64?"
+    rows: [["7::i64", "null::i64?"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [a, b]
+        input: {read: {common: {direct: {}}, $table: t_pair}}
+expect:
+  schema: "a:i64, b:i64?"
+  rows:
+    order: ORDER_MULTISET
+    values: [["7::i64", "null::i64?"]]

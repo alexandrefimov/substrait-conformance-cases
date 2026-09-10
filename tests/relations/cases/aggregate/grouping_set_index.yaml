@@ -1,0 +1,47 @@
+id: aggregate/grouping_sets/index-column
+spec_ref: relations/logical_relations.md#aggregate-operation
+kind: KIND_POSITIVE
+notes: >-
+  Two grouping sets, so two rules apply at once. An aggregate with more than one
+  grouping set gains a trailing required i32 holding the zero-based index of the set a
+  record came from. And a grouping expression that is not in every set becomes
+  nullable whatever its own type says, because rows from the other set carry a null
+  there. Neither column is nullable in a single-set aggregate, which is what the
+  measure-nullability case shows.
+extensions:
+  arith: extension:io.substrait:functions_arithmetic
+inputs:
+  t_group:
+    schema: "g0:i64, g1:string, v:i64"
+    rows: [["1::i64", "'a'::string", "10::i64"], ["1::i64", "'b'::string", "20::i64"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [g0, g1, total, grouping_set]
+        input:
+          aggregate:
+            common: {direct: {}}
+            input: {read: {common: {direct: {}}, $table: t_group}}
+            grouping_expressions: ["$0", "$1"]
+            groupings:
+              - {expression_references: [0]}
+              - {expression_references: [1]}
+            measures:
+              - measure:
+                  function_reference: 1
+                  phase: AGGREGATION_PHASE_INITIAL_TO_RESULT
+                  invocation: AGGREGATION_INVOCATION_ALL
+                  output_type: "i64?"
+                  arguments: [{value: "$2"}]
+  extension_urns: [{extension_urn_anchor: 1, urn: "extension:io.substrait:functions_arithmetic"}]
+  extensions: [{extension_function: {extension_urn_reference: 1, function_anchor: 1, name: "sum:i64"}}]
+expect:
+  schema: "g0:i64?, g1:string?, total:i64?, grouping_set:i32"
+  rows:
+    order: ORDER_MULTISET
+    values:
+      - ["1::i64?", "null::string?", "30::i64?", "0::i32"]
+      - ["null::i64?", "'a'::string?", "10::i64?", "1::i32"]
+      - ["null::i64?", "'b'::string?", "20::i64?", "1::i32"]

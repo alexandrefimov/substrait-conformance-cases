@@ -1,0 +1,30 @@
+id: read/projection/mask-drops-a-column
+spec_ref: relations/logical_relations.md#read-properties
+kind: KIND_POSITIVE
+notes: >-
+  The read output defaults to the direct schema after the masked complex expression is
+  applied, so a projection narrows the type and not just the data. The two fields are
+  selected in the schema's own order, which is what keeps this case out of the
+  reordering question its sibling records.
+inputs:
+  t_mix:
+    schema: "c0:i64, c1:string, c2:bool"
+    rows: [["10::i64", "'x'::string", "true::bool"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [c0, c2]
+        input:
+          read:
+            common: {direct: {}}
+            $table: t_mix
+            projection:
+              select: {struct_items: [{field: 0}, {field: 2}]}
+              maintain_singular_struct: false
+expect:
+  schema: "c0:i64, c2:bool"
+  rows:
+    order: ORDER_MULTISET
+    values: [["10::i64", "true::bool"]]

@@ -1,0 +1,27 @@
+id: emit/drop/leave-columns-out
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  An emit mapping may leave output columns out entirely. Two of the three columns
+  never reach the consumer, which is what distinguishes emit from a projection that
+  computes a narrower set of columns.
+inputs:
+  t_mix:
+    schema: "c0:i64, c1:string, c2:bool"
+    rows: [["10::i64", "'x'::string", "true::bool"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [only]
+        input:
+          filter:
+            common: {emit: {output_mapping: [1]}}
+            input: {read: {common: {direct: {}}, $table: t_mix}}
+            condition: "true::bool"
+expect:
+  schema: "only:string"
+  rows:
+    order: ORDER_MULTISET
+    values: [["'x'::string"]]

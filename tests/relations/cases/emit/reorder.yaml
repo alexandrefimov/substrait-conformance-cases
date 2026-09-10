@@ -1,0 +1,28 @@
+id: emit/reorder/project-output-mapping
+spec_ref: relations/common_fields.md#emit
+kind: KIND_POSITIVE
+notes: >-
+  A relation with an emit mapping outputs its columns in any order and may leave some
+  out. Here the project computes a fourth column and then emits only the third and the
+  first, in that order, so the mapping is read against the relation output and not
+  against the relation input.
+inputs:
+  t_mix:
+    schema: "c0:i64, c1:string, c2:bool"
+    rows: [["10::i64", "'x'::string", "true::bool"]]
+plan:
+  version: {minor_number: 102, producer: substrait-relation-tests}
+  execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
+  relations:
+    - root:
+        names: [k0, k1]
+        input:
+          project:
+            common: {emit: {output_mapping: [2, 0]}}
+            input: {read: {common: {direct: {}}, $table: t_mix}}
+            expressions: ["$1"]
+expect:
+  schema: "k0:bool, k1:i64"
+  rows:
+    order: ORDER_MULTISET
+    values: [["true::bool", "10::i64"]]
