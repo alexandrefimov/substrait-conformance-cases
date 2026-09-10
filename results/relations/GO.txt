@@ -1,0 +1,76 @@
+GO: relations column from run 2026-09-10T20:39, github.com/substrait-io/substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0, github.com/substrait-io/substrait-protobuf/go v0.85.0, pinning github.com/substrait-io/substrait v0.87.0
+Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
+BOUNDARY: substrait-go derives a schema and does not execute, so every case here is answered on its schema alone, including the 26 that declare rows.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
+
+score   aggregate/grouping_sets/index-column                      ERROR: invalid relation: root relation has 4 output name(s) but the output schema requires 3
+score   aggregate/grouping_sets/overlapping-sets                  [g0:i64, g1:i64, total:string, grouping_set:i64?]
+score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i64?]
+score   aggregate/sum/measure-nullability                         [g0:i64, total:i64?]
+score   cross/output/preserves-nullability                        [l0:i64, l1:i64?, r0:i64?, r1:i64]
+score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64?]
+score   emit/drop/leave-columns-out                               [only:string]
+score   emit/on_aggregate/mapping-on-an-aggregate                 [total:i64?, g:string]
+score   emit/on_fetch/mapping-on-a-fetch                          ERROR: invalid relation: missing required Offset field for Fetch Relation
+score   emit/on_join/mapping-on-a-join                            [r0:bool, l0:i64]
+score   emit/on_sort/mapping-on-a-sort                            [only_v:string]
+score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64]
+score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64?]
+score   exchange/round-robin/output-is-the-input                  ERROR: not implemented
+score   expand/consistent/index-column                            ERROR: not implemented
+score   expand/fields/beyond-the-definitions                      ERROR: not implemented
+score   expand/switching/nullability-is-the-union                 ERROR: not implemented
+score   fetch/count/unset-means-all                               ERROR: invalid relation: missing required Offset field for Fetch Relation
+score   fetch/offset-and-count/window                             ERROR: invalid relation: missing required Offset field for Fetch Relation
+observe invalid/declaration/output-type-disagrees-with-extension  [r:decimal<20,2>]
+observe invalid/emit/maps-a-column-that-is-not-there              CRASH: runtime error: index out of range [5] with length 2
+observe invalid/set/inputs-differ-in-width                        ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64>, got struct<i64, i64, i64>
+score   join/inner/output-nullability                             [a0:i64, a1:i64?, b0:i64, b1:i64?]
+score   join/left/output-nullability                              [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/left_mark/output-mark-column                         ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
+score   join/left_semi/output-columns                             [a0:i64, a1:i64?]
+score   join/left_single/output-nullability                       [a0:i64, a1:i64?, b0:i64?, b1:i64?]
+score   join/outer/output-nullability                             [a0:i64?, a1:i64?, b0:i64?, b1:i64?]
+score   join/right/output-nullability                             [a0:i64?, a1:i64?, b0:i64, b1:i64?]
+score   join/right_anti/output-columns                            [b0:i64, b1:i64?]
+score   join_physical/hash_left_anti/wire-7                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/hash_left_single/wire-9                     [a0:i64, a1:i64?, b0:i64, b1:i64?]
+score   join_physical/hash_right_anti/wire-8                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/hash_right_semi/wire-6                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/merge_left_anti/wire-7                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+score   join_physical/nested_loop_left_anti/wire-7                ERROR: not implemented
+score   names/nested_nullability/a-nullable-struct-keeps-its-fields [outer:struct<inner:i64, other:string?>?]
+score   names/nested_struct/depth-first-name-order                [a:i64, s:struct<x:i64, y:i64?>]
+score   names/struct_of_structs/seven-names-for-two-columns       [a:struct<b:i64, c:i64>, d:struct<e:i64, f:i64, g:i64>]
+score   project/decimal_add/return-type                           [r:decimal<11,2>]
+score   project/decimal_divide/return-type                        [r:decimal<21,8>]
+score   project/decimal_multiply/return-type                      [r:decimal<16,3>]
+score   project/output-order/appends-computed-columns             [a:i64, b:i64?, sum:i64]
+score   read/mask/keeps-a-column-whole                            ERROR: invalid relation: root relation has 4 output name(s) but the output schema requires 5
+score   read/mask/narrows-a-struct-from-inside                    ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 5
+score   read/named_table/direct-schema                            [a:i64, b:i64?]
+score   read/projection/mask-drops-a-column                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
+observe read/projection/mask-reorders                             ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
+score   read/virtual_table/literal-rows                           [n:i64, s:string?]
+score   reference/subtree/maintains-the-referred-output           ERROR: not implemented
+score   set/intersection_multiset/output-nullability              ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/intersection_multiset_all/output-nullability          ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/intersection_primary/output-nullability               ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_multiset/output-nullability                     ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_primary/output-nullability                      ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/minus_primary_all/output-nullability                  ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/union_all/output-nullability                          ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   set/union_distinct/output-nullability                     ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i64?, i64?, i64, i64, i64?, i64?>
+score   sort/nulls_first/sequence                                 [k:i64?, v:string]
+score   sort/nulls_last/sequence                                  [k:i64?, v:string]
+score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date?]
+score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]
+score   temporal/precision_timestamp/precision-is-part-of-the-type [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>]
+observe unresolved/ddl/declares-no-output                         ERROR: not implemented
+observe unresolved/update/output-type-is-not-stated               ERROR: not implemented
+observe unresolved/virtual_table/row-required-in-nullable-column  [n:i64?]
+observe unresolved/virtual_table/row-type-differs-from-schema     [n:i32]
+score   window/lead/nullable-whatever-the-argument                ERROR: not implemented
+score   window/output-order/appends-after-the-input               ERROR: not implemented
+score   write/modified_records/returns-the-after-image            [id:i64, note:string?]
+score   write/no_output/returns-nothing                           [id:?, note:?]

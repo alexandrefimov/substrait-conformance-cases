@@ -1,0 +1,77 @@
+DUCKDB: relations column from run 2026-09-10T20:39, duckdb 1.5.5, substrait extension 4ea63dd
+Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
+BOUNDARY: DuckDB's logical types carry no nullability, so no answer below carries `?`; names, types, arity and order are what a `score` line is compared on.
+It executes, so a case that declares rows is answered with rows too, unless the plan was refused before it ran.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
+
+score   aggregate/grouping_sets/index-column                      ERROR: Binder Error: Positional reference 4 out of range (total 3 columns)
+score   aggregate/grouping_sets/overlapping-sets                  ERROR: Binder Error: Positional reference 4 out of range (total 3 columns)
+score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i128] rows (1, 'a', 10) (1, 'b', 20)
+score   aggregate/sum/measure-nullability                         [g0:i64, total:i128] rows (1, 30)
+score   cross/output/preserves-nullability                        [l0:i64, l1:i64, r0:i64, r1:i64] rows (1, null, 7, 8) (1, null, 9, 10)
+score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64] rows (7, null)
+score   emit/drop/leave-columns-out                               [only:i64] rows (10)
+score   emit/on_aggregate/mapping-on-an-aggregate                 [total:string, g:i128] rows ('a', 30)
+score   emit/on_fetch/mapping-on-a-fetch                          [v:i64, k:string] rows (2, 'b') (3, 'c')
+score   emit/on_join/mapping-on-a-join                            [r0:i64, l0:string] rows (1, 'x')
+score   emit/on_sort/mapping-on-a-sort                            [only_v:i64] rows (1) (2) (3)
+score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64] rows (true, 10)
+score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64] rows (7, null)
+score   exchange/round-robin/output-is-the-input                  ERROR: Not implemented Error: Unsupported relation type exchange
+score   expand/consistent/index-column                            ERROR: Not implemented Error: Unsupported relation type expand
+score   expand/fields/beyond-the-definitions                      ERROR: Not implemented Error: Unsupported relation type expand
+score   expand/switching/nullability-is-the-union                 ERROR: Not implemented Error: Unsupported relation type expand
+score   fetch/count/unset-means-all                               [k:i64, v:string] rows (3, 'c') (null, 'n')
+score   fetch/offset-and-count/window                             [k:i64, v:string] rows (2, 'b') (3, 'c')
+observe invalid/declaration/output-type-disagrees-with-extension  [r:fp64]
+observe invalid/emit/maps-a-column-that-is-not-there              [x:i64]
+observe invalid/set/inputs-differ-in-width                        ERROR: Binder Error: Set operations can only apply to expressions with the same number of result columns
+score   join/inner/output-nullability                             [a0:i64, a1:i64, b0:i64, b1:i64] rows (2, 2, 2, 20)
+score   join/left/output-nullability                              [a0:i64, a1:i64, b0:i64, b1:i64] rows (1, null, null, null) (2, 2, 2, 20)
+score   join/left_mark/output-mark-column                         [a0:i64, a1:i64, mark:bool] rows (1, null, false) (2, 2, true)
+score   join/left_semi/output-columns                             [a0:i64, a1:i64] rows (2, 2)
+score   join/left_single/output-nullability                       [a0:i64, a1:i64, b0:i64, b1:i64] rows (1, null, null, null) (2, 2, 2, 20)
+score   join/outer/output-nullability                             [a0:i64, a1:i64, b0:i64, b1:i64] rows (1, null, null, null) (2, 2, 2, 20) (null, null, 5, 50)
+score   join/right/output-nullability                             [a0:i64, a1:i64, b0:i64, b1:i64] rows (2, 2, 2, 20) (null, null, 5, 50)
+score   join/right_anti/output-columns                            [b0:i64, b1:i64] rows (5, 50)
+score   join_physical/hash_left_anti/wire-7                       ERROR: Not implemented Error: Unsupported relation type hash_join
+score   join_physical/hash_left_single/wire-9                     ERROR: Not implemented Error: Unsupported relation type hash_join
+score   join_physical/hash_right_anti/wire-8                      ERROR: Not implemented Error: Unsupported relation type hash_join
+score   join_physical/hash_right_semi/wire-6                      ERROR: Not implemented Error: Unsupported relation type hash_join
+score   join_physical/merge_left_anti/wire-7                      ERROR: Not implemented Error: Unsupported relation type merge_join
+score   join_physical/nested_loop_left_anti/wire-7                ERROR: Not implemented Error: Unsupported relation type nested_loop_join
+score   names/nested_nullability/a-nullable-struct-keeps-its-fields ERROR: Binder Error: Positional reference 2 out of range (total 1 columns)
+score   names/nested_struct/depth-first-name-order                ERROR: Binder Error: Positional reference 3 out of range (total 2 columns)
+score   names/struct_of_structs/seven-names-for-two-columns       ERROR: Binder Error: Positional reference 3 out of range (total 2 columns)
+score   project/decimal_add/return-type                           [r:decimal<11,2>] rows (4.00)
+score   project/decimal_divide/return-type                        [r:fp64]
+score   project/decimal_multiply/return-type                      [r:decimal<15,3>] rows (3.000)
+score   project/output-order/appends-computed-columns             [a:i64, b:i64, sum:i64] rows (7, null, 14)
+score   read/mask/keeps-a-column-whole                            [s:struct<x:i64, y:string, z:bool>]
+score   read/mask/narrows-a-struct-from-inside                    [s:struct<x:i64, y:string, z:bool>]
+score   read/named_table/direct-schema                            [a:i64, b:i64] rows (7, null)
+score   read/projection/mask-drops-a-column                       [c0:i64, c2:bool] rows (10, true)
+observe read/projection/mask-reorders                             [first:bool, second:i64]
+score   read/virtual_table/literal-rows                           [n:i64, s:string] rows (1, 'a') (2, null)
+score   reference/subtree/maintains-the-referred-output           [a:i64, b:string] rows (1, 'x') (2, null)
+score   set/intersection_multiset/output-nullability              CRASH: the probe process died, exit 139
+score   set/intersection_multiset_all/output-nullability          CRASH: the probe process died, exit 139
+score   set/intersection_primary/output-nullability               ERROR: Not implemented Error: INTERSECTION_PRIMARY with more than two inputs is not supported
+score   set/minus_multiset/output-nullability                     ERROR: Not implemented Error: SetOperationType transform not implemented for SetRel_SetOp type inputs
+score   set/minus_primary/output-nullability                      [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64]
+score   set/minus_primary_all/output-nullability                  CRASH: the probe process died, exit 139
+score   set/union_all/output-nullability                          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64]
+score   set/union_distinct/output-nullability                     CRASH: the probe process died, exit 139
+score   sort/nulls_first/sequence                                 [k:i64, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   sort/nulls_last/sequence                                  [k:i64, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date] rows (2024-03-01, 1970-01-01, null)
+score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<6>, ms:precision_timestamp<6>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
+score   temporal/precision_timestamp/precision-is-part-of-the-type [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
+observe unresolved/ddl/declares-no-output                         ERROR: Not implemented Error: Unsupported relation type ddl
+observe unresolved/update/output-type-is-not-stated               ERROR: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON  in substrait.Plan @ relations[0].root.input.update: message  substrait.UpdateRel,  near 49:22   (offset 1205):   no such field:  'common'
+observe unresolved/virtual_table/row-required-in-nullable-column  [n:i64]
+observe unresolved/virtual_table/row-type-differs-from-schema     [n:i8]
+score   window/lead/nullable-whatever-the-argument                ERROR: INTERNAL Error: Unrecognized FROM in WindowExpression
+score   window/output-order/appends-after-the-input               ERROR: INTERNAL Error: Unrecognized FROM in WindowExpression
+score   write/modified_records/returns-the-after-image            ERROR: Catalog Error: Table with name target does not exist!
+score   write/no_output/returns-nothing                           ERROR: Catalog Error: Table with name target does not exist!

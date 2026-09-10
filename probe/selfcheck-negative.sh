@@ -601,6 +601,64 @@ mutate "a comparison that reports no difference" "was not reported as a differen
 mutate "a difference reported under the wrong kind" "but not as" \
   replace probe/column_diff.py 'kind = ("refusal" if was and now else "lost" if now else "gained" if was else "answer")' 'kind = "answer"'
 
+# The picture and the page are drawn from the same verdicts as the counts beside them. Breaking the
+# drawing alone is what tells the two checks apart: one says the committed file is the generator's
+# output, the other says the generator drew a shape per cell.
+mutate "a relations picture that is not what its generator draws" "differs from probe/relations/picture.py" \
+  python3 -c "
+p = 'docs/relations.svg'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('The relation corpus', 'The relation corpora', 1))"
+
+mutate "a relations cell drawn as agreement where the column differs" "draws" \
+  python3 -c "
+import re
+for p in ('docs/relations.svg', 'docs/relations-dark.svg'):
+    t = open(p, encoding='utf-8').read()
+    for old, new in (('#d03b3b', '#d6d6d1'), ('#e05a58', '#363a40')):
+        t = t.replace(old, new)
+    open(p, 'w', encoding='utf-8').write(t)"
+
+mutate "a stale count of the relation cases" "relation cases" \
+  python3 -c "
+p = 'README.md'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('corpus: 71 cases written by hand', 'corpus: 73 cases written by hand'))"
+
+# The relations corpus is measured against an extract of its own bundles, and the tie between the
+# two is a hash rather than a rerun of the generator, because the generator needs protobuf and this
+# gate needs python3. So the hash is the thing to break.
+mutate "a bundle edited after the expectations were extracted" "has changed since the extract" \
+  python3 -c "
+p = 'tests/relations/bundles/join/left.pb'
+data = open(p, 'rb').read()
+open(p, 'wb').write(data + b'\\x00')"
+
+mutate "a case the extract does not name" "the extract does not name" \
+  python3 -c "
+import shutil
+shutil.copy('tests/relations/bundles/join/left.pb', 'tests/relations/bundles/join/left_copy.pb')"
+
+mutate "a relations column with a case missing" "is not a whole column" \
+  python3 -c "
+p = 'results/relations/DUCKDB.txt'
+lines = [l for l in open(p, encoding='utf-8') if 'join/left_mark' not in l]
+open(p, 'w', encoding='utf-8').writelines(lines)"
+
+mutate "a column taken against another state of the corpus" "another state of the corpus" \
+  python3 -c "
+import json, re
+p = 'results/relations/DUCKDB.txt'
+t = open(p, encoding='utf-8').read()
+fp = json.load(open('results/relations/expected.json', encoding='utf-8'))['fingerprint']
+open(p, 'w', encoding='utf-8').write(t.replace(fp, 'f' * len(fp), 1))"
+
+mutate "a never-scored case marked as scored" "the corpus says observe" \
+  python3 -c "
+p = 'results/relations/DUCKDB.txt'
+t = open(p, encoding='utf-8').read()
+open(p, 'w', encoding='utf-8').write(t.replace('observe read/projection', 'score   read/projection'))"
+
 mutate "broken python" "python syntax" \
   sh -c "printf 'def (\n' >> probe/matrix.py"
 

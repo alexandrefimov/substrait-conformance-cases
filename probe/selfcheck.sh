@@ -383,6 +383,74 @@ echo "### every differing cell is classified"
 python3 probe/check_differed.py || FAILED=1
 
 echo
+echo "### the relation corpus picture is what its generator draws"
+# Two checks, and the second is the one that matters. The first says the committed SVGs are the
+# generator's output; that alone would stay true if the drawing loop skipped a state, since the
+# files would match a generator that skips it too. So the shapes are also counted by their fill and
+# compared with the verdicts probe/relations/check_column.py forms - one more of each than the grid
+# holds, because the legend draws one swatch per state.
+for want in svg-light:docs/relations.svg svg-dark:docs/relations-dark.svg; do
+  python3 probe/relations/picture.py "${want%%:*}" 2>/dev/null | diff -q - "${want#*:}" >/dev/null \
+    && ok "${want#*:} is what probe/relations/picture.py draws from the saved columns" \
+    || fail "${want#*:} differs from probe/relations/picture.py output"
+done
+python3 - <<'RELSVG' || FAILED=1
+import collections, io, re, sys
+sys.path.insert(0, "probe/relations")
+sys.path.insert(0, "probe")
+import check_column as cc
+import heatmap as base
+import picture
+
+model = picture.build()
+cells = collections.Counter(s for states in model["cells"].values() for s in states.values())
+bad = 0
+for theme, path in (("light", "docs/relations.svg"), ("dark", "docs/relations-dark.svg")):
+    t = base.THEMES[theme]
+    svg = io.open(path, encoding="utf-8").read()
+    hatched = svg.count('fill="url(#hatch)"')
+    drawn = {
+        cc.SCHEMA_ONLY: hatched,
+        cc.DIFFERED: svg.count('fill="%s"' % t["divergence"]),
+        cc.OBSERVED: svg.count('fill="url(#dots)"'),
+        cc.UNSUPPORTED: len(re.findall(r'fill="none" stroke="%s" stroke-width="0.8"' % t["rule"], svg)),
+        # A hatched cell is drawn as a filled box and a hatch over it, so the match colour counts
+        # both states; the plain matches are what is left after the hatched ones are taken out.
+        cc.MATCHED: svg.count('fill="%s"' % t["match"]) - hatched,
+    }
+    off = {cc.STATE_NAME[s]: (n, cells[s] + 1) for s, n in drawn.items() if n != cells[s] + 1}
+    if off:
+        print("FAILED: %s draws %s where the columns say %s"
+              % (path, {k: v[0] for k, v in off.items()}, {k: v[1] for k, v in off.items()}))
+        bad = 1
+    else:
+        print("ok      %-24s %d shapes, one per cell and one per legend swatch"
+              % (path, sum(drawn.values())))
+raise SystemExit(bad)
+RELSVG
+
+echo
+echo "### the relations columns agree with the corpus they were taken on"
+# The bundles under tests/relations are protobuf and this check needs python3 and nothing else, so
+# the tie runs through results/relations/expected.json: probe/relations/check_column.py hashes every
+# committed bundle against the extract before it scores anything. An edited case, a case the extract
+# does not name and a column with a hole all fail here rather than in a number nobody recomputes.
+if [ -d results/relations ]; then
+  cols=$(find results/relations -name '*.txt' | sort)
+  if [ -z "$cols" ]; then
+    fail "results/relations holds an expectation extract and no column: nothing measures the corpus"
+  else
+    for col in $cols; do
+      if out=$(python3 probe/relations/check_column.py "$col" 2>&1); then
+        ok "$(echo "$out" | sed -n '2p' | sed 's/^  //') - $(basename "$col" .txt)"
+      else
+        fail "$col: $(echo "$out" | head -3 | tr '\n' ' ')"
+      fi
+    done
+  fi
+fi
+
+echo
 echo "### the corpus is whole"
 python3 - <<'PY' || FAILED=1
 import json, os, sys

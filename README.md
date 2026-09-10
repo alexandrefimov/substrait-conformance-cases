@@ -117,6 +117,33 @@ generators build the plans with that library's builders, and [`gen/README.md`](g
 how. [METHOD.md](METHOD.md) is the method and what a match proves; [FINDINGS.md](FINDINGS.md) the
 way from a report back to the cases that reproduce it.
 
+## The relation corpus
+
+`tests/relations/` is a second corpus: 71 cases written by hand against the sentences of the
+relation documentation, and read by three implementations.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/relations-dark.svg">
+  <img src="docs/relations.svg"
+       alt="The relation corpus as a grid, cases down and participants across: agreement in a quiet
+            grey, agreement on the schema of a case that also asserts rows hatched, divergence in
+            red, a plan the participant does not accept left as an outline, and a case that carries
+            no expectation dotted.">
+</picture>
+
+One story per column. substrait-java answers 58 of the 63 scored cases and refuses 5. substrait-go
+refuses 28, eight of them the set operations, whose inputs it requires to agree on a nullability
+these cases deliberately vary. DuckDB is the only one that executes, so it is the only one measured
+against the rows that 47 of the cases assert. Its 11 divergences all show in the schema, five of
+them in the rows as well: so far the rows have confirmed an answer rather than caught one. The
+hatched cells are the other two agreeing about a schema and never seeing the rows. Eight cases
+carry no expectation on purpose and are never scored.
+
+`results/relations/` holds one column per participant, and `bash probe/relations/replay.sh <NAME>`
+rebuilds one participant from nothing at its pinned version.
+[`probe/relations/README.md`](probe/relations/README.md) is how the measurement works and how to add
+a fourth.
+
 ## What it covers
 
 The matrix above is depth. Breadth is the other half substrait#1164 asks for — which relations the

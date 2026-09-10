@@ -107,6 +107,35 @@ def facts():
     }
     for p, byname in dif["cells"].items():
         f["cases differing for " + p] = len(byname)
+
+    # The relation corpus is a second measurement on a second set of cases, and its counts reach
+    # the pages the same way the others do. Read from the extract rather than by listing bundles:
+    # the extract is what every column was scored against, so a page that agrees with it agrees
+    # with the columns beside it.
+    rel = json.load(io.open(os.path.join(ROOT, "results/relations/expected.json"), encoding="utf-8"))
+    f["relation cases"] = len(rel["cases"])
+    # `is not None`, not truthiness: write/no_output asserts that a relation returns no rows at
+    # all, which renders as the empty string and is an assertion rather than an absence.
+    f["relation cases asserting rows"] = sum(1 for c in rel["cases"] if c["rows"] is not None)
+    f["relation cases scored"] = sum(1 for c in rel["cases"] if c["mark"] == "score")
+    f["relation cases never scored"] = sum(1 for c in rel["cases"] if c["mark"] == "observe")
+
+    # The per-participant counts the README states, formed by the same procedure that scores a
+    # column rather than counted again here - two counts of the same file is how a sentence comes
+    # to disagree with the picture above it.
+    sys.path.insert(0, os.path.join(ROOT, "probe", "relations"))
+    import check_column as cc
+    for label, name in (("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")):
+        model = cc.score(os.path.join(ROOT, "results/relations/%s.txt" % name))
+        f["relation cases matched by " + label] = len(model["matched"])
+        f["relation cases refused by " + label] = len(model["unsupported"])
+        f["relation cases differing for " + label] = len(model["differed"])
+        # Of those, the ones the rows caught as well as the schema. A count of what executing
+        # actually added, which is the claim the README makes about it.
+        f["relation cases differing in rows for " + label] = sum(
+            1 for _, why in model["differed"] if "rows " in why)
+        f["relation set cases refused by " + label] = sum(
+            1 for case_id, _ in model["unsupported"] if case_id.startswith("set/"))
     return f
 
 
@@ -125,6 +154,27 @@ CLAIMS = [
     ("README.md", "cells that are not a divergence",
      r"%s marked as something other than a divergence" % NUMBER),
     ("README.md", "cases", r"`derived-schema/` \| the %s plans, protobuf-JSON" % NUMBER),
+
+    ("README.md", "relation cases",
+     r"`tests/relations/` is a second corpus: %s cases written by hand" % NUMBER),
+    ("README.md", "relation cases matched by substrait-java",
+     r"substrait-java answers %s of the \d+ scored cases" % NUMBER),
+    ("README.md", "relation cases scored",
+     r"substrait-java answers \d+ of the %s scored cases" % NUMBER),
+    ("README.md", "relation cases refused by substrait-java",
+     r"scored cases and refuses %s" % NUMBER),
+    ("README.md", "relation cases refused by substrait-go",
+     r"substrait-go refuses %s," % NUMBER),
+    ("README.md", "relation set cases refused by substrait-go",
+     r"%s of them the set operations" % NUMBER),
+    ("README.md", "relation cases asserting rows",
+     r"the rows that %s of the cases assert" % NUMBER),
+    ("README.md", "relation cases differing for DuckDB",
+     r"Its %s divergences all show in the schema" % NUMBER),
+    ("README.md", "relation cases differing in rows for DuckDB",
+     r"%s of them in the rows as well" % NUMBER),
+    ("README.md", "relation cases never scored",
+     r"%s cases carry no expectation on purpose" % NUMBER),
 
     ("METHOD.md", "unscored", r"%s cases carry no expectation" % NUMBER),
     ("METHOD.md", "cases pending a spec answer", r"%s have virtual-table row types" % NUMBER),
