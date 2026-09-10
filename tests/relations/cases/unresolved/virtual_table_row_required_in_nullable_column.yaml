@@ -8,8 +8,11 @@ unresolved:
     nullable. Nullability is part of a type and the type system forbids implicit
     coercion, which would make this invalid; but nullability is also stripped before
     binding under MIRROR and DECLARED_OUTPUT, and widening in this direction is what
-    engines do silently. The spec does not settle it, so the case ships without an
-    expectation and is never scored.
+    engines do silently. Two independent derivations from the text split on exactly
+    this: one called it unsettled, the other called it a violation of the cast rule
+    while noting the specification never states the correspondence between a virtual
+    table row and base_schema. substrait-java refuses it, substrait-go and DuckDB accept
+    it. The case ships without an expectation.
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
   execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}

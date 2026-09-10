@@ -4,10 +4,15 @@ kind: KIND_UNRESOLVED
 unresolved:
   tracked_in: substrait-io/substrait#1211
   why: >-
-    The row supplies an i8 literal for a column the base_schema declares i32. No rule
-    names virtual table rows specifically, and the general rule in type_system.md allows
-    no coercion and requires an explicit cast for every change of type, so the answer
-    turns on whether that general rule reaches a virtual table row at all.
+    The row supplies an i8 literal for a column the base_schema declares i32. The
+    general rule in type_system.md allows no coercion and requires an explicit cast for
+    every change of type, and two independent derivations from the text both read it as
+    reaching this row and called the plan invalid. What neither could point at is a
+    sentence saying a virtual table's expressions are checked against base_schema at
+    all, and the Virtual Table section never states one. Implementations are split the
+    same way: substrait-java refuses it, substrait-go and DuckDB accept it. The case
+    therefore ships without an expectation, and what it records is that the text points
+    one way while half the implementations go the other.
 plan:
   version: {minor_number: 102, producer: substrait-relation-tests}
   execution_behavior: {variable_eval_mode: VARIABLE_EVALUATION_MODE_PER_PLAN}
