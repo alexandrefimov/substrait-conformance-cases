@@ -503,6 +503,26 @@ if [ -d results/relations ]; then
 fi
 
 echo
+echo "### a relation answer with no rows after the word reads as an empty set"
+# write/no_output asserts that a relation returns nothing at all, so a participant that executes it
+# and agrees answers `[...] rows` with nothing after the word - column.py strips the space that
+# would have held the rows. Read as an answer without rows, it would fail the column of every engine
+# that got it right, and nothing in the saved columns reaches that case yet to show it.
+python3 - <<'SPLITPY' || FAILED=1
+import sys
+sys.path.insert(0, "probe/relations")
+import check_column as cc
+want = {"[a:i64] rows": ("[a:i64]", ""), "[a:i64] rows (1) (2)": ("[a:i64]", "(1) (2)"),
+        "[a:i64]": ("[a:i64]", None), "ERROR: refused": (None, None)}
+bad = [(text, cc.split_answer(text), w) for text, w in want.items() if cc.split_answer(text) != w]
+for text, got, w in bad:
+    print("FAILED: the answer %r reads as %r, not %r" % (text, got, w))
+if not bad:
+    print("ok      an empty row set, a row set, no rows and a refusal each read as what they are")
+raise SystemExit(1 if bad else 0)
+SPLITPY
+
+echo
 echo "### the corpus is whole"
 python3 - <<'PY' || FAILED=1
 import json, os, sys

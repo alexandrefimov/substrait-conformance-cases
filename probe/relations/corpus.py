@@ -136,14 +136,23 @@ def render_value(v):
     return str(v)
 
 
-def render_rows(rows):
-    """`(1, null) (2, 2)`, sorted.
+def in_sequence(case):
+    """Whether the case fixes the order of its rows: ORDER_SEQUENCE, which the sort and fetch cases
+    declare because a sort sets which row comes first and a fetch keeps it."""
+    return (case.expect.HasField("rows")
+            and case.expect.rows.order == rt.RelationTestCase.RowSet.ORDER_SEQUENCE)
 
-    Every row set in the corpus is ORDER_MULTISET - the relation rules fix no order - so the
-    sequence a run happens to return is not the observation. Sorting by the rendered text rather
-    than by the values keeps a row of mixed types comparable at all.
+
+def render_rows(rows, sequence=False):
+    """`(1, null) (2, 2)`: in the order given where the case fixes one, sorted where it does not.
+
+    Most cases declare ORDER_MULTISET - the relation rules fix no order - so the sequence a run
+    happens to return is not the observation, and the rows are sorted by their rendered text, which
+    keeps a row of mixed types comparable at all. Under ORDER_SEQUENCE the order is the observation,
+    and sorting it away would let a sort that ignores where nulls go pass.
     """
-    return " ".join(sorted("(%s)" % ", ".join(render_value(v) for v in r) for r in rows))
+    rendered = ["(%s)" % ", ".join(render_value(v) for v in r) for r in rows]
+    return " ".join(rendered if sequence else sorted(rendered))
 
 
 EPOCH = None  # filled in on first use; see literal_value

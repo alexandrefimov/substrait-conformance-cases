@@ -591,7 +591,7 @@
       "mark": "score",
       "spec_ref": "relations/logical_relations.md#sort-operation",
       "schema": "[k:i64?, v:string]",
-      "rows": "(1, 'a') (2, 'b') (3, 'c') (null, 'n')"
+      "rows": "(null, 'n') (1, 'a') (2, 'b') (3, 'c')"
     },
     {
       "id": "sort/nulls_last/sequence",
