@@ -22,7 +22,7 @@ PARTICIPANTS = {
         "executes": False,
         "boundary": [
             "BOUNDARY: substrait-java derives a schema and does not execute, so every case here is"
-            " answered on its schema alone, including the 26 that declare rows.",
+            " answered on its schema alone, including the ones that declare rows.",
         ],
     },
     "GO": {
@@ -32,7 +32,7 @@ PARTICIPANTS = {
         "executes": False,
         "boundary": [
             "BOUNDARY: substrait-go derives a schema and does not execute, so every case here is"
-            " answered on its schema alone, including the 26 that declare rows.",
+            " answered on its schema alone, including the ones that declare rows.",
         ],
     },
     "DUCKDB": {

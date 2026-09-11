@@ -1,6 +1,6 @@
 # Measuring the relation corpus
 
-The 39 cases in `tests/relations/` are compiled to bundles. This directory puts them through
+The cases in `tests/relations/` are compiled to bundles. This directory puts them through
 implementations and saves one column per participant under `results/relations/`. The 98-plan
 corpus is measured separately, and its columns are `results/<NAME>.txt`, one directory up.
 
@@ -37,13 +37,13 @@ score   set/union_distinct/output-nullability   CRASH: the probe process died, e
 ```
 
 A mark, the case id, and the answer: a schema in the notation the cases are written in, the rows
-after it for the 26 cases that declare rows when the participant executes, `ERROR:` when the plan
-was refused, `CRASH:` when it took the process down — which four of the eight set operations do to
+after it when the case declares rows and the participant executes, `ERROR:` when the plan was
+refused, `CRASH:` when it took the process down — which four of the eight set operations do to
 DuckDB at 1.5.5, and an emit mapping past the end of its input does to DataFusion.
 
 `score` is a `KIND_POSITIVE` case, the only kind carrying an expectation. `observe` is
-`KIND_INVALID_PLAN` or `KIND_UNRESOLVED` — 4 of the 39 — which ship without one on purpose and are
-recorded, never scored. Without the mark a column reads as 39 answers all of which could be right.
+`KIND_INVALID_PLAN` or `KIND_UNRESOLVED`, which ship without one on purpose and are recorded, never
+scored. Without the mark a column reads as a list of answers all of which could be right.
 
 The head names the day, the versions, and how far this participant can be read, and that last part
 is load-bearing. DuckDB's logical types carry no nullability, so both sides are compared with the

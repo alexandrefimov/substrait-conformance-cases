@@ -13,9 +13,9 @@
 # thing a column must never contain, and a driver that iterated over whatever answers came back
 # would lose exactly the cases worth reporting.
 #
-# A file of its own rather than a copy in each participant's script: both need the same handling of
-# the same 39 cases, and a second copy of "what to write when the process dies" is how two columns
-# come to record the same event differently.
+# A file of its own rather than a copy in each participant's script: every one of them needs the
+# same handling of the same cases, and a second copy of "what to write when the process dies" is how
+# two columns come to record the same event differently.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NAME="$1"

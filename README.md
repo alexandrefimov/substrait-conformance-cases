@@ -103,7 +103,7 @@ Which relations those 98 plans reach at all is counted in [METHOD.md](METHOD.md#
     bash probe/selfcheck.sh
     bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
     bash probe/relations/replay.sh DUCKDB|GO|JAVA|DATAFUSION
-    python3 probe/relations/retake.sh
+    bash probe/relations/retake.sh
 
 The first recomputes every number on this page from the committed files; it needs python3 and
 nothing else. The rest rebuild one implementation at its pinned version and require its saved
