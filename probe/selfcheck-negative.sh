@@ -772,6 +772,9 @@ old = \"rows (null, 'n') (1, 'a') (2, 'b') (3, 'c')\"
 assert t.count(old) == 1, 'the line this mutation edits is gone; re-aim it'
 open(p, 'w', encoding='utf-8').write(t.replace(old, \"rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')\"))"
 
+mutate "an empty row set read as no rows" "reads as" \
+  replace probe/relations/check_column.py 'if text.endswith(" rows"):' 'if False:'
+
 mutate "a differing relation cell with no reason" "no reason says why" \
   python3 -c "
 import json

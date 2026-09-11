@@ -104,9 +104,16 @@ def strip_nullability(text):
 
 def split_answer(text):
     """`[a:i64] rows (1)` into its schema and its rows. Absent rows are None, not an empty set:
-    a participant that did not run the plan has said nothing about rows."""
+    a participant that did not run the plan has said nothing about rows.
+
+    An empty set is `[a:i64] rows`, with nothing after the word: a runner writes `rows ` and an
+    empty list, and column.py strips the space that would have held them. A schema always ends in
+    `]`, so the word at the end can only be this.
+    """
     if text.startswith(REFUSAL):
         return None, None
+    if text.endswith(" rows"):
+        return text[:-len(" rows")].strip(), ""
     schema, sep, rows = text.partition(" rows ")
     return schema.strip(), rows.strip() if sep else None
 
