@@ -42,7 +42,8 @@ import heatmap as base     # noqa: E402
 
 # The order the page lists them in: most of the corpus answered first. Fixed here rather than
 # sorted by result, so that a column moving does not silently reorder the picture.
-COLUMNS = [("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")]
+COLUMNS = [("substrait-java", "JAVA"), ("DataFusion", "DATAFUSION"), ("substrait-go", "GO"),
+           ("DuckDB", "DUCKDB")]
 
 GROUP_LABEL = {
     "read": "Read: schema, projection and masks", "names": "Names, depth first through a struct",

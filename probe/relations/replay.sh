@@ -43,11 +43,12 @@ if [ "$LATEST" = 1 ]; then
   # An environment of its own. The pinned one on a workstation is .probe-env, and today's DuckDB
   # installed into it would leave every later pinned replay measuring a build nobody pinned - which
   # is also why a failed mktemp stops the run rather than falling back to the default. The
-  # overrides go for the same reason: a SUBSTRAIT_JAVA_DIR or PROBE_CACHE left in the caller's
-  # shell would have this run measure that checkout and report it as today's substrait-java.
+  # overrides go for the same reason: a SUBSTRAIT_JAVA_DIR, DF_DIR or PROBE_CACHE left in the
+  # caller's shell would have this run measure that checkout and report it as today's release.
   SP="$(mktemp -d)" && [ -d "$SP" ] || { SP=""; fail "no directory for today's environment"; }
   export SUBSTRAIT_PROBE_ENV="$SP"
-  unset SUBSTRAIT_JAVA_DIR PROBE_CACHE RELATIONS_DUCKDB_PYTHON RELATIONS_GO_BINARY SKIP_SETUP
+  unset SUBSTRAIT_JAVA_DIR DF_DIR PROBE_CACHE RELATIONS_DUCKDB_PYTHON RELATIONS_GO_BINARY \
+    RELATIONS_DATAFUSION_BINARY SKIP_SETUP
 else
   SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 fi
@@ -62,6 +63,7 @@ case "$NAME" in
   DUCKDB) runner="$ROOT/probe/relations/duckdb_all.sh"; one_case="$ROOT/probe/relations/duckdb_one.py" ;;
   GO)     runner="$ROOT/probe/relations/go_all.sh";     one_case="$ROOT/probe/relations/go/main.go" ;;
   JAVA)   runner="$ROOT/probe/relations/java_all.sh";   one_case="$ROOT/probe/relations/java/RelationCase.java" ;;
+  DATAFUSION) runner="$ROOT/probe/relations/datafusion_all.sh"; one_case="$ROOT/probe/relations/datafusion/main.rs" ;;
   *)      fail "unknown participant $NAME" ;;
 esac
 

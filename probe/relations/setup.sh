@@ -4,13 +4,14 @@
 # how LATEST=1 probe/relations/replay.sh asks whether a participant has moved since its column was
 # taken.
 #
-#     bash probe/relations/setup.sh [DUCKDB|GO|JAVA]
+#     bash probe/relations/setup.sh [DUCKDB|GO|JAVA|DATAFUSION]
 #
 # Every participant reads a bundle with generated protobuf bindings and nothing else - no YAML, no
 # authoring parser. That is a property of the corpus rather than a convenience, so the bindings are
 # the first thing built for each of them, in that participant's own language: protoc writes the Go
-# ones, tests/relations/bootstrap.sh the Python ones. A runner that had to compile a case first
-# would be measuring this repository's tooling alongside the participant's library.
+# and Java ones, prost the Rust ones, tests/relations/bootstrap.sh the Python ones. A runner that
+# had to compile a case first would be measuring this repository's tooling alongside the
+# participant's library.
 #
 # After that each participant has its own dependency. substrait-go is a module at a pinned commit.
 # DuckDB is a pip install plus the community substrait extension, which `INSTALL` takes no version
@@ -145,8 +146,60 @@ GRADLE
   echo "substrait-java runner: $SP/reljava/out"
 fi
 
+if [ -z "$ONLY" ] || [ "$ONLY" = "DATAFUSION" ]; then
+  # rustup puts cargo in ~/.cargo/bin and leaves PATH to a shell profile a script does not read.
+  export PATH="$HOME/.cargo/bin:$PATH"
+  command -v cargo >/dev/null || { echo "cargo is not on PATH; the DataFusion runner cannot be built" >&2; exit 1; }
+  # The checkout comes from probe/setup.sh, as substrait-java's does above and for the same reason:
+  # one place that knows how to fetch the project at its pin. It is cloned without blobs there.
+  DF="${DF_DIR:-$SP/datafusion}"
+  if [ -z "${DF_DIR:-}" ] && [ ! -e "$DF/.git" ]; then
+    SETUP_ONLY=datafusion bash "$ROOT/probe/setup.sh" "$SP" >&2 \
+      || { echo "DataFusion did not clone" >&2; exit 1; }
+  fi
+  [ -f "$DF/datafusion/substrait/Cargo.toml" ] || { echo "not a DataFusion checkout: $DF" >&2; exit 1; }
+  # A crate of its own beside the checkout rather than an example inside it, as the 98-plan probe
+  # is: the bindings need a build script, and an example only shares its package's, which would
+  # mean editing the checkout. It depends on the checkout by path, and takes the checkout's
+  # lockfile and toolchain so the libraries it resolves are the ones that commit builds with. prost has to be the release the substrait crate derives its messages with,
+  # or the generated RelationTestCase cannot hold them, so it is read from the checkout too.
+  prost="$(sed -n 's/^prost = "\([^"]*\)".*/\1/p' "$DF/Cargo.toml")"
+  [ -n "$prost" ] || { echo "no prost version in $DF/Cargo.toml" >&2; exit 1; }
+  R="$SP/reldf"
+  rm -rf "$R"
+  mkdir -p "$R"
+  cp "$ROOT/probe/relations/datafusion/main.rs" "$ROOT/probe/relations/datafusion/build.rs" "$R/"
+  cp "$DF/Cargo.lock" "$R/Cargo.lock"
+  [ ! -f "$DF/rust-toolchain.toml" ] || cp "$DF/rust-toolchain.toml" "$R/"
+  cat > "$R/Cargo.toml" <<TOML
+[package]
+name = "relation-case"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[[bin]]
+name = "relation_case"
+path = "main.rs"
+
+[dependencies]
+datafusion = { path = "$DF/datafusion/core" }
+datafusion-substrait = { path = "$DF/datafusion/substrait" }
+prost = "$prost"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[build-dependencies]
+prost-build = "$prost"
+
+[workspace]
+TOML
+  ( cd "$R" && RELATIONS_REPO="$ROOT" cargo build -q ) \
+    || { echo "the DataFusion runner did not build" >&2; exit 1; }
+  echo "DataFusion runner: $R/target/debug/relation_case"
+fi
+
 # Everything below is the Python side: the runners written in it, and probe/relations/expected.py.
-case "$ONLY" in GO|JAVA) exit 0 ;; esac
+case "$ONLY" in GO|JAVA|DATAFUSION) exit 0 ;; esac
 
 python3 -m venv "$ENV_DIR"
 # pyyaml is not the measurement's: it is what tests/relations compiles a case with. The environment

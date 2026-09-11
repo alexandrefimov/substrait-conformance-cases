@@ -472,9 +472,13 @@ mutate "no drift job for the relation columns" "never retaken against today's re
   replace .github/workflows/drift.yml "bash probe/relations/replay.sh" "bash probe/relations/retake.sh"
 
 mutate "a relation participant whose drift blocks are never collected" "record loop" \
-  replace .github/workflows/drift.yml 'for c in DUCKDB GO JAVA; do
-            f="runs/drift-relations-' 'for c in GO JAVA; do
-            f="runs/drift-relations-'
+  python3 -c "
+import re
+p = '.github/workflows/drift.yml'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'for c in ([A-Z ]+); do\n\s*f=\"runs/drift-relations-', t)
+names = m.group(1).split()
+open(p, 'w', encoding='utf-8').write(t[:m.start(1)] + ' '.join(names[1:]) + t[m.end(1):])"
 
 # The ways a drift run can lose its blocks that no list of participants shows: a job asking the
 # pinned question, a collector that does not wait for it, an artifact under a name the collector
@@ -741,6 +745,19 @@ d['cells']['DuckDB']['read/mask/narrows-a-struct-from-inside'] = 0
 open(p, 'w', encoding='utf-8').write(
     t[:m.start(2)] + json.dumps(d, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + t[m.end(2):])"
 
+# Which columns the page has to draw comes from probe/relations/participants.py, so a participant
+# that is measured and then left off the page is caught without a list of names in the check.
+mutate "a measured participant the page leaves out" "draws no column for DataFusion" \
+  python3 -c "
+import json, re
+p = 'docs/index.html'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'(<script type=\"application/json\" id=\"relations-data\">)(.*?)(</script>)', t, re.S)
+d = json.loads(m.group(2))
+del d['cells']['DataFusion'], d['answers']['DataFusion']
+open(p, 'w', encoding='utf-8').write(
+    t[:m.start(2)] + json.dumps(d, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + t[m.end(2):])"
+
 # The reasons behind the differing cells: a judgement is worth what its test is worth, so the test
 # is what gets broken here - the cell that no longer has one, the reason that no longer describes
 # the answer, and the reason left behind after the cell stopped differing.
@@ -770,9 +787,12 @@ json.dump(d, open(p, 'w'), indent=2)"
 
 mutate "a relation participant CI does not retake" "probe/relations/replay.sh accepts" \
   python3 -c "
+import re
 p = '.github/workflows/selfcheck.yml'
 t = open(p, encoding='utf-8').read()
-open(p, 'w', encoding='utf-8').write(t.replace('column: [DUCKDB, GO, JAVA]', 'column: [DUCKDB, GO]'))"
+m = re.search(r'^  relations:\n(?:.*\n)*?\s*column: \[([^\]]*)\]', t, re.M)
+names = [n.strip() for n in m.group(1).split(',')]
+open(p, 'w', encoding='utf-8').write(t[:m.start(1)] + ', '.join(names[:-1]) + t[m.end(1):])"
 
 # The relations corpus is measured against an extract of its own bundles, and the tie between the
 # two is a hash rather than a rerun of the generator, because the generator needs protobuf and this

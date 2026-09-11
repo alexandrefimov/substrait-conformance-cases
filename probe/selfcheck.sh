@@ -403,7 +403,11 @@ if not found:
 drawn = json.loads(found.group(1))
 
 bad = 0
-for label, name in (("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")):
+# Every participant probe/relations/participants.py registers, so one measured and never drawn is
+# a failure here rather than a column the page quietly leaves out.
+from participants import PARTICIPANTS
+for name, caps in sorted(PARTICIPANTS.items()):
+    label = caps["label"]
     model = cc.score("results/relations/%s.txt" % name)
     if label not in drawn["cells"]:
         print("FAILED: the page draws no column for %s" % label)
