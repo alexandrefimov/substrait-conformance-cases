@@ -12,9 +12,10 @@
 #   pinned (default)  the versions in probe/versions.env. A difference is a failure: the
 #                     participant moved, or this harness did, and the run names the cases.
 #   LATEST=1          today's release, through probe/versions-latest.env and in an environment of
-#                     its own. A difference is what the run went looking for; only a harness that
-#                     will not build or comes back short fails. OUT=<dir> keeps the column and the
-#                     report, and a run that found something leaves a block for results/DRIFT.txt.
+#                     its own. A difference from another build is what the run went looking for;
+#                     from the same build it fails as above. So does a harness that will not build
+#                     or comes back short. OUT=<dir> keeps the column and the report, and a run that
+#                     found a move leaves a block for results/DRIFT.txt.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NAME="${1:-}"
@@ -24,16 +25,29 @@ LATEST="${LATEST:-0}"
 fail() { echo "FAILED: $*" >&2; exit 1; }
 # shellcheck source=../columns.sh
 . "$ROOT/probe/columns.sh"
+# From the root, so a relative OUT means the same wherever the caller stands, as it does for
+# probe/replay_column.sh.
+cd "$ROOT" || fail "cannot enter $ROOT"
+
+# Set before anything is created, so a run refused on its first check leaves nothing behind.
+SP="" fresh="" report=""
+cleanup() {
+  [ -z "$fresh" ] || rm -f "$fresh"
+  [ -z "$report" ] || rm -f "$report"
+  [ "$LATEST" != 1 ] || [ -z "$SP" ] || rm -rf "$SP"
+}
+trap cleanup EXIT
 
 if [ "$LATEST" = 1 ]; then
   export SUBSTRAIT_VERSIONS="$ROOT/probe/versions-latest.env"
   # An environment of its own. The pinned one on a workstation is .probe-env, and today's DuckDB
-  # installed into it would leave every later pinned replay measuring a build nobody pinned. The
-  # overrides go for the same reason: a SUBSTRAIT_JAVA_DIR left in the caller's shell would have
-  # this run measure that checkout and report it as today's substrait-java.
-  SP="$(mktemp -d)"
+  # installed into it would leave every later pinned replay measuring a build nobody pinned - which
+  # is also why a failed mktemp stops the run rather than falling back to the default. The
+  # overrides go for the same reason: a SUBSTRAIT_JAVA_DIR or PROBE_CACHE left in the caller's
+  # shell would have this run measure that checkout and report it as today's substrait-java.
+  SP="$(mktemp -d)" && [ -d "$SP" ] || { SP=""; fail "no directory for today's environment"; }
   export SUBSTRAIT_PROBE_ENV="$SP"
-  unset SUBSTRAIT_JAVA_DIR RELATIONS_DUCKDB_PYTHON RELATIONS_GO_BINARY SKIP_SETUP
+  unset SUBSTRAIT_JAVA_DIR PROBE_CACHE RELATIONS_DUCKDB_PYTHON RELATIONS_GO_BINARY SKIP_SETUP
 else
   SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 fi
@@ -51,8 +65,7 @@ case "$NAME" in
   *)      fail "unknown participant $NAME" ;;
 esac
 
-fresh="$(mktemp)"; report="$(mktemp)"
-trap 'rm -f "$fresh" "$report"; [ "$LATEST" != 1 ] || rm -rf "$SP"' EXIT
+fresh="$(mktemp)" && report="$(mktemp)" || fail "no temporary file for the run"
 
 [ "${SKIP_SETUP:-0}" = 1 ] || bash "$ROOT/probe/relations/setup.sh" "$NAME" >&2 || fail "setup"
 
@@ -87,13 +100,18 @@ python3 "$ROOT/probe/relations/check_column.py" "$fresh" >/dev/null || fail "the
 # repository served - and answers that agree while the versions do not are not a reproduction of
 # this column; they are a second measurement that happens to land in the same place. Compared as a
 # string because each participant decides what belongs in its own revision line. Under LATEST=1 the
-# two are expected to differ, and are printed rather than compared.
+# two may differ, and are printed rather than compared - but a difference in the answers is the
+# participant's only when they do. Today's release can be the pinned one, and then the same build
+# answering differently is this harness having changed, which fails as it does in the pinned mode
+# rather than being recorded as a move.
 rev_of_column() { head -1 "$1" | sed 's/^[^:]*: relations column from run [^,]*, //'; }
 saved_rev="$(rev_of_column "$SAVED")"
 ran_rev="$(rev_of_column "$fresh")"
+another_build=0
 if [ "$LATEST" = 1 ]; then
   echo "saved: $saved_rev"
   echo "ran:   $ran_rev"
+  [ "$saved_rev" = "$ran_rev" ] || another_build=1
 elif [ "$saved_rev" != "$ran_rev" ]; then
   echo "FAILED: this run measured a different build of $NAME" >&2
   echo "  saved: $saved_rev" >&2
@@ -103,7 +121,8 @@ fi
 
 # Calling a moved answer a change in the participant means knowing that nothing on this side moved:
 # the bundles, the extract the marks come from, and the code that turns an answer into a line of the
-# column. Two runs reporting the same value put the same cases and wrote the answers the same way.
+# column. Two runs reporting the same value put the same cases to the participant and rendered its
+# answers with the same code; the build itself is in the revision line of the column.
 CORPUS_REV="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo "not a checkout")"
 [ -z "$(git -C "$ROOT" status --porcelain 2>/dev/null)" ] || CORPUS_REV="$CORPUS_REV+dirty"
 INPUTS="$(python3 - "$ROOT/tests/relations/bundles" "$ROOT/results/relations/expected.json" \
@@ -142,7 +161,7 @@ if [ -n "${OUT:-}" ]; then
   mkdir -p "$OUT"
   cp "$fresh" "$OUT/$NAME.txt"
   cp "$report" "$OUT/$NAME.moved"
-  if [ "$LATEST" = 1 ] && [ "$moved" -ne 0 ]; then
+  if [ "$another_build" = 1 ] && [ "$moved" -ne 0 ]; then
     {
       echo "##### $(date -u +%Y-%m-%d)  relations/$NAME  $ran_rev"
       echo "corpus $CORPUS_REV, inputs $INPUTS"
@@ -165,10 +184,10 @@ if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
   } >> "$GITHUB_STEP_SUMMARY"
 fi
 
-if [ "$LATEST" = 1 ]; then
+if [ "$another_build" = 1 ]; then
   [ "$moved" -eq 0 ] && echo "ok      unchanged from results/relations/$NAME.txt" \
                      || echo "MOVED   results/relations/$NAME.txt describes an older release; the cases are above"
   exit 0
 fi
-[ "$moved" -eq 0 ] || fail "the fresh run differs from results/relations/$NAME.txt"
+[ "$moved" -eq 0 ] || fail "the same build answers differently from results/relations/$NAME.txt"
 echo "$NAME reproduces results/relations/$NAME.txt, all $(column_body "$SAVED" | wc -l | tr -d ' ') answers"

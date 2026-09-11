@@ -41,9 +41,9 @@ SP="${1:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}"
 #
 # Versions come from one file rather than from "whatever is latest": otherwise a second run measures
 # a different environment and the saved columns stop meaning anything. Which file is the one thing a
-# caller may change: probe/versions-latest.env is the same list with the four installable
-# participants unpinned, and LATEST=1 probe/replay_column.sh passes it here, because the drift run
-# asks what today's release answers rather than whether the saved column reproduces.
+# caller may change: probe/versions-latest.env is the same list with the participants unpinned, and
+# the LATEST=1 replays of both corpora pass it here, because the drift run asks what today's release
+# answers rather than whether the saved column reproduces.
 . "${SUBSTRAIT_VERSIONS:-$(dirname "$0")/versions.env}"
 
 # A version of "latest" means install without a pin. It is spelled out rather than left empty

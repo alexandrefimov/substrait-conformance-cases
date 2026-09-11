@@ -109,7 +109,12 @@ GRADLE
       | awk '/CPSTART/{f=1;next}/CPEND/{f=0}f' > "$pbjar"
   fi
   [ -s "$pbjar" ] || { echo "protobuf-java $RELATIONS_PROTOBUF_JAVA_VERSION did not resolve" >&2; exit 1; }
-  CP="$(cat "$pbjar"):$CP"
+  # Only when it is the newer of the two. A substrait-java past its pin - LATEST=1 follows main -
+  # can resolve a newer runtime for gencode of its own, and this one ahead of it would then break
+  # every case at once rather than none.
+  theirs="$(tr ':' '\n' <<< "$CP" | sed -n 's#.*/protobuf-java-\([0-9][0-9.]*\)\.jar$#\1#p' | head -1)"
+  newest="$(printf '%s\n%s\n' "${theirs:-0}" "$RELATIONS_PROTOBUF_JAVA_VERSION" | sort -V | tail -1)"
+  [ "$newest" = "${theirs:-}" ] || CP="$(cat "$pbjar"):$CP"
   # JAVA17_HOME if the caller named one, then the JAVA_HOME it already has when that is the version
   # versions.env asks for, and only then the macOS locator. The middle step is the one that was
   # missing: /usr/libexec/java_home is a Mac, so this passed here and failed on the first Linux
