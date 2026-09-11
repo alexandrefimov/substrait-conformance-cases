@@ -48,12 +48,28 @@ if ! bash probe/selfcheck.sh >/dev/null 2>&1; then
 fi
 echo "ok      the copied tree passes before anything is broken"
 
+# What the tree is, content and names, so that a mutation which ran and changed nothing can be told
+# from one that changed something. The copy has neither .git nor .probe-env in it, so this walks
+# only the tracked material, and it runs twice per mutation against a tree that is copied wholesale
+# for each one anyway.
+tree_fingerprint() { find . -type f -print0 | sort -z | xargs -0 cksum | cksum; }
+
 mutate() { # <name> <expected fragment of the failure> <command that breaks one invariant>
   local name="$1" want="$2"; shift 2
   copy_repo "$WORK.tmp"
   rm -rf "$WORK"; mv "$WORK.tmp" "$WORK"; cd "$WORK"
+  local before; before="$(tree_fingerprint)"
   if ! "$@" >/dev/null 2>&1; then
     echo "MISSED  $name: the mutation itself did not apply"; MISS=$((MISS + 1)); return
+  fi
+  # A mutation that succeeds and changes nothing is the failure this file exists to prevent, and
+  # exit status cannot see it. Several mutations here edit a sentence by substring, and when that
+  # sentence is later reworded `str.replace` returns the text unchanged and `sed` writes the file
+  # back as it was: the command succeeds, the check finds nothing wrong because nothing is wrong,
+  # and the guard goes on reporting ok while guarding nothing. Two of them had been doing that.
+  if [ "$(tree_fingerprint)" = "$before" ]; then
+    echo "MISSED  $name: the mutation ran and changed nothing - the thing it edits has moved"
+    MISS=$((MISS + 1)); return
   fi
   local out; out="$(bash probe/selfcheck.sh 2>&1)"; local rc=$?
   if [ "$rc" -eq 0 ]; then
