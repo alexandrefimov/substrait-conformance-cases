@@ -115,6 +115,27 @@ if not m: raise SystemExit(1)
 io.open('docs/index.html', 'w', encoding='utf-8').write(
     s[:m.start()] + 'All %d cases' % (int(m.group(1)) - 1) + s[m.end():])"
 
+# The generator and its tracked output move together as they would in a real change. A raw angle
+# bracket does not currently happen to form </script in the saved data, so only the hostile unit
+# fixture proves that the serializer cannot turn future participant output into page markup.
+unsafe_script_data() {
+  replace probe/script_data.py '.replace("<", "\\u003c")' '.replace("<", "<")' &&
+  python3 probe/heatmap.py page > docs/index.html
+}
+mutate "hostile JSON ending an HTML script element" "HTML script data escaping failed" \
+  unsafe_script_data
+
+mutate "an action moved back to a mutable release tag" "not pinned to a full commit SHA" \
+  replace .github/workflows/selfcheck.yml \
+  'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' 'actions/checkout@v4'
+
+mutate "a workflow token made write-capable" "can write repository contents" \
+  replace .github/workflows/drift.yml '  contents: read' '  contents: write'
+
+mutate "the scheduled workflow pushing Git refs" "pushes Git refs" \
+  replace .github/workflows/drift.yml \
+  'git diff --binary -- results/DRIFT.txt > DRIFT.patch' 'git push'
+
 # The generator and the files it writes move together, the way a real edit would arrive: changing
 # only the generator leaves docs/ stale and the byte comparison above fires instead, which says
 # nothing about whether the cells themselves are checked.

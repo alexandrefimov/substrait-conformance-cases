@@ -21,6 +21,8 @@ Three drawing decisions carry the reading of the matrix and are not cosmetic:
 """
 import html, io, json, os, re, sys
 
+import script_data
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # The columns, in the order the README lists them. Gluten is not here: its column is taken in a
@@ -921,8 +923,8 @@ def page(model):
         "repo": REPO,
         "versions": versions,
         "boundaries": html.escape(boundaries),
-        "data": json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
-        "states": json.dumps(states, ensure_ascii=False),
+        "data": script_data.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
+        "states": script_data.dumps(states, ensure_ascii=False),
     }
 
 

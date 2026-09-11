@@ -42,7 +42,8 @@ Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
     Acero        dec(16,7)
 
 The columns were taken 2026-09-09 against the versions in `probe/versions.env`; the weekly `drift`
-run records what has moved since, in `results/DRIFT.txt`. They answer the 93 cases that carry an
+run reports what has moved since. When something moved, its artifact contains a proposed
+`results/DRIFT.txt` change for a normal reviewed PR. They answer the 93 cases that carry an
 expectation. The nine in the table are consumer paths rather than engines — the Java core, Isthmus
 and Spark all go through substrait-java, DuckDB through its substrait extension — and Gluten, the
 tenth, runs over the virtual-table variant in a cluster.

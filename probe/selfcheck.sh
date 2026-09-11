@@ -807,7 +807,7 @@ for wf, asks in (("selfcheck", "against the pin"), ("drift", "against today's re
               % (path, script, asks))
         raise SystemExit(1)
 
-# The job that writes results/DRIFT.txt collects the blocks by participant, one loop per corpus, and
+# The job that prepares results/DRIFT.txt collects the blocks by participant, one loop per corpus, and
 # a participant the matrix retakes and the loop does not name has its moves thrown away unread. So
 # are those of a job the collector does not wait for, and of one whose artifact it looks for under
 # another name or whose run keeps its blocks somewhere the artifact does not take.
@@ -831,7 +831,7 @@ for corpus, script in (("drift-", "probe/replay_column.sh"),
         if script not in job["runs"]:
             continue
         if name not in collector["needs"]:
-            print("FAILED: the job that writes results/DRIFT.txt does not wait for drift job %s,"
+            print("FAILED: the job that prepares results/DRIFT.txt does not wait for drift job %s,"
                   " so it can finish before that job's blocks exist" % name)
             bad = 1
         if job["artifact"] != corpus:
@@ -865,13 +865,39 @@ raise SystemExit(bad)
 MATRIXPY
 
 echo
+echo "### workflows keep their supply-chain and repository write boundaries"
+python3 - <<'WORKFLOWSECPY' || FAILED=1
+import glob, io, re
+
+bad = 0
+for path in sorted(glob.glob(".github/workflows/*.yml")):
+    text = io.open(path, encoding="utf-8").read()
+    if not re.search(r"^permissions:\n  contents: read\s*$", text, re.M):
+        print("FAILED: %s does not set contents: read at workflow level" % path)
+        bad = 1
+    for action, ref in re.findall(r"\buses:\s+([^\s@]+)@([^\s#]+)", text):
+        if not re.fullmatch(r"[0-9a-f]{40}", ref):
+            print("FAILED: %s action %s@%s is not pinned to a full commit SHA"
+                  % (path, action, ref))
+            bad = 1
+    if re.search(r"^\s*contents:\s*write\s*$", text, re.M):
+        print("FAILED: %s can write repository contents" % path)
+        bad = 1
+    if re.search(r"\bgit\s+push\b", text):
+        print("FAILED: %s pushes Git refs" % path)
+        bad = 1
+if not bad:
+    print("ok      every action uses a full SHA; workflows are explicitly read-only and push no refs")
+raise SystemExit(bad)
+WORKFLOWSECPY
+
+echo
 echo "### the drift log says what it claims to say"
-# results/DRIFT.txt is the one file in this repository a workflow writes rather than a person, and
-# it is written a week at a time by a job nobody watches. What can be checked is its shape: that
-# every block names a day, one of the participants a replay accepts and the revision it was built
-# from; that the days do not run backwards; and that each block carries the two lines that let a
-# reader tell a moved answer from a changed corpus. A malformed block would otherwise sit there
-# looking like a record.
+# results/DRIFT.txt is prepared a week at a time by a job nobody watches, then accepted through a
+# reviewed change. What can be checked is its shape: that every block names a day, one of the
+# participants a replay accepts and the revision it was built from; that the days do not run
+# backwards; and that each block carries the two lines that let a reader tell a moved answer from a
+# changed corpus. A malformed block would otherwise sit there looking like a record.
 python3 - <<'DRIFTPY' || FAILED=1
 import io, re, sys
 
@@ -1027,6 +1053,9 @@ DIFFPY
 
 echo
 echo "### syntax"
+python3 probe/test_script_data.py \
+  && ok "HTML script data cannot terminate its element and still decodes as the original JSON" \
+  || fail "HTML script data escaping failed"
 python3 probe/test_spark_runtime.py \
   && ok "Spark runtime checks reject incomplete results and incorrect runtimes" \
   || fail "Spark runtime result checks failed"
