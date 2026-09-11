@@ -796,9 +796,12 @@ for i, line in enumerate(lines):
         print("FAILED: %s:%d has no corpus and fingerprint line under it"
               % (LOG, i + 1)); bad = 1
     # And the block has to end in the summary the comparison prints, or it records no count at all.
-    tail = [l for l in lines[i + 2:] if l.startswith("#####")][:1]
-    stop = lines.index(tail[0]) if tail else len(lines)
-    if not any(re.match(r"^%s: \d+ of \d+ answers moved" % who, l) for l in lines[i + 2:stop]):
+    # The next header is found by position. Looked up by its text, the next header after two blocks
+    # under one header - a second run on the same day that finds the same move - is the first
+    # block's own, and a whole block reads as empty.
+    stop = next((j for j in range(i + 1, len(lines)) if lines[j].startswith("#####")), len(lines))
+    if not any(re.match(r"^%s: \d+ of \d+ answers moved" % re.escape(who), l)
+               for l in lines[i + 2:stop]):
         print("FAILED: the block at %s:%d never says how many answers moved" % (LOG, i + 1)); bad = 1
 if not bad:
     print("ok      %d recorded move(s), each dated, attributed and counted" % blocks)
