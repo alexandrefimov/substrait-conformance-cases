@@ -391,6 +391,11 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
    not a weaker agreement - the same distinction the matrix above draws for a type-system boundary. */
 .bar .s { background: var(--match);
           background-image: repeating-linear-gradient(135deg, var(--boundary) 0 1px, transparent 1px 4px); }
+/* Where the second corpus begins. It shares the page with the first and nothing else - not a case,
+   not a column, not the procedure behind a cell - and a reader scrolling out of the matrix has to
+   see that the measurement ended rather than that it continues under a new heading. So the two are
+   parted by a rule across the page with room above it; the heading below supplies the room under. */
+.relations { margin-top: 58px; border-top: 2px solid var(--rule-strong); }
 .rel-legend { margin: 14px 0 0; }
 .rel-legend .sw i.m { background: var(--match); }
 .rel-legend .sw i.s { background: var(--match);
