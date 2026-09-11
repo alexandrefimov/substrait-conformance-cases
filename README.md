@@ -88,10 +88,11 @@ Which relations those 98 plans reach at all is counted in [METHOD.md](METHOD.md#
 
 ## What would help
 
-- **A reading of `probe/expected.py` against the spec.** It is 93 expectations written by hand from
-  the spec text, and nobody outside this repository has read them; a wrong one turns into a
-  divergence reported against an implementation that was right. One rule's worth is enough: the
-  join matrix, the five decimal cases, the set-operation table.
+- **A second reading of the expectations, by someone with no stake in them.** They have been read
+  once, from inside this repository: one contradicted the specification and was fixed, and
+  [sixteen rest on a step the specification never states](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8),
+  thirteen of them joins. An answer on those sixteen is worth more than a fresh pass over the rest,
+  and a wrong expectation is reported as a divergence against an implementation that was right.
 - **From the spec, one answer.** When a virtual table's rows disagree with the schema it declares —
   an i8 literal in an i32 column, a null in a required one — which wins? Four cases here go unscored
   pending one; the fifth case without an expectation is a plan invalid on purpose, where a refusal
