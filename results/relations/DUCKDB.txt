@@ -1,4 +1,4 @@
-DUCKDB: relations column from run 2026-09-11T20:55, duckdb 1.5.5, substrait extension 4ea63dd
+DUCKDB: relations column from run 2026-09-12T00:12, duckdb 1.5.5, substrait extension 4ea63dd
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
 BOUNDARY: DuckDB's logical types carry no nullability, so no answer below carries `?`; names, types, arity and order are what a `score` line is compared on.
 It executes, so a case that declares rows is answered with rows too, unless the plan was refused before it ran.
@@ -62,7 +62,7 @@ score   set/minus_primary/output-nullability                      [c0:i64, c1:i6
 score   set/minus_primary_all/output-nullability                  CRASH: the probe process died, exit 139
 score   set/union_all/output-nullability                          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64]
 score   set/union_distinct/output-nullability                     CRASH: the probe process died, exit 139
-score   sort/nulls_first/sequence                                 [k:i64, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   sort/nulls_first/sequence                                 [k:i64, v:string] rows (null, 'n') (1, 'a') (2, 'b') (3, 'c')
 score   sort/nulls_last/sequence                                  [k:i64, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
 score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date] rows (2024-03-01, 1970-01-01, null)
 score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<6>, ms:precision_timestamp<6>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)

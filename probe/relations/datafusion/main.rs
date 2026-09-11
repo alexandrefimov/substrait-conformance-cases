@@ -546,9 +546,10 @@ fn hex(bytes: &[u8]) -> String {
     out
 }
 
-/// `(1, null) (2, 2)`, sorted by the rendered text, as probe/relations/corpus.py sorts the
-/// expectation. So the order is not compared, not even where a case declares ORDER_SEQUENCE.
-fn render_rows(batches: &[RecordBatch]) -> Result<String, Harness> {
+/// `(1, null) (2, 2)`, as probe/relations/corpus.py writes the expectation: in the order the plan
+/// returned them where the case declares ORDER_SEQUENCE, sorted by the rendered text where it does
+/// not.
+fn render_rows(batches: &[RecordBatch], sequence: bool) -> Result<String, Harness> {
     let mut rows = Vec::new();
     for batch in batches {
         for i in 0..batch.num_rows() {
@@ -560,7 +561,9 @@ fn render_rows(batches: &[RecordBatch]) -> Result<String, Harness> {
             rows.push(format!("({})", cells.join(", ")));
         }
     }
-    rows.sort();
+    if !sequence {
+        rows.sort();
+    }
     Ok(rows.join(" "))
 }
 
@@ -592,10 +595,16 @@ async fn answer(case: &RelationTestCase) -> Result<String, Harness> {
         },
         Err(e) => return Ok(refusal(&e)),
     };
-    if case.expect.as_ref().and_then(|e| e.rows.as_ref()).is_some() {
-        Ok(format!("{schema} rows {}", render_rows(&batches)?))
-    } else {
-        Ok(schema)
+    match case.expect.as_ref().and_then(|e| e.rows.as_ref()) {
+        Some(rows) => {
+            let sequence =
+                rows.order == substrait_test::relation_test_case::row_set::Order::Sequence as i32;
+            Ok(format!(
+                "{schema} rows {}",
+                render_rows(&batches, sequence)?
+            ))
+        }
+        None => Ok(schema),
     }
 }
 

@@ -1,6 +1,6 @@
-DATAFUSION: relations column from run 2026-09-11T23:00, datafusion cc29ea12a, substrait crate 0.63.0
+DATAFUSION: relations column from run 2026-09-12T00:13, datafusion cc29ea12a, substrait crate 0.63.0
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
-BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too, as a multiset like every column's.
+BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too.
 The schema is the one its consumer derives for the logical plan; the rows are what executing that plan returns.
 score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
 
@@ -62,7 +62,7 @@ score   set/minus_primary/output-nullability                      [c0:i64, c1:i6
 score   set/minus_primary_all/output-nullability                  [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 score   set/union_all/output-nullability                          [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 score   set/union_distinct/output-nullability                     [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
-score   sort/nulls_first/sequence                                 [k:i64?, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   sort/nulls_first/sequence                                 [k:i64?, v:string] rows (null, 'n') (1, 'a') (2, 'b') (3, 'c')
 score   sort/nulls_last/sequence                                  [k:i64?, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
 score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date?] rows (2024-03-01, 1970-01-01, null)
 score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)

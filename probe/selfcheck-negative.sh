@@ -761,6 +761,17 @@ open(p, 'w', encoding='utf-8').write(
 # The reasons behind the differing cells: a judgement is worth what its test is worth, so the test
 # is what gets broken here - the cell that no longer has one, the reason that no longer describes
 # the answer, and the reason left behind after the cell stopped differing.
+# The sort and fetch cases fix the order of their rows, so an answer holding the right rows in the
+# wrong order is a divergence. Put back the order a multiset comparison would have accepted, and
+# DataFusion's column differs on a cell no reason covers.
+mutate "a sequence case answered in the wrong order" "differs on sort/nulls_first/sequence and no reason" \
+  python3 -c "
+p = 'results/relations/DATAFUSION.txt'
+t = open(p, encoding='utf-8').read()
+old = \"rows (null, 'n') (1, 'a') (2, 'b') (3, 'c')\"
+assert t.count(old) == 1, 'the line this mutation edits is gone; re-aim it'
+open(p, 'w', encoding='utf-8').write(t.replace(old, \"rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')\"))"
+
 mutate "a differing relation cell with no reason" "no reason says why" \
   python3 -c "
 import json
