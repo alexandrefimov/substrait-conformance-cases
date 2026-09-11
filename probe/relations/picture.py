@@ -36,6 +36,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "probe"))
 
 import check_column as cc  # noqa: E402
+import script_data         # noqa: E402
 # The palette and the fonts, nothing else. This file is picture.py rather than heatmap.py for that
 # import: with both directories on the path, a second module of that name resolves to whichever
 # came first, and the drawing would have imported itself.
@@ -477,8 +478,8 @@ def section(repo):
     return SECTION % {"cases": len(model["cases"]), "participants": len(COLUMNS),
                       "rollup": "\n      ".join(rows), "legend": legend,
                       "note": html.escape(note), "repo": repo,
-                      "data": json.dumps(page_model(), ensure_ascii=False, sort_keys=True,
-                                         separators=(",", ":"))}
+                      "data": script_data.dumps(page_model(), ensure_ascii=False, sort_keys=True,
+                                                separators=(",", ":"))}
 
 
 if __name__ == "__main__":

@@ -29,13 +29,13 @@ for one commit is time spent on nothing. Gluten is outside this: it runs in a cl
 moved since the column was taken — and only a broken harness fails the run. That is what
 `.github/workflows/drift.yml` does weekly; `selfcheck.yml` does the pinned direction on every push.
 
-A drift run that finds something writes a block into [`results/DRIFT.txt`](../results/DRIFT.txt)
-and commits it: the day, the participant, the revision it was actually built from, the revision
-of this repository and the fingerprint of its inputs, and the cases that moved. A quiet week
-leaves nothing there. The jobs run in parallel in separate checkouts, so each leaves its block in
-its artifact and one later job collects them and writes once; `selfcheck.sh` checks the
-shape of what that job wrote, since it is the one file here a workflow produces rather than a
-person.
+A drift run that finds something prepares a block for
+[`results/DRIFT.txt`](../results/DRIFT.txt): the day, the participant, the revision it was actually
+built from, the revision of this repository and the fingerprint of its inputs, and the cases that
+moved. A quiet week leaves nothing there. The jobs run in parallel in separate checkouts, so each
+leaves its block in its artifact and one later job collects them into a proposed file and patch.
+Those outputs are artifacts for a normal reviewed PR; the workflow does not write to a Git branch.
+`selfcheck.sh` checks the shape of the saved log.
 
 `OUT=<dir>` keeps the run: the normalized column, the runner's raw output, the report of what moved,
 and a record naming the versions actually installed, the revision this repository was at, and one

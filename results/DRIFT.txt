@@ -1,6 +1,7 @@
 What moved between a saved column and the release of the day, one block per participant per run
-that found something. Written by .github/workflows/drift.yml, which runs weekly against today's
-versions rather than the ones probe/versions.env pins.
+that found something. Prepared by .github/workflows/drift.yml, which runs weekly against today's
+versions rather than the ones probe/versions.env pins. A non-empty run leaves a proposed copy and
+patch as an artifact; this saved log changes only through a reviewed repository change.
 
 A quiet week leaves nothing here: the run happened, and the workflow's own history says so. This
 file is for the other case, where the participant answered differently from the column saved in
@@ -14,4 +15,3 @@ repository and one fingerprint over what this side fed the comparison - the plan
 normalize.py for the 98-plan corpus; the bundles, the extract and the code that writes a column for
 the relation corpus. Without those two a moved answer, a regenerated corpus and an edited
 expectation cannot be told apart afterwards.
-
