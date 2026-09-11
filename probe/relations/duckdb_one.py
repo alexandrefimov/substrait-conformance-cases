@@ -179,7 +179,7 @@ def answer(case):
     # none of. No `?` ever appears: DuckDB's logical types carry no nullability.
     schema = "[%s]" % ", ".join("%s:%s" % (d[0], corpus_type(d[1])) for d in described)
     if case.expect.HasField("rows"):
-        return "%s rows %s" % (schema, corpus.render_rows(rows))
+        return "%s rows %s" % (schema, corpus.render_rows(rows, corpus.in_sequence(case)))
     return schema
 
 

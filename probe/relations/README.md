@@ -37,9 +37,10 @@ score   set/union_distinct/output-nullability   CRASH: the probe process died, e
 ```
 
 A mark, the case id, and the answer: a schema in the notation the cases are written in, the rows
-after it when the case declares rows and the participant executes, `ERROR:` when the plan was
-refused, `CRASH:` when it took the process down — which four of the eight set operations do to
-DuckDB at 1.5.5, and an emit mapping past the end of its input does to DataFusion.
+after it when the case declares rows and the participant executes - sorted, unless the case fixes
+their order - `ERROR:` when the plan was refused, `CRASH:` when it took the process down — which
+four of the eight set operations do to DuckDB at 1.5.5, and an emit mapping past the end of its
+input does to DataFusion.
 
 `score` is a `KIND_POSITIVE` case, the only kind carrying an expectation. `observe` is
 `KIND_INVALID_PLAN` or `KIND_UNRESOLVED`, which ship without one on purpose and are recorded, never
@@ -53,8 +54,8 @@ rows — and `join_physical/hash_right_semi` and `hash_right_anti` emit the same
 nullability, so those two are one case to them. `check_column.py` says that rather than counting two
 agreements which rest on one answer. DataFusion executes and its types carry nullability, so its
 column is compared on the whole schema and on the rows; but it refuses the physical join messages as
-DuckDB does, so no column here tells that pair apart yet. Rows are compared as a multiset in every
-column, including the cases that declare ORDER_SEQUENCE, whose order nothing here checks yet.
+DuckDB does, so no column here tells that pair apart yet. Rows are compared as a multiset, except in
+the sort and fetch cases, which declare ORDER_SEQUENCE and whose order is part of the answer.
 
 ## When the corpus changes
 

@@ -49,7 +49,8 @@ def build():
             # A case that is never scored ships without an expectation, and null here says so; an
             # empty schema string would read as "expects no columns".
             "schema": corpus.render_named_struct(case.expect.schema) if mark == corpus.SCORED else None,
-            "rows": corpus.render_rows(rows) if rows is not None else None,
+            "rows": (corpus.render_rows(rows, corpus.in_sequence(case))
+                     if rows is not None else None),
         })
     # One value over the whole corpus, written into every column's head. Per-case hashes catch a
     # bundle edited under a saved extract; this catches the other direction - a column taken
