@@ -210,7 +210,7 @@ mutate "a guarded sentence reworded past its pattern" "was reworded" \
   python3 -c "
 import io, re
 s = io.open('README.md', encoding='utf-8').read()
-new = re.sub(r'It is (\d+) expectations written by hand', r'It is \\1 expectations, written by hand', s)
+new = re.sub(r'\| (\d+) generated plans, where the type', r'| \\1 generated plans in which the type', s)
 if new == s: raise SystemExit(1)
 io.open('README.md', 'w', encoding='utf-8').write(new)"
 
