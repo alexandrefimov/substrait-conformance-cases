@@ -174,7 +174,10 @@
       },
       "triage": {
         "DATAFUSION": {
-          "outcome": "open"
+          "outcome": "reported",
+          "at": [
+            "https://github.com/apache/datafusion/issues/25208"
+          ]
         }
       }
     }
