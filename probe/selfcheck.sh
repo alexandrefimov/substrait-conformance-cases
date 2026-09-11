@@ -846,11 +846,17 @@ for column, refused in COLUMNS:
     head, body = rows(io.open(column, encoding="utf-8").read())
     parsed = [LINE.match(l).groups() for l in body]
     schema = next(i for i, (_, _, a) in enumerate(parsed) if a.startswith("["))
-    refusal = next(i for i, (_, _, a) in enumerate(parsed) if a.startswith(refused))
+    # The refusal is written in rather than looked for. A column with none left to offer - DuckDB's,
+    # the day its set operations stop crashing - would otherwise end this check in a traceback.
+    refusal = next(i for i in range(len(body)) if i != schema)
+    mark, name, _ = parsed[refusal]
+    body[refusal] = "%s%-46s %s" % (mark or "", name, refused + " a refusal written in")
+    parsed[refusal] = (mark, name, refused + " a refusal written in")
 
     with tempfile.TemporaryDirectory() as tmp:
+        base = written(tmp, "base.txt", body, head)
         same = written(tmp, "same.txt", body, "T: a second take")
-        rc, out = diff(column, same)
+        rc, out = diff(base, same)
         if rc != 0 or "0 of %d answers moved" % len(body) not in out:
             print("FAILED: two takes of %s were not called identical: %s" % (column, out.strip()))
             bad = 1
@@ -866,7 +872,7 @@ for column, refused in COLUMNS:
             lines = list(body)
             mark, name, _ = parsed[index]
             lines[index] = "%s%-46s %s" % (mark or "", name, value)
-            rc, out = diff(column, written(tmp, "moved.txt", lines, "T: a second take"))
+            rc, out = diff(base, written(tmp, "moved.txt", lines, "T: a second take"))
             if rc == 0:
                 print("FAILED: in %s, %s was not reported as a difference" % (column, label)); bad = 1
             elif name not in out or "1 %s" % kind not in out:
@@ -876,7 +882,7 @@ for column, refused in COLUMNS:
         # A case that stopped being answered at all. The count guard in replay_column.sh catches a
         # short column first, but the comparison must not call a missing case an agreement either.
         lines = [l for i, l in enumerate(body) if i != schema]
-        rc, out = diff(column, written(tmp, "short.txt", lines, "T: a second take"))
+        rc, out = diff(base, written(tmp, "short.txt", lines, "T: a second take"))
         if rc == 0 or "1 gone" not in out:
             print("FAILED: a case dropped from %s was not reported: %s" % (column, out.strip()))
             bad = 1
