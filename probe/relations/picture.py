@@ -267,7 +267,7 @@ SECTION = """
   </div>
   <div class="matrix-meta">
     <span class="hint">Click or tap a cell to open what that participant answered, what the case
-      asserts, and where they differ, why.</span>
+      asserts, and where they differ, why. A GitHub mark means an issue or PR is linked.</span>
   </div>
   <div class="matrix-pane">
     <div class="scroll" tabindex="0" role="region" aria-label="Relation corpus">
@@ -290,10 +290,44 @@ SECTION = """
     // fill for each is .rst0 to .rst4 in the stylesheet. Named here so a state added there without
     // a fill here shows as an unstyled cell rather than as a wrong colour.
     const MATCHED = 0, SCHEMA_ONLY = 1, DIFFERED = 2, UNSUPPORTED = 3, OBSERVED = 4;
+    // The five outcomes probe/relations/check_differed.py accepts, in words; the three the matrix
+    // above also carries are worded the way it words them. An outcome missing from here is shown
+    // as results/relations/differed.json spells it, because a status this page cannot name is
+    // still a status and dropping it would read as no triage at all.
+    const TRACKING = {"reported": "Reported", "open": "Investigation open",
+                      "spec-question": "Spec question", "fixed": "Fixed upstream",
+                      "not-a-defect": "Not a defect"};
     let onlyDiffering = false, open = null;
 
     function differs(caseId) {
       return D.participants.some(p => D.cells[p][caseId] === DIFFERED);
+    }
+
+    function githubRef(url) {
+      const m = String(url).match(/^https:\\/\\/github\\.com\\/([^/]+\\/[^/]+)\\/(issues|pull)\\/(\\d+)$/);
+      return m ? {label: m[1] + "#" + m[3], kind: m[2] === "pull" ? "GitHub PR" : "GitHub issue"} :
+        {label: url, kind: "GitHub"};
+    }
+
+    function tracking(reason) {
+      if (!reason) return "";
+      const links = (reason.at || []).map(url => {
+        const ref = githubRef(url);
+        return '<li><a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' +
+               '<span class="tracking-link-kind">' + ref.kind + '</span><span>' + esc(ref.label) +
+               '</span><span class="tracking-link-out" aria-hidden="true">\\u2197</span></a></li>';
+      }).join("");
+      // Which cases the report was written from, when the reason is one the other corpus carries.
+      // The line above has already named that reason, so this says only what it does not: a reader
+      // who opens the issue will find that corpus's plans in it rather than this case.
+      const filed = reason.at.length && reason.at_from ?
+        '<p class="tracking-note">Filed from that corpus\\'s own plans, not from this case.</p>' : "";
+      return '<section class="tracking" aria-label="Issue tracking"><h4>Tracking</h4>' +
+        (links ? '<ul class="tracking-links">' + links + "</ul>" :
+          '<p class="tracking-empty">No GitHub issue or PR yet.</p>') +
+        '<p class="tracking-state"><span>Corpus status</span> \\u00b7 ' +
+        esc(TRACKING[reason.outcome] || reason.outcome) + "</p>" + filed +
+        (reason.note ? '<p class="tracking-note">' + esc(reason.note) + "</p>" : "") + "</section>";
     }
 
     function detail(caseId, participant) {
@@ -317,10 +351,9 @@ SECTION = """
       if (reason) {
         out += "<dt>why</dt><dd>" + esc(reason.what) +
                (reason.same_as ? ' <em>The same cause the 98-plan corpus records as ' +
-                 esc(reason.same_as) + ".</em>" : "") +
-               (reason.outcome ? " <em>Triaged " + esc(reason.outcome) + ".</em>" : "") + "</dd>";
+                 esc(reason.same_as) + ".</em>" : "") + "</dd>";
       }
-      return out + "</dl></div>";
+      return out + "</dl>" + tracking(reason) + "</div>";
     }
 
     function closeDetail() {
@@ -366,8 +399,12 @@ SECTION = """
                   '<span class="rel-rowmark">' + (D.declares_rows[id] ? "|" : "&nbsp;") + "</span>" +
                   esc(short) + "</th>";
           for (const p of D.participants) {
+            const reason = (D.reasons[p] || {})[id];
+            const mark = reason && reason.at.length ?
+              '<svg class="github-mark" aria-hidden="true" focusable="false">' +
+              '<use href="#github-mark"></use></svg>' : "";
             html += '<td class="cell rst' + D.cells[p][id] + '" data-case="' + esc(id) +
-                    '" data-p="' + esc(p) + '"><i></i></td>';
+                    '" data-p="' + esc(p) + '"><i>' + mark + "</i></td>";
           }
           html += "</tr>";
         }
@@ -400,6 +437,27 @@ ROLLUP_ROW = """<div class="row"><span class="name">%(name)s</span>
       <span class="num">%(num)s</span></div>"""
 
 
+def tracking(rule, name, other_rules):
+    """Where a reader is sent to follow one cell up, and under which record it was filed.
+
+    A cause the 98-plan corpus already carries is named in `same_as` and its prose is not repeated;
+    neither is its triage, so for those cells the report lives in that corpus's differed.json. It is
+    read from there rather than copied into this one, because a copy is a second place to edit when
+    an issue is closed or another is filed, and the two would disagree the first time only one was
+    touched. Which record a link came from travels with it: the report was filed from a plan of that
+    corpus, and a reader who opens it will find that plan rather than this case.
+    """
+    triaged = rule.get("triage", {}).get(name, {})
+    at = list(triaged.get("at", []))
+    at_from = None
+    if not at and rule.get("same_as"):
+        other = other_rules.get(rule["same_as"], {}).get("triage", {}).get(name, {})
+        at = list(other.get("at", []))
+        at_from = rule["same_as"] if at else None
+    return {"outcome": triaged.get("outcome"), "at": at, "at_from": at_from,
+            "note": triaged.get("note")}
+
+
 def page_model():
     """Everything the page's own table needs, from the same verdicts the picture draws.
 
@@ -411,6 +469,10 @@ def page_model():
     triage_path = os.path.join(ROOT, "results", "relations", "differed.json")
     with io.open(triage_path, encoding="utf-8") as fh:
         triage = json.load(fh)
+    # The 98-plan corpus's reasons, for the ones this corpus names in `same_as`.
+    # probe/relations/check_differed.py requires every such id to exist there.
+    with io.open(os.path.join(ROOT, "differed.json"), encoding="utf-8") as fh:
+        other_rules = json.load(fh)["rules"]
 
     cases, cells, answers, reasons = {}, {}, {}, {}
     for case in model["cases"]:
@@ -423,11 +485,10 @@ def page_model():
         reasons[label] = {}
         for case_id, rule_id in triage["cells"].get(name, {}).items():
             rule = triage["rules"][rule_id]
-            reasons[label][case_id] = {
-                "id": rule_id, "kind": rule["kind"], "what": rule["what"],
-                "same_as": rule.get("same_as"),
-                "outcome": rule.get("triage", {}).get(name, {}).get("outcome"),
-            }
+            entry = {"id": rule_id, "kind": rule["kind"], "what": rule["what"],
+                     "same_as": rule.get("same_as")}
+            entry.update(tracking(rule, name, other_rules))
+            reasons[label][case_id] = entry
     return {
         "participants": [label for label, _ in COLUMNS],
         "groups": [{"label": g["label"], "cases": g["cases"]} for g in model["groups"]],

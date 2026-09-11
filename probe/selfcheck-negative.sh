@@ -779,6 +779,40 @@ del d['cells']['DataFusion'], d['answers']['DataFusion']
 open(p, 'w', encoding='utf-8').write(
     t[:m.start(2)] + json.dumps(d, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + t[m.end(2):])"
 
+# A differing cell carries the reason it was triaged under and, where one was filed, the report to
+# read next. Four ways for that to go wrong, and a reader has no way to tell any of them from the
+# truth: a cell whose reason is gone, a cell under someone else's reason, a filed report the page
+# does not show, and a mark that leads to a report the corpus never recorded for that cell.
+page_reason() {  # <participant> <case> <python statement over `r`, the reason on the page>
+  python3 -c "
+import json, re, sys
+p = 'docs/index.html'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'(<script type=\"application/json\" id=\"relations-data\">)(.*?)(</script>)', t, re.S)
+d = json.loads(m.group(2))
+by = d['reasons'][sys.argv[1]]
+r = by[sys.argv[2]]
+exec(sys.argv[3])
+open(p, 'w', encoding='utf-8').write(
+    t[:m.start(2)] + json.dumps(d, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + t[m.end(2):])" "$@"
+}
+
+mutate "a triaged cell whose reason the page leaves out" \
+  "carries no reason for DuckDB/emit/drop/leave-columns-out" \
+  page_reason DuckDB emit/drop/leave-columns-out "del by['emit/drop/leave-columns-out']"
+
+mutate "a cell drawn under another cell's reason" "under reason go-write-returns-names-without-types" \
+  page_reason DuckDB emit/drop/leave-columns-out "r['id'] = 'go-write-returns-names-without-types'"
+
+mutate "a filed report the page drops" \
+  "for DataFusion/aggregate/grouping_sets/index-column, the triage records" \
+  page_reason DataFusion aggregate/grouping_sets/index-column "r['at'] = []"
+
+mutate "a mark leading to a report the corpus does not record" \
+  "for substrait-go/write/no_output/returns-nothing, the triage records" \
+  page_reason substrait-go write/no_output/returns-nothing \
+  "r['at'] = ['https://github.com/apache/datafusion/issues/1']"
+
 # The reasons behind the differing cells: a judgement is worth what its test is worth, so the test
 # is what gets broken here - the cell that no longer has one, the reason that no longer describes
 # the answer, and the reason left behind after the cell stopped differing.

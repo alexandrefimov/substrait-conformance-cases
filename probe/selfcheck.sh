@@ -424,9 +424,41 @@ for name, caps in sorted(PARTICIPANTS.items()):
     if drawn["answers"][label] != answers:
         print("FAILED: the page's answers for %s are not the ones in its column" % label)
         bad = 1
+
+# The reports a cell sends a reader to. A cell carrying a GitHub mark that leads to an issue the
+# corpus does not record for it is worse than no mark, and one that drops a filed report leaves a
+# maintainer looking for a report that exists - so both directions are compared here, against the
+# triage rather than against the page's own data. Reasons the 98-plan corpus carries hold their
+# reports there and are named through `same_as`, which is why that file is read too.
+triage = json.load(io.open("results/relations/differed.json", encoding="utf-8"))
+shared = json.load(io.open("differed.json", encoding="utf-8"))["rules"]
+linked = 0
+for name, caps in sorted(PARTICIPANTS.items()):
+    label = caps["label"]
+    for case_id, rule_id in sorted(triage["cells"].get(name, {}).items()):
+        rule = triage["rules"][rule_id]
+        at = rule.get("triage", {}).get(name, {}).get("at")
+        if not at and rule.get("same_as"):
+            at = shared.get(rule["same_as"], {}).get("triage", {}).get(name, {}).get("at")
+        shown = drawn["reasons"].get(label, {}).get(case_id)
+        if shown is None:
+            print("FAILED: the page carries no reason for %s/%s, which the triage puts under %s"
+                  % (label, case_id, rule_id))
+            bad = 1
+            continue
+        if shown.get("id") != rule_id:
+            print("FAILED: the page has %s/%s under reason %s, the triage puts it under %s"
+                  % (label, case_id, shown.get("id"), rule_id))
+            bad = 1
+        if shown.get("at") != list(at or []):
+            print("FAILED: the page links %s for %s/%s, the triage records %s"
+                  % (shown.get("at"), label, case_id, list(at or [])))
+            bad = 1
+        linked += 1 if at else 0
 if not bad:
-    print("ok      %d cells and their answers, the same on the page as in the columns"
-          % sum(len(v) for v in drawn["cells"].values()))
+    print("ok      %d cells and their answers, the same on the page as in the columns; %d of them "
+          "link the report the triage records"
+          % (sum(len(v) for v in drawn["cells"].values()), linked))
 raise SystemExit(bad)
 RELPAGE
 
