@@ -649,7 +649,8 @@ echo
 echo "### the participants CI retakes are the ones the script accepts"
 # Six places name that list: the case labels in replay_column.sh, the two usage lines beside them,
 # the matrix of each workflow, and the loop in drift.yml that collects what the matrix left behind.
-# The relation corpus has four of its own, the same less the usage lines. Adding a participant to
+# The relation corpus has five of its own: the case labels in its replay.sh, the usage line of its
+# setup.sh, a matrix in each workflow, and its own loop in drift.yml. Adding a participant to
 # the script and not to a workflow leaves a column nobody retakes while the pages say otherwise, and
 # adding it to one workflow and not the other leaves it checked against the pin but never against a
 # release. Neither is visible in a diff.
@@ -686,15 +687,27 @@ def jobs(path):
         m = re.match(r"^  ([a-z][a-z0-9_-]*):\s*$", line)
         if m:
             job = m.group(1)
-            found[job] = {"matrix": None, "runs": set()}
+            found[job] = {"matrix": None, "runs": set(), "run_line": {}, "needs": set(),
+                          "artifact": None, "artifact_path": None, "text": ""}
         if job is None:
             continue
+        found[job]["text"] += line + "\n"
         m = re.match(r"^\s*column:\s*\[([^\]]*)\]", line)
         if m:
             found[job]["matrix"] = {n.strip() for n in m.group(1).split(",") if n.strip()}
+        m = re.match(r"^    needs:\s*\[?([^\]]*)\]?\s*$", line)
+        if m:
+            found[job]["needs"] = {n.strip() for n in m.group(1).split(",") if n.strip()}
+        m = re.match(r"^\s+name:\s*(\S+)\$\{\{ matrix\.column \}\}\s*$", line)
+        if m:
+            found[job]["artifact"] = m.group(1)
+        m = re.match(r"^\s+path:\s*(\S+?)/?\s*$", line)
+        if m and found[job]["artifact"] is not None:
+            found[job]["artifact_path"] = m.group(1)
         for script in ("probe/relations/replay.sh", "probe/replay_column.sh"):
             if script in line:
                 found[job]["runs"].add(script)
+                found[job]["run_line"][script] = line
                 break
     return found
 
@@ -707,35 +720,74 @@ if not relations_cases:
     print("FAILED: no participants found in probe/relations/replay.sh")
     raise SystemExit(1)
 WANTED = {"probe/replay_column.sh": cases, "probe/relations/replay.sh": relations_cases}
+usage = re.search(r"probe/relations/setup\.sh \[([A-Z|]+)\]",
+                  io.open("probe/relations/setup.sh", encoding="utf-8").read())
+sources["probe/relations/setup.sh usage line"] = (
+    set(usage.group(1).split("|")) if usage else set(), "probe/relations/replay.sh")
 
+bad = 0
+workflow = {}
 for wf, asks in (("selfcheck", "against the pin"), ("drift", "against today's release")):
     path = ".github/workflows/%s.yml" % wf
+    workflow[wf] = jobs(path)
     seen = set()
-    for name, job in sorted(jobs(path).items()):
+    for name, job in sorted(workflow[wf].items()):
         for script in job["runs"]:
             seen.add(script)
             if job["matrix"] is None:
                 print("FAILED: %s job %s runs %s over no matrix" % (path, name, script))
                 raise SystemExit(1)
             sources["%s job %s" % (path, name)] = (job["matrix"], script)
+            # Which question a job asks is one variable on its run line. Without it a drift job
+            # holds its columns to their pins, finds nothing to record, and stays green.
+            latest = "LATEST=1" in job["run_line"][script]
+            if latest != (wf == "drift"):
+                print("FAILED: %s job %s runs %s %s LATEST=1, so it retakes its columns %s"
+                      % (path, name, script, "with" if latest else "without",
+                         "against today's release" if latest else "against the pin"))
+                bad = 1
     for script in sorted(set(WANTED) - seen):
         print("FAILED: no job in %s runs %s, so its columns are never retaken %s"
               % (path, script, asks))
         raise SystemExit(1)
 
 # The job that writes results/DRIFT.txt collects the blocks by participant, one loop per corpus, and
-# a participant the matrix retakes and the loop does not name has its moves thrown away unread.
+# a participant the matrix retakes and the loop does not name has its moves thrown away unread. So
+# are those of a job the collector does not wait for, and of one whose artifact it looks for under
+# another name or whose run keeps its blocks somewhere the artifact does not take.
 record = io.open(".github/workflows/drift.yml", encoding="utf-8").read()
-loops = re.findall(r'for c in ([A-Z ]+); do\n\s*f="runs/drift-(relations-)?\$c/', record)
-for corpus, script in (("", "probe/replay_column.sh"), ("relations-", "probe/relations/replay.sh")):
+loops = re.findall(r'for c in ([A-Z ]+); do\n\s*f="runs/(drift-(?:relations-)?)\$c/', record)
+collector = [n for n, j in workflow["drift"].items() if "runs/drift-" in j["text"]]
+if len(collector) != 1:
+    print("FAILED: .github/workflows/drift.yml has %d jobs collecting drift blocks, not one"
+          % len(collector))
+    raise SystemExit(1)
+collector = workflow["drift"][collector[0]]
+for corpus, script in (("drift-", "probe/replay_column.sh"),
+                       ("drift-relations-", "probe/relations/replay.sh")):
     named = [set(names.split()) for names, which in loops if which == corpus]
     if len(named) != 1:
         print("FAILED: .github/workflows/drift.yml has %d loops collecting the blocks %s leaves,"
               " not one" % (len(named), script))
         raise SystemExit(1)
-    sources[".github/workflows/drift.yml record loop over runs/drift-%s*" % corpus] = (named[0], script)
+    sources[".github/workflows/drift.yml record loop over runs/%s*" % corpus] = (named[0], script)
+    for name, job in sorted(workflow["drift"].items()):
+        if script not in job["runs"]:
+            continue
+        if name not in collector["needs"]:
+            print("FAILED: the job that writes results/DRIFT.txt does not wait for drift job %s,"
+                  " so it can finish before that job's blocks exist" % name)
+            bad = 1
+        if job["artifact"] != corpus:
+            print("FAILED: drift job %s uploads its artifact as %s<NAME>, and the record loop reads"
+                  " %s<NAME>" % (name, job["artifact"], corpus))
+            bad = 1
+        out = re.search(r"\bOUT=(\S+)", job["run_line"][script])
+        if not out or out.group(1).rstrip("/") != job["artifact_path"]:
+            print("FAILED: drift job %s keeps its run in %s and uploads %s"
+                  % (name, out.group(1) if out else "nothing", job["artifact_path"]))
+            bad = 1
 
-bad = 0
 for name, got in sorted(sources.items()):
     if isinstance(got, tuple):
         matrix, script = got
@@ -751,7 +803,7 @@ for name, got in sorted(sources.items()):
 if not bad:
     print("ok      %d participants in probe/replay_column.sh, its usage and both workflows: %s"
           % (len(cases), ", ".join(sorted(cases))))
-    print("ok      %d in probe/relations/replay.sh and both workflows: %s"
+    print("ok      %d in probe/relations/replay.sh, its setup's usage line and both workflows: %s"
           % (len(relations_cases), ", ".join(sorted(relations_cases))))
 raise SystemExit(bad)
 MATRIXPY
@@ -769,42 +821,66 @@ import io, re, sys
 
 LOG = "results/DRIFT.txt"
 script = io.open("probe/replay_column.sh", encoding="utf-8").read()
-known = set(re.findall(r"^\s*([A-Z]+)\)\s+SETUP_KEY=", script, re.M))
+plain = set(re.findall(r"^\s*([A-Z]+)\)\s+SETUP_KEY=", script, re.M))
 # Both corpora write into this one log. A relation column is named by its path under results/, so a
 # move in the DuckDB of one corpus is never read as a move in the DuckDB of the other.
 relations = io.open("probe/relations/replay.sh", encoding="utf-8").read()
-known |= {"relations/" + n for n in re.findall(r"^\s*([A-Z]+)\)\s+runner=", relations, re.M)}
-
-lines = io.open(LOG, encoding="utf-8").read().split("\n")
+relation = {"relations/" + n for n in re.findall(r"^\s*([A-Z]+)\)\s+runner=", relations, re.M)}
+known = plain | relation
 HEAD = re.compile(r"^##### (\d{4}-\d{2}-\d{2})  ((?:relations/)?[A-Z]+)  (\S.*)$")
-bad, blocks, previous = 0, 0, ""
-for i, line in enumerate(lines):
-    if not line.startswith("#####"):
-        continue
-    m = HEAD.match(line)
-    if not m:
-        print("FAILED: %s:%d is not a block header: %r" % (LOG, i + 1, line)); bad = 1; continue
-    day, who, revision = m.groups()
-    blocks += 1
-    if who not in known:
-        print("FAILED: %s:%d names %s, which the replay does not accept" % (LOG, i + 1, who)); bad = 1
-    if day < previous:
-        print("FAILED: %s:%d is dated %s, after a block dated %s" % (LOG, i + 1, day, previous)); bad = 1
-    previous = max(previous, day)
-    # The line under the header is what tells a participant that moved from a corpus that changed.
-    if i + 1 >= len(lines) or not re.match(r"^corpus \S+, inputs [0-9a-f]+$", lines[i + 1]):
-        print("FAILED: %s:%d has no corpus and fingerprint line under it"
-              % (LOG, i + 1)); bad = 1
-    # And the block has to end in the summary the comparison prints, or it records no count at all.
-    # The next header is found by position. Looked up by its text, the next header after two blocks
-    # under one header - a second run on the same day that finds the same move - is the first
-    # block's own, and a whole block reads as empty.
-    stop = next((j for j in range(i + 1, len(lines)) if lines[j].startswith("#####")), len(lines))
-    if not any(re.match(r"^%s: \d+ of \d+ answers moved" % re.escape(who), l)
-               for l in lines[i + 2:stop]):
-        print("FAILED: the block at %s:%d never says how many answers moved" % (LOG, i + 1)); bad = 1
+
+
+def problems(lines, where):
+    found, blocks, previous = [], 0, ""
+    for i, line in enumerate(lines):
+        if not line.startswith("#####"):
+            continue
+        m = HEAD.match(line)
+        if not m:
+            found.append("%s:%d is not a block header: %r" % (where, i + 1, line)); continue
+        day, who, revision = m.groups()
+        blocks += 1
+        if who not in known:
+            found.append("%s:%d names %s, which the replay does not accept" % (where, i + 1, who))
+        if day < previous:
+            found.append("%s:%d is dated %s, after a block dated %s" % (where, i + 1, day, previous))
+        previous = max(previous, day)
+        # The line under the header tells a participant that moved from a corpus that changed.
+        if i + 1 >= len(lines) or not re.match(r"^corpus \S+, inputs [0-9a-f]+$", lines[i + 1]):
+            found.append("%s:%d has no corpus and fingerprint line under it" % (where, i + 1))
+        # And the block has to end in the summary the comparison prints, or it records no count at
+        # all. The next header is found by position. Looked up by its text, the next header after
+        # two blocks under one header - a second run on the same day that finds the same move - is
+        # the first block's own, and a whole block reads as empty.
+        stop = next((j for j in range(i + 1, len(lines)) if lines[j].startswith("#####")), len(lines))
+        if not any(re.match(r"^%s: \d+ of \d+ answers moved" % re.escape(who), l)
+                   for l in lines[i + 2:stop]):
+            found.append("the block at %s:%d never says how many answers moved" % (where, i + 1))
+    return found, blocks
+
+
+# The log in the repository holds no block yet, so the check is also given one that holds each kind
+# a run can write - a column of each corpus, and a second block under a header already used - and
+# required to accept it. A check that only ever refuses would pass here and reject the first real
+# relation block the workflow commits.
+def block(day, who, corpus):
+    return ["##### %s  %s  a revision" % (day, who), "corpus %s, inputs 0123456789abcdef" % corpus,
+            "  some/case/id                                  answer",
+            "%s: 1 of 71 answers moved (1 answer), 0 gone, 0 new" % who, ""]
+one, other = sorted(plain)[0], sorted(relation)[0]
+sample = (["What moved, and when.", ""] + block("2026-01-05", one, "aaaaaaa")
+          + block("2026-01-05", other, "aaaaaaa") + block("2026-01-05", other, "bbbbbbb"))
+refused, _ = problems(sample, "a well-formed log")
+bad = 0
+if refused:
+    print("FAILED: the drift log check refuses a well-formed log: %s" % refused[0]); bad = 1
+
+found, blocks = problems(io.open(LOG, encoding="utf-8").read().split("\n"), LOG)
+for problem in found:
+    print("FAILED: %s" % problem); bad = 1
 if not bad:
-    print("ok      %d recorded move(s), each dated, attributed and counted" % blocks)
+    print("ok      %d recorded move(s), each dated, attributed and counted; a well-formed log of"
+          " both corpora accepted" % blocks)
 raise SystemExit(bad)
 DRIFTPY
 

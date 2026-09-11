@@ -476,6 +476,46 @@ mutate "a relation participant whose drift blocks are never collected" "record l
             f="runs/drift-relations-' 'for c in GO JAVA; do
             f="runs/drift-relations-'
 
+# The ways a drift run can lose its blocks that no list of participants shows: a job asking the
+# pinned question, a collector that does not wait for it, an artifact under a name the collector
+# does not read, and a run kept where the artifact does not look. And the opposite of all four, a
+# pinned job asking today's question.
+mutate "a drift job that retakes against the pin" "without LATEST=1" \
+  replace .github/workflows/drift.yml "LATEST=1 OUT=run bash probe/relations/replay.sh" "OUT=run bash probe/relations/replay.sh"
+
+mutate "a pinned job that retakes against today's release" "with LATEST=1" \
+  replace .github/workflows/selfcheck.yml "run: bash probe/relations/replay.sh" "run: LATEST=1 bash probe/relations/replay.sh"
+
+mutate "a drift job the collector does not wait for" "does not wait for drift job" \
+  python3 -c "
+import re
+p = '.github/workflows/drift.yml'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'^    needs: \[([^\]]*)\]', t, re.M)
+names = [n.strip() for n in m.group(1).split(',') if n.strip() != 'relations']
+open(p, 'w', encoding='utf-8').write(t[:m.start(1)] + ', '.join(names) + t[m.end(1):])"
+
+mutate "a drift artifact under a name the collector does not read" "uploads its artifact as" \
+  replace .github/workflows/drift.yml 'name: drift-relations-${{ matrix.column }}' 'name: drift-rel-${{ matrix.column }}'
+
+mutate "a drift run kept where its artifact does not look" "keeps its run in" \
+  replace .github/workflows/drift.yml "LATEST=1 OUT=run bash probe/relations/replay.sh" "LATEST=1 OUT=kept bash probe/relations/replay.sh"
+
+# The drift log holds no block yet, so its check is also handed one of each kind a run writes and
+# must accept it. Taking the relation prefix out of the header pattern is the change that would
+# otherwise reach main unnoticed and reject the first relation block the workflow commits.
+mutate "a drift log check that refuses a relation block" "refuses a well-formed log" \
+  replace probe/selfcheck.sh '((?:relations/)?[A-Z]+)  (\S.*)$")' '([A-Z]+)  (\S.*)$")'
+
+mutate "a relation participant missing from its setup's usage line" "setup.sh usage line names" \
+  python3 -c "
+import re
+p = 'probe/relations/setup.sh'
+t = open(p, encoding='utf-8').read()
+m = re.search(r'probe/relations/setup\.sh \[([A-Z|]+)\]', t)
+names = m.group(1).split('|')
+open(p, 'w', encoding='utf-8').write(t[:m.start(1)] + '|'.join(names[:-1]) + t[m.end(1):])"
+
 mutate "a participant missing from the usage line" "the script accepts" \
   python3 -c "
 import io, re

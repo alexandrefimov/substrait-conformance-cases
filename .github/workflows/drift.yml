@@ -92,8 +92,8 @@ jobs:
 
   # One job writes the log, because the twelve above run in parallel in separate checkouts and
   # twelve jobs appending to one file would race. It collects whatever blocks they left - a
-  # participant that did not move leaves none - and writes them in the order the matrices name, the
-  # 98-plan columns first, so a week's entries read the same way whichever job finished first.
+  # participant that did not move leaves none - and writes them in a fixed order rather than the
+  # order the jobs finished in.
   record:
     needs: [drift, relations]
     if: always()
@@ -106,17 +106,28 @@ jobs:
         with:
           path: runs
           pattern: drift-*
+      # Sorted by the day in each block's header, keeping the matrices' order within a day: a
+      # dispatch that runs across midnight UTC has jobs dated either side of it, and
+      # probe/selfcheck.sh refuses a log whose days run backwards.
       - id: collect
         run: |
-          : > blocks
+          : > found
           for c in PYTHON GO DUCKDB ACERO VALIDATOR JAVA ISTHMUS SPARK DATAFUSION; do
             f="runs/drift-$c/$c.drift"
-            [ -s "$f" ] && cat "$f" >> blocks && echo >> blocks
+            [ -s "$f" ] && echo "$f" >> found
           done
           for c in DUCKDB GO JAVA; do
             f="runs/drift-relations-$c/$c.drift"
-            [ -s "$f" ] && cat "$f" >> blocks && echo >> blocks
+            [ -s "$f" ] && echo "$f" >> found
           done
+          : > blocks
+          n=0
+          while read -r f; do
+            n=$((n + 1))
+            printf '%s\t%05d\t%s\n' "$(head -1 "$f" | cut -d' ' -f2)" "$n" "$f"
+          done < found | sort -t $'\t' -k1,1 -k2,2n | cut -f3 > ordered
+          while read -r f; do cat "$f" >> blocks && echo >> blocks; done < ordered
+          rm -f found ordered
           if [ -s blocks ]; then
             cat blocks >> results/DRIFT.txt
             echo "moved=yes" >> "$GITHUB_OUTPUT"
