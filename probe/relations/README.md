@@ -48,20 +48,33 @@ rows — and `join_physical/hash_right_semi` and `hash_right_anti` emit the same
 nullability, so those two are one case to them. `check_column.py` says that rather than counting two
 agreements which rest on one answer.
 
+## When the corpus changes
+
+Every saved column carries a fingerprint over the corpus it answered, so a case added or edited
+makes `check_column.py` refuse to score any of them rather than compare one set of cases against
+another. Retaking is one command:
+
+```sh
+bash probe/relations/retake.sh          # or: retake.sh GO JAVA
+```
+
+It regenerates the extract, runs each participant, redraws the pictures and the page, and ends by
+naming what a script cannot write: the reasons that no longer describe their cells, and the
+sentences whose numbers have moved. Nothing it writes is committed for you.
+
 ## When something does not match
 
 `check_column.py` prints the counts, and with `--cases` every case under `matched`, `differed`,
 `unsupported` and `observed`. A `differed` case is a finding about the participant, not a broken
-run. `replay.sh` reporting `MOVED` is the participant having changed since the column was saved: the
-new column is what gets committed, with its pin in `probe/versions.env` updated beside it.
+run — and it needs a reason in `results/relations/differed.json` before the self-check will pass.
+`replay.sh` reporting `MOVED` is the participant having changed since the column was saved: the new
+column is what gets committed, with its pin in `probe/versions.env` updated beside it.
 
-If the self-check says a bundle has changed since the expectations were extracted, rerun the
-extract, and then retake every saved column — each carries a fingerprint over the corpus, and
-`check_column.py` refuses to score one against cases it did not answer.
-
-```sh
-.probe-env/relvenv/bin/python probe/relations/expected.py --write
-```
+Each reason carries a test of an output property, so a judgement that has stopped describing the
+answer fails rather than sitting there. Where the cause is one the 98-case corpus already records,
+the reason keeps that file's id under `same_as` instead of restating it: one engine should not get
+two stories. Five of the nine do, which is the relation cases reaching the same defects along
+different plans — the emit mapping on four relations that corpus does not reach, among them.
 
 ## Adding a participant
 
@@ -86,6 +99,8 @@ answers become a column, since substrait-go prints `boolean?` where a case says 
 | `drive.sh` | runs a participant over every bundle, one process per case |
 | `column.py` | assembles a column and refuses one that is not whole |
 | `check_column.py` | scores a saved column |
+| `check_differed.py` | checks that every differing cell has a reason and that the reason still describes it |
+| `retake.sh` | the whole measurement again, after the corpus has changed |
 
 The extract exists because a bundle is protobuf and `probe/selfcheck.sh` needs python3 and nothing
 else. That gate ties the two by hash only; `expected.py --check` re-renders the bundles, which is

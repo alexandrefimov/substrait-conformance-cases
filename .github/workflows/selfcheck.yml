@@ -21,6 +21,45 @@ jobs:
       # fire; two of them lived in checks.
       - run: bash probe/selfcheck-negative.sh
 
+  # The relation corpus is a second measurement on a second set of cases, and its columns need the
+  # same guarantee: probe/selfcheck.sh checks them against the extract and against the picture, but
+  # it runs no participant, so a column of it could go stale without anything noticing. Three
+  # participants, each built from nothing by probe/relations/setup.sh and required to return its
+  # saved column answer for answer.
+  relations:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        column: [DUCKDB, GO, JAVA]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Every participant reads a bundle with bindings protoc generates, and relation_test.proto
+      # imports the Substrait protos, which import google/protobuf/any.proto - shipped apart from
+      # the compiler on Debian and Ubuntu, in libprotobuf-dev.
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
+      # Both toolchain versions are read from versions.env rather than written again here: a second
+      # copy would let CI pass on a toolchain the file does not promise.
+      - id: go
+        if: matrix.column == 'GO'
+        run: . probe/versions.env && echo "version=$GO_MINIMUM" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-go@v5
+        if: matrix.column == 'GO'
+        with:
+          go-version: ${{ steps.go.outputs.version }}
+      - id: java
+        if: matrix.column == 'JAVA'
+        run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        if: matrix.column == 'JAVA'
+        with:
+          distribution: temurin
+          java-version: ${{ steps.java.outputs.version }}
+      - run: bash probe/relations/replay.sh ${{ matrix.column }}
+
   # Columns reproduced rather than read: built from the pinned versions on a machine that is not the
   # author's, retaken, and required to be identical. Four are a pip install or a go get, the
   # validator is a clone and a cargo build, and the substrait-java pair is a clone and a Gradle

@@ -383,6 +383,48 @@ echo "### every differing cell is classified"
 python3 probe/check_differed.py || FAILED=1
 
 echo
+echo "### the relation table on the page carries the verdicts the columns hold"
+# The page draws its own table from its own JSON, and nobody rereads that JSON. A cell drawn from a
+# stale model would keep index.html byte-identical to the generator and agree with every number
+# beside it, so the data is compared with probe/relations/check_column.py, which is where a verdict
+# comes from.
+python3 - <<'RELPAGE' || FAILED=1
+import io, json, re, sys
+sys.path.insert(0, "probe/relations")
+import check_column as cc
+
+page = io.open("docs/index.html", encoding="utf-8").read()
+found = re.search(r'<script type="application/json" id="relations-data">(.*?)</script>', page, re.S)
+if not found:
+    print("FAILED: docs/index.html carries no data for the relation table")
+    raise SystemExit(1)
+drawn = json.loads(found.group(1))
+
+bad = 0
+for label, name in (("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")):
+    model = cc.score("results/relations/%s.txt" % name)
+    if label not in drawn["cells"]:
+        print("FAILED: the page draws no column for %s" % label)
+        bad = 1
+        continue
+    off = {c: (drawn["cells"][label].get(c), s) for c, s in model["state"].items()
+           if drawn["cells"][label].get(c) != s}
+    if off:
+        case_id, (page_state, real) = sorted(off.items())[0]
+        print("FAILED: the page has %s/%s as %s, the column makes it %s (%d cells differ)"
+              % (label, case_id, page_state, real, len(off)))
+        bad = 1
+    answers = {c: t for c, (_, t) in model["answers"].items()}
+    if drawn["answers"][label] != answers:
+        print("FAILED: the page's answers for %s are not the ones in its column" % label)
+        bad = 1
+if not bad:
+    print("ok      %d cells and their answers, the same on the page as in the columns"
+          % sum(len(v) for v in drawn["cells"].values()))
+raise SystemExit(bad)
+RELPAGE
+
+echo
 echo "### the relation corpus picture is what its generator draws"
 # Two checks, and the second is the one that matters. The first says the committed SVGs are the
 # generator's output; that alone would stay true if the drawing loop skipped a state, since the
@@ -428,6 +470,10 @@ for theme, path in (("light", "docs/relations.svg"), ("dark", "docs/relations-da
               % (path, sum(drawn.values())))
 raise SystemExit(bad)
 RELSVG
+
+echo
+echo "### every differing relation cell has a reason, and the reason still describes it"
+python3 probe/relations/check_differed.py || FAILED=1
 
 echo
 echo "### the relations columns agree with the corpus they were taken on"
@@ -603,6 +649,11 @@ echo "### the participants CI retakes are the ones the script accepts"
 # and the matrix of each workflow. Adding a participant to the script and not to a workflow leaves a
 # column nobody retakes while the pages say otherwise, and adding it to one workflow and not the
 # other leaves it checked against the pin but never against a release. Neither is visible in a diff.
+#
+# There are two measurements and therefore two matrices, so each is attributed to the job it belongs
+# to rather than taken as the first one in the file. Read by position instead, adding the relations
+# job above the other made its three participants look like the nine, and moving it lower would have
+# silenced that without checking anything.
 python3 - <<'MATRIXPY' || FAILED=1
 import io, re, sys
 
@@ -617,24 +668,74 @@ sources = {"probe/replay_column.sh case labels": cases}
 for m in re.finditer(r"replay_column\.sh ([A-Z|]+)", script):
     line = script[:m.start()].count("\n") + 1
     sources["probe/replay_column.sh:%d" % line] = set(m.group(1).split("|"))
+def jobs(path):
+    """Every job in a workflow, with the matrix it fans out over and the scripts it runs.
+
+    Attributed by what the job invokes rather than by what it is called: there are two measurements
+    and two matrices now, and reading the first `column:` in the file made the relations job's three
+    participants look like the nine. Job names differ between the workflows anyway - `column` here,
+    `drift` there - so the name was never the thing to key on.
+    """
+    text = io.open(path, encoding="utf-8").read()
+    found, job = {}, None
+    for line in text.splitlines():
+        m = re.match(r"^  ([a-z][a-z0-9_-]*):\s*$", line)
+        if m:
+            job = m.group(1)
+            found[job] = {"matrix": None, "runs": set()}
+        if job is None:
+            continue
+        m = re.match(r"^\s*column:\s*\[([^\]]*)\]", line)
+        if m:
+            found[job]["matrix"] = {n.strip() for n in m.group(1).split(",") if n.strip()}
+        for script in ("probe/relations/replay.sh", "probe/replay_column.sh"):
+            if script in line:
+                found[job]["runs"].add(script)
+                break
+    return found
+
+# The relation corpus is measured by its own script over its own participants. Its job is in
+# selfcheck.yml only: the weekly drift run does not retake those columns against today's releases
+# yet, which is a gap worth stating rather than a rule to enforce here.
+relations = io.open("probe/relations/replay.sh", encoding="utf-8").read()
+relations_cases = set(re.findall(r"^\s*([A-Z]+)\)\s+runner=", relations, re.M))
+if not relations_cases:
+    print("FAILED: no participants found in probe/relations/replay.sh")
+    raise SystemExit(1)
+WANTED = {"probe/replay_column.sh": cases, "probe/relations/replay.sh": relations_cases}
+
+seen = set()
 for wf in ("selfcheck", "drift"):
     path = ".github/workflows/%s.yml" % wf
-    text = io.open(path, encoding="utf-8").read()
-    m = re.search(r"^\s*column:\s*\[([^\]]*)\]", text, re.M)
-    if not m:
-        print("FAILED: %s has no column matrix" % path)
-        raise SystemExit(1)
-    sources[path] = {n.strip() for n in m.group(1).split(",") if n.strip()}
+    for name, job in sorted(jobs(path).items()):
+        for script in job["runs"]:
+            seen.add(script)
+            if job["matrix"] is None:
+                print("FAILED: %s job %s runs %s over no matrix" % (path, name, script))
+                raise SystemExit(1)
+            sources["%s job %s" % (path, name)] = (job["matrix"], script)
+for script in sorted(set(WANTED) - seen):
+    print("FAILED: no workflow job runs %s, so its columns are retaken by nobody" % script)
+    raise SystemExit(1)
 
 bad = 0
 for name, got in sorted(sources.items()):
-    if got != cases:
+    if isinstance(got, tuple):
+        matrix, script = got
+        if matrix != WANTED[script]:
+            print("FAILED: %s names %s; %s accepts %s"
+                  % (name, ", ".join(sorted(matrix)) or "nobody", script,
+                     ", ".join(sorted(WANTED[script]))))
+            bad = 1
+    elif got != cases:
         print("FAILED: %s names %s; the script accepts %s"
               % (name, ", ".join(sorted(got)) or "nobody", ", ".join(sorted(cases))))
         bad = 1
 if not bad:
-    print("ok      %d participants, the same in the script, its usage and both workflows: %s"
+    print("ok      %d participants in probe/replay_column.sh, its usage and both workflows: %s"
           % (len(cases), ", ".join(sorted(cases))))
+    print("ok      %d in probe/relations/replay.sh and the job that runs it: %s"
+          % (len(relations_cases), ", ".join(sorted(relations_cases))))
 raise SystemExit(bad)
 MATRIXPY
 
