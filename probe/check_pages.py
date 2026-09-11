@@ -99,6 +99,12 @@ def facts():
                                   for p, t in rule.get("triage", {}).items()
                                   if t["outcome"] == "open"),
         "cases pending a spec answer": len(exp["spec_silent"]),
+        # The reasons that carry a link to the project the divergence is about. The README states
+        # this above the fold, where it answers the first thing a maintainer arriving from an issue
+        # wants to know, so it is the number most worth catching when it moves.
+        "reasons": len(dif["rules"]),
+        "reasons linking a report": sum(1 for r in dif["rules"].values()
+                                        if any(t.get("at") for t in r.get("triage", {}).values())),
         "lines in the example plan": plan_lines("aggregate_grouping_field_shared_by_sets"),
         "lines in the shortest plan": min(sizes),
         "lines in the longest plan": max(sizes),
@@ -145,8 +151,12 @@ def facts():
 # four patterns that way, which is a rewording the author did not make. Writing them as plain
 # sentences and widening the spaces here keeps the next rewrap from silently disarming a guard.
 CLAIMS = [
-    ("README.md", "cases", r"The main comparison corpus contains %s plans" % NUMBER),
-    ("README.md", "scored", r"an expected schema for %s of them" % NUMBER),
+    ("README.md", "cases", r"\| %s generated plans, where the type a plan declares" % NUMBER),
+    ("README.md", "relation cases",
+     r"\| %s hand-written cases pinning what the relation documentation" % NUMBER),
+    ("README.md", "reasons linking a report",
+     r"%s of the [\w-]+ reasons behind a divergence link an issue" % NUMBER),
+    ("README.md", "reasons", r"[\w-]+ of the %s reasons behind a divergence link an issue" % NUMBER),
     ("README.md", "scored", r"It is %s expectations written by hand" % NUMBER),
     ("README.md", "cases pending a spec answer", r"%s cases here go unscored" % NUMBER),
     ("README.md", "scored", r"They answer the %s cases that carry an expectation" % NUMBER),
@@ -155,8 +165,6 @@ CLAIMS = [
      r"%s marked as something other than a divergence" % NUMBER),
     ("README.md", "cases", r"`derived-schema/` \| the %s plans, protobuf-JSON" % NUMBER),
 
-    ("README.md", "relation cases",
-     r"`tests/relations/` is a second corpus: %s cases written by hand" % NUMBER),
     ("README.md", "relation cases matched by substrait-java",
      r"substrait-java answers %s of the \d+ scored cases" % NUMBER),
     ("README.md", "relation cases scored",

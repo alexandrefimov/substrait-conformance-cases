@@ -57,23 +57,25 @@ for want in svg-light:docs/matrix.svg svg-dark:docs/matrix-dark.svg page:docs/in
     || fail "${want#*:} differs from probe/heatmap.py output"
 done
 
-# The coverage block in the README is generated too, and unlike the files above it lives inside a
-# page a person edits by hand, which is the one place a generated thing quietly gets improved.
+# The coverage block is generated too, and unlike the files above it lives inside a page a person
+# edits by hand, which is the one place a generated thing quietly gets improved. It sits in
+# METHOD.md: breadth of a corpus is what that page is for, and the README had grown into a second
+# copy of the site.
 python3 - <<'COVPY' || FAILED=1
 import io, re, subprocess, sys
 want = subprocess.run([sys.executable, "probe/coverage.py"], capture_output=True, text=True)
 if want.returncode:
     print("FAILED: probe/coverage.py: %s" % want.stderr.strip().splitlines()[-1:])
     raise SystemExit(1)
-page = io.open("README.md", encoding="utf-8").read()
+page = io.open("METHOD.md", encoding="utf-8").read()
 got = re.search(r"<!-- coverage:.*?<!-- /coverage -->", page, re.S)
 if not got:
-    print("FAILED: the README no longer carries the coverage block probe/coverage.py writes")
+    print("FAILED: METHOD.md no longer carries the coverage block probe/coverage.py writes")
     raise SystemExit(1)
 if got.group(0).strip() != want.stdout.strip():
-    print("FAILED: the README's coverage block differs from probe/coverage.py output")
+    print("FAILED: METHOD.md's coverage block differs from probe/coverage.py output")
     raise SystemExit(1)
-print("ok      the README's coverage block is what probe/coverage.py counts from the plans")
+print("ok      METHOD.md's coverage block is what probe/coverage.py counts from the plans")
 COVPY
 
 echo
