@@ -16,7 +16,7 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 PY="$SP/relvenv/bin/python"
-ALL="DUCKDB GO JAVA"
+ALL="DUCKDB GO JAVA DATAFUSION"
 WANT="${*:-$ALL}"
 FAILED=0
 
@@ -36,6 +36,7 @@ for name in $WANT; do
     DUCKDB) runner=duckdb_all.sh ;;
     GO)     runner=go_all.sh ;;
     JAVA)   runner=java_all.sh ;;
+    DATAFUSION) runner=datafusion_all.sh ;;
     *)      fail "unknown participant $name"; continue ;;
   esac
   say "$name"

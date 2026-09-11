@@ -1,0 +1,77 @@
+DATAFUSION: relations column from run 2026-09-11T23:00, datafusion cc29ea12a, substrait crate 0.63.0
+Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
+BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too, as a multiset like every column's.
+The schema is the one its consumer derives for the logical plan; the rows are what executing that plan returns.
+score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
+
+score   aggregate/grouping_sets/index-column                      [g0:i64?, g1:string?, total:i64?, grouping_set:uint8] rows (1, null, 30, 1) (null, 'a', 10, 2) (null, 'b', 20, 2)
+score   aggregate/grouping_sets/overlapping-sets                  [g0:i64?, g1:string?, total:i64?, grouping_set:uint8] rows (1, 'a', 10, 0) (1, 'b', 20, 0) (1, null, 30, 1)
+score   aggregate/grouping_sets/single-set-keeps-key-type         [g0:i64, g1:string, total:i64?] rows (1, 'a', 10) (1, 'b', 20)
+score   aggregate/sum/measure-nullability                         [g0:i64, total:i64?] rows (1, 30)
+score   cross/output/preserves-nullability                        [l0:i64, l1:i64?, r0:i64?, r1:i64] rows (1, null, 7, 8) (1, null, 9, 10)
+score   emit/direct_explicit/direct-equivalence                   [a:i64, b:i64?] rows (7, null)
+score   emit/drop/leave-columns-out                               [only:string] rows ('x')
+score   emit/on_aggregate/mapping-on-an-aggregate                 [total:i64?, g:string] rows (30, 'a')
+score   emit/on_fetch/mapping-on-a-fetch                          [v:string, k:i64?] rows ('b', 2) ('c', 3)
+score   emit/on_join/mapping-on-a-join                            [r0:bool, l0:i64] rows (true, 1)
+score   emit/on_sort/mapping-on-a-sort                            [only_v:string] rows ('a') ('b') ('c')
+score   emit/reorder/project-output-mapping                       [k0:bool, k1:i64] rows (true, 10)
+score   emit/unset_is_direct/direct-equivalence                   [a:i64, b:i64?] rows (7, null)
+score   exchange/round-robin/output-is-the-input                  [c0:i64, c1:string?] rows (1, 'a') (2, null)
+score   expand/consistent/index-column                            ERROR: This feature is not implemented: Expand(ExpandRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), input: So
+score   expand/fields/beyond-the-definitions                      ERROR: This feature is not implemented: Expand(ExpandRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), input: So
+score   expand/switching/nullability-is-the-union                 ERROR: This feature is not implemented: Expand(ExpandRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), input: So
+score   fetch/count/unset-means-all                               [k:i64?, v:string] rows (3, 'c') (null, 'n')
+score   fetch/offset-and-count/window                             [k:i64?, v:string] rows (2, 'b') (3, 'c')
+observe invalid/declaration/output-type-disagrees-with-extension  [r:decimal<15,6>]
+observe invalid/emit/maps-a-column-that-is-not-there              CRASH: the probe process died, exit 101
+observe invalid/set/inputs-differ-in-width                        ERROR: Error during planning: UNION queries have different number of columns: left has 2 columns whereas right has 3 columns
+score   join/inner/output-nullability                             [a0:i64, a1:i64?, b0:i64, b1:i64?] rows (2, 2, 2, 20)
+score   join/left/output-nullability                              [a0:i64, a1:i64?, b0:i64?, b1:i64?] rows (1, null, null, null) (2, 2, 2, 20)
+score   join/left_mark/output-mark-column                         [a0:i64, a1:i64?, mark:bool?] rows (1, null, false) (2, 2, true)
+score   join/left_semi/output-columns                             [a0:i64, a1:i64?] rows (2, 2)
+score   join/left_single/output-nullability                       ERROR: Error during planning: unsupported join type LeftSingle
+score   join/outer/output-nullability                             [a0:i64?, a1:i64?, b0:i64?, b1:i64?] rows (1, null, null, null) (2, 2, 2, 20) (null, null, 5, 50)
+score   join/right/output-nullability                             [a0:i64?, a1:i64?, b0:i64, b1:i64?] rows (2, 2, 2, 20) (null, null, 5, 50)
+score   join/right_anti/output-columns                            [b0:i64, b1:i64?] rows (5, 50)
+score   join_physical/hash_left_anti/wire-7                       ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
+score   join_physical/hash_left_single/wire-9                     ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
+score   join_physical/hash_right_anti/wire-8                      ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
+score   join_physical/hash_right_semi/wire-6                      ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
+score   join_physical/merge_left_anti/wire-7                      ERROR: This feature is not implemented: MergeJoin(MergeJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), lef
+score   join_physical/nested_loop_left_anti/wire-7                ERROR: This feature is not implemented: NestedLoopJoin(NestedLoopJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct
+score   names/nested_nullability/a-nullable-struct-keeps-its-fields [outer:struct<inner:i64, other:string?>?]
+score   names/nested_struct/depth-first-name-order                [a:i64, s:struct<x:i64, y:i64?>]
+score   names/struct_of_structs/seven-names-for-two-columns       [a:struct<b:i64, c:i64>, d:struct<e:i64, f:i64, g:i64>]
+score   project/decimal_add/return-type                           [r:decimal<11,2>] rows (4.00)
+score   project/decimal_divide/return-type                        [r:decimal<15,6>]
+score   project/decimal_multiply/return-type                      [r:decimal<16,3>] rows (3.000)
+score   project/output-order/appends-computed-columns             [a:i64, b:i64?, sum:i64] rows (7, null, 14)
+score   read/mask/keeps-a-column-whole                            [s:struct<x:i64, y:string, z:bool>]
+score   read/mask/narrows-a-struct-from-inside                    ERROR: Substrait error: Named schema must contain names for all fields
+score   read/named_table/direct-schema                            [a:i64, b:i64?] rows (7, null)
+score   read/projection/mask-drops-a-column                       [c0:i64, c2:bool] rows (10, true)
+observe read/projection/mask-reorders                             [first:bool, second:i64]
+score   read/virtual_table/literal-rows                           [n:i64, s:string?] rows (1, 'a') (2, null)
+score   reference/subtree/maintains-the-referred-output           ERROR: This feature is not implemented: Substrait plan with more than 1 relation trees not supported. Number of relation trees: 2
+score   set/intersection_multiset/output-nullability              [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/intersection_multiset_all/output-nullability          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/intersection_primary/output-nullability               [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/minus_multiset/output-nullability                     ERROR: This feature is not implemented: Unsupported set operator: MinusMultiset
+score   set/minus_primary/output-nullability                      [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/minus_primary_all/output-nullability                  [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/union_all/output-nullability                          [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/union_distinct/output-nullability                     [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   sort/nulls_first/sequence                                 [k:i64?, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   sort/nulls_last/sequence                                  [k:i64?, v:string] rows (1, 'a') (2, 'b') (3, 'c') (null, 'n')
+score   temporal/date/days-since-the-epoch                        [d:date, epoch:date, missing:date?] rows (2024-03-01, 1970-01-01, null)
+score   temporal/literals/precision-carried-in-the-plan           [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
+score   temporal/precision_timestamp/precision-is-part-of-the-type [s:precision_timestamp<0>, ms:precision_timestamp<3>, us:precision_timestamp<6>] rows (2024-03-01 12:00:00, 2024-03-01 12:00:00.500000, 2024-03-01 12:00:00.123456)
+observe unresolved/ddl/declares-no-output                         ERROR: This feature is not implemented: Ddl(DdlRel { table_schema: Some(NamedStruct { names: ["id", "note"], r#struct: Some(Struct { types: [Type { kind: Some(I64(I64
+observe unresolved/update/output-type-is-not-stated               ERROR: This feature is not implemented: Update(UpdateRel { table_schema: Some(NamedStruct { names: ["id", "note"], r#struct: Some(Struct { types: [Type { kind: Some(I6
+observe unresolved/virtual_table/row-required-in-nullable-column  [n:i64?]
+observe unresolved/virtual_table/row-type-differs-from-schema     ERROR: Arrow error: Invalid argument error: column types must match schema types, expected Int32 but found Int8 at column index 0
+score   window/lead/nullable-whatever-the-argument                ERROR: This feature is not implemented: Consistent Partition Window Rel not supported
+score   window/output-order/appends-after-the-input               ERROR: This feature is not implemented: Consistent Partition Window Rel not supported
+score   write/modified_records/returns-the-after-image            ERROR: This feature is not implemented: Write(WriteRel { table_schema: Some(NamedStruct { names: ["id", "note"], r#struct: Some(Struct { types: [Type { kind: Some(I64(
+score   write/no_output/returns-nothing                           ERROR: This feature is not implemented: Write(WriteRel { table_schema: Some(NamedStruct { names: ["id", "note"], r#struct: Some(Struct { types: [Type { kind: Some(I64(

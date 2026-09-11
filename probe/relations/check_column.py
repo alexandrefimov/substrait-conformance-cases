@@ -9,7 +9,7 @@ Only KIND_POSITIVE is scored, and the column says so per line. The other kinds c
 at all, so an answer to one of them is recorded and counted apart. A summary that folded them in
 would report more agreement than the corpus asked for.
 
-A case is not one assertion. 26 of the 39 declare rows as well as a schema, and one pair -
+A case is not one assertion. Most declare rows as well as a schema, and one pair -
 join_physical/hash_right_semi and hash_right_anti - emits the same columns with the same
 nullability and differs in nothing but the rows. So a participant that derives schemas without
 executing is not scored on rows as though it had agreed: its unreached row assertions are counted
@@ -183,7 +183,7 @@ def score(path):
                 rows_compared.append(case["id"])
         (differed if why else matched).append((case["id"], "; ".join(why) or got_schema))
         # A case whose rows the participant never looked at is not the same agreement as one it
-        # answered whole, and the two must not share a colour: 26 cases assert rows, and one pair
+        # answered whole, and the two must not share a colour: most cases assert rows, and one pair
         # is separated by nothing else.
         state[case["id"]] = (DIFFERED if why
                              else SCHEMA_ONLY if case["id"] in rows_unobserved

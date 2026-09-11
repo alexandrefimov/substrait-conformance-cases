@@ -12,7 +12,7 @@
 // point - the contract carries no version-specific content of its own.
 //
 // substrait-go derives schemas and does not execute, so it answers with a schema and never with
-// rows. The 26 cases that declare rows are unanswered on that half, and two of them -
+// rows. The cases that declare rows are unanswered on that half, and two of them -
 // join_physical/hash_right_semi and hash_right_anti - differ in nothing else; the head of the
 // column says so, and probe/relations/check_column.py counts it.
 package main

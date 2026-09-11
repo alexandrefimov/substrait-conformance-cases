@@ -30,8 +30,8 @@ BUNDLES = os.path.join(ROOT, "tests", "relations", "bundles")
 # What each kind means for a column. KIND_POSITIVE is the only kind that carries an expectation, so
 # it is the only kind a verdict can be formed about; the rest are recorded and never scored. The
 # marker is written into the column itself rather than left to a reader who knows the corpus,
-# because a column that scores 39 out of 39 when only 35 cases have an expectation flatters whoever
-# is reading it.
+# because a column that scores every case when only some of them carry an expectation flatters
+# whoever is reading it.
 SCORED, OBSERVED = "score", "observe"
 KIND_MARK = {
     rt.RelationTestCase.KIND_POSITIVE: SCORED,

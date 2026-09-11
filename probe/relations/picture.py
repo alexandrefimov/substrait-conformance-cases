@@ -14,13 +14,14 @@ Three of that grammar's decisions carry over unchanged.
 
   - Silence is never a colour. A participant that refuses a plan gets an empty outline, because
     "does not accept this plan" is a fact about support and a good-to-bad ramp would read as a
-    wrong answer. DuckDB refuses or crashes on 12 of the 35 scored cases.
+    wrong answer. DuckDB refuses or crashes on a large share of the scored cases.
   - A limit is drawn apart from a divergence, and here the limit is the corpus's own second half.
-    26 cases assert rows as well as a schema; a participant that derives schemas without executing
-    is hatched on those, because it agreed with half of what the case says and never saw the rest.
-    Without that, substrait-java reads as 34 whole agreements when 25 of them are half of one.
-  - A case that carries no expectation is dotted, not filled. Four of the 39 ship without one on
-    purpose, and a colour on that row would be an answer to a question the corpus does not ask.
+    Most cases assert rows as well as a schema; a participant that derives schemas without
+    executing is hatched on those, because it agreed with half of what the case says and never saw
+    the rest. Without that, substrait-java's agreements would all read as whole when most of them
+    are half of one.
+  - A case that carries no expectation is dotted, not filled. Some ship without one on purpose,
+    and a colour on that row would be an answer to a question the corpus does not ask.
 """
 
 import html
@@ -42,7 +43,8 @@ import heatmap as base     # noqa: E402
 
 # The order the page lists them in: most of the corpus answered first. Fixed here rather than
 # sorted by result, so that a column moving does not silently reorder the picture.
-COLUMNS = [("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")]
+COLUMNS = [("substrait-java", "JAVA"), ("DataFusion", "DATAFUSION"), ("substrait-go", "GO"),
+           ("DuckDB", "DUCKDB")]
 
 GROUP_LABEL = {
     "read": "Read: schema, projection and masks", "names": "Names, depth first through a struct",

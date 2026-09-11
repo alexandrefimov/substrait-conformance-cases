@@ -1,4 +1,4 @@
-DUCKDB: relations column from run 2026-09-11T00:29, duckdb 1.5.5, substrait extension 4ea63dd
+DUCKDB: relations column from run 2026-09-11T20:55, duckdb 1.5.5, substrait extension 4ea63dd
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
 BOUNDARY: DuckDB's logical types carry no nullability, so no answer below carries `?`; names, types, arity and order are what a `score` line is compared on.
 It executes, so a case that declares rows is answered with rows too, unless the plan was refused before it ran.

@@ -131,8 +131,11 @@ def facts():
     # to disagree with the picture above it.
     sys.path.insert(0, os.path.join(ROOT, "probe", "relations"))
     import check_column as cc
-    for label, name in (("substrait-java", "JAVA"), ("substrait-go", "GO"), ("DuckDB", "DUCKDB")):
-        model = cc.score(os.path.join(ROOT, "results/relations/%s.txt" % name))
+    from participants import PARTICIPANTS
+    models = {}
+    for name, caps in sorted(PARTICIPANTS.items()):
+        label = caps["label"]
+        model = models[name] = cc.score(os.path.join(ROOT, "results/relations/%s.txt" % name))
         f["relation cases matched by " + label] = len(model["matched"])
         f["relation cases refused by " + label] = len(model["unsupported"])
         f["relation cases differing for " + label] = len(model["differed"])
@@ -142,6 +145,16 @@ def facts():
             1 for _, why in model["differed"] if "rows " in why)
         f["relation set cases refused by " + label] = sum(
             1 for case_id, _ in model["unsupported"] if case_id.startswith("set/"))
+    # The participants that execute, against each other on the rows every one of them reached. A
+    # second executor is worth what it confirms where there was one voice, and the README counts it.
+    executing = [name for name, caps in sorted(PARTICIPANTS.items()) if caps["executes"]]
+    reached = set.intersection(*(set(models[name]["rows_compared"]) for name in executing))
+    rows = lambda name, case_id: cc.split_answer(models[name]["answers"][case_id][1])[1]
+    same = [c for c in reached if len({rows(name, c) for name in executing}) == 1]
+    f["relation cases whose rows every executing participant reaches"] = len(reached)
+    f["relation cases where the executing participants return the same rows"] = len(same)
+    f["relation cases where the executing participants return different rows"] = (
+        len(reached) - len(same))
     return f
 
 
@@ -177,9 +190,19 @@ CLAIMS = [
     ("README.md", "relation cases asserting rows",
      r"the rows that %s of the cases assert" % NUMBER),
     ("README.md", "relation cases differing for DuckDB",
-     r"Its %s divergences all show in the schema" % NUMBER),
+     r"DuckDB's %s divergences all show in the schema" % NUMBER),
     ("README.md", "relation cases differing in rows for DuckDB",
      r"%s of them in the rows as well" % NUMBER),
+    ("README.md", "relation cases differing for DataFusion",
+     r"and so do DataFusion's %s," % NUMBER),
+    ("README.md", "relation cases differing in rows for DataFusion",
+     r"%s of them in the rows: so far" % NUMBER),
+    ("README.md", "relation cases whose rows every executing participant reaches",
+     r"Both reach the rows of %s cases" % NUMBER),
+    ("README.md", "relation cases where the executing participants return the same rows",
+     r"and return the same rows on %s\." % NUMBER),
+    ("README.md", "relation cases where the executing participants return different rows",
+     r"The other %s are the emit cases" % NUMBER),
     ("README.md", "relation cases never scored",
      r"%s cases carry no expectation on purpose" % NUMBER),
 

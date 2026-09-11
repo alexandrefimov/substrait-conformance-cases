@@ -64,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        column: [DUCKDB, GO, JAVA]
+        column: [DUCKDB, GO, JAVA, DATAFUSION]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -90,8 +90,8 @@ jobs:
           name: drift-relations-${{ matrix.column }}
           path: run/
 
-  # One job writes the log, because the twelve above run in parallel in separate checkouts and
-  # twelve jobs appending to one file would race. It collects whatever blocks they left - a
+  # One job writes the log, because the thirteen above run in parallel in separate checkouts and
+  # thirteen jobs appending to one file would race. It collects whatever blocks they left - a
   # participant that did not move leaves none - and writes them in a fixed order rather than the
   # order the jobs finished in.
   record:
@@ -116,7 +116,7 @@ jobs:
             f="runs/drift-$c/$c.drift"
             [ -s "$f" ] && echo "$f" >> found
           done
-          for c in DUCKDB GO JAVA; do
+          for c in DUCKDB GO JAVA DATAFUSION; do
             f="runs/drift-relations-$c/$c.drift"
             [ -s "$f" ] && echo "$f" >> found
           done

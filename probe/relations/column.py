@@ -14,8 +14,8 @@ whatever is current there, so a difference from the saved column could be a defe
 another version of the participant, and the file would not say which.
 
 The mark. Only KIND_POSITIVE carries an expectation, so only KIND_POSITIVE can be scored; the other
-kinds are recorded and never scored. Left implicit, a column reads as 39 answers all of which could
-be right, and the corpus starts flattering whoever runs it. The mark comes from
+kinds are recorded and never scored. Left implicit, a column reads as a list of answers all of which
+could be right, and the corpus starts flattering whoever runs it. The mark comes from
 results/relations/expected.json, which is generated from the bundles themselves.
 
 This file needs python3 and nothing else, so the column can be assembled and checked in the same

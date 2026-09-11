@@ -38,14 +38,18 @@
     "decimal-own-derivation": {
       "kind": "divergence",
       "same_as": "decimal-own-derivation",
-      "what": "functions_arithmetic_decimal.yaml fixes the precision and scale of the result; DuckDB returns a decimal and computes its own.",
+      "what": "functions_arithmetic_decimal.yaml fixes the precision and scale of the result; DuckDB and DataFusion return a decimal and compute their own, on multiply and divide respectively.",
       "check": {
         "got_matches": {
-          "DUCKDB": "^\\[r:decimal<15,3>\\]"
+          "DUCKDB": "^\\[r:decimal<15,3>\\]",
+          "DATAFUSION": "^\\[r:decimal<15,6>\\]$"
         }
       },
       "triage": {
         "DUCKDB": {
+          "outcome": "reported"
+        },
+        "DATAFUSION": {
           "outcome": "reported"
         }
       }
@@ -141,6 +145,41 @@
           "outcome": "open"
         }
       }
+    },
+    "datafusion-intersection-takes-the-first-input": {
+      "kind": "divergence",
+      "same_as": "datafusion-intersection-takes-the-first-input",
+      "what": "The same answer these cases reach on their own plans: for all three intersections DataFusion returns the nullability of the first input, s1, column for column.",
+      "check": {
+        "got_matches": {
+          "DATAFUSION": "^\\[c0:i64, c1:i64, c2:i64, c3:i64, c4:i64\\?, c5:i64\\?, c6:i64\\?, c7:i64\\?\\]$"
+        }
+      },
+      "triage": {
+        "DATAFUSION": {
+          "outcome": "reported"
+        }
+      }
+    },
+    "datafusion-grouping-set-index-is-its-grouping-id": {
+      "kind": "divergence",
+      "what": "An aggregate over more than one grouping set gains a trailing required i32 holding the zero-based index of the set a record came from. DataFusion puts its own __grouping_id there instead: an unsigned integer with a bit set for each grouping expression the record's set leaves out, and above those bits a count that tells repeats of one set apart, as wide as all of it needs. So the type differs and the values do too: index-column's sets (g0) and (g1) come back as 1 and 2 rather than 0 and 1, and overlapping-sets' (g0) and (g0, g1) as 1 and 0 rather than 0 and 1. apache/datafusion#23468 moved the column to where Substrait puts it and left what it holds. overlapping-sets also makes g0 nullable although both sets group on it, which is grouping-key-nullability in the other corpus.",
+      "check": {
+        "got_matches": {
+          "DATAFUSION": {
+            "aggregate/grouping_sets/index-column": "^\\[g0:i64\\?, g1:string\\?, total:i64\\?, grouping_set:uint8\\] rows \\(1, null, 30, 1\\) \\(null, 'a', 10, 2\\) \\(null, 'b', 20, 2\\)$",
+            "aggregate/grouping_sets/overlapping-sets": "^\\[g0:i64\\?, g1:string\\?, total:i64\\?, grouping_set:uint8\\] rows \\(1, 'a', 10, 0\\) \\(1, 'b', 20, 0\\) \\(1, null, 30, 1\\)$"
+          }
+        }
+      },
+      "triage": {
+        "DATAFUSION": {
+          "outcome": "reported",
+          "at": [
+            "https://github.com/apache/datafusion/issues/25208"
+          ]
+        }
+      }
     }
   },
   "cells": {
@@ -161,6 +200,14 @@
       "aggregate/grouping_sets/overlapping-sets": "go-grouping-sets-one-column-per-pair",
       "join_physical/hash_left_single/wire-9": "go-hash-join-ignores-the-join-type",
       "write/no_output/returns-nothing": "go-write-returns-names-without-types"
+    },
+    "DATAFUSION": {
+      "aggregate/grouping_sets/index-column": "datafusion-grouping-set-index-is-its-grouping-id",
+      "aggregate/grouping_sets/overlapping-sets": "datafusion-grouping-set-index-is-its-grouping-id",
+      "project/decimal_divide/return-type": "decimal-own-derivation",
+      "set/intersection_multiset/output-nullability": "datafusion-intersection-takes-the-first-input",
+      "set/intersection_multiset_all/output-nullability": "datafusion-intersection-takes-the-first-input",
+      "set/intersection_primary/output-nullability": "datafusion-intersection-takes-the-first-input"
     }
   }
 }

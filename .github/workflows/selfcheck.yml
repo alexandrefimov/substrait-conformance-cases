@@ -23,7 +23,7 @@ jobs:
 
   # The relation corpus is a second measurement on a second set of cases, and its columns need the
   # same guarantee: probe/selfcheck.sh checks them against the extract and against the picture, but
-  # it runs no participant, so a column of it could go stale without anything noticing. Three
+  # it runs no participant, so a column of it could go stale without anything noticing. Four
   # participants, each built from nothing by probe/relations/setup.sh and required to return its
   # saved column answer for answer.
   relations:
@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        column: [DUCKDB, GO, JAVA]
+        column: [DUCKDB, GO, JAVA, DATAFUSION]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

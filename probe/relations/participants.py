@@ -22,7 +22,7 @@ PARTICIPANTS = {
         "executes": False,
         "boundary": [
             "BOUNDARY: substrait-java derives a schema and does not execute, so every case here is"
-            " answered on its schema alone, including the 26 that declare rows.",
+            " answered on its schema alone, including the ones that declare rows.",
         ],
     },
     "GO": {
@@ -32,7 +32,7 @@ PARTICIPANTS = {
         "executes": False,
         "boundary": [
             "BOUNDARY: substrait-go derives a schema and does not execute, so every case here is"
-            " answered on its schema alone, including the 26 that declare rows.",
+            " answered on its schema alone, including the ones that declare rows.",
         ],
     },
     "DUCKDB": {
@@ -45,6 +45,19 @@ PARTICIPANTS = {
             " `?`; names, types, arity and order are what a `score` line is compared on.",
             "It executes, so a case that declares rows is answered with rows too, unless the"
             " plan was refused before it ran.",
+        ],
+    },
+    "DATAFUSION": {
+        "label": "DataFusion",
+        "nullability": True,
+        "names": True,
+        "executes": True,
+        "boundary": [
+            "BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is"
+            " compared on the whole schema and, where the case declares rows, on the rows too, as"
+            " a multiset like every column's.",
+            "The schema is the one its consumer derives for the logical plan; the rows are what"
+            " executing that plan returns.",
         ],
     },
 }

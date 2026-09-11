@@ -9,7 +9,7 @@ implementation, and every answer beside it is retaken by one command.
 | | | |
 | --- | --- | --- |
 | [`derived-schema/`](derived-schema) | 98 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
-| [`tests/relations/`](tests/relations) | 71 hand-written cases pinning what the relation documentation says a relation outputs, schema and rows alike | substrait-java, substrait-go, DuckDB |
+| [`tests/relations/`](tests/relations) | 71 hand-written cases pinning what the relation documentation says a relation outputs, schema and rows alike | substrait-java, substrait-go, DuckDB, DataFusion |
 
 [The matrix as a page](https://alexandrefimov.github.io/substrait-conformance-cases/) puts the
 answer and the expectation beside each cell.
@@ -102,8 +102,8 @@ Which relations those 98 plans reach at all is counted in [METHOD.md](METHOD.md#
 
     bash probe/selfcheck.sh
     bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
-    bash probe/relations/replay.sh DUCKDB|GO|JAVA
-    python3 probe/relations/retake.sh
+    bash probe/relations/replay.sh DUCKDB|GO|JAVA|DATAFUSION
+    bash probe/relations/retake.sh
 
 The first recomputes every number on this page from the committed files; it needs python3 and
 nothing else. The rest rebuild one implementation at its pinned version and require its saved
@@ -143,13 +143,15 @@ way from a report back to the cases that reproduce it.
 
 One story per column. substrait-java answers 58 of the 63 scored cases and refuses 5. substrait-go
 refuses 28, eight of them the set operations, whose inputs it requires to agree on a nullability
-these cases deliberately vary. DuckDB is the only one that executes, so it is the only one measured
-against the rows that 47 of the cases assert. Its 11 divergences all show in the schema, five of
-them in the rows as well: so far the rows have confirmed an answer rather than caught one. The
-hatched cells are the other two agreeing about a schema and never seeing the rows. Eight cases
-carry no expectation on purpose and are never scored.
+these cases deliberately vary. DuckDB and DataFusion execute, so they are the two measured against
+the rows that 47 of the cases assert. DuckDB's 11 divergences all show in the schema, five of them
+in the rows as well, and so do DataFusion's 6, two of them in the rows: so far the rows have
+confirmed an answer rather than caught one. Both reach the rows of 31 cases and return the same rows
+on 26. The other five are the emit cases, where DataFusion returns the rows the case asserts and
+DuckDB does not. The hatched cells are substrait-java and substrait-go agreeing about a schema and
+never seeing the rows. Eight cases carry no expectation on purpose and are never scored.
 
 `results/relations/` holds one column per participant, and `bash probe/relations/replay.sh <NAME>`
 rebuilds one participant from nothing at its pinned version.
 [`probe/relations/README.md`](probe/relations/README.md) is how the measurement works and how to add
-a fourth.
+a fifth.
