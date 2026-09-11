@@ -201,3 +201,25 @@ A refusal is not recorded that way, and mostly should not be: a participant that
 The general answer for the other 190 would be to compare a refusal against what the engine declares it supports, which needs no reasons written by hand at all. The spec ships no such declaration today: at v0.102.0 `dialects/` holds the schema and its fixtures and not one engine's file.
 
 What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-eight of them; one of those twenty-eight still needs investigation and says what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
+
+## What the corpus covers
+
+The matrix above is depth. Breadth is the other half substrait#1164 asks for — which relations the
+cases reach at all — and `probe/coverage.py` counts that from the plans themselves:
+
+<!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->
+| relation | cases | | relation | cases |
+| --- | ---: | --- | --- | ---: |
+| `read` | 98 | | `cross` | 1 |
+| `filter` | 1 | | `write` | 1 |
+| `fetch` | 1 | | `hash_join` | 4 |
+| `aggregate` | 7 | | `merge_join` | 4 |
+| `sort` | 1 | | `nested_loop_join` | 4 |
+| `join` | 26 | | `window` | 3 |
+| `project` | 9 | | `expand` | 2 |
+| `set` | 16 | | `top_n` | 1 |
+
+16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 98 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
+<!-- /coverage -->
+
+Apache 2.0, the plans included, so a case can go straight into another project's tests.

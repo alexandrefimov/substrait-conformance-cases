@@ -201,7 +201,7 @@ mutate "the per-participant page against its generator" "DIFFS.md differs" \
   bump results/DIFFS.md '## DuckDB — (\d+) cases'
 
 mutate "a hand-improved coverage block" "coverage block differs" \
-  bump README.md '\| `join` \| (\d+) \|'
+  bump METHOD.md '\| `join` \| (\d+) \|'
 
 mutate "a number in the prose gone stale" "where the files say" \
   bump README.md 'They answer the (\d+) cases'
@@ -619,11 +619,17 @@ for p in ('docs/relations.svg', 'docs/relations-dark.svg'):
         t = t.replace(old, new)
     open(p, 'w', encoding='utf-8').write(t)"
 
+# The replacement is asserted rather than attempted. str.replace on a missing substring succeeds
+# and writes the file back unchanged, so when the sentence this aimed at was reworded the mutation
+# went on "applying" and the check went on "passing" - a guard that had quietly stopped guarding,
+# which is the thing this whole file exists to catch. Caught here, on its own suite.
 mutate "a stale count of the relation cases" "relation cases" \
   python3 -c "
 p = 'README.md'
 t = open(p, encoding='utf-8').read()
-open(p, 'w', encoding='utf-8').write(t.replace('corpus: 71 cases written by hand', 'corpus: 73 cases written by hand'))"
+old, new = '| 71 hand-written cases', '| 73 hand-written cases'
+assert old in t, 'the sentence this mutation edits is gone; re-aim it'
+open(p, 'w', encoding='utf-8').write(t.replace(old, new))"
 
 # The page's own table is drawn from its own JSON, which nothing else reads. Breaking one cell in
 # it leaves the file byte-identical to its generator, which is why the data is checked separately.
