@@ -7,8 +7,11 @@ file is for the other case, where the participant answered differently from the 
 results/ - which is not by itself a defect in either. It says when, in what version, and on which
 cases, so that "when did this cell change" is a question to git log rather than to memory.
 
-The block header is the day, the participant, and the revision it was actually built from. The line
-under it is the revision of this repository and one fingerprint over the corpus, expected.json and
-normalize.py: without those two a moved answer, a regenerated corpus and an edited expectation
-cannot be told apart afterwards.
+The block header is the day, the participant, and the revision it was actually built from. A
+participant is named by its column's path under results/: DUCKDB is results/DUCKDB.txt, and
+relations/DUCKDB is results/relations/DUCKDB.txt. The line under it is the revision of this
+repository and one fingerprint over what this side fed the comparison - the plans, expected.json and
+normalize.py for the 98-plan corpus; the bundles, the extract and the code that writes a column for
+the relation corpus. Without those two a moved answer, a regenerated corpus and an edited
+expectation cannot be told apart afterwards.
 

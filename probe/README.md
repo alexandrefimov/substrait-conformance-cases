@@ -32,8 +32,8 @@ moved since the column was taken — and only a broken harness fails the run. Th
 A drift run that finds something writes a block into [`results/DRIFT.txt`](../results/DRIFT.txt)
 and commits it: the day, the participant, the revision it was actually built from, the revision
 of this repository and the fingerprint of its inputs, and the cases that moved. A quiet week
-leaves nothing there. The nine jobs run in parallel in separate checkouts, so each leaves its
-block in its artifact and one later job collects them and writes once; `selfcheck.sh` checks the
+leaves nothing there. The jobs run in parallel in separate checkouts, so each leaves its block in
+its artifact and one later job collects them and writes once; `selfcheck.sh` checks the
 shape of what that job wrote, since it is the one file here a workflow produces rather than a
 person.
 

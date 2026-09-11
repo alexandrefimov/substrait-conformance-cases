@@ -23,10 +23,15 @@ so it is only ever "answered" or "refused".
 Headers are not compared. A column's first line names the day it was taken and the revision it was
 taken against, so two takes never agree on it, and a participant's boundary line may follow it;
 both sit above the blank line that opens the answers.
+
+A relation column, from probe/relations/replay.sh, is read the same way. Its lines start with a mark
+before the case id - `score` or `observe`, which probe/relations/column.py takes from the corpus -
+and a process that died is written `CRASH:` rather than folded into `ERROR:`, so both are refusals.
 """
 import io, re, sys
 
 VERDICT = re.compile(r"^(?:DATAFUSION|DUCKDB|SUBSTRAITGO|ACERO|VALIDATOR|SPARK|ISTHMUS)\s+(\S+)")
+MARK = re.compile(r"^(?:score|observe)\s+")
 
 
 def answers(path):
@@ -42,7 +47,7 @@ def answers(path):
             continue
         if not line.strip():
             continue
-        name, _, value = line.partition(" ")
+        name, _, value = MARK.sub("", line, count=1).partition(" ")
         rows[name] = value.strip()
     return rows
 
@@ -66,7 +71,7 @@ def verdicts(path):
 
 
 def refused(value):
-    return value.startswith("ERROR: ")
+    return value.startswith(("ERROR: ", "CRASH: "))
 
 
 def main():

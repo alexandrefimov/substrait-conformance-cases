@@ -22,6 +22,10 @@ first run; the other two are a `go build` and a `pip install`.
 
 `replay.sh` is the one to trust: it builds the participant from nothing and requires the saved
 column back answer for answer, refusing first if what it measured is not what that column names.
+`LATEST=1` asks the other question, whether the participant has moved since: it builds today's
+release through `probe/versions-latest.env`, in an environment of its own, and names the cases that
+moved without failing on them. `.github/workflows/drift.yml` runs that weekly for all three and
+writes what it finds into `results/DRIFT.txt` under `relations/<NAME>`.
 
 ## Reading a column
 
@@ -67,8 +71,10 @@ sentences whose numbers have moved. Nothing it writes is committed for you.
 `check_column.py` prints the counts, and with `--cases` every case under `matched`, `differed`,
 `unsupported` and `observed`. A `differed` case is a finding about the participant, not a broken
 run — and it needs a reason in `results/relations/differed.json` before the self-check will pass.
-`replay.sh` reporting `MOVED` is the participant having changed since the column was saved: the new
-column is what gets committed, with its pin in `probe/versions.env` updated beside it.
+`replay.sh` failing on a different build means the pin in `probe/versions.env` and the saved column
+have come apart: the new column is what gets committed, with its pin updated beside it. Failing on
+the same build with different answers is this harness having changed, and the cases it names are
+where.
 
 Each reason carries a test of an output property, so a judgement that has stopped describing the
 answer fails rather than sitting there. Where the cause is one the 98-case corpus already records,

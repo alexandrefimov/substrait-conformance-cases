@@ -1,8 +1,10 @@
 #!/bin/bash
 # Builds the environment the relations columns are measured in, at the versions probe/versions.env
-# pins.
+# pins - or at today's releases when SUBSTRAIT_VERSIONS names probe/versions-latest.env, which is
+# how LATEST=1 probe/relations/replay.sh asks whether a participant has moved since its column was
+# taken.
 #
-#     bash probe/relations/setup.sh [DUCKDB|GO]
+#     bash probe/relations/setup.sh [DUCKDB|GO|JAVA]
 #
 # Every participant reads a bundle with generated protobuf bindings and nothing else - no YAML, no
 # authoring parser. That is a property of the corpus rather than a convenience, so the bindings are
@@ -26,7 +28,10 @@ ONLY="${1:-}"
 PROTO_DIR="$ROOT/proto"
 [ -f "$PROTO_DIR/substrait/algebra.proto" ] || PROTO_DIR="$ROOT/tests/relations/vendor/proto"
 # shellcheck source=../versions.env
-. "$ROOT/probe/versions.env"
+. "${SUBSTRAIT_VERSIONS:-$ROOT/probe/versions.env}"
+# "latest" means install without a pin, as in probe/setup.sh, which the substrait-java clone below
+# is delegated to and which reads the same variable.
+pin() { case "${1:-}" in ""|latest) : ;; *) printf '==%s' "$1" ;; esac; }
 
 command -v protoc >/dev/null || { echo "protoc is not on PATH; the bindings cannot be generated" >&2; exit 1; }
 got="$(protoc --version | awk '{print $2}')"
@@ -104,7 +109,12 @@ GRADLE
       | awk '/CPSTART/{f=1;next}/CPEND/{f=0}f' > "$pbjar"
   fi
   [ -s "$pbjar" ] || { echo "protobuf-java $RELATIONS_PROTOBUF_JAVA_VERSION did not resolve" >&2; exit 1; }
-  CP="$(cat "$pbjar"):$CP"
+  # Only when it is the newer of the two. A substrait-java past its pin - LATEST=1 follows main -
+  # can resolve a newer runtime for gencode of its own, and this one ahead of it would then break
+  # every case at once rather than none.
+  theirs="$(tr ':' '\n' <<< "$CP" | sed -n 's#.*/protobuf-java-\([0-9][0-9.]*\)\.jar$#\1#p' | head -1)"
+  newest="$(printf '%s\n%s\n' "${theirs:-0}" "$RELATIONS_PROTOBUF_JAVA_VERSION" | sort -V | tail -1)"
+  [ "$newest" = "${theirs:-}" ] || CP="$(cat "$pbjar"):$CP"
   # JAVA17_HOME if the caller named one, then the JAVA_HOME it already has when that is the version
   # versions.env asks for, and only then the macOS locator. The middle step is the one that was
   # missing: /usr/libexec/java_home is a Mac, so this passed here and failed on the first Linux
@@ -147,7 +157,7 @@ python3 -m venv "$ENV_DIR"
   "protobuf==$RELATIONS_PROTOBUF_VERSION" pyyaml
 
 if [ -z "$ONLY" ] || [ "$ONLY" = "DUCKDB" ]; then
-  "$ENV_DIR/bin/pip" install --quiet --disable-pip-version-check "duckdb==$DUCKDB_VERSION"
+  "$ENV_DIR/bin/pip" install --quiet --disable-pip-version-check "duckdb$(pin "$DUCKDB_VERSION")"
   "$ENV_DIR/bin/python" - <<'PYEOF'
 import duckdb
 con = duckdb.connect()
