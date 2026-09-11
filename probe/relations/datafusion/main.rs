@@ -7,8 +7,10 @@
 // case's answer rather than the end of the run.
 //
 // The bundle is decoded with bindings prost generated from relation_test.proto, whose Substrait
-// messages are the substrait crate's own (build.rs), so the plan handed to the consumer is the
-// message the bundle carries, not a copy rebuilt from another representation.
+// messages are the substrait crate's own (build.rs), so the plan reaches the consumer in the types
+// it takes rather than rebuilt from another representation. Those types are the crate's release of
+// the Substrait protos, and prost drops a field newer than that release while decoding, as it would
+// for any application built on the crate.
 //
 // The case's input tables are built here, from the types the case declares, by this file's own
 // conversion rather than the consumer's literal reader: through the consumer's, a literal it read
@@ -154,8 +156,12 @@ fn scalar(lit: &proto::expression::Literal, want: &DataType) -> Result<ScalarVal
             return ScalarValue::try_from(want).map_err(|e| Harness(e.to_string()));
         }
         L::Boolean(v) => ScalarValue::Boolean(Some(*v)),
-        L::I8(v) => ScalarValue::Int8(Some(*v as i8)),
-        L::I16(v) => ScalarValue::Int16(Some(*v as i16)),
+        L::I8(v) => ScalarValue::Int8(Some(
+            i8::try_from(*v).map_err(|_| format!("i8 literal {v} is out of range"))?,
+        )),
+        L::I16(v) => ScalarValue::Int16(Some(
+            i16::try_from(*v).map_err(|_| format!("i16 literal {v} is out of range"))?,
+        )),
         L::I32(v) => ScalarValue::Int32(Some(*v)),
         L::I64(v) => ScalarValue::Int64(Some(*v)),
         L::Fp32(v) => ScalarValue::Float32(Some(*v)),
@@ -211,6 +217,7 @@ fn reads<'a>(rel: &'a proto::Rel, out: &mut Vec<&'a proto::ReadRel>) {
         R::Exchange(r) => r.input.as_deref().into_iter().collect(),
         R::Expand(r) => r.input.as_deref().into_iter().collect(),
         R::Write(r) => r.input.as_deref().into_iter().collect(),
+        R::Ddl(r) => r.view_definition.as_deref().into_iter().collect(),
         R::ExtensionSingle(r) => r.input.as_deref().into_iter().collect(),
         R::Join(r) => both(&r.left, &r.right),
         R::Cross(r) => both(&r.left, &r.right),
@@ -337,6 +344,15 @@ fn render_type(data_type: &DataType, is_nullable: bool) -> String {
         DataType::Binary | DataType::LargeBinary | DataType::BinaryView => "binary".to_string(),
         DataType::FixedSizeBinary(n) => format!("fixedbinary<{n}>"),
         DataType::Date32 => "date".to_string(),
+        DataType::Time32(unit) | DataType::Time64(unit) => format!(
+            "precision_time<{}>",
+            match unit {
+                TimeUnit::Second => 0,
+                TimeUnit::Millisecond => 3,
+                TimeUnit::Microsecond => 6,
+                TimeUnit::Nanosecond => 9,
+            }
+        ),
         DataType::Decimal128(p, s) => format!("decimal<{p},{s}>"),
         DataType::Timestamp(unit, tz) => format!(
             "{}<{}>",
@@ -388,7 +404,10 @@ fn render_schema(plan: &LogicalPlan) -> String {
 }
 
 /// Python's repr of a float, which is what probe/relations/corpus.py writes for one: the shortest
-/// digits that round-trip, positional from 1e-4 up to 1e16 and in exponent form outside that.
+/// digits that read back as the same value, positional from 1e-4 up to 1e16 and in exponent form
+/// outside that. Where two strings of that length both read back, Python takes the one nearer the
+/// value, and an exact tie to the even digit. Rust's shortest form can settle such a tie the other
+/// way, so its length is kept and the digits are taken from exact rounding at that length instead.
 fn py_float(v: f64) -> String {
     if v.is_nan() {
         return "nan".to_string();
@@ -399,11 +418,20 @@ fn py_float(v: f64) -> String {
     if v == 0.0 {
         return if v.is_sign_negative() { "-0.0" } else { "0.0" }.to_string();
     }
-    let sci = format!("{v:e}");
-    let (mantissa, exponent) = sci.split_once('e').unwrap_or((sci.as_str(), "0"));
-    let exponent: i32 = exponent.parse().unwrap_or(0);
-    let sign = if mantissa.starts_with('-') { "-" } else { "" };
-    let digits: String = mantissa.chars().filter(|c| c.is_ascii_digit()).collect();
+    let digits_of = |sci: &str| -> (String, i32) {
+        let (mantissa, exponent) = sci.split_once('e').unwrap_or((sci, "0"));
+        let digits: String = mantissa.chars().filter(|c| c.is_ascii_digit()).collect();
+        (digits, exponent.parse().unwrap_or(0))
+    };
+    let (shortest, _) = digits_of(&format!("{v:e}"));
+    let exact = format!("{:.*e}", shortest.len() - 1, v);
+    let chosen = if exact.parse::<f64>() == Ok(v) {
+        exact
+    } else {
+        format!("{v:e}")
+    };
+    let (digits, exponent) = digits_of(&chosen);
+    let sign = if v < 0.0 { "-" } else { "" };
     if (-4..16).contains(&exponent) {
         if exponent >= 0 {
             let point = exponent as usize + 1;
@@ -518,8 +546,8 @@ fn hex(bytes: &[u8]) -> String {
     out
 }
 
-/// `(1, null) (2, 2)`, sorted by the rendered text: every row set in the corpus is a multiset, and
-/// probe/relations/corpus.py sorts the expectation the same way.
+/// `(1, null) (2, 2)`, sorted by the rendered text, as probe/relations/corpus.py sorts the
+/// expectation. So the order is not compared, not even where a case declares ORDER_SEQUENCE.
 fn render_rows(batches: &[RecordBatch]) -> Result<String, Harness> {
     let mut rows = Vec::new();
     for batch in batches {
@@ -536,9 +564,9 @@ fn render_rows(batches: &[RecordBatch]) -> Result<String, Harness> {
     Ok(rows.join(" "))
 }
 
-/// The first line of an error, its runs of whitespace collapsed and cut at 160 characters, as the
-/// DataFusion probe of the 98-plan corpus cuts it. A refusal of a relation this consumer has no arm
-/// for carries the whole relation after it, which would otherwise be the longest line in the column.
+/// The first line of an error, its runs of whitespace collapsed, cut at the 160 characters the
+/// other corpus's DataFusion probe keeps of a refusal. A refusal of a relation this consumer has no
+/// arm for carries the whole relation after it, which would otherwise be the longest line here.
 fn refusal(error: &impl std::fmt::Display) -> String {
     let text = error.to_string();
     let first = text.lines().next().unwrap_or("");

@@ -1,6 +1,6 @@
-DATAFUSION: relations column from run 2026-09-11T20:56, datafusion cc29ea12a, substrait crate 0.63.0
+DATAFUSION: relations column from run 2026-09-11T23:00, datafusion cc29ea12a, substrait crate 0.63.0
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
-BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too.
+BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too, as a multiset like every column's.
 The schema is the one its consumer derives for the logical plan; the rows are what executing that plan returns.
 score = the case carries an expectation and is compared with it. observe = KIND_INVALID_PLAN or KIND_UNRESOLVED: recorded, never scored, 8 of the 71 cases.
 

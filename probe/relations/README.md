@@ -52,8 +52,9 @@ all**. substrait-go and substrait-java derive schemas without executing, so thei
 rows — and `join_physical/hash_right_semi` and `hash_right_anti` emit the same columns with the same
 nullability, so those two are one case to them. `check_column.py` says that rather than counting two
 agreements which rest on one answer. DataFusion executes and its types carry nullability, so its
-column is compared on everything a case asserts; but it refuses the physical join messages as DuckDB
-does, so no column here tells that pair apart yet.
+column is compared on the whole schema and on the rows; but it refuses the physical join messages as
+DuckDB does, so no column here tells that pair apart yet. Rows are compared as a multiset in every
+column, including the cases that declare ORDER_SEQUENCE, whose order nothing here checks yet.
 
 ## When the corpus changes
 

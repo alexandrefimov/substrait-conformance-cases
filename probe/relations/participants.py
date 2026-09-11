@@ -54,7 +54,8 @@ PARTICIPANTS = {
         "executes": True,
         "boundary": [
             "BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is"
-            " compared on the whole schema and, where the case declares rows, on the rows too.",
+            " compared on the whole schema and, where the case declares rows, on the rows too, as"
+            " a multiset like every column's.",
             "The schema is the one its consumer derives for the logical plan; the rows are what"
             " executing that plan returns.",
         ],

@@ -163,11 +163,11 @@
     },
     "datafusion-grouping-set-index-is-its-grouping-id": {
       "kind": "divergence",
-      "what": "An aggregate over more than one grouping set gains a trailing required i32 holding the zero-based index of the set a record came from. DataFusion puts its own __grouping_id there instead: an unsigned integer with a bit set for each grouping expression the record's set leaves out, as wide as those bits need. So the type differs and the values do too: index-column's sets (g0) and (g1) come back as 1 and 2 rather than 0 and 1, and overlapping-sets' (g0) and (g0, g1) as 1 and 0 rather than 0 and 1. apache/datafusion#23468 moved the column to where Substrait puts it and left what it holds. overlapping-sets also makes g0 nullable although both sets group on it, which is grouping-key-nullability in the other corpus.",
+      "what": "An aggregate over more than one grouping set gains a trailing required i32 holding the zero-based index of the set a record came from. DataFusion puts its own __grouping_id there instead: an unsigned integer with a bit set for each grouping expression the record's set leaves out, and above those bits a count that tells repeats of one set apart, as wide as all of it needs. So the type differs and the values do too: index-column's sets (g0) and (g1) come back as 1 and 2 rather than 0 and 1, and overlapping-sets' (g0) and (g0, g1) as 1 and 0 rather than 0 and 1. apache/datafusion#23468 moved the column to where Substrait puts it and left what it holds. overlapping-sets also makes g0 nullable although both sets group on it, which is grouping-key-nullability in the other corpus.",
       "check": {
         "got_matches": {
           "DATAFUSION": {
-            "aggregate/grouping_sets/index-column": "grouping_set:uint8\\] rows \\(1, null, 30, 1\\) \\(null, 'a', 10, 2\\) \\(null, 'b', 20, 2\\)$",
+            "aggregate/grouping_sets/index-column": "^\\[g0:i64\\?, g1:string\\?, total:i64\\?, grouping_set:uint8\\] rows \\(1, null, 30, 1\\) \\(null, 'a', 10, 2\\) \\(null, 'b', 20, 2\\)$",
             "aggregate/grouping_sets/overlapping-sets": "^\\[g0:i64\\?, g1:string\\?, total:i64\\?, grouping_set:uint8\\] rows \\(1, 'a', 10, 0\\) \\(1, 'b', 20, 0\\) \\(1, null, 30, 1\\)$"
           }
         }

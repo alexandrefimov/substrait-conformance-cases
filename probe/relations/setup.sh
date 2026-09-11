@@ -149,7 +149,8 @@ fi
 if [ -z "$ONLY" ] || [ "$ONLY" = "DATAFUSION" ]; then
   # rustup puts cargo in ~/.cargo/bin and leaves PATH to a shell profile a script does not read.
   export PATH="$HOME/.cargo/bin:$PATH"
-  command -v cargo >/dev/null || { echo "cargo is not on PATH; the DataFusion runner cannot be built" >&2; exit 1; }
+  command -v cargo >/dev/null || {
+    echo "cargo is not on PATH; the DataFusion runner cannot be built" >&2; exit 1; }
   # The checkout comes from probe/setup.sh, as substrait-java's does above and for the same reason:
   # one place that knows how to fetch the project at its pin. It is cloned without blobs there.
   DF="${DF_DIR:-$SP/datafusion}"
@@ -157,12 +158,22 @@ if [ -z "$ONLY" ] || [ "$ONLY" = "DATAFUSION" ]; then
     SETUP_ONLY=datafusion bash "$ROOT/probe/setup.sh" "$SP" >&2 \
       || { echo "DataFusion did not clone" >&2; exit 1; }
   fi
-  [ -f "$DF/datafusion/substrait/Cargo.toml" ] || { echo "not a DataFusion checkout: $DF" >&2; exit 1; }
+  [ -f "$DF/datafusion/substrait/Cargo.toml" ] || {
+    echo "not a DataFusion checkout: $DF" >&2; exit 1; }
+  # Absolute, because the crate below names it from another directory.
+  DF="$(cd "$DF" && pwd)"
+  # A checkout that was already there is used as it stands, and one at another commit is measured
+  # at that commit. The column's head records which, and probe/relations/replay.sh refuses the run
+  # as a reproduction; this says so before the build rather than after it.
+  want="$(git -C "$DF" rev-parse -q --verify "$DATAFUSION_COMMIT^{commit}" 2>/dev/null || true)"
+  [ "$(git -C "$DF" rev-parse HEAD 2>/dev/null)" = "$want" ] || \
+    echo "note: $DF is not at $DATAFUSION_COMMIT, and the column will be taken at what it is" >&2
   # A crate of its own beside the checkout rather than an example inside it, as the 98-plan probe
   # is: the bindings need a build script, and an example only shares its package's, which would
   # mean editing the checkout. It depends on the checkout by path, and takes the checkout's
-  # lockfile and toolchain so the libraries it resolves are the ones that commit builds with. prost has to be the release the substrait crate derives its messages with,
-  # or the generated RelationTestCase cannot hold them, so it is read from the checkout too.
+  # lockfile and toolchain so the libraries it resolves are the ones that commit builds with.
+  # prost has to be the release the substrait crate derives its messages with, or the generated
+  # RelationTestCase cannot hold them, so it is read from the checkout too.
   prost="$(sed -n 's/^prost = "\([^"]*\)".*/\1/p' "$DF/Cargo.toml")"
   [ -n "$prost" ] || { echo "no prost version in $DF/Cargo.toml" >&2; exit 1; }
   R="$SP/reldf"
