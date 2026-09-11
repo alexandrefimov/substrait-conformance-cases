@@ -1,8 +1,10 @@
 #!/bin/bash
 # Builds the environment the relations columns are measured in, at the versions probe/versions.env
-# pins.
+# pins - or at today's releases when SUBSTRAIT_VERSIONS names probe/versions-latest.env, which is
+# how LATEST=1 probe/relations/replay.sh asks whether a participant has moved since its column was
+# taken.
 #
-#     bash probe/relations/setup.sh [DUCKDB|GO]
+#     bash probe/relations/setup.sh [DUCKDB|GO|JAVA]
 #
 # Every participant reads a bundle with generated protobuf bindings and nothing else - no YAML, no
 # authoring parser. That is a property of the corpus rather than a convenience, so the bindings are
@@ -26,7 +28,10 @@ ONLY="${1:-}"
 PROTO_DIR="$ROOT/proto"
 [ -f "$PROTO_DIR/substrait/algebra.proto" ] || PROTO_DIR="$ROOT/tests/relations/vendor/proto"
 # shellcheck source=../versions.env
-. "$ROOT/probe/versions.env"
+. "${SUBSTRAIT_VERSIONS:-$ROOT/probe/versions.env}"
+# "latest" means install without a pin, as in probe/setup.sh, which the substrait-java clone below
+# is delegated to and which reads the same variable.
+pin() { case "${1:-}" in ""|latest) : ;; *) printf '==%s' "$1" ;; esac; }
 
 command -v protoc >/dev/null || { echo "protoc is not on PATH; the bindings cannot be generated" >&2; exit 1; }
 got="$(protoc --version | awk '{print $2}')"
@@ -147,7 +152,7 @@ python3 -m venv "$ENV_DIR"
   "protobuf==$RELATIONS_PROTOBUF_VERSION" pyyaml
 
 if [ -z "$ONLY" ] || [ "$ONLY" = "DUCKDB" ]; then
-  "$ENV_DIR/bin/pip" install --quiet --disable-pip-version-check "duckdb==$DUCKDB_VERSION"
+  "$ENV_DIR/bin/pip" install --quiet --disable-pip-version-check "duckdb$(pin "$DUCKDB_VERSION")"
   "$ENV_DIR/bin/python" - <<'PYEOF'
 import duckdb
 con = duckdb.connect()

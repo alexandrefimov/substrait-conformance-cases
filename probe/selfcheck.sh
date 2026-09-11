@@ -647,10 +647,12 @@ LINKPY
 
 echo
 echo "### the participants CI retakes are the ones the script accepts"
-# Five places name that list: the case labels in replay_column.sh, the two usage lines beside them,
-# and the matrix of each workflow. Adding a participant to the script and not to a workflow leaves a
-# column nobody retakes while the pages say otherwise, and adding it to one workflow and not the
-# other leaves it checked against the pin but never against a release. Neither is visible in a diff.
+# Six places name that list: the case labels in replay_column.sh, the two usage lines beside them,
+# the matrix of each workflow, and the loop in drift.yml that collects what the matrix left behind.
+# The relation corpus has four of its own, the same less the usage lines. Adding a participant to
+# the script and not to a workflow leaves a column nobody retakes while the pages say otherwise, and
+# adding it to one workflow and not the other leaves it checked against the pin but never against a
+# release. Neither is visible in a diff.
 #
 # There are two measurements and therefore two matrices, so each is attributed to the job it belongs
 # to rather than taken as the first one in the file. Read by position instead, adding the relations
@@ -696,9 +698,9 @@ def jobs(path):
                 break
     return found
 
-# The relation corpus is measured by its own script over its own participants. Its job is in
-# selfcheck.yml only: the weekly drift run does not retake those columns against today's releases
-# yet, which is a gap worth stating rather than a rule to enforce here.
+# The relation corpus is measured by its own script over its own participants, and each workflow
+# needs a job for it as it does for the other: selfcheck.yml holds a column to its pin, drift.yml to
+# today's release, and a script missing from one of them is a question nobody asks of its columns.
 relations = io.open("probe/relations/replay.sh", encoding="utf-8").read()
 relations_cases = set(re.findall(r"^\s*([A-Z]+)\)\s+runner=", relations, re.M))
 if not relations_cases:
@@ -706,9 +708,9 @@ if not relations_cases:
     raise SystemExit(1)
 WANTED = {"probe/replay_column.sh": cases, "probe/relations/replay.sh": relations_cases}
 
-seen = set()
-for wf in ("selfcheck", "drift"):
+for wf, asks in (("selfcheck", "against the pin"), ("drift", "against today's release")):
     path = ".github/workflows/%s.yml" % wf
+    seen = set()
     for name, job in sorted(jobs(path).items()):
         for script in job["runs"]:
             seen.add(script)
@@ -716,9 +718,22 @@ for wf in ("selfcheck", "drift"):
                 print("FAILED: %s job %s runs %s over no matrix" % (path, name, script))
                 raise SystemExit(1)
             sources["%s job %s" % (path, name)] = (job["matrix"], script)
-for script in sorted(set(WANTED) - seen):
-    print("FAILED: no workflow job runs %s, so its columns are retaken by nobody" % script)
-    raise SystemExit(1)
+    for script in sorted(set(WANTED) - seen):
+        print("FAILED: no job in %s runs %s, so its columns are never retaken %s"
+              % (path, script, asks))
+        raise SystemExit(1)
+
+# The job that writes results/DRIFT.txt collects the blocks by participant, one loop per corpus, and
+# a participant the matrix retakes and the loop does not name has its moves thrown away unread.
+record = io.open(".github/workflows/drift.yml", encoding="utf-8").read()
+loops = re.findall(r'for c in ([A-Z ]+); do\n\s*f="runs/drift-(relations-)?\$c/', record)
+for corpus, script in (("", "probe/replay_column.sh"), ("relations-", "probe/relations/replay.sh")):
+    named = [set(names.split()) for names, which in loops if which == corpus]
+    if len(named) != 1:
+        print("FAILED: .github/workflows/drift.yml has %d loops collecting the blocks %s leaves,"
+              " not one" % (len(named), script))
+        raise SystemExit(1)
+    sources[".github/workflows/drift.yml record loop over runs/drift-%s*" % corpus] = (named[0], script)
 
 bad = 0
 for name, got in sorted(sources.items()):
@@ -736,7 +751,7 @@ for name, got in sorted(sources.items()):
 if not bad:
     print("ok      %d participants in probe/replay_column.sh, its usage and both workflows: %s"
           % (len(cases), ", ".join(sorted(cases))))
-    print("ok      %d in probe/relations/replay.sh and the job that runs it: %s"
+    print("ok      %d in probe/relations/replay.sh and both workflows: %s"
           % (len(relations_cases), ", ".join(sorted(relations_cases))))
 raise SystemExit(bad)
 MATRIXPY
@@ -745,7 +760,7 @@ echo
 echo "### the drift log says what it claims to say"
 # results/DRIFT.txt is the one file in this repository a workflow writes rather than a person, and
 # it is written a week at a time by a job nobody watches. What can be checked is its shape: that
-# every block names a day, one of the participants the replay accepts and the revision it was built
+# every block names a day, one of the participants a replay accepts and the revision it was built
 # from; that the days do not run backwards; and that each block carries the two lines that let a
 # reader tell a moved answer from a changed corpus. A malformed block would otherwise sit there
 # looking like a record.
@@ -755,9 +770,13 @@ import io, re, sys
 LOG = "results/DRIFT.txt"
 script = io.open("probe/replay_column.sh", encoding="utf-8").read()
 known = set(re.findall(r"^\s*([A-Z]+)\)\s+SETUP_KEY=", script, re.M))
+# Both corpora write into this one log. A relation column is named by its path under results/, so a
+# move in the DuckDB of one corpus is never read as a move in the DuckDB of the other.
+relations = io.open("probe/relations/replay.sh", encoding="utf-8").read()
+known |= {"relations/" + n for n in re.findall(r"^\s*([A-Z]+)\)\s+runner=", relations, re.M)}
 
 lines = io.open(LOG, encoding="utf-8").read().split("\n")
-HEAD = re.compile(r"^##### (\d{4}-\d{2}-\d{2})  ([A-Z]+)  (\S.*)$")
+HEAD = re.compile(r"^##### (\d{4}-\d{2}-\d{2})  ((?:relations/)?[A-Z]+)  (\S.*)$")
 bad, blocks, previous = 0, 0, ""
 for i, line in enumerate(lines):
     if not line.startswith("#####"):
@@ -788,15 +807,18 @@ DRIFTPY
 
 echo
 echo "### the comparison a replayed column is judged by can tell a difference"
-# probe/replay_column.sh rebuilds a participant's environment and requires the answers to be
-# identical to the saved column. Everything about that run - the pinned version, the fresh venv, the
-# workflow - is worth nothing if the comparison at the end cannot report a difference, and a
-# comparison that always agrees looks exactly like a column that always reproduces. So it is given
-# columns that differ in each of the ways a column can differ, and required to say so.
+# probe/replay_column.sh and probe/relations/replay.sh rebuild a participant's environment and
+# require the answers to be identical to the saved column. Everything about that run - the pinned
+# version, the fresh venv, the workflow - is worth nothing if the comparison at the end cannot report
+# a difference, and a comparison that always agrees looks exactly like a column that always
+# reproduces. So it is given columns that differ in each of the ways a column can differ, and
+# required to say so - a column of each corpus, since a relation line carries a mark before the case
+# and a relation column writes a dead process as CRASH rather than ERROR.
 python3 - <<'DIFFPY' || FAILED=1
-import io, os, subprocess, sys, tempfile
+import io, os, re, subprocess, sys, tempfile
 
-COLUMN = "results/GO.txt"
+COLUMNS = (("results/GO.txt", "ERROR:"), ("results/relations/DUCKDB.txt", "CRASH:"))
+LINE = re.compile(r"^((?:score|observe)\s+)?(\S+)\s+(.*)$")
 
 
 def rows(text):
@@ -816,44 +838,49 @@ def diff(a, b):
     return p.returncode, p.stdout
 
 
-head, body = rows(io.open(COLUMN, encoding="utf-8").read())
-schema = next(i for i, l in enumerate(body) if not l.split(None, 1)[1].startswith("ERROR:"))
-refusal = next(i for i, l in enumerate(body) if l.split(None, 1)[1].startswith("ERROR:"))
 bad = 0
+for column, refused in COLUMNS:
+    head, body = rows(io.open(column, encoding="utf-8").read())
+    parsed = [LINE.match(l).groups() for l in body]
+    schema = next(i for i, (_, _, a) in enumerate(parsed) if a.startswith("["))
+    refusal = next(i for i, (_, _, a) in enumerate(parsed) if a.startswith(refused))
 
-with tempfile.TemporaryDirectory() as tmp:
-    same = written(tmp, "same.txt", body, "T: a second take")
-    rc, out = diff(COLUMN, same)
-    if rc != 0 or "0 of %d answers moved" % len(body) not in out:
-        print("FAILED: two takes of one column were not called identical: %s" % out.strip()); bad = 1
+    with tempfile.TemporaryDirectory() as tmp:
+        same = written(tmp, "same.txt", body, "T: a second take")
+        rc, out = diff(column, same)
+        if rc != 0 or "0 of %d answers moved" % len(body) not in out:
+            print("FAILED: two takes of %s were not called identical: %s" % (column, out.strip()))
+            bad = 1
 
-    # The three ways an answer can move. They are not one case: a schema that became a refusal and a
-    # refusal that became a schema are opposite findings, and the second is what an upstream fix
-    # looks like from here.
-    for label, index, value, kind in (
-        ("a changed schema", schema, "[made:up]", "answer"),
-        ("an answer that became a refusal", schema, "ERROR: made up", "lost"),
-        ("a refusal that became an answer", refusal, "[made:up]", "gained"),
-    ):
-        lines = list(body)
-        name = lines[index].split(None, 1)[0]
-        lines[index] = "%-46s %s" % (name, value)
-        rc, out = diff(COLUMN, written(tmp, "moved.txt", lines, "T: a second take"))
-        if rc == 0:
-            print("FAILED: %s was not reported as a difference" % label); bad = 1
-        elif name not in out or "1 %s" % kind not in out:
-            print("FAILED: %s was reported, but not as '%s' against %s: %s"
-                  % (label, kind, name, out.strip().splitlines()[-1])); bad = 1
+        # The three ways an answer can move. They are not one case: a schema that became a refusal
+        # and a refusal that became a schema are opposite findings, and the second is what an
+        # upstream fix looks like from here.
+        for label, index, value, kind in (
+            ("a changed schema", schema, "[made:up]", "answer"),
+            ("an answer that became a refusal", schema, refused + " made up", "lost"),
+            ("a refusal that became an answer", refusal, "[made:up]", "gained"),
+        ):
+            lines = list(body)
+            mark, name, _ = parsed[index]
+            lines[index] = "%s%-46s %s" % (mark or "", name, value)
+            rc, out = diff(column, written(tmp, "moved.txt", lines, "T: a second take"))
+            if rc == 0:
+                print("FAILED: in %s, %s was not reported as a difference" % (column, label)); bad = 1
+            elif name not in out or "1 %s" % kind not in out:
+                print("FAILED: in %s, %s was reported, but not as '%s' against %s: %s"
+                      % (column, label, kind, name, out.strip().splitlines()[-1])); bad = 1
 
-    # A case that stopped being answered at all. The count guard in replay_column.sh catches a short
-    # column first, but the comparison must not call a missing case an agreement either.
-    lines = [l for i, l in enumerate(body) if i != schema]
-    rc, out = diff(COLUMN, written(tmp, "short.txt", lines, "T: a second take"))
-    if rc == 0 or "1 gone" not in out:
-        print("FAILED: a case dropped from the column was not reported: %s" % out.strip()); bad = 1
+        # A case that stopped being answered at all. The count guard in replay_column.sh catches a
+        # short column first, but the comparison must not call a missing case an agreement either.
+        lines = [l for i, l in enumerate(body) if i != schema]
+        rc, out = diff(column, written(tmp, "short.txt", lines, "T: a second take"))
+        if rc == 0 or "1 gone" not in out:
+            print("FAILED: a case dropped from %s was not reported: %s" % (column, out.strip()))
+            bad = 1
 
 if not bad:
-    print("ok      identical columns agree; a changed, lost, gained or dropped answer is reported")
+    print("ok      identical columns agree; a changed, lost, gained or dropped answer is reported,"
+          " in a column of each corpus")
 raise SystemExit(bad)
 DIFFPY
 

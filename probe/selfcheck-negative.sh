@@ -434,6 +434,16 @@ corpus 5f9d391, inputs 4d7bb168ef648649
   emit_read                                      answer
 ''')"
 
+# The relation columns write into the same log under their path, and ACERO measures the other corpus
+# only: a block naming it there is a move attributed to a column that does not exist.
+mutate "a relation drift block naming nobody the relation replay retakes" "the replay does not accept" \
+  python3 -c "
+import io
+io.open('results/DRIFT.txt', 'a', encoding='utf-8').write('''##### 2026-09-14  relations/ACERO  pyarrow 25.0.1
+corpus a046105, inputs 4d7bb168ef648649
+relations/ACERO: 1 of 71 answers moved (1 answer), 0 gone, 0 new
+''')"
+
 # The list of participants CI retakes, which lives in five places and drifts silently.
 mutate "a participant the drift workflow does not retake" "the script accepts" \
   python3 -c "
@@ -444,6 +454,27 @@ m = re.search(r'^(\s*column: \[)([^\]]*)(\])', s, re.M)
 names = [n.strip() for n in m.group(2).split(',')]
 io.open(p, 'w', encoding='utf-8').write(
     s[:m.start()] + m.group(1) + ', '.join(names[:-1]) + m.group(3) + s[m.end():])"
+
+# The same list for the relation corpus, whose drift job is the second matrix in that file, and the
+# two ways of losing it that a matrix does not show: no job running its script at all, and a job
+# whose blocks the record step never collects.
+mutate "a relation participant the drift workflow does not retake" "probe/relations/replay.sh accepts" \
+  python3 -c "
+import io, re
+p = '.github/workflows/drift.yml'
+s = io.open(p, encoding='utf-8').read()
+m = list(re.finditer(r'^(\s*column: \[)([^\]]*)(\])', s, re.M))[1]
+names = [n.strip() for n in m.group(2).split(',')]
+io.open(p, 'w', encoding='utf-8').write(
+    s[:m.start()] + m.group(1) + ', '.join(names[:-1]) + m.group(3) + s[m.end():])"
+
+mutate "no drift job for the relation columns" "never retaken against today's release" \
+  replace .github/workflows/drift.yml "bash probe/relations/replay.sh" "bash probe/relations/retake.sh"
+
+mutate "a relation participant whose drift blocks are never collected" "record loop" \
+  replace .github/workflows/drift.yml 'for c in DUCKDB GO JAVA; do
+            f="runs/drift-relations-' 'for c in GO JAVA; do
+            f="runs/drift-relations-'
 
 mutate "a participant missing from the usage line" "the script accepts" \
   python3 -c "
@@ -616,6 +647,16 @@ mutate "a comparison that reports no difference" "was not reported as a differen
 # as a refusal becoming an answer.
 mutate "a difference reported under the wrong kind" "but not as" \
   replace probe/column_diff.py 'kind = ("refusal" if was and now else "lost" if now else "gained" if was else "answer")' 'kind = "answer"'
+
+# A relation column differs from the others in two ways the comparison has to know: a mark stands
+# before the case id, and a dead process is written CRASH. Read without the first, every line is
+# keyed "score" or "observe" and 71 answers collapse into two; without the second, DuckDB coming
+# back from a segfault reads as a changed answer rather than as the fix it would be.
+mutate "a relation line keyed by its mark" "were not called identical" \
+  replace probe/column_diff.py 'MARK.sub("", line, count=1).partition(" ")' 'line.partition(" ")'
+
+mutate "a dead process not counted as a refusal" "DUCKDB.txt, a refusal that became an answer was reported, but not as" \
+  replace probe/column_diff.py 'value.startswith(("ERROR: ", "CRASH: "))' 'value.startswith("ERROR: ")'
 
 # The picture and the page are drawn from the same verdicts as the counts beside them. Breaking the
 # drawing alone is what tells the two checks apart: one says the committed file is the generator's

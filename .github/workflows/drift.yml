@@ -1,7 +1,7 @@
-# The same four columns against today's release instead of the pinned one. A difference here is not
-# a failure: it says the participant moved since results/<NAME>.txt was taken, and names the cases
-# it moved on. selfcheck.yml is the other direction - the pinned versions, where a difference means
-# something in this repository is wrong.
+# The saved columns against today's release instead of the pinned one. A difference here is not a
+# failure: it says the participant moved since results/<NAME>.txt or results/relations/<NAME>.txt
+# was taken, and names the cases it moved on. selfcheck.yml is the other direction - the pinned
+# versions, where a difference means something in this repository is wrong.
 #
 # Weekly rather than per-push: nothing in a commit here changes what DuckDB released.
 name: drift
@@ -56,12 +56,46 @@ jobs:
           name: drift-${{ matrix.column }}
           path: run/
 
-  # One job writes the log, because the nine above run in parallel in separate checkouts and nine
-  # jobs appending to one file would race. It collects whatever blocks they left - a participant
-  # that did not move leaves none - and writes them in the order the matrix names, so a week's
-  # entries read the same way whichever job finished first.
+  # The relation columns, against the same releases. Their own job because they are retaken by their
+  # own script over their own participants; the setup is the one selfcheck.yml's relations job has,
+  # with today's go in place of the minimum for the reason given above.
+  relations:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        column: [DUCKDB, GO, JAVA]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libprotobuf-dev
+      - uses: actions/setup-go@v5
+        if: matrix.column == 'GO'
+        with:
+          go-version: stable
+      - id: java
+        if: matrix.column == 'JAVA'
+        run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        if: matrix.column == 'JAVA'
+        with:
+          distribution: temurin
+          java-version: ${{ steps.java.outputs.version }}
+      - run: LATEST=1 OUT=run bash probe/relations/replay.sh ${{ matrix.column }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drift-relations-${{ matrix.column }}
+          path: run/
+
+  # One job writes the log, because the twelve above run in parallel in separate checkouts and
+  # twelve jobs appending to one file would race. It collects whatever blocks they left - a
+  # participant that did not move leaves none - and writes them in the order the matrices name, the
+  # 98-plan columns first, so a week's entries read the same way whichever job finished first.
   record:
-    needs: drift
+    needs: [drift, relations]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -77,6 +111,10 @@ jobs:
           : > blocks
           for c in PYTHON GO DUCKDB ACERO VALIDATOR JAVA ISTHMUS SPARK DATAFUSION; do
             f="runs/drift-$c/$c.drift"
+            [ -s "$f" ] && cat "$f" >> blocks && echo >> blocks
+          done
+          for c in DUCKDB GO JAVA; do
+            f="runs/drift-relations-$c/$c.drift"
             [ -s "$f" ] && cat "$f" >> blocks && echo >> blocks
           done
           if [ -s blocks ]; then
