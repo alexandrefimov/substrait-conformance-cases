@@ -40,12 +40,18 @@ JAVA_FIELD = re.compile(r"(Decimal|PrecisionTimestamp|VarChar|FixedChar|FixedBin
 JAVA_ANY_FIELD = re.compile(r"([A-Za-z][A-Za-z0-9]*)\{([^{}]*)\}")
 
 def _nested_java(inner):
-    """A nested struct in java notation: Struct{...fields=[I64{..}, I64{..}]}."""
-    m = re.search(r"Struct\{nullable=(true|false), fields=\[(.*)\]\}\s*\]?\s*$", inner)
+    """A struct column in java notation: Struct{...fields=[I64{..}, I64{..}]}.
+
+    Its fields go through the same reader as a plain column's, so the token keeps what the other
+    notations keep: each field's parameters and a "?" on each nullable one, struct(i64,i64?).
+    """
+    m = re.match(r"Struct\{nullable=(true|false), fields=\[(.*)\]\}\s*\]?\s*$", inner)
     if not m:
         return None
-    kinds = [k.lower() for k, _ in JAVA_FIELD.findall(m.group(2))]
-    return ["struct(%s)" % ",".join(kinds), m.group(1) == "true"] if kinds else None
+    fields = _java_fields(m.group(2))
+    if not fields:
+        return None
+    return ["struct(%s)" % ",".join(t + ("?" if n else "") for t, n in fields), m.group(1) == "true"]
 
 def parse_java(s):
     """Struct{nullable=false, fields=[Decimal{nullable=false, scale=9, precision=38}]}"""
@@ -53,6 +59,12 @@ def parse_java(s):
     nested = _nested_java(inner)
     if nested is not None:
         return [nested]
+    # Read as plain columns, a struct's fields would stand in for the struct itself.
+    if "Struct{" in inner:
+        return None
+    return _java_fields(inner)
+
+def _java_fields(inner):
     # A field this parser does not know must not disappear: returning nothing makes the caller
     # report an unparsed answer and fail the run, which is the honest outcome.
     if len(JAVA_ANY_FIELD.findall(inner)) != len(JAVA_FIELD.findall(inner)):
@@ -81,10 +93,10 @@ def _nested_bracket(s):
     The trailing "!! names N, types M" is this project's own probe marker, not part of the answer.
     """
     s = re.sub(r"\s*!!.*$", "", s.strip())
-    m = re.match(r"^\[(?:[^:\[\]]*:)?\[([^\[\]]+)\]\]$", s)
+    m = re.match(r"^\[(?:[^:\[\]]*:)?\[([^\[\]]+)\](\??)\]$", s)
     if not m:
         return None
-    return [["struct(%s)" % ",".join(x.strip() for x in m.group(1).split(",")), False]]
+    return [["struct(%s)" % ",".join(x.strip() for x in m.group(1).split(",")), m.group(2) == "?"]]
 
 def parse_py(s):
     """[c0:i64, c1:i64?], [r:dec(38,9)], or a bare type i64 (how the validator prints a single one)."""
@@ -172,20 +184,24 @@ def _mapped(s, table):
 GO_T = {"string": "str", "boolean": "bool", "fp64": "fp64", "fp32": "fp32", "binary": "bin"}
 
 def parse_go(s):
-    """[r:decimal<11,2>, c:precision_timestamp<6>] - parameters in angle brackets, own names."""
+    """[r:decimal<11,2>, c:precision_timestamp<6>] - parameters in angle brackets, own names.
+
+    A nullable parameterized type carries its "?" before the brackets: decimal?<11,2>,
+    struct?<i64, i64?>.
+    """
     got = parse_py(s)
     if got is None:
         return None
     out = []
     for t, nullable in got:
-        if t.startswith("struct<"):
-            inner = t[len("struct<"):-1]
-            out.append(["struct(%s)" % ",".join(x.strip() for x in inner.split(",")), nullable])
-        elif "<" in t:
-            base, args = t[:t.index("<")], t[t.index("<") + 1:-1]
+        m = re.match(r"^([a-z_]+)(\??)<(.*)>$", t)
+        if m and m.group(1) == "struct":
+            out.append(["struct(%s)" % ",".join(x.strip() for x in m.group(3).split(",")),
+                        nullable or m.group(2) == "?"])
+        elif m:
             base = {"decimal": "dec", "varchar": "vchar", "fixedchar": "fchar",
-                    "fixedbinary": "fbin"}.get(base, base)
-            out.append(["%s(%s)" % (base, args), nullable])
+                    "fixedbinary": "fbin"}.get(m.group(1), m.group(1))
+            out.append(["%s(%s)" % (base, m.group(3)), nullable or m.group(2) == "?"])
         else:
             out.append([GO_T.get(t, t), nullable])
     return out
@@ -210,8 +226,10 @@ def parse_calcite(s):
     """
     m = re.match(r"^\[(?:[^:\[\]]*:)?ROW\[([^\[\]]+)\](\??)\]$", s.strip())
     if m:
-        inner = [CALCITE_T.get(x.strip().split(":")[-1], x.strip().split(":")[-1])
-                 for x in m.group(1).split(",")]
+        inner = []
+        for x in m.group(1).split(","):
+            t = x.strip().split(":")[-1]
+            inner.append(CALCITE_T.get(t.rstrip("?"), t.rstrip("?")) + ("?" if t.endswith("?") else ""))
         return [["struct(%s)" % ",".join(inner), m.group(2) == "?"]]
     got = _mapped(s, CALCITE_T)
     if got is None:

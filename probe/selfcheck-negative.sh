@@ -176,6 +176,23 @@ io.open('README.md', 'w', encoding='utf-8').write(
 mutate "an Acero parameterized type normalized to a plain type" "Acero parameterized-type parser" \
   replace probe/check_expected.py '{"varchar": "vchar", "fixed_char": "fchar"}' '{"varchar": "str", "fixed_char": "str"}'
 
+mutate "a struct's inner nullability dropped from the Java answer" "a nested struct loses nullability" \
+  replace probe/check_expected.py 't + ("?" if n else "") for t, n in fields' 't for t, n in fields'
+
+mutate "a nullable struct read as required from the python answer" "a nested struct loses nullability" \
+  replace probe/check_expected.py 'm.group(1).split(",")), m.group(2) == "?"]]' 'm.group(1).split(",")), False]]'
+
+mutate "the ? before a Go type's brackets ignored" "Go parameterized-type parser" \
+  replace probe/check_expected.py 'out.append(["%s(%s)" % (base, m.group(3)), nullable or m.group(2) == "?"])' 'out.append(["%s(%s)" % (base, m.group(3)), nullable])'
+
+mutate "the ? before a Go struct's brackets ignored" "a nested struct loses nullability" \
+  replace probe/check_expected.py 'm.group(3).split(",")),
+                        nullable or m.group(2) == "?"])' 'm.group(3).split(",")),
+                        nullable])'
+
+mutate "a nullable Calcite field inside a ROW left unmapped" "a nested struct loses nullability" \
+  replace probe/check_expected.py 'CALCITE_T.get(t.rstrip("?"), t.rstrip("?")) + ("?" if t.endswith("?") else "")' 'CALCITE_T.get(t, t)'
+
 mutate "a number in the results table" "README says" \
   python3 -c "
 import io, re

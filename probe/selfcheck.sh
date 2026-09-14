@@ -141,6 +141,27 @@ if parsers["parse_acero"](sample) != [["vchar(17)", False], ["fchar(8)", True], 
     raise SystemExit(1)
 print("ok      Acero parameterized types retain widths, kinds and nullability")
 
+# substrait-go writes a nullable parameterized type as decimal?<11,2>, and no saved answer has one.
+sample = "[a:decimal?<11,2>, b:varchar<17>, c:precision_timestamp?<6>]"
+if parsers["parse_go"](sample) != [["dec(11,2)", True], ["vchar(17)", False], ["precision_timestamp(6)", True]]:
+    print("FAILED: Go parameterized-type parser lost a width, kind or nullability")
+    raise SystemExit(1)
+print("ok      Go parameterized types retain widths, kinds and nullability")
+
+# The one struct expectation, phase_intermediate, is required inside as well as outside, and so is
+# every answer to it that the check reads, so the saved columns cannot show a reader that drops
+# either flag. The same nullable struct with one nullable field is given here as each probe prints it.
+nested = [("parse_java", "Struct{nullable=false, fields=[Struct{nullable=true, fields=[I64{nullable=false}, I64{nullable=true}]}]}"),
+          ("parse_py", "[r:[i64, i64?]?]"),
+          ("parse_py", "[[i64, i64?]?]"),
+          ("parse_go", "[r:struct?<i64, i64?>]"),
+          ("parse_calcite", "[r:ROW[f0:BIGINT, f1:BIGINT?]?]")]
+lost = [s for fn, s in nested if parsers[fn](s) != [["struct(i64,i64?)", True]]]
+if lost:
+    print("FAILED: a nested struct loses nullability inside or outside: %s" % lost[0])
+    raise SystemExit(1)
+print("ok      nested structs keep nullability inside and outside, in all four notations")
+
 bad = 0
 for label, col, fmt in COLUMNS:
     out = subprocess.run([sys.executable, "probe/check_expected.py", "results/" + col + ".txt", fmt],
