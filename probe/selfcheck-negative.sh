@@ -176,6 +176,29 @@ io.open('README.md', 'w', encoding='utf-8').write(
 mutate "an Acero parameterized type normalized to a plain type" "Acero parameterized-type parser" \
   replace probe/check_expected.py '{"varchar": "vchar", "fixed_char": "fchar"}' '{"varchar": "str", "fixed_char": "str"}'
 
+mutate "a struct's inner nullability dropped from the Java answer" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'return _struct(fields, m.group(1) == "true")' 'return _struct([[t, False] for t, _ in fields], m.group(1) == "true")'
+
+mutate "a nullable struct read as required from the python answer" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'fields = parse_py("[%s]" % m.group(1))
+    return [_struct(fields, m.group(2) == "?")]' 'fields = parse_py("[%s]" % m.group(1))
+    return [_struct(fields, False)]'
+
+mutate "the validator's field names kept inside a struct" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'fields = parse_py("[%s]" % m.group(1))' 'fields = [[x.strip(), False] for x in m.group(1).split(",")]'
+
+mutate "the ? before a Go type's brackets ignored" "Go parameterized-type parser" \
+  replace probe/check_expected.py 'out.append(["%s(%s)" % (base, m.group(3)), nullable or m.group(2) == "?"])' 'out.append(["%s(%s)" % (base, m.group(3)), nullable])'
+
+mutate "the ? before a Go struct's brackets ignored" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'out.append(_struct(fields, nullable or m.group(2) == "?"))' 'out.append(_struct(fields, nullable))'
+
+mutate "a Go struct's fields left in Go's type names" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'fields = parse_go("[%s]" % m.group(3))' 'fields = parse_py("[%s]" % m.group(3))'
+
+mutate "a ROW's fields left in Calcite's type names" "a nested struct loses a field's type or nullability" \
+  replace probe/check_expected.py 'fields = parse_calcite("[%s]" % m.group(1))' 'fields = parse_py("[%s]" % m.group(1))'
+
 mutate "a number in the results table" "README says" \
   python3 -c "
 import io, re
