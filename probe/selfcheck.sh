@@ -148,19 +148,30 @@ if parsers["parse_go"](sample) != [["dec(11,2)", True], ["vchar(17)", False], ["
     raise SystemExit(1)
 print("ok      Go parameterized types retain widths, kinds and nullability")
 
-# The one struct expectation, phase_intermediate, is required inside as well as outside, and so is
-# every answer to it that the check reads, so the saved columns cannot show a reader that drops
-# either flag. The same nullable struct with one nullable field is given here as each probe prints it.
-nested = [("parse_java", "Struct{nullable=false, fields=[Struct{nullable=true, fields=[I64{nullable=false}, I64{nullable=true}]}]}"),
-          ("parse_py", "[r:[i64, i64?]?]"),
-          ("parse_py", "[[i64, i64?]?]"),
-          ("parse_go", "[r:struct?<i64, i64?>]"),
-          ("parse_calcite", "[r:ROW[f0:BIGINT, f1:BIGINT?]?]")]
-lost = [s for fn, s in nested if parsers[fn](s) != [["struct(i64,i64?)", True]]]
+# The one struct expectation, phase_intermediate, holds two required i64, and so does every answer to
+# it that the check reads, so the saved columns cannot show a reader that loses a field's type or a
+# nullability flag inside or outside. These are the answers substrait-java, substrait-python, the
+# validator, substrait-go and Isthmus gave for a read of one struct column holding a required
+# decimal(10,2) and a nullable i64, named a and b: first with the struct required, then nullable.
+# Isthmus makes every field of the nullable one nullable, substrait-java#1154, and the check must
+# show that as it is.
+R, N = [["struct(dec(10,2),i64?)", False]], [["struct(dec(10,2),i64?)", True]]
+nested = [
+    ("parse_java", "Struct{nullable=false, fields=[Struct{nullable=false, fields=[Decimal{nullable=false, scale=2, precision=10}, I64{nullable=true}]}]}", R),
+    ("parse_py", "[s:[dec(10,2), i64?]]  !! names 3, types 1", R),
+    ("parse_py", "[s:[a:dec(10,2), b:i64?]]", R),
+    ("parse_go", "[s:struct<decimal<10,2>, i64?>]", R),
+    ("parse_calcite", "[s:ROW[a:DECIMAL(10,2), b:BIGINT?]]", R),
+    ("parse_java", "Struct{nullable=false, fields=[Struct{nullable=true, fields=[Decimal{nullable=false, scale=2, precision=10}, I64{nullable=true}]}]}", N),
+    ("parse_py", "[s:[dec(10,2), i64?]?]  !! names 3, types 1", N),
+    ("parse_py", "[s:[a:dec(10,2), b:i64?]?]", N),
+    ("parse_go", "[s:struct?<decimal<10,2>, i64?>]", N),
+    ("parse_calcite", "[s:ROW[a:DECIMAL(10,2)?, b:BIGINT?]?]", [["struct(dec(10,2)?,i64?)", True]])]
+lost = [(s, parsers[fn](s)) for fn, s, want in nested if parsers[fn](s) != want]
 if lost:
-    print("FAILED: a nested struct loses nullability inside or outside: %s" % lost[0])
+    print("FAILED: a nested struct loses a field's type or nullability: %s read as %s" % lost[0])
     raise SystemExit(1)
-print("ok      nested structs keep nullability inside and outside, in all four notations")
+print("ok      nested structs keep their fields' types and nullability, in all four notations")
 
 bad = 0
 for label, col, fmt in COLUMNS:

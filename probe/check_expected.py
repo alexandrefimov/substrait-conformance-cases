@@ -39,19 +39,23 @@ JAVA_FIELD = re.compile(r"(Decimal|PrecisionTimestamp|VarChar|FixedChar|FixedBin
 # drops what it cannot read is worse than one that stops, so the two counts are compared below.
 JAVA_ANY_FIELD = re.compile(r"([A-Za-z][A-Za-z0-9]*)\{([^{}]*)\}")
 
-def _nested_java(inner):
-    """A struct column in java notation: Struct{...fields=[I64{..}, I64{..}]}.
+def _struct(fields, nullable):
+    """The token a struct column becomes in every notation: struct(dec(10,2),i64?).
 
-    Its fields go through the same reader as a plain column's, so the token keeps what the other
-    notations keep: each field's parameters and a "?" on each nullable one, struct(i64,i64?).
+    Each notation reads the fields with the reader it uses for plain columns, so a field's type is
+    named the way the expectations name it, and a "?" marks each nullable field.
     """
+    return ["struct(%s)" % ",".join(t + ("?" if n else "") for t, n in fields), nullable]
+
+def _nested_java(inner):
+    """A struct column in java notation: Struct{...fields=[I64{..}, I64{..}]}."""
     m = re.match(r"Struct\{nullable=(true|false), fields=\[(.*)\]\}\s*\]?\s*$", inner)
     if not m:
         return None
     fields = _java_fields(m.group(2))
     if not fields:
         return None
-    return ["struct(%s)" % ",".join(t + ("?" if n else "") for t, n in fields), m.group(1) == "true"]
+    return _struct(fields, m.group(1) == "true")
 
 def parse_java(s):
     """Struct{nullable=false, fields=[Decimal{nullable=false, scale=9, precision=38}]}"""
@@ -90,13 +94,16 @@ def _java_fields(inner):
 def _nested_bracket(s):
     """substrait-python and the validator print a nested struct as [i64, i64] inside the column.
 
+    The validator also names the fields of a struct that has names, [s:[a:dec(10,2), b:i64?]], and
+    reading the fields as a column list drops those names the way it drops column names.
     The trailing "!! names N, types M" is this project's own probe marker, not part of the answer.
     """
     s = re.sub(r"\s*!!.*$", "", s.strip())
     m = re.match(r"^\[(?:[^:\[\]]*:)?\[([^\[\]]+)\](\??)\]$", s)
     if not m:
         return None
-    return [["struct(%s)" % ",".join(x.strip() for x in m.group(1).split(",")), m.group(2) == "?"]]
+    fields = parse_py("[%s]" % m.group(1))
+    return [_struct(fields, m.group(2) == "?")] if fields else None
 
 def parse_py(s):
     """[c0:i64, c1:i64?], [r:dec(38,9)], or a bare type i64 (how the validator prints a single one)."""
@@ -196,8 +203,10 @@ def parse_go(s):
     for t, nullable in got:
         m = re.match(r"^([a-z_]+)(\??)<(.*)>$", t)
         if m and m.group(1) == "struct":
-            out.append(["struct(%s)" % ",".join(x.strip() for x in m.group(3).split(",")),
-                        nullable or m.group(2) == "?"])
+            fields = parse_go("[%s]" % m.group(3))
+            if not fields:
+                return None
+            out.append(_struct(fields, nullable or m.group(2) == "?"))
         elif m:
             base = {"decimal": "dec", "varchar": "vchar", "fixedchar": "fchar",
                     "fixedbinary": "fbin"}.get(m.group(1), m.group(1))
@@ -226,11 +235,8 @@ def parse_calcite(s):
     """
     m = re.match(r"^\[(?:[^:\[\]]*:)?ROW\[([^\[\]]+)\](\??)\]$", s.strip())
     if m:
-        inner = []
-        for x in m.group(1).split(","):
-            t = x.strip().split(":")[-1]
-            inner.append(CALCITE_T.get(t.rstrip("?"), t.rstrip("?")) + ("?" if t.endswith("?") else ""))
-        return [["struct(%s)" % ",".join(inner), m.group(2) == "?"]]
+        fields = parse_calcite("[%s]" % m.group(1))
+        return [_struct(fields, m.group(2) == "?")] if fields else None
     got = _mapped(s, CALCITE_T)
     if got is None:
         return None
