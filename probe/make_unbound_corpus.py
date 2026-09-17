@@ -1,6 +1,6 @@
 """Rewrite the name a plan's function calls are declared under, three ways.
 
-    python3 probe/make_unbound_corpus.py <input dir> <output dir> control|signature|unknown
+    python3 probe/make_unbound_corpus.py <input dir> <output dir> control|mismatch|signature|unknown
 
 The declaration swap asks whether a consumer repeats the output type the plan
 states. This asks a different question: whether it resolves the call at all.
@@ -15,6 +15,14 @@ can be refused for a shape the plan no longer has.
               other two columns cannot be read. multiply and divide have no
               partner that returns the same type, so their cases get no control
               and are left out of that corpus rather than given a wrong one.
+  mismatch    the compound name keeps its short part and takes argument types that are declared
+              under the same URN but are not the ones the call passes: add:i32_i32 becomes
+              add:i8_i8 over i32 arguments. The key exists, so a participant that only checks for
+              its presence accepts; one that checks the key against the call refuses. The
+              alternative has to live in the same extension file, or the key would simply be absent
+              and this would be the `unknown` column again, which is why only add:i32_i32, avg:i64
+              and sum:i64 can carry it. sum is the one where the alternative returns what the
+              original returns, so a refusal there is about the arguments and nothing else.
   signature   the compound name keeps its short part and takes argument types no
               impl declares: add:dec_dec becomes add:str_str. A consumer that
               resolves the short name against the actual arguments binds this
@@ -31,6 +39,10 @@ import json, os, sys
 # which is what a control exists to rule out. The rewrite is per declaration and a declaration is
 # shared by every call that references it, so the exclusion is per case: a case whose swapped anchor
 # is referenced from a join stays out of the control corpus.
+# short name -> (suffix in the corpus, a suffix declared under the same URN that the call does not
+# match). Nothing here crosses an extension file.
+MISMATCH = {"add:i32_i32": "add:i8_i8", "avg:i64": "avg:i8", "sum:i64": "sum:i8"}
+
 PARTNER = {"add": "subtract", "subtract": "add",
            "equal": "not_equal", "not_equal": "equal",
            "is_null": "is_not_null", "is_not_null": "is_null"}
@@ -43,6 +55,8 @@ def rewrite(name, mode):
     if mode == "control":
         other = PARTNER.get(short)
         return None if other is None else "%s:%s" % (other, sig)
+    if mode == "mismatch":
+        return MISMATCH.get(name)
     if mode == "signature":
         return "%s:%s" % (short, "_".join(["str"] * max(1, len(sig.split("_")))))
     if mode == "unknown":
