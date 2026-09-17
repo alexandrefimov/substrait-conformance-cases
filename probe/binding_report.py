@@ -28,18 +28,19 @@ def refused(v):
 
 def main():
     out = sys.argv[1]
-    print("%-12s %-24s %-24s %-24s" % ("", "control", "signature", "unknown"))
-    print("%-12s %-24s %-24s %-24s" % ("", "same / refused / n", "same / refused / n", "same / refused / n"))
+    modes = ("control", "mismatch", "signature", "unknown")
+    print("%-12s" % "" + "".join("%-22s" % m for m in modes))
+    print("%-12s" % "" + "".join("%-22s" % "same / refused / n" for _ in modes))
     for n in NAMES:
         orig = col("%s/%s.orig.txt" % (out, n))
         if not orig:
             print("%-12s no run" % n)
             continue
         row, clean = "%-12s" % n, True
-        for mode in ("control", "signature", "unknown"):
+        for mode in modes:
             c = col("%s/%s.%s.txt" % (out, n, mode))
             if not c:
-                row += "%-24s" % "no run"
+                row += "%-22s" % "no run"
                 continue
             shared = [k for k in c if k in orig]
             same = sum(1 for k in shared if c[k] == orig[k])
@@ -47,7 +48,7 @@ def main():
             if mode == "control" and ref:
                 clean = False
             cell = "%d / %d / %d" % (same, ref, len(shared))
-            row += "%-24s" % (cell if (clean or mode == "control") else cell + " *")
+            row += "%-22s" % (cell if (clean or mode == "control") else cell + " *")
         print(row + ("" if clean else "   * control not clean"))
 
 

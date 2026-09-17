@@ -175,10 +175,17 @@ rewrites `Plan.extensions[].extensionFunction.name` three ways and leaves everyt
 a refusal cannot be about a shape the plan no longer has. [results/BINDING.txt](results/BINDING.txt)
 is the saved run, over the same nine participants.
 
-The rewrites are a control, a name whose argument types no implementation declares, and a name no
-extension file declares at all. The control exists because a refusal has to be attributable: a
-participant that objects to the rewrite itself has not been asked the question, and its other two
-columns cannot be read. It is clean for all nine.
+The rewrites are a control, a key declared under the same URN that the call does not match, a name
+whose argument types no implementation declares, and a name no extension file declares at all. The
+control exists because a refusal has to be attributable: a participant that objects to the rewrite
+itself has not been asked the question, and its other columns cannot be read. It is clean for all
+nine.
+
+Nothing refuses the mismatched key. Every participant accepts `sum:i8` over an `i64` argument,
+including the three that refuse a key they cannot find, and `sum:i8` returns what `sum:i64` returns,
+so the declared output type still agrees and a refusal could only have been about the arguments.
+Looking a key up and checking it against the call are different things, and only the first happens
+anywhere here.
 
 Four behaviours come out of it. substrait-java, Isthmus and Spark look the compound key up in the
 loaded extension. DuckDB, DataFusion and Acero resolve the short name against their own registry

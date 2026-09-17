@@ -13,6 +13,11 @@
 #              same signature, same return. Every answer should be the answer to the original plan.
 #              A refusal here means the rewrite itself is what the participant objects to, and that
 #              participant's other two columns say nothing.
+#   mismatch   the key names argument types declared under the same URN that the call does not pass:
+#              add:i32_i32 becomes add:i8_i8 over i32 arguments. A refusal means the key is checked
+#              against the call and not merely looked up. Only three names can carry it without
+#              crossing an extension file, and sum is the one whose alternative returns what the
+#              original returns, so a refusal there is about the arguments alone.
 #   signature  add:dec_dec becomes add:str_str. A refusal means the argument types in the compound
 #              name are checked; an unchanged answer means the short name is resolved against the
 #              real arguments instead, which is a different way of binding rather than none.
@@ -26,7 +31,7 @@ ROOT="$(cd "$PROBE/.." && pwd)"
 OUT="${1:-$(mktemp -d)}"
 CASES="$ROOT/derived-schema"
 
-for mode in control signature unknown; do
+for mode in control mismatch signature unknown; do
   python3 "$PROBE/make_unbound_corpus.py" "$CASES" "$OUT/$mode" "$mode" || exit 1
 done
 
@@ -35,7 +40,7 @@ done
 if CP="$(bash "$PROBE/cp.sh" core 2>/dev/null)"; then
   javac -nowarn -cp "$CP" -d "$OUT/bincls" "$ROOT/gen/JsonToBin.java" 2>/dev/null || CP=""
 fi
-for mode in control signature unknown; do
+for mode in control mismatch signature unknown; do
   [ -n "$CP" ] && java -cp "$OUT/bincls:$CP" JsonToBin "$OUT/$mode" >/dev/null 2>&1
 done
 [ -n "$CP" ] || echo "no substrait-java classpath: substrait-go and Acero will be skipped"
@@ -57,7 +62,7 @@ run_one() { # <participant> <corpus> <raw path>
 for spec in "JAVA:line" "PYTHON:line" "VALIDATOR:block" "DUCKDB:block" "GO:block" \
             "ACERO:block" "DATAFUSION:block" "ISTHMUS:block" "SPARK:line"; do
   name="${spec%%:*}"; fmt="${spec##*:}"
-  for variant in orig control signature unknown; do
+  for variant in orig control mismatch signature unknown; do
     src="$CASES"; [ "$variant" != orig ] && src="$OUT/$variant"
     run_one "$name" "$src" "$OUT/$name.$variant.raw"
     python3 "$PROBE/normalize.py" "$OUT/$name.$variant.raw" "$fmt" "$name $variant" \

@@ -2,16 +2,18 @@ Whether the function a call names is resolved: probe/binding_matrix.sh, 2026-09-
 
 Only Plan.extensions[].extensionFunction.name is rewritten. Arguments, schemas and declared output
 types stay exactly as they were, so nothing here can be refused for a shape the plan no longer has.
-Three rewrites, and each answer is read against the first:
+Four rewrites, and each answer is read against the first:
 
   control    a partner with the same signature and the same return - add for subtract, is_null for
              is_not_null, equal for not_equal away from a join key. Every answer should be the answer
              to the original plan. A refusal here means the rewrite itself is what the participant
-             objects to, and its other two columns say nothing.
+             objects to, and its other columns say nothing.
+  mismatch   a key declared under the same URN that the call does not match: add:i32_i32 becomes
+             add:i8_i8 over i32 arguments, sum:i64 becomes sum:i8 over an i64 one. The key exists,
+             so looking it up succeeds; only checking it against the call can fail.
   signature  add:dec_dec becomes add:str_str: the short name stands, the argument types in the
-             compound name do not. A refusal means those types are checked against the declaration.
-             An unchanged answer means the short name is resolved some other way, not that nothing
-             is resolved.
+             compound name do not. A refusal means the key as a whole is checked. An unchanged
+             answer means the short name is resolved some other way, not that nothing is resolved.
   unknown    the short name becomes one no extension file declares. A refusal means names are
              resolved at all; an unchanged answer means the call is carried through unbound.
 
@@ -22,19 +24,32 @@ conversion for not_equal, so swapping one would refuse for a reason that is not 
 rewrite is per declaration and a declaration is shared by every call that references it, which is
 why that exclusion is per case rather than per call.
 
-             control                  signature                unknown                 
-             same / refused / n       same / refused / n       same / refused / n      
-JAVA        17 / 0 / 18             12 / 27 / 40            12 / 27 / 40            
-PYTHON      17 / 0 / 18             39 / 0 / 40             39 / 0 / 40             
-VALIDATOR   17 / 0 / 18             39 / 0 / 40             39 / 0 / 40             
-DUCKDB      16 / 0 / 18             39 / 0 / 40             16 / 20 / 40            
-GO          17 / 0 / 18             15 / 22 / 40            34 / 5 / 40             
-ACERO       17 / 0 / 18             39 / 0 / 40             23 / 12 / 40            
-DATAFUSION  17 / 0 / 18             39 / 0 / 40             18 / 20 / 40            
-ISTHMUS     17 / 0 / 18             12 / 18 / 40            12 / 18 / 40            
-SPARK       17 / 0 / 18             12 / 16 / 40            12 / 16 / 40            
+mismatch reaches six cases. An alternative signature has to be declared in the same extension file
+or the key would simply be absent, which is the unknown column again, and only add:i32_i32, avg:i64
+and sum:i64 have one. sum is the useful one twice over: sum:i8 returns the i64? that sum:i64
+returns, so the declared output type still agrees with the key and a refusal there could only be
+about the arguments.
 
-Four behaviours, and the control is clean for all nine.
+            control               mismatch              signature             unknown               
+            same / refused / n    same / refused / n    same / refused / n    same / refused / n    
+JAVA        17 / 0 / 18           6 / 0 / 7             12 / 27 / 40          12 / 27 / 40          
+PYTHON      17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           39 / 0 / 40           
+VALIDATOR   17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           39 / 0 / 40           
+DUCKDB      16 / 0 / 18           6 / 0 / 7             39 / 0 / 40           16 / 20 / 40          
+GO          17 / 0 / 18           6 / 0 / 7             15 / 22 / 40          34 / 5 / 40           
+ACERO       17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           23 / 12 / 40          
+DATAFUSION  17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           18 / 20 / 40          
+ISTHMUS     17 / 0 / 18           4 / 0 / 7             12 / 18 / 40          12 / 18 / 40          
+SPARK       17 / 0 / 18           6 / 0 / 7             12 / 16 / 40          12 / 16 / 40          
+
+Nothing refuses the mismatch. Every participant accepts sum:i8 over an i64 argument and add:i8_i8
+over i32 ones, including the three that refuse a key they cannot find. Looking the key up and
+checking it against the call are different things, and only the first is done anywhere here.
+Isthmus's count of unchanged answers is lower than the rest for a reason that is not a changed
+answer: two of its six cases refuse in both corpora with a message that prints the function name,
+so the text moves when the name does.
+
+Four behaviours on the other columns, and the control is clean for all nine.
 
 substrait-java, Isthmus and Spark look the compound key up in the loaded extension and refuse both
 rewrites alike: "Unexpected scalar function with key add:str_str. The URN ... is loaded but no
@@ -46,11 +61,11 @@ the declaration. add:str_str binds, because add is one of their own; no_such_fun
 substrait-python and substrait-validator resolve nothing. A plan naming a function no extension file
 declares passes both, unchanged, on every case.
 
-substrait-go is not measured here. It parses the compound name's suffix as a type string and fails
-there - "mismatched input 'str' expecting {'IF','FUNC','BOOLEAN','I8',...}" - before any lookup, and
-on the unknown corpus it fails the same way on 'dec'. Its two counts describe that parse, not
-binding, and are left in the table rather than removed so the next reader does not take them for an
-answer.
+substrait-go is not measured on signature and unknown. It parses the compound name's suffix as a
+type string and fails there - "mismatched input 'str' expecting {'IF','FUNC','BOOLEAN','I8',...}" -
+before any lookup, and on the unknown corpus it fails the same way on 'dec'. Those two counts
+describe that parse, not binding, and are left in the table rather than removed so the next reader
+does not take them for an answer. Its mismatch column parses and is measured.
 
 Read beside results/LIE.txt: of the five participants whose answer follows a swapped output type,
 two - substrait-python and the validator - never resolve the function either, so their schema comes
