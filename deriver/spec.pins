@@ -1,0 +1,13 @@
+# The extension files this deriver reads a rule out of, pinned by content rather than by version.
+#
+# The plans declare spec 0.102, and the rules behind the expectations were read at v0.102.0, so a
+# run against a checkout serving other bytes is measuring a different text. The four files here are
+# the ones the corpus reaches; the rest of extensions/ is indexed by URN but no rule is taken from
+# it, so pinning it would only make an unrelated edit upstream stop this run.
+#
+# Regenerate with:
+#   git -C <substrait checkout> ls-tree v0.102.0 extensions/ | awk '{print $3 "  " $4}'
+1fb11fc89fe1663543740c0f45ca47168fc779fc  extensions/functions_aggregate_generic.yaml
+d4b8db5dc1f0372e565635bfc1a9b75a1ea7d707  extensions/functions_arithmetic.yaml
+50eb32dca7f4eb45ab9c36d1dad4425a3f32da0a  extensions/functions_arithmetic_decimal.yaml
+a07fd29e61dd2ed4bb4d58fd3142785d20d589c9  extensions/functions_comparison.yaml

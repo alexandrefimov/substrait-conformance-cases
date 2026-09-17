@@ -1,0 +1,139 @@
+{
+ "extensions": [
+  {
+   "extensionFunction": {
+    "functionAnchor": 6,
+    "name": "add:i64_i64",
+    "extensionUrnReference": 6
+   }
+  }
+ ],
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "project": {
+      "common": {
+       "direct": {}
+      },
+      "input": {
+       "read": {
+        "common": {
+         "direct": {}
+        },
+        "baseSchema": {
+         "names": [
+          "c0",
+          "c1"
+         ],
+         "struct": {
+          "types": [
+           {
+            "i64": {
+             "nullability": "NULLABILITY_REQUIRED"
+            }
+           },
+           {
+            "i64": {
+             "nullability": "NULLABILITY_NULLABLE"
+            }
+           }
+          ],
+          "nullability": "NULLABILITY_REQUIRED"
+         }
+        },
+        "virtualTable": {
+         "expressions": []
+        }
+       }
+      },
+      "expressions": [
+       {
+        "scalarFunction": {
+         "functionReference": 6,
+         "outputType": {
+          "i64": {
+           "nullability": "NULLABILITY_REQUIRED"
+          }
+         },
+         "arguments": [
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {}
+             },
+             "rootReference": {}
+            }
+           }
+          },
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {}
+             },
+             "rootReference": {}
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "scalarFunction": {
+         "functionReference": 6,
+         "outputType": {
+          "i64": {
+           "nullability": "NULLABILITY_NULLABLE"
+          }
+         },
+         "arguments": [
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {}
+             },
+             "rootReference": {}
+            }
+           }
+          },
+          {
+           "value": {
+            "selection": {
+             "directReference": {
+              "structField": {
+               "field": 1
+              }
+             },
+             "rootReference": {}
+            }
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    "names": [
+     "c0",
+     "c1",
+     "rr",
+     "rn"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ },
+ "extensionUrns": [
+  {
+   "extensionUrnAnchor": 6,
+   "urn": "extension:io.substrait:functions_arithmetic"
+  }
+ ]
+}

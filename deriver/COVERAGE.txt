@@ -1,0 +1,54 @@
+Which of the deriver's rules this corpus pins: probe by deriver/mutants.py.
+
+Each rule is replaced by another reading of the same specification sentence and the scored cases
+are rederived. A reading the corpus tells apart is a rule some case pins. A reading it does not
+is a rule stated in deriver/ and checked by nothing - agreement on it means nothing until a case
+exists. Regenerate with:
+
+  SUBSTRAIT_DIR=<substrait checkout> python3 -m deriver.mutants --verbose > deriver/COVERAGE.txt
+
+37 alternative readings: 34 the corpus tells apart, 3 it does not
+
+told apart:
+  read: the projection mask is ignored                     1 case(s): read_projection_mask
+  project: the new expressions come before the input       8 case(s): decimal_add, decimal_add_overflow, decimal_divide
+  emit: the output mapping is ignored                      17 case(s): aggregate_grouping_field_shared_by_sets, aggregate_grouping_sets_declared_order, decimal_add
+  join inner: the right side becomes nullable              6 case(s): control_join_without_relcommon, join_inner, joineq_inner
+  join left: the right side stays required                 5 case(s): join_left, joineq_left, physjoin_hash_left
+  join right: the right side is nulled instead of the left 2 case(s): join_right, joineq_right
+  join left single: the right side stays required          2 case(s): join_left_single, joineq_left_single
+  join right single: the output is right then left         2 case(s): join_right_single, joineq_right_single
+  join right mark: the mark is appended to the left side   2 case(s): join_right_mark, joineq_right_mark
+  join mark: the mark column is required                   7 case(s): join_left_mark, join_right_mark, joineq_left_mark
+  join outer: neither side becomes nullable                2 case(s): join_outer, joineq_outer
+  join left anti: both sides are returned                  2 case(s): join_left_anti, joineq_left_anti
+  join right anti: the left side is returned               2 case(s): join_right_anti, joineq_right_anti
+  join right semi: the left side is returned               5 case(s): join_right_semi, joineq_right_semi, physjoin_hash_right_semi
+  join left mark: the mark is appended to the right side   5 case(s): join_left_mark, joineq_left_mark, physjoin_hash_left_mark
+  join semi: both sides are returned                       2 case(s): join_left_semi, joineq_left_semi
+  cross: the output becomes nullable                       1 case(s): cross_preserves_nullability
+  set minus: nullable if any input is                      3 case(s): setop_minus_multiset, setop_minus_primary, setop_minus_primary_all
+  set intersection primary: the multiset rule              1 case(s): setop_intersection_primary
+  set intersection multiset: nullable if any input is      2 case(s): setop_intersection_multiset, setop_intersection_multiset_all
+  set union: required if any input is                      2 case(s): setop_union_all, setop_union_distinct
+  aggregate: measures come before the grouping expressions 1 case(s): aggregate_grouping_then_measure
+  aggregate: a grouping expression is nullable only if in no set 3 case(s): aggregate_grouping_field_shared_by_sets, aggregate_grouping_set_index, aggregate_grouping_sets_declared_order
+  aggregate: the grouping-set index is always appended     1 case(s): aggregate_grouping_then_measure
+  aggregate: the grouping-set index is never appended      1 case(s): aggregate_grouping_set_index
+  the appended index column is nullable                    3 case(s): aggregate_grouping_set_index, expand_consistent_fields, expand_switching_nullability
+  the appended index column is i64                         3 case(s): aggregate_grouping_set_index, expand_consistent_fields, expand_switching_nullability
+  expand: no duplicate-index column                        2 case(s): expand_consistent_fields, expand_switching_nullability
+  expand: the index column comes first                     2 case(s): expand_consistent_fields, expand_switching_nullability
+  expand: a switching field is required if any duplicate is 1 case(s): expand_switching_nullability
+  window: the window columns come before the input         3 case(s): window_bound_offset, window_bound_offset_expr, window_output_order
+  functions: MIRROR does not propagate nullability         1 case(s): mirror_argument_nullability
+  functions: DECLARED_OUTPUT mirrors its arguments         9 case(s): aggregate_grouping_then_measure, aggregate_sum_i64, narrowing_count
+  functions: the phase does not select the intermediate type 1 case(s): phase_intermediate
+
+not told apart - the rule is stated here and checked by nothing:
+  read: the mask is read in the order its items are listed
+      the other reading: struct_items as an order rather than a selection
+  set: the field types come from the last input
+      the other reading: "the field order of the inputs" with no primary
+  write: the output is the declared table schema
+      the other reading: WriteRel.table_schema as the output rather than the input

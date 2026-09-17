@@ -675,6 +675,15 @@ raise SystemExit(bad)
 MANPY
 
 echo
+echo "### the derived schemas agree with the expectations"
+# deriver/ computes an output schema from a plan; probe/expected.py writes one by hand. Both are
+# written from the specification, and neither reads the other, so this compares two readings of the
+# same sentences rather than a file against its own generator. Regenerating deriver/DERIVED.txt
+# needs a Substrait checkout and is not part of this; deriver/README.md says how.
+python3 deriver/check.py --quiet \
+  && ok "the saved derived schemas agree with expected.json" \
+  || fail "derived schemas differ from the expectations"
+
 echo "### the pages state the numbers the files hold"
 # The table above is checked against check_expected.py; the sentences around it were not checked at
 # all, and that is where the numbers went stale.
@@ -1096,10 +1105,12 @@ python3 probe/test_spark_runtime.py \
 python3 probe/structural_cases.py --verify-fixtures \
   && ok "focused structural fixtures and their controls are complete" \
   || fail "focused structural fixtures are incomplete"
+# Prints its own ok line, in the same shape as the ones above.
+python3 -m deriver.test_derive || fail "the deriver's own rules failed their checks"
 SYNTAX=0
-for f in probe/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done
+for f in probe/*.py deriver/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done
 for f in probe/*.sh gen/*.sh; do bash -n "$f" || { fail "bash syntax: $f"; SYNTAX=1; }; done
-rm -rf probe/__pycache__
+rm -rf probe/__pycache__ deriver/__pycache__
 [ "$SYNTAX" -eq 0 ] && ok "python and bash sources parse"
 
 echo

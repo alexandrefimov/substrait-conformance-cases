@@ -1,7 +1,9 @@
-JAVA: column from run 2026-09-09T07:35, substrait-java fff63906
+JAVA: column from run 2026-09-17T22:20, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
+aggregate_grouping_set_index                   Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}, I32{nullable=false}]}
 aggregate_grouping_sets_declared_order         Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}]}
+aggregate_grouping_then_measure                Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_sum_i64                              Struct{nullable=false, fields=[I64{nullable=true}]}
 control_join_without_relcommon                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 control_passthrough_rn                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
@@ -45,6 +47,7 @@ joineq_right_mark                              Struct{nullable=false, fields=[I6
 joineq_right_semi                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 joineq_right_single                            Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 joineq_right                                   Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+mirror_argument_nullability                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=false}, I64{nullable=true}]}
 narrowing_count                                Struct{nullable=false, fields=[I64{nullable=false}]}
 narrowing_is_not_null                          Struct{nullable=false, fields=[Bool{nullable=false}]}
 narrowing_is_null                              Struct{nullable=false, fields=[Bool{nullable=false}]}

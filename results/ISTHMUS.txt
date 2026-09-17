@@ -1,7 +1,9 @@
-ISTHMUS: column from run 2026-09-09T07:35, substrait-java fff63906
+ISTHMUS: column from run 2026-09-17T22:21, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
+aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
 aggregate_grouping_sets_declared_order         [c:VARCHAR?, a:BIGINT?]
+aggregate_grouping_then_measure                [c:VARCHAR, $f1:BIGINT?]
 aggregate_sum_i64                              [$f0:BIGINT?]
 control_join_without_relcommon                 [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT?]
@@ -45,6 +47,7 @@ joineq_right_mark                              ERROR: UnsupportedOperationExcept
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
 joineq_right                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+mirror_argument_nullability                    [c0:BIGINT, c1:BIGINT?, $f2:BIGINT, $f3:BIGINT?]
 narrowing_count                                [$f0:BIGINT]
 narrowing_is_not_null                          [$f1:BOOLEAN]
 narrowing_is_null                              [$f1:BOOLEAN]
