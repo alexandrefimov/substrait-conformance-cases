@@ -480,6 +480,15 @@ pair, and runs the cases of
 [substrait-io/substrait#1213](https://github.com/substrait-io/substrait/pull/1213) on Spark and Hive
 in Docker. Its README says what agrees with what and what was not measured.
 
+## Whether a call is bound
+
+`binding_matrix.sh` asks the nine participants a question the declaration swap does not: whether the
+function a call names is resolved at all. `make_unbound_corpus.py` rewrites only the name in the
+extension declaration - a control with the same signature and return, a name whose argument types no
+implementation declares, and a name no extension file declares - and `binding_report.py` reads the
+three columns against the original. [results/BINDING.txt](../results/BINDING.txt) is the saved run;
+`METHOD.md` says what each answer establishes.
+
 ## Finding index
 
 [FINDINGS.md](../FINDINGS.md) links each reported contract to the relevant matrix cases or focused probe, with controls and related implementation PRs. It keeps producer checks separate from static consumer plans.

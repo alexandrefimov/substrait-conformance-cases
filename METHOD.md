@@ -166,6 +166,31 @@ that returned it unchanged would still fail the emit, projection and join cases 
 half is a mutation that reaches the expression itself, not another swap of a declared output. And
 Gluten is not in the experiment at all, for the same reason it is not in `reverify.sh`.
 
+## Whether the call is bound at all
+
+The declaration swap asks whether an answer is the declared output type repeated. It does not ask
+whether the participant looked at the function the call names, and the two are independent: a
+consumer can resolve the name and still take the type from the plan. `probe/binding_matrix.sh`
+rewrites `Plan.extensions[].extensionFunction.name` three ways and leaves everything else alone, so
+a refusal cannot be about a shape the plan no longer has. [results/BINDING.txt](results/BINDING.txt)
+is the saved run, over the same nine participants.
+
+The rewrites are a control, a name whose argument types no implementation declares, and a name no
+extension file declares at all. The control exists because a refusal has to be attributable: a
+participant that objects to the rewrite itself has not been asked the question, and its other two
+columns cannot be read. It is clean for all nine.
+
+Four behaviours come out of it. substrait-java, Isthmus and Spark look the compound key up in the
+loaded extension. DuckDB, DataFusion and Acero resolve the short name against their own registry
+instead, so a name their engine knows binds whatever the declaration says. substrait-python and the
+validator resolve nothing, and a plan naming a function no extension file declares passes both.
+substrait-go is not measured: it parses the name's suffix as a type string and fails there, before
+any lookup, so its two counts describe that parse rather than binding.
+
+Read beside the swap, that last group is the sharper result. Of the participants whose answer
+follows a swapped output type, substrait-python and the validator also never resolve the function,
+so nothing in their answer comes from the extension at all.
+
 ## What has already been corrected
 
 The claims on these pages have been corrected as the measurements were reviewed, with each
