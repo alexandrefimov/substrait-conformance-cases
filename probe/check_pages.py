@@ -84,6 +84,31 @@ def facts():
         raise SystemExit("FAILED: results/LIE.txt lists %d cases where its header says %d"
                          % (len(in_table), touched))
 
+    # How much of a row's agreement is the declaration read back. A case whose answer moves under
+    # the swap and still matches the expectation is one where the two coincide because the plan said
+    # so, not because the participant derived it. The README states these per participant, and three
+    # of them happen to be equal, so that equality is asserted rather than assumed: were one of the
+    # three to move, the sentence would be wrong in a way no single number would reveal.
+    lie_lines = lie.splitlines()
+    head = next(i for i, l in enumerate(lie_lines) if l.startswith("case "))
+    cols = lie_lines[head].split()[1:]
+    verdict = {c: {} for c in cols}
+    for line in lie_lines[head + 1:]:
+        if not line.strip() or not line[0].isalnum():
+            break
+        got = re.findall(r"\S+(?: \S+)?(?=\s{2,}|$)", line.rstrip())
+        for c, x in zip(cols, got[1:]):
+            verdict[c][got[0]] = x.strip()
+
+    def read_back(col):
+        moved = {k for k, x in verdict.get(col, {}).items() if x in ("follows", "changed")}
+        return len({k for k in moved if k in exp["expected"]} - set(dif["cells"].get(col, {})))
+
+    trio = {c: read_back(c) for c in ("VALIDATOR", "GO", "ISTHMUS")}
+    if len(set(trio.values())) != 1:
+        raise SystemExit("FAILED: the README says the validator, substrait-go and Isthmus read back "
+                         "the same number of matches, and they now differ: %r" % trio)
+
     f = {
         "cases": len(cases),
         "scored": len(exp["expected"]),
@@ -112,6 +137,9 @@ def facts():
         # cases had been added since, and how many of those declared an output_type - is zero by
         # construction. What is worth watching instead is the reach of the experiment itself.
         "cases carrying an output_type": len(in_table),
+        "matches substrait-java reads back": read_back("JAVA"),
+        "matches substrait-python reads back": read_back("PYTHON"),
+        "matches each of the other three reads back": next(iter(trio.values())),
         "of those with an expectation": len(in_table & set(exp["expected"])),
         "scored plans with no output_type": len(set(exp["expected"]) - in_table),
     }
@@ -212,6 +240,15 @@ CLAIMS = [
 
     ("METHOD.md", "unscored", r"%s cases carry no expectation" % NUMBER),
     ("METHOD.md", "cases pending a spec answer", r"%s have virtual-table row types" % NUMBER),
+    ("README.md", "cases carrying an output_type",
+     r"Only %s of the \d+ cases declare an output type" % NUMBER),
+    ("README.md", "matches substrait-java reads back",
+     r"%s of substrait-java's matches" % NUMBER),
+    ("README.md", "matches substrait-python reads back",
+     r"%s of\s+substrait-python's" % NUMBER),
+    ("README.md", "matches each of the other three reads back",
+     r"%s each of the validator's" % NUMBER),
+
     ("METHOD.md", "cases carrying an output_type",
      r"%s of the \d+ cases carry an `output_type`" % NUMBER),
     ("METHOD.md", "of those with an expectation",

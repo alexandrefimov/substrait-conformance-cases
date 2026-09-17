@@ -73,9 +73,16 @@ of its type system hatched.
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
 by the person who also wrote the generators and the expectations, so its 88 matches say that two
-encodings of a spec rule agree. [METHOD.md](METHOD.md) has the experiment that swaps a declared
-`output_type` for a false one and finds Java's answer following it, and
-[the two `expand` cells](METHOD.md#the-two-expand-cases) where even this row differs.
+encodings of a spec rule agree. [The two `expand` cells](METHOD.md#the-two-expand-cases) are where
+even this row differs.
+
+Four more rows carry a narrower version of the same caveat.
+[The declaration swap](METHOD.md#what-a-match-establishes) puts a false `output_type` into every
+plan that declares one, and five of the rows move with it: 14 of substrait-java's matches, 13 of
+substrait-python's and 11 each of the validator's, substrait-go's and Isthmus's are the declared
+type read back rather than a derivation. Only 27 of the 98 cases declare an output type, and the
+swap reaches nothing else. Acero, DataFusion, DuckDB and Spark answer the swapped plan exactly as
+they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
