@@ -1,0 +1,256 @@
+DECIMAL-RULES: run 2026-09-17, images pinned in probe/versions.env
+Rules read at substrait e708362, gandiva apache-arrow-7.0.0, hive rel/release-4.0.1, spark v4.0.1, arrow-arith 59.3.0.
+The engine blocks carry the type the Substrait formula derives beside the type the engine derived.
+
+### python3 probe/decimal-rules/rules.py --examples 1
+
+operand type pairs: 606841
+a count of pairs that disagree below precision 38 separates a different rule from a different clamp
+
+== add
+  vs gandiva                                0 / 606841 differ
+  vs hive                                   0 / 606841 differ
+  vs spark(allowPrecisionLoss=true)         0 / 606841 differ
+  vs spark(allowPrecisionLoss=false)   234832 / 606841 differ, 0 below 38
+      add(dec(1,0), dec(37,37)): substrait dec(38,36), spark(allowPrecisionLoss=false) dec(38,37)
+  vs arrow_rs/datafusion               234832 / 606841 differ, 0 below 38
+      add(dec(1,0), dec(37,37)): substrait dec(38,36), arrow_rs/datafusion dec(38,37)
+  among gandiva, hive, spark(allowPrecisionLoss=true)       0 / 606841 differ
+
+== subtract
+  vs gandiva                                0 / 606841 differ
+  vs hive                                   0 / 606841 differ
+  vs spark(allowPrecisionLoss=true)         0 / 606841 differ
+  vs spark(allowPrecisionLoss=false)   234832 / 606841 differ, 0 below 38
+      subtract(dec(1,0), dec(37,37)): substrait dec(38,36), spark(allowPrecisionLoss=false) dec(38,37)
+  vs arrow_rs/datafusion               234832 / 606841 differ, 0 below 38
+      subtract(dec(1,0), dec(37,37)): substrait dec(38,36), arrow_rs/datafusion dec(38,37)
+  among gandiva, hive, spark(allowPrecisionLoss=true)       0 / 606841 differ
+
+== multiply
+  vs gandiva                                0 / 606841 differ
+  vs hive                                   0 / 606841 differ
+  vs spark(allowPrecisionLoss=true)         0 / 606841 differ
+  vs spark(allowPrecisionLoss=false)   485478 / 606841 differ, 0 below 38
+      multiply(dec(1,0), dec(37,7)): substrait dec(38,6), spark(allowPrecisionLoss=false) dec(38,7)
+  vs arrow_rs/datafusion               485478 / 606841 differ, 0 below 38
+      multiply(dec(1,0), dec(37,7)): substrait dec(38,6), arrow_rs/datafusion dec(38,7)
+  among gandiva, hive, spark(allowPrecisionLoss=true)       0 / 606841 differ
+
+== divide
+  vs gandiva                           402584 / 606841 differ, 20314 below 38
+      divide(dec(1,0), dec(1,0)): substrait dec(8,6), gandiva dec(7,6)
+  vs hive                              402584 / 606841 differ, 20314 below 38
+      divide(dec(1,0), dec(1,0)): substrait dec(8,6), hive dec(7,6)
+  vs spark(allowPrecisionLoss=true)    402584 / 606841 differ, 20314 below 38
+      divide(dec(1,0), dec(1,0)): substrait dec(8,6), spark(allowPrecisionLoss=true) dec(7,6)
+  vs spark(allowPrecisionLoss=false)   600682 / 606841 differ, 20314 below 38
+      divide(dec(1,0), dec(1,0)): substrait dec(8,6), spark(allowPrecisionLoss=false) dec(7,6)
+  vs arrow_rs/datafusion               592191 / 606841 differ, 23827 below 38
+      divide(dec(1,0), dec(1,0)): substrait dec(8,6), arrow_rs/datafusion dec(5,4)
+  among gandiva, hive, spark(allowPrecisionLoss=true)       0 / 606841 differ
+
+== modulus
+  vs gandiva                                0 / 606841 differ
+  vs hive                                   0 / 606841 differ
+  vs spark(allowPrecisionLoss=true)         0 / 606841 differ
+  vs spark(allowPrecisionLoss=false)        0 / 606841 differ
+  vs arrow_rs/datafusion                    0 / 606841 differ
+  among gandiva, hive, spark(allowPrecisionLoss=true)       0 / 606841 differ
+
+### python3 probe/decimal-rules/engines.py spark
+
+# apache/spark:4.0.1
+# spark.sql.decimalOperations.allowPrecisionLoss = true
+# spark.sql.ansi.enabled = true (its default)
+basic/add                  decimal(11,2)  decimal(11,2)    3.00
+basic/subtract             decimal(11,2)  decimal(11,2)    -1.00
+basic/multiply             decimal(16,3)  decimal(16,3)    2.000
+basic/divide               decimal(21,8)  decimal(17,8)    0.50000000   differ
+scale_reduction/add        decimal(38,9)  decimal(38,9)    3.000000000
+scale_reduction/subtract   decimal(38,9)  decimal(38,9)    2.000000000
+scale_reduction/multiply   decimal(38,6)  decimal(38,6)    2.000000
+scale_reduction/divide     decimal(38,6)  decimal(38,6)    3.000000
+divide_rule/wide_divisor   decimal(29,12) decimal(20,12)   8.100E-9   differ
+null_values/add            decimal(11,2)  decimal(11,2)    NULL
+null_values/divide         decimal(21,8)  decimal(17,8)    NULL   differ
+overflow/add               decimal(38,6)  decimal(38,6)    ERROR NUMERIC_VALUE_OUT_OF_RANGE.WITH_SUGGESTION
+overflow/subtract          decimal(38,6)  decimal(38,6)    ERROR NUMERIC_VALUE_OUT_OF_RANGE.WITH_SUGGESTION
+overflow/multiply          decimal(38,6)  decimal(38,6)    ERROR NUMERIC_VALUE_OUT_OF_RANGE.WITH_SUGGESTION
+overflow/divide            decimal(38,6)  decimal(38,6)    ERROR NUMERIC_VALUE_OUT_OF_RANGE.WITH_SUGGESTION
+rounding/add_up            decimal(38,9)  decimal(38,9)    1.234567891
+rounding/add_tie           decimal(38,9)  decimal(38,9)    1.234567891
+rounding/add_tie_even      decimal(38,9)  decimal(38,9)    1.234567892
+rounding/add_tie_negative  decimal(38,9)  decimal(38,9)    -1.234567891
+rounding/multiply          decimal(38,6)  decimal(38,6)    1.234568
+rounding/multiply_tie      decimal(38,6)  decimal(38,6)    1.234569
+rounding/multiply_tie_negative decimal(38,6)  decimal(38,6)    -1.234569
+rounding/divide            decimal(38,6)  decimal(38,6)    0.666667
+# spark.sql.ansi.enabled = false
+overflow/add               decimal(38,6)  decimal(38,6)  NULL
+overflow/subtract          decimal(38,6)  decimal(38,6)  NULL
+overflow/multiply          decimal(38,6)  decimal(38,6)  NULL
+overflow/divide            decimal(38,6)  decimal(38,6)  NULL
+
+### python3 probe/decimal-rules/engines.py hive
+
+# apache/hive:4.0.1
+basic/add                  decimal(11,2)  decimal(11,2)    3.00
+basic/subtract             decimal(11,2)  decimal(11,2)    -1.00
+basic/multiply             decimal(16,3)  decimal(16,3)    2.000
+basic/divide               decimal(21,8)  decimal(17,8)    0.50000000   differ
+scale_reduction/add        decimal(38,9)  decimal(38,9)    3.000000000
+scale_reduction/subtract   decimal(38,9)  decimal(38,9)    2.000000000
+scale_reduction/multiply   decimal(38,6)  decimal(38,6)    2.000000
+scale_reduction/divide     decimal(38,6)  decimal(38,6)    3.000000
+divide_rule/wide_divisor   decimal(29,12) decimal(20,12)   0.000000008100   differ
+null_values/add            decimal(11,2)  decimal(11,2)    NULL
+null_values/divide         decimal(21,8)  decimal(17,8)    NULL   differ
+overflow/add               decimal(38,6)  decimal(38,6)    NULL
+overflow/subtract          decimal(38,6)  decimal(38,6)    NULL
+overflow/multiply          decimal(38,6)  decimal(38,6)    NULL
+overflow/divide            decimal(38,6)  decimal(38,6)    NULL
+rounding/add_up            decimal(38,9)  decimal(38,9)    1.234567891
+rounding/add_tie           decimal(38,9)  decimal(38,9)    1.234567891
+rounding/add_tie_even      decimal(38,9)  decimal(38,9)    1.234567892
+rounding/add_tie_negative  decimal(38,9)  decimal(38,9)    -1.234567891
+rounding/multiply          decimal(38,6)  decimal(38,6)    1.234568
+rounding/multiply_tie      decimal(38,6)  decimal(38,6)    1.234569
+rounding/multiply_tie_negative decimal(38,6)  decimal(38,6)    -1.234569
+rounding/divide            decimal(38,6)  decimal(38,6)    0.666667
+
+### python3 probe/decimal-rules/engines.py trino
+
+# trinodb/trino:483
+basic/add                  decimal(11,2)  decimal(11,2)    3.00
+basic/subtract             decimal(11,2)  decimal(11,2)    -1.00
+basic/multiply             decimal(16,3)  decimal(15,3)    2.000   differ
+basic/divide               decimal(21,8)  decimal(17,8)    0.50000000   differ
+scale_reduction/add        decimal(38,9)  decimal(38,10)   3.0000000000   differ
+scale_reduction/subtract   decimal(38,9)  decimal(38,10)   2.0000000000   differ
+scale_reduction/multiply   decimal(38,6)  decimal(38,6)    2.000000
+scale_reduction/divide     decimal(38,6)  decimal(38,6)    3.000000
+divide_rule/wide_divisor   decimal(29,12) decimal(20,12)   0.000000008100   differ
+null_values/add            decimal(11,2)  decimal(11,2)    NULL
+null_values/divide         decimal(21,8)  decimal(17,8)    NULL   differ
+overflow/add               decimal(38,6)  -                Query 20260917_113228_00037_6a9pi failed: Decimal overflow   differ
+overflow/subtract          decimal(38,6)  -                Query 20260917_113228_00038_6a9pi failed: Decimal overflow   differ
+overflow/multiply          decimal(38,6)  -                Query 20260917_113229_00039_6a9pi failed: Decimal overflow   differ
+overflow/divide            decimal(38,6)  -                Query 20260917_113229_00040_6a9pi failed: Decimal overflow   differ
+rounding/add_up            decimal(38,9)  decimal(38,10)   1.2345678906   differ
+rounding/add_tie           decimal(38,9)  decimal(38,10)   1.2345678905   differ
+rounding/add_tie_even      decimal(38,9)  decimal(38,10)   1.2345678915   differ
+rounding/add_tie_negative  decimal(38,9)  decimal(38,10)   -1.2345678905   differ
+rounding/multiply          decimal(38,6)  decimal(38,6)    1.234568
+rounding/multiply_tie      decimal(38,6)  decimal(38,6)    1.234569
+rounding/multiply_tie_negative decimal(38,6)  decimal(38,6)    -1.234569
+rounding/divide            decimal(38,6)  decimal(38,6)    0.666667
+
+### python3 probe/decimal-rules/engines.py mysql
+
+# mysql:8.4.11
+basic/add                  decimal(11,2)  decimal(11,2)    3.00
+basic/subtract             decimal(11,2)  decimal(11,2)    -1.00
+basic/multiply             decimal(16,3)  decimal(15,3)    2.000   differ
+basic/divide               decimal(21,8)  decimal(15,6)    0.500000   differ
+scale_reduction/add        decimal(38,9)  decimal(39,10)   3.0000000000   differ
+scale_reduction/subtract   decimal(38,9)  decimal(39,10)   2.0000000000   differ
+scale_reduction/multiply   decimal(38,6)  decimal(65,20)   2.00000000000000000000   differ
+scale_reduction/divide     decimal(38,6)  decimal(52,14)   3.00000000000000   differ
+divide_rule/wide_divisor   decimal(29,12) decimal(14,6)    0.000000   differ
+null_values/add            decimal(11,2)  decimal(11,2)    NULL
+null_values/divide         decimal(21,8)  decimal(15,6)    NULL   differ
+overflow/add               decimal(38,6)  decimal(49,10)   100000000000000000000000000000000000000.0000000000   differ
+overflow/subtract          decimal(38,6)  decimal(49,10)   -100000000000000000000000000000000000000.0000000000   differ
+overflow/multiply          decimal(38,6)  -                ERROR 1264 (22003) at line 1: Out of range value for column 'v' at row 1   differ
+overflow/divide            decimal(38,6)  decimal(52,4)    999999999999999999999999999999999999990000000000.0000   differ
+rounding/add_up            decimal(38,9)  decimal(39,10)   1.2345678906   differ
+rounding/add_tie           decimal(38,9)  decimal(39,10)   1.2345678905   differ
+rounding/add_tie_even      decimal(38,9)  decimal(39,10)   1.2345678915   differ
+rounding/add_tie_negative  decimal(38,9)  decimal(39,10)   -1.2345678905   differ
+rounding/multiply          decimal(38,6)  decimal(65,20)   1.23456789010000000000   differ
+rounding/multiply_tie      decimal(38,6)  decimal(65,20)   1.23456850000000000000   differ
+rounding/multiply_tie_negative decimal(38,6)  decimal(65,20)   -1.23456850000000000000   differ
+rounding/divide            decimal(38,6)  decimal(52,14)   0.66666666666667   differ
+
+### python3 probe/decimal-rules/engines.py clickhouse
+
+# clickhouse/clickhouse-server:26.8.6.5
+basic/add                  decimal(11,2)  Decimal(18, 2)   3   differ
+basic/subtract             decimal(11,2)  Decimal(18, 2)   -1   differ
+basic/multiply             decimal(16,3)  Decimal(18, 3)   2   differ
+basic/divide               decimal(21,8)  Decimal(18, 2)   0.5   differ
+scale_reduction/add        decimal(38,9)  Decimal(38, 10)  3   differ
+scale_reduction/subtract   decimal(38,9)  Decimal(38, 10)  2   differ
+scale_reduction/multiply   decimal(38,6)  Decimal(38, 20)  2   differ
+scale_reduction/divide     decimal(38,6)  Decimal(38, 10)  3   differ
+divide_rule/wide_divisor   decimal(29,12) Decimal(18, 2)   0   differ
+null_values/add            decimal(11,2)  Nullable(Decimal(18, 2)) \N   differ
+null_values/divide         decimal(21,8)  Nullable(Decimal(18, 2)) \N   differ
+overflow/add               decimal(38,6)  Decimal(38, 10)  1896011491092736564947192744.6130393088   differ
+overflow/subtract          decimal(38,6)  Decimal(38, 10)  -1896011491092736564947192744.6130393088   differ
+overflow/multiply          decimal(38,6)  Decimal(38, 20)  -412110040424226562.13785281988311121919   differ
+overflow/divide            decimal(38,6)  -                Received exception from server (version 26.8.6):   differ
+rounding/add_up            decimal(38,9)  Decimal(38, 10)  1.2345678906   differ
+rounding/add_tie           decimal(38,9)  Decimal(38, 10)  1.2345678905   differ
+rounding/add_tie_even      decimal(38,9)  Decimal(38, 10)  1.2345678915   differ
+rounding/add_tie_negative  decimal(38,9)  Decimal(38, 10)  -1.2345678905   differ
+rounding/multiply          decimal(38,6)  Decimal(38, 20)  1.2345678901   differ
+rounding/multiply_tie      decimal(38,6)  Decimal(38, 20)  1.2345685   differ
+rounding/multiply_tie_negative decimal(38,6)  Decimal(38, 20)  -1.2345685   differ
+rounding/divide            decimal(38,6)  Decimal(38, 10)  0.6666666666   differ
+
+### python3 probe/decimal-rules/engines.py spark --overflow
+
+# apache/spark:4.0.1
+# spark.sql.decimalOperations.allowPrecisionLoss = true
+# spark.sql.ansi.enabled = true (its default)
+i8/add_max                 tinyint          ERROR BINARY_ARITHMETIC_OVERFLOW
+i32/add_max                int              ERROR ARITHMETIC_OVERFLOW
+i32/multiply_max           int              ERROR ARITHMETIC_OVERFLOW
+i64/add_max                bigint           ERROR ARITHMETIC_OVERFLOW
+i64/subtract_min           bigint           ERROR ARITHMETIC_OVERFLOW
+# spark.sql.ansi.enabled = false
+i8/add_max                 tinyint          -128
+i32/add_max                int              -2147483648
+i32/multiply_max           int              -2
+i64/add_max                bigint           -9223372036854775808
+i64/subtract_min           bigint           9223372036854775807
+
+### python3 probe/decimal-rules/engines.py hive --overflow
+
+# apache/hive:4.0.1
+i8/add_max                 tinyint          -128
+i32/add_max                int              -2147483648
+i32/multiply_max           int              -2
+i64/add_max                bigint           -9223372036854775808
+i64/subtract_min           bigint           9223372036854775807
+
+### python3 probe/decimal-rules/engines.py trino --overflow
+
+# trinodb/trino:483
+i8/add_max                 -                Query 20260917_120333_00016_63bdq failed: tinyint addition overflow: 127 + 1
+i32/add_max                -                Query 20260917_120334_00017_63bdq failed: integer addition overflow: 2147483647 + 1
+i32/multiply_max           -                Query 20260917_120334_00018_63bdq failed: integer multiplication overflow: 2147483647 * 2
+i64/add_max                -                Query 20260917_120335_00019_63bdq failed: bigint addition overflow: 9223372036854775807 + 
+i64/subtract_min           -                Query 20260917_120336_00020_63bdq failed: bigint subtraction overflow: -922337203685477580
+
+### python3 probe/decimal-rules/engines.py mysql --overflow
+
+# mysql:8.4.11
+i8/add_max                 bigint           128
+i32/add_max                bigint           2147483648
+i32/multiply_max           bigint           4294967294
+i64/add_max                -                ERROR 1690 (22003) at line 1: BIGINT value is out of range in '(cast(9223372036854775807 a
+i64/subtract_min           -                ERROR 1690 (22003) at line 1: BIGINT value is out of range in '(cast(-(9223372036854775808
+u64/add_max                -                ERROR 1690 (22003) at line 1: BIGINT UNSIGNED value is out of range in '(cast(184467440737
+
+### python3 probe/decimal-rules/engines.py clickhouse --overflow
+
+# clickhouse/clickhouse-server:26.8.6.5
+i8/add_max                 Int16            128
+i32/add_max                Int64            2147483648
+i32/multiply_max           Int64            4294967294
+i64/add_max                Int64            -9223372036854775808
+i64/subtract_min           Int64            9223372036854775807
+u64/add_max                UInt64           0

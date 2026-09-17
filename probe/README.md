@@ -471,6 +471,15 @@ the virtual-table variant of the corpus (`derived-schema-virtual-tables`, built 
 Gluten reads only `virtual_table` and `local_files` out of a `ReadRel`, so the canonical corpus
 with its named tables will not do.
 
+## Decimal return types
+
+[decimal-rules/](decimal-rules/) is outside the corpus: it does not read a plan. It compares the
+`functions_arithmetic_decimal` return expressions against five other rule sets — the reference they
+came from, two engines that implement it and one that does not — over every decimal operand type
+pair, and runs the cases of
+[substrait-io/substrait#1213](https://github.com/substrait-io/substrait/pull/1213) on Spark and Hive
+in Docker. Its README says what agrees with what and what was not measured.
+
 ## Finding index
 
 [FINDINGS.md](../FINDINGS.md) links each reported contract to the relevant matrix cases or focused probe, with controls and related implementation PRs. It keeps producer checks separate from static consumer plans.
