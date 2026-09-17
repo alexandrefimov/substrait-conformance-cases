@@ -20,8 +20,8 @@ bytes are pinned by content in deriver/spec.pins.
 """
 import os, subprocess, sys
 
-from . import types
-from .types import Type, Unsupported
+from . import type_model as types
+from .type_model import Type, Unsupported
 
 SPEC_REF = os.environ.get("DERIVER_SPEC_REF", "v0.102.0")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")

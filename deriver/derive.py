@@ -15,8 +15,8 @@ names - because that is what the corpus compares.
 """
 import json, os, sys
 
-from . import extensions, types
-from .types import Type, Unsupported
+from . import extensions, type_model as types
+from .type_model import Type, Unsupported
 
 # The i32 column Aggregate and Expand append. Neither page states its nullability; the value is the
 # index of a grouping set or of a duplicate, which every row of the output has, so it is written

@@ -14,8 +14,8 @@ that, and only for the readings both it and probe/expected.py happen to share.
 """
 import sys
 
-from deriver import derive, extensions, types
-from deriver.types import Type, Unsupported
+from deriver import derive, extensions, type_model as types
+from deriver.type_model import Type, Unsupported
 
 FAILED = []
 

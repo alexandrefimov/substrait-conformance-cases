@@ -9,6 +9,13 @@ The rendering goes the other way, into the notation `expected.json` and the part
 `dec(11,2)`, `vchar(10)`, `str`, `i64?`. Parameterized types are written with the signature short
 names of the extension docs, which is what the comparison in probe/check_expected.py already
 normalizes every participant's spelling into.
+
+The file is not called `types.py`, which is what it wants to be called, and the code still imports
+it as `types`. `deriver/check.py` runs as a file, so its own directory goes first on the import
+path, and a module named `types` sitting there shadows the standard library one that `json` and
+`re` pull in on the way up. Python 3.14 resolved it anyway and 3.12 did not, so the repository was
+green on a workstation and red in CI. Renaming the file fixes it wherever the module is imported
+from; renaming it in the code would only have moved the trap.
 """
 import re
 

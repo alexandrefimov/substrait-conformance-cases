@@ -18,8 +18,8 @@ answer; guessing would be indistinguishable from deriving.
 """
 import json, os, sys
 
-from . import derive, extensions, types
-from .types import Unsupported
+from . import derive, extensions, type_model as types
+from .type_model import Unsupported
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 CASES = os.path.join(ROOT, "derived-schema")
