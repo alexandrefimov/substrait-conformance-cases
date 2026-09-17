@@ -1,8 +1,8 @@
-Output-schema sensitivity to the declared type: probe/lie_matrix.sh, 2026-09-07.
+Output-schema sensitivity to the declared type: probe/lie_matrix.sh, 2026-09-17.
 
 Every declared output_type in the corpus is swapped for a false one (probe/make_lied_corpus.py:
 decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, and a struct for a struct of the same
-arity with each field swapped) and nothing else about the plan changes. 23 of the 78 cases carry an
+arity with each field swapped) and nothing else about the plan changes. 27 of the 98 cases carry an
 output_type and are therefore touched.
 
   follows    - the output changed and matched the script's type-swap pattern
@@ -17,35 +17,46 @@ count of names, which this table recorded as NOTICED. phase_intermediate landed 
 among the caught depending on which swap was in the directory. Swapping a struct for a struct of the
 same arity removes that confounder: the output follows the declaration.
 
-The participants here are the ones whose probes run from one command. Spark and Gluten were in an
-earlier hand-made version of this table and are not reproducible by the script, so they are gone.
+All nine column participants are here. The four this table used to hold were not a judgement about
+the other five: substrait-go and Acero read the binary protobuf, and the swapped corpus was written
+as JSON only, so they answered "no such file" on every case. The matrix now writes the binaries too.
+Gluten is still outside, for the same reason it is outside reverify.sh: its column is taken in a
+cluster by hand.
 
-case                              JAVA                PYTHON              VALIDATOR           DUCKDB              
-ctas_keeps_declared_schema        follows             both fail           both fail           held                
-decimal_add                       follows             follows             follows             held                
-decimal_add_overflow              follows             follows             follows             both fail           
-decimal_divide                    follows             follows             follows             held                
-decimal_multiply                  follows             follows             follows             held                
-decimal_multiply_overflow         follows             follows             follows             both fail           
-joineq_inner                      held                held                held                held                
-joineq_left                       held                held                held                held                
-joineq_left_anti                  held                held                held                held                
-joineq_left_mark                  held                held                held                held                
-joineq_left_semi                  held                held                held                held                
-joineq_left_single                held                held                held                held                
-joineq_outer                      held                held                held                held                
-joineq_right                      held                held                held                held                
-joineq_right_anti                 held                held                held                held                
-joineq_right_mark                 held                held                held                both fail           
-joineq_right_semi                 held                held                held                held                
-joineq_right_single               held                held                held                both fail           
-narrowing_count                   follows             follows             follows             held                
-narrowing_is_not_null             changed             changed             changed             held                
-narrowing_is_null                 changed             changed             changed             held                
-phase_final                       follows             follows             follows             held                
-phase_intermediate                follows             follows             follows             both fail           
+case                              JAVA                PYTHON              VALIDATOR           DUCKDB              GO                  ACERO               DATAFUSION          ISTHMUS             SPARK
+aggregate_sum_i64                 follows             follows             follows             held                follows             held                held                follows             both fail
+ctas_keeps_declared_schema        follows             both fail           both fail           held                held                both fail           both fail           held                held
+decimal_add                       follows             follows             follows             held                follows             held                held                follows             held
+decimal_add_overflow              follows             follows             follows             both fail           follows             both fail           held                follows             held
+decimal_divide                    follows             follows             follows             held                follows             held                held                follows             held
+decimal_multiply                  follows             follows             follows             held                follows             held                held                follows             held
+decimal_multiply_overflow         follows             follows             follows             both fail           follows             both fail           held                follows             held
+joineq_inner                      held                held                held                held                held                held                held                held                held
+joineq_left                       held                held                held                held                held                held                held                held                held
+joineq_left_anti                  held                held                held                held                held                both fail           held                held                held
+joineq_left_mark                  held                held                held                held                both fail           both fail           held                both fail           both fail
+joineq_left_semi                  held                held                held                held                held                both fail           held                held                held
+joineq_left_single                held                held                held                held                held                both fail           both fail           both fail           both fail
+joineq_outer                      held                held                held                held                held                held                held                held                held
+joineq_right                      held                held                held                held                held                held                held                held                held
+joineq_right_anti                 held                held                held                held                held                both fail           held                both fail           both fail
+joineq_right_mark                 held                held                held                both fail           both fail           both fail           held                both fail           both fail
+joineq_right_semi                 held                held                held                held                held                both fail           held                both fail           both fail
+joineq_right_single               held                held                held                both fail           held                both fail           both fail           both fail           both fail
+narrowing_count                   follows             follows             follows             held                follows             held                held                follows             both fail
+narrowing_is_not_null             changed             changed             changed             held                changed             held                held                changed             held
+narrowing_is_null                 changed             changed             changed             held                changed             held                held                changed             held
+phase_final                       follows             follows             follows             held                follows             held                held                follows             both fail
+phase_intermediate                follows             follows             follows             both fail           follows             both fail           both fail           follows             both fail
+window_bound_offset               follows             follows             both fail           held                both fail           both fail           both fail           both fail           held
+window_bound_offset_expr          follows             both fail           both fail           both fail           both fail           both fail           both fail           both fail           held
+window_output_order               follows             follows             both fail           both fail           both fail           both fail           both fail           both fail           both fail
 
-substrait-java moves on eleven cases, ten of which carry an expectation: the five decimal ones,
-narrowing_count, the two null predicates and the two aggregation phases; the eleventh,
-ctas_keeps_declared_schema, has no expectation. substrait-python and the validator move on ten each,
-all ten carrying one. DuckDB moves on none.
+Five of the nine answer with the declaration. substrait-java moves on 15 cases, 14 of which carry an
+expectation; ctas_keeps_declared_schema does not. substrait-python moves on 13, and the validator,
+substrait-go and Isthmus on 11 each, every one of those carrying an expectation.
+
+The other four never move: DuckDB, Acero, DataFusion and Spark answer the swapped plan exactly as
+they answer the original. That is the distinction this table exists for. An answer that matches the
+declaration proves nothing on its own - it may be the declaration read back - and only a participant
+whose answer holds under the swap has derived it.

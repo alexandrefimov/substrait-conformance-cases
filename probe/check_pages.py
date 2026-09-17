@@ -108,8 +108,12 @@ def facts():
         "lines in the example plan": plan_lines("aggregate_grouping_field_shared_by_sets"),
         "lines in the shortest plan": min(sizes),
         "lines in the longest plan": max(sizes),
-        "cases added since the swap ran": len(cases) - swap_corpus,
-        "of those declaring an output_type": len(declaring - in_table),
+        # The swap now runs over the whole corpus, so the drift these two used to measure - how many
+        # cases had been added since, and how many of those declared an output_type - is zero by
+        # construction. What is worth watching instead is the reach of the experiment itself.
+        "cases carrying an output_type": len(in_table),
+        "of those with an expectation": len(in_table & set(exp["expected"])),
+        "scored plans with no output_type": len(set(exp["expected"]) - in_table),
     }
     for p, byname in dif["cells"].items():
         f["cases differing for " + p] = len(byname)
@@ -208,9 +212,12 @@ CLAIMS = [
 
     ("METHOD.md", "unscored", r"%s cases carry no expectation" % NUMBER),
     ("METHOD.md", "cases pending a spec answer", r"%s have virtual-table row types" % NUMBER),
-    ("METHOD.md", "cases added since the swap ran", r"%s cases have been added since" % NUMBER),
-    ("METHOD.md", "of those declaring an output_type",
-     r"%s of them declaring an `output_type`" % NUMBER),
+    ("METHOD.md", "cases carrying an output_type",
+     r"%s of the \d+ cases carry an `output_type`" % NUMBER),
+    ("METHOD.md", "of those with an expectation",
+     r"carry an `output_type` and %s of those have an expectation" % NUMBER),
+    ("METHOD.md", "scored plans with no output_type",
+     r"The remaining %s scored plans declare none" % NUMBER),
     ("METHOD.md", "row cases", r"%s cases also carry expected rows" % NUMBER),
     ("METHOD.md", "open triaged pairs", r"%s of those [a-z-]+ still needs? investigation" % NUMBER),
     ("METHOD.md", "triaged pairs", r"and there are %s of them" % NUMBER),

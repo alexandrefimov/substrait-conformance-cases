@@ -14,6 +14,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 DF="${DF_DIR:-$SP/datafusion}"
 CASES="${1:-$ROOT/derived-schema}"
+# The probe runs from inside the checkout, so a relative corpus path resolves against that
+# directory and the run dies with "could not read the case directory". Absolute here, once.
+CASES="$(cd "$CASES" 2>/dev/null && pwd)" || { echo "not a corpus directory: ${1:-$ROOT/derived-schema}" >&2; exit 1; }
 D="$(cd "$(dirname "$0")" && pwd)"
 # A worktree carries .git as a file, not a directory, and reverify.sh documents DF_DIR as "a
 # DataFusion checkout or worktree" and admits both at its own preflight. Accepting only a directory

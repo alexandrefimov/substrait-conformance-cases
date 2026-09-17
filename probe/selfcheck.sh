@@ -347,7 +347,9 @@ for line in lines[head + 1:]:
 
 have = set(json.load(open("expected.json", encoding="utf-8"))["expected"])
 LABEL = {"JAVA": "substrait-java", "PYTHON": "substrait-python",
-         "VALIDATOR": "substrait-validator", "DUCKDB": "DuckDB"}
+         "VALIDATOR": "substrait-validator", "GO": "substrait-go",
+         "ISTHMUS": "Isthmus/Calcite", "ACERO": "Acero", "DATAFUSION": "DataFusion",
+         "DUCKDB": "DuckDB", "SPARK": "Spark"}
 counts = {}
 for col, label in LABEL.items():
     moved = [c for c, v in verdicts.get(col, {}).items() if v in MOVED]

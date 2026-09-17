@@ -125,37 +125,46 @@ inference by the consumer.
 
 That is what the declaration swap measures. `probe/lie_matrix.sh` changes declared `output_type`
 fields while preserving the rest of each plan and reports whose output schema moves;
-`results/LIE.txt` is the saved run. For substrait-java, substrait-python and the validator a false
-declaration moves the answer on ten of the 22 scored cases that carry one. For DuckDB, seventeen
-output schemas stay unchanged and five pairs produce no comparable schema on either plan.
+`results/LIE.txt` is the saved run over all nine column participants.
 
 | | answers that move | of them with an expectation |
 | --- | ---: | ---: |
-| substrait-java | 11 | 10 |
-| substrait-python | 10 | 10 |
-| substrait-validator | 10 | 10 |
+| substrait-java | 15 | 14 |
+| substrait-python | 13 | 13 |
+| substrait-validator | 11 | 11 |
+| substrait-go | 11 | 11 |
+| Isthmus/Calcite | 11 | 11 |
+| Acero | 0 | 0 |
+| DataFusion | 0 | 0 |
 | DuckDB | 0 | 0 |
+| Spark | 0 | 0 |
 
-For substrait-java the eleven that move are the five decimal cases, `narrowing_count`, the two null
-predicates and the two aggregation phases, plus `ctas_keeps_declared_schema`, which carries no
-expectation.
+Five of the nine answer with the declaration. For substrait-java the fifteen that move are the five
+decimal cases, `aggregate_sum_i64`, `narrowing_count`, the two null predicates, the two aggregation
+phases and the three window cases, plus `ctas_keeps_declared_schema`, which carries no expectation.
+The twelve it holds are all `joineq_*`, where the swapped declaration belongs to a join predicate
+whose type never reaches the output schema, so it can be copied without the join's output changing.
 
-Only 23 of the 78 cases the swap ran over carry an `output_type`; 22 of those have an expectation. Twenty cases have been added since that run — three window cases, two expand, cross, top-N, the integer sum and the twelve physical joins — four of them declaring an `output_type`. For Java, ten
-scored output schemas change and twelve hold. In those twelve cases the altered declaration belongs
-to a join predicate, whose type is absent from the output schema. The predicate's declaration can
-be copied without changing the join's output. The other 51 scored plans have no `output_type`.
-These counts measure output sensitivity; they do not count independently derived schemas.
+For Acero, DataFusion, DuckDB and Spark nothing moves. That on its own is not a derivation: reading
+a held answer as one the consumer derived is the mistake recorded below. What settles those four is
+`decimal_divide`, where the plan declares `dec(21,8)` and they answer `decimal128(16,7)`,
+`Decimal128(15,6)`, `DOUBLE` and `decimal(17,8)`. An answer that differs from the declaration cannot
+be the declaration repeated.
+
+27 of the 98 cases carry an `output_type` and 26 of those have an expectation. The remaining 67
+scored plans declare none, so the swap reaches nothing in them. These counts measure output
+sensitivity; they do not count independently derived schemas.
 
 The swap preserves struct arity. Replacing a struct with a scalar would also change the number of
 fields in depth, making the plan disagree with `Plan.Root.names`. A refusal over that disagreement
 would not establish that the function's return type had been checked.
 
 What this experiment cannot reach: it perturbs `output_type` and nothing else, so it says nothing
-about a schema that comes from `ReadRel.base_schema`, which is where the other 51 get theirs. That
+about a schema that comes from `ReadRel.base_schema`, which is where the other 67 get theirs. That
 field is a legitimate source of input types rather than a declaration to be repeated — a consumer
 that returned it unchanged would still fail the emit, projection and join cases — so the missing
 half is a mutation that reaches the expression itself, not another swap of a declared output. And
-only Java, Python, the validator and DuckDB were run through this script at all.
+Gluten is not in the experiment at all, for the same reason it is not in `reverify.sh`.
 
 ## What has already been corrected
 

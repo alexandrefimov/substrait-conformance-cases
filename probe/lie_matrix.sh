@@ -4,7 +4,10 @@
 #   bash probe/lie_matrix.sh [output directory]
 #
 # Run setup.sh and reverify.sh first: they prepare the environments, gen/classpath.txt and SchemaOf.
-# The four participants are Java, Python, validator and DuckDB, as in results/LIE.txt.
+# All nine column participants are asked. A participant whose environment is not up is skipped with
+# a line naming it, not silently dropped and not a failure of the run: a machine without cargo still
+# measures the other eight. Gluten is outside this, as it is outside reverify.sh - its column is
+# taken in a cluster by hand.
 #
 #   follows      the output changed and matched the script's type-swap pattern
 #   changed      the output changed without matching that pattern
@@ -27,12 +30,30 @@ LIED="$OUT/lied"
 python3 "$PROBE/make_lied_corpus.py" "$CASES" "$LIED" >/dev/null || exit 1
 echo "swapped corpus: $LIED ($(ls "$LIED"/*.json | wc -l | tr -d ' ') cases)"
 
+# substrait-go and Acero read the binary protobuf, not the JSON, and make_lied_corpus.py writes only
+# JSON. Without this step those two answer "read: no such file" on every swapped case, which the
+# table would report as no answer - a participant that looks unmeasured rather than one that was
+# never given the corpus. This is why the matrix covered four participants and not nine.
+if CP="$(bash "$PROBE/cp.sh" core 2>/dev/null)"; then
+  javac -nowarn -cp "$CP" -d "$OUT/bincls" "$ROOT/gen/JsonToBin.java" 2>/dev/null \
+    && java -cp "$OUT/bincls:$CP" JsonToBin "$LIED" >/dev/null 2>&1 \
+    && echo "swapped binaries: $(ls "$LIED"/*.bin 2>/dev/null | wc -l | tr -d ' ')" \
+    || echo "no swapped binaries: substrait-go and Acero will be skipped"
+else
+  echo "no substrait-java classpath: substrait-go and Acero will be skipped"
+fi
+
 declare -a NAMES=() FMTS=()
 add() { NAMES+=("$1"); FMTS+=("$2"); }
 
-for spec in "JAVA:line" "PYTHON:line" "VALIDATOR:block" "DUCKDB:block"; do
+# The format is the one reverify.sh writes each column with: one line per case, or a block per case
+# that normalize.py reduces to one. Getting it wrong yields a column that is not whole, which is
+# caught below rather than quietly mis-parsed.
+for spec in "JAVA:line" "PYTHON:line" "VALIDATOR:block" "DUCKDB:block" "GO:block" \
+            "ACERO:block" "DATAFUSION:block" "ISTHMUS:block" "SPARK:line"; do
   add "${spec%%:*}" "${spec##*:}"
 done
+declare -a SKIPPED=()
 
 for i in "${!NAMES[@]}"; do
   name="${NAMES[$i]}"; fmt="${FMTS[$i]}"
@@ -40,16 +61,34 @@ for i in "${!NAMES[@]}"; do
     src=$CASES; [ "$variant" = lied ] && src=$LIED
     raw="$OUT/$name.$variant.raw"
     case "$name" in
-      JAVA)      java -cp "$ROOT/gen/out:$(cat "$ROOT/gen/classpath.txt")" \
-                   SchemaOf $(ls "$src"/*.json | grep -v manifest) > "$raw" 2>/dev/null ;;
+      JAVA)      bash "$PROBE/java_all.sh" "$src" > "$raw" 2>&1 ;;
       PYTHON)    bash "$PROBE/python_all.sh" "$src" > "$raw" 2>&1 ;;
       VALIDATOR) bash "$PROBE/validator_all.sh" "$src" > "$raw" 2>&1 ;;
       DUCKDB)    bash "$PROBE/duckdb_all.sh" "$src" > "$raw" 2>&1 ;;
+      GO)        bash "$PROBE/go_all.sh" "$src" > "$raw" 2>&1 ;;
+      ACERO)     bash "$PROBE/acero_all.sh" "$src" > "$raw" 2>&1 ;;
+      DATAFUSION) bash "$PROBE/datafusion_all.sh" "$src" > "$raw" 2>&1 ;;
+      ISTHMUS)   bash "$PROBE/isthmus_all.sh" "$src" > "$raw" 2>&1 ;;
+      SPARK)     bash "$PROBE/spark_all.sh" "$src" > "$raw" 2>&1 ;;
     esac
     python3 "$PROBE/normalize.py" "$raw" "$fmt" "$name $variant" > "$OUT/$name.$variant.txt" 2>/dev/null \
-      || fail "$name/$variant: normalization did not yield a whole column"
+      || { SKIPPED+=("$name/$variant"); rm -f "$OUT/$name.$variant.txt"; }
   done
 done
+
+# A participant is in the table only with both halves: one half alone compares nothing. Skipping is
+# reported by name, because a quietly missing column reads like a participant that held.
+declare -a KEPT=() KEPT_FMT=()
+for i in "${!NAMES[@]}"; do
+  n="${NAMES[$i]}"
+  if [ -s "$OUT/$n.orig.txt" ] && [ -s "$OUT/$n.lied.txt" ]; then
+    KEPT+=("$n"); KEPT_FMT+=("${FMTS[$i]}")
+  else
+    echo "skipped: $n (its environment did not yield a whole column on both corpora)"
+  fi
+done
+NAMES=("${KEPT[@]}"); FMTS=("${KEPT_FMT[@]}")
+[ "${#NAMES[@]}" -gt 0 ] || fail "no participant produced a column on both corpora"
 
 python3 - "$OUT" "${NAMES[@]}" <<'PY'
 import io, os, sys
