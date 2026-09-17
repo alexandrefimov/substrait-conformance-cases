@@ -20,8 +20,6 @@ bytes are pinned by content in deriver/spec.pins.
 """
 import os, subprocess, sys
 
-import yaml
-
 from . import types
 from .types import Type, Unsupported
 
@@ -127,6 +125,17 @@ class Library:
         self._load()
 
     def _load(self):
+        # PyYAML is imported here rather than at the top of the file. Everything above this point -
+        # the type model, the relation rules, the return type expression evaluator - is standard
+        # library only, and probe/selfcheck.sh runs with no environment beyond it. Reading an
+        # extension file already needs a Substrait checkout, so the one step that needs a package
+        # is the one that needs a checkout too.
+        try:
+            import yaml
+        except ImportError:
+            raise Unsupported("reading the extension files needs PyYAML (pip install pyyaml); "
+                              "the relation rules and the expression evaluator do not")
+        self._yaml = yaml
         listing = subprocess.run(["git", "-C", _checkout(), "ls-tree", "--name-only",
                                   "%s:extensions" % SPEC_REF], capture_output=True)
         if listing.returncode != 0:
@@ -137,7 +146,7 @@ class Library:
                 continue
             path = "extensions/" + name
             raw = _git_show(path)
-            doc = yaml.safe_load(raw)
+            doc = self._yaml.safe_load(raw)
             urn = (doc or {}).get("urn")
             if not urn:
                 continue
