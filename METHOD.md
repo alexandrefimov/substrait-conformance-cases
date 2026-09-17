@@ -189,14 +189,17 @@ anywhere here.
 
 Four behaviours come out of it. substrait-java, Isthmus and Spark look the compound key up in the
 loaded extension. DuckDB, DataFusion and Acero resolve the short name against their own registry
-instead, so a name their engine knows binds whatever the declaration says. substrait-python and the
-validator resolve nothing, and a plan naming a function no extension file declares passes both.
+instead, so a name their engine knows binds whatever the declaration says. substrait-python resolves
+nothing and prints no diagnostic saying so. The validator does not distinguish the rewrites either,
+but it is not measured on this question so much as excused from it: with URN resolution off it warns
+that it did not attempt to resolve the YAML, and with resolution on it warns that the declaration's
+`name` and `impls` are not yet recognised.
 substrait-go is not measured: it parses the name's suffix as a type string and fails there, before
 any lookup, so its two counts describe that parse rather than binding.
 
 Read beside the swap, that last group is the sharper result. Of the participants whose answer
-follows a swapped output type, substrait-python and the validator also never resolve the function,
-so nothing in their answer comes from the extension at all.
+follows a swapped output type, substrait-python never resolves the function either, so nothing in
+its answer comes from the extension at all.
 
 ## What has already been corrected
 

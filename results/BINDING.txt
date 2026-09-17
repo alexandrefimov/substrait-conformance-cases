@@ -58,8 +58,17 @@ scalar function with this key was found."
 DuckDB, DataFusion and Acero resolve the short name against their own registry rather than against
 the declaration. add:str_str binds, because add is one of their own; no_such_function does not.
 
-substrait-python and substrait-validator resolve nothing. A plan naming a function no extension file
-declares passes both, unchanged, on every case.
+substrait-python resolves nothing and says nothing: it answers every rewrite with the schema it
+answered the original with, and prints no diagnostic at all.
+
+The validator does not distinguish the rewrites either, but it is explicit about why, in both of its
+configurations. As the probe runs it, with URN resolution off, every case carries "did not attempt to
+resolve YAML: configured recursion limit for URN resolution has been reached (code 2001)". With
+URN_DEPTH set it finds the extension file and reports "not yet implemented: the following child nodes
+were not recognized by the validator: description, impls, name (code 0001)", and returns the same
+schema for the original and for a name no file declares. So the validator is not measured on this
+question rather than answering it permissively: at the pinned revision it says it has not implemented
+the check, and its schema output has to be read beside that diagnostic.
 
 substrait-go is not measured on signature and unknown. It parses the compound name's suffix as a
 type string and fails there - "mismatched input 'str' expecting {'IF','FUNC','BOOLEAN','I8',...}" -
