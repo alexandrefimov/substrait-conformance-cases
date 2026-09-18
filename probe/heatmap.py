@@ -466,12 +466,16 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 .pinning ul { margin: 6px 0 0; padding-left: 1.2em; }
 .pinning li { margin: 2px 0; font: 12px/1.5 var(--mono); }
 .pinning .pin-note { color: var(--ink-3); }
-/* The dot that marks a case which is the only one to pin some derivation rule: remove it and that
-   rule stops being checked by anything. In the gutter of the name, and an empty span when the case
-   pins nothing, so the names still line up - the same shape as the rows bar above. It is not a
-   verdict and carries no state colour: a case can be load-bearing and still be one every
-   participant refuses. */
-tbody th.case .pin { display: inline-block; width: 9px; color: var(--ink-3); font-size: 11px; }
+/* The "only check" column: the cases that are the only ones to tell some derivation rule apart
+   from another reading of it. It sits between the case name and the participants and is drawn
+   unlike them on purpose - no verdict square, a quieter header, a rule on its right - because it
+   describes the case, not an implementation's answer, and must not read as a tenth participant. A
+   case can be the only check of a rule and still be one most participants refuse. */
+thead th.only-check { width: 1%%; white-space: nowrap; font-weight: 400; color: var(--ink-3);
+  border-right: 1px solid var(--rule); padding: 0 8px; }
+thead th.only-check a { color: inherit; text-decoration: underline dotted; }
+tbody td.only-check { text-align: center; color: var(--ink-3); font-size: 11px;
+  border-right: 1px solid var(--rule); cursor: help; }
 /* The relation table's own name column is wider than the matrix's: its case names carry a group
    prefix and a rule, where the other corpus names a case in one word. */
 #rel-matrix tbody th.case { padding-right: 22px; }
@@ -658,12 +662,12 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     </div>
   </div>
 
-  <section class="pinning">
+  <section class="pinning" id="pinning">
     <h2>What the grid cannot show</h2>
     <p>A row of agreement is worth what the case behind it pins. <code>deriver/</code> derives each
     schema a second time from the specification, and <code>deriver/mutants.py</code> then replaces
     each of its rules with another reading of the same sentence and rederives: a reading no case
-    tells apart is a rule this corpus states and tests with nothing. The dot beside a case name
+    tells apart is a rule this corpus states and tests with nothing. The <em>only check</em> column
     marks the %(pin_count)d cases that are the only ones to pin some reading — remove one and that
     rule goes unchecked.</p>
     <p>%(unpinned_count)d readings are pinned by nothing:</p>
@@ -730,6 +734,8 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   });
 
   document.getElementById("head").innerHTML = '<th class="corner">case</th>' +
+    '<th class="only-check"><a href="#pinning" title="the only case that tells some derivation ' +
+    'rule apart from another reading of it - see below the matrix">only check</a></th>' +
     D.participants.map(function (p) {
       return '<th title="' + p + '"><span class="column-name">' + D.short[p] + '</span></th>';
     }).join("");
@@ -738,16 +744,17 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   D.groups.forEach(function (g) {
     var gr = document.createElement("tr");
     gr.className = "group";
-    gr.innerHTML = '<th>' + g.label + '</th><td colspan="' + D.participants.length + '"></td>';
+    gr.innerHTML = '<th>' + g.label + '</th><td colspan="' + (D.participants.length + 1) + '"></td>';
     body.appendChild(gr);
     for (var k = 0; k < g.n; k++, at++) {
       var tr = document.createElement("tr");
       tr.dataset.r = at;
       var pins = D.sole[D.cases[at]];
-      var pinMark = pins ?
-        '<span class="pin" title="' + esc('the only case that pins: ' + pins.join('; ')) +
-        '">\u2022</span>' : '<span class="pin"></span>';
-      var cells = '<th class="case">' + pinMark + esc(D.cases[at]) + '</th>';
+      var cells = '<th class="case">' + esc(D.cases[at]) + '</th>' +
+        (pins ? '<td class="only-check" title="' +
+                // Each label is a wrong reading of some rule; this case is what rules it out.
+                esc('the only case that rules out: ' + pins.join('; ')) + '">\u25c6</td>'
+              : '<td class="only-check"></td>');
       for (var c = 0; c < D.participants.length; c++) {
         var st = D.cells[at][c], tracked = D.tracking[at][c];
         var ruleId = D.answers[at][c][1], reason = D.rules[ruleId];
@@ -768,7 +775,7 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
   var current = null, activeCell = null, activeHeader = null;
   var detailRow = document.createElement("tr"), detailCell = document.createElement("td");
   detailRow.className = "detail-row";
-  detailCell.colSpan = D.participants.length + 1;
+  detailCell.colSpan = D.participants.length + 2;
   detailRow.appendChild(detailCell);
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function escAttr(s) { return esc(s).replace(/"/g, "&quot;"); }
@@ -821,7 +828,8 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     var td = document.querySelector('td.cell[data-r="' + r + '"][data-c="' + c + '"]');
     if (!td) { current = null; return; }
     activeCell = td;
-    activeHeader = document.querySelectorAll("#head th")[c + 1];
+    // Two columns precede the participants: the case name and "only check".
+    activeHeader = document.querySelectorAll("#head th")[c + 2];
     td.classList.add("on");
     td.setAttribute("aria-expanded", "true");
     td.parentElement.classList.add("selected-row");
