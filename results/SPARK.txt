@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-18T13:15, spark 3.5.4
+SPARK: column from run 2026-09-18T15:50, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -48,6 +48,8 @@ joineq_right_mark                              ERROR: UnsupportedOperationExcept
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SINGLE
 joineq_right                                   [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
+lateral_join_uncorrelated_without_anchor       ERROR: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row v
+lateral_join_uncorrelated                      ERROR: UnsupportedOperationException: Type io.substrait.relation.ImmutableLateralJoin not handled by visitor type io.substrait.s
 mirror_argument_nullability                    [c0:bigint, c1:bigint?, rr:bigint, rn:bigint?]
 narrowing_count                                ERROR: IllegalArgumentException: requirement failed
 narrowing_is_not_null                          [r:boolean]
@@ -95,6 +97,8 @@ setop_union_all                                [c0:bigint, c1:bigint?, c2:bigint
 setop_union_distinct                           ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
 stringlen_declared                             ERROR: UnsupportedOperationException: Unknown expression type.
 topn_keeps_the_input_schema                    ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableTopN not handled by visitor type io.substrait
+update_root_names_a_count                      ERROR: IllegalArgumentException: Plan.Root names count (1) must match input record type depth-first named-field count (2)
+update_root_names_the_table                    ERROR: UnsupportedOperationException: Type io.substrait.relation.ImmutableNamedUpdate not handled by visitor type io.substrait.s
 virtual_table_emit_mapping                     [col2:string]
 virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})

@@ -38,16 +38,31 @@ every case without exception is narrower: no expectation here reads a plan, and 
 implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
 is why the first thing the README asks for is somebody else's reading of it.
 
-Six cases carry no expectation, for two different reasons that `expected.json` keeps apart. Five of
-them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
+Nine cases carry no expectation, for two different reasons that `expected.json` keeps apart. Eight
+of them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
 different from the declared schema, and remain unscored pending clarification of exact type
-equality versus compatibility between a row and its schema. The fifth is a projection mask listing
-its fields as [2, 0]: `field_references.md` says that "right now, you can only mask things out", and
-not what a mask listed out of schema order yields. Of the participants that apply the mask at all,
-all four put the columns in the listed order and none keeps the schema's; four more ignore the mask
-and Acero does not implement it. The sixth case, under `spec_says_invalid`, is a CTAS whose input
-schema does not match its `table_schema`. The spec requires them to match, so this plan is invalid
-and what is worth measuring is whether the violation is reported.
+equality versus compatibility between a row and its schema. One is a projection mask listing its
+fields as [2, 0]: `field_references.md` says that "right now, you can only mask things out", and not
+what a mask listed out of schema order yields. Of the participants that apply the mask at all, all
+four put the columns in the listed order and none keeps the schema's; four more ignore the mask and
+Acero does not implement it.
+
+One is a lateral join without a `rel_anchor`, whose right input references nothing. The spec answers
+it twice: `logical_relations.md` requires the anchor only when the right input references the
+current left row, and `algebra.proto` requires it on every lateral join. The participants split the
+same way. substrait-python and DuckDB answer it exactly as they answer `lateral_join_uncorrelated`,
+the same join with the anchor set, which is scored; substrait-java refuses it.
+
+Two are the same `UpdateRel` of a two-column table, written for each reading of its output, which
+the spec gives only as "number of modified records": one root names a single column, as a count
+would have, and the other names the table's two. A root has to name every output column, so a
+producer cannot write the plan without choosing. Only substrait-java answers either, and its core
+and Isthmus disagree. The core derives the table's columns and refuses the one-name root; Isthmus
+converts the two-name plan into a single `ROWCOUNT` column.
+
+The ninth case, under `spec_says_invalid`, is a CTAS whose input schema does not match its
+`table_schema`. The spec requires them to match, so this plan is invalid and what is worth measuring
+is whether the violation is reported.
 
 ## What the corpus is made of
 
@@ -156,7 +171,7 @@ a held answer as one the consumer derived is the mistake recorded below. What se
 `Decimal128(15,6)`, `DOUBLE` and `decimal(17,8)`. An answer that differs from the declaration cannot
 be the declaration repeated.
 
-29 of the 102 cases carry an `output_type` and 28 of those have an expectation. The remaining 68
+29 of the 106 cases carry an `output_type` and 28 of those have an expectation. The remaining 69
 scored plans declare none, so the swap reaches nothing in them. These counts measure output
 sensitivity; they do not count independently derived schemas.
 
@@ -297,16 +312,17 @@ cases reach at all — and `probe/coverage.py` counts that from the plans themse
 <!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->
 | relation | cases | | relation | cases |
 | --- | ---: | --- | --- | ---: |
-| `read` | 102 | | `cross` | 1 |
+| `read` | 104 | | `cross` | 1 |
 | `filter` | 1 | | `write` | 1 |
-| `fetch` | 1 | | `hash_join` | 4 |
-| `aggregate` | 9 | | `merge_join` | 4 |
-| `sort` | 1 | | `nested_loop_join` | 4 |
-| `join` | 26 | | `window` | 3 |
+| `fetch` | 1 | | `update` | 2 |
+| `aggregate` | 9 | | `hash_join` | 4 |
+| `sort` | 1 | | `merge_join` | 4 |
+| `join` | 26 | | `nested_loop_join` | 4 |
+| `lateral_join` | 2 | | `window` | 3 |
 | `project` | 10 | | `expand` | 2 |
 | `set` | 16 | | `top_n` | 1 |
 
-16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 102 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
+18 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 106 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `exchange`.
 <!-- /coverage -->
 
 Apache 2.0, the plans included, so a case can go straight into another project's tests.

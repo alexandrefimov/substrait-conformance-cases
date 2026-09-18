@@ -1,4 +1,4 @@
-DATAFUSION: column from run 2026-09-18T13:14, datafusion cc29ea12a
+DATAFUSION: column from run 2026-09-18T15:49, datafusion cc29ea12a
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
@@ -48,6 +48,8 @@ joineq_right_anti                              [c0:Int64?, c1:Int64]
 joineq_right_mark                              [c0:Int64?, c1:Int64, c2:Boolean?]
 joineq_right_semi                              [c0:Int64?, c1:Int64]
 joineq_right_single                            ERROR: Error during planning: unsupported join type RightSingle
+lateral_join_uncorrelated                      ERROR: Substrait error: rel must set rel_type
+lateral_join_uncorrelated_without_anchor       ERROR: Substrait error: rel must set rel_type
 mirror_argument_nullability                    [c0:Int64, c1:Int64?, rr:Int64, rn:Int64?]
 narrowing_count                                [n:Int64]
 narrowing_is_not_null                          [r:Boolean]
@@ -95,6 +97,8 @@ setop_union_all                                [c0:Int64, c1:Int64?, c2:Int64?, 
 setop_union_distinct                           [c0:Int64, c1:Int64?, c2:Int64?, c3:Int64?, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
 stringlen_declared                             [c0:Utf8, c1:Utf8, c2:FixedSizeBinary(4), c3:Utf8]
 topn_keeps_the_input_schema                    ERROR: Substrait error: rel must set rel_type
+update_root_names_a_count                      ERROR: This feature is not implemented: Update(UpdateRel { table_schema: Some(NamedStruct { names: ["c0", "c1"], r#struct: Some(Struct { types: [Type { kind: Some(I64(
+update_root_names_the_table                    ERROR: This feature is not implemented: Update(UpdateRel { table_schema: Some(NamedStruct { names: ["c0", "c1"], r#struct: Some(Struct { types: [Type { kind: Some(I64(
 virtual_table_emit_mapping                     [col2:Utf8]
 virtual_table_literal_type_differs_from_schema [c:Int32]
 virtual_table_row_null_in_required_column      [c:Int32]

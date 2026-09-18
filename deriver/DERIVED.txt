@@ -51,6 +51,8 @@ joineq_right_anti                              [i64?, i64]
 joineq_right_mark                              [i64?, i64, bool?]
 joineq_right_semi                              [i64?, i64]
 joineq_right_single                            [i64?, i64?, i64?, i64]
+lateral_join_uncorrelated                      [i64, i64?, i64?, i64]
+lateral_join_uncorrelated_without_anchor       [i64, i64?, i64?, i64]
 mirror_argument_nullability                    [i64, i64?, i64, i64?]
 narrowing_count                                [i64]
 narrowing_is_not_null                          [bool]
@@ -98,6 +100,8 @@ setop_union_all                                [i64, i64?, i64?, i64?, i64?, i64
 setop_union_distinct                           [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
 stringlen_declared                             [vchar(10), fchar(5), fbin(4), str]
 topn_keeps_the_input_schema                    [i64, i64?]
+update_root_names_a_count                      not-derived: the update relation's output is described only as 'number of modified records': no Direct Output Order, type or nullability is given
+update_root_names_the_table                    not-derived: the update relation's output is described only as 'number of modified records': no Direct Output Order, type or nullability is given
 virtual_table_emit_mapping                     [str]
 virtual_table_literal_type_differs_from_schema [i32]
 virtual_table_row_null_in_required_column      [i32]

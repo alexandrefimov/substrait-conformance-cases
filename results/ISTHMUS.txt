@@ -1,4 +1,4 @@
-ISTHMUS: column from run 2026-09-18T13:15, substrait-java fff63906
+ISTHMUS: column from run 2026-09-18T15:50, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
 aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
@@ -47,6 +47,8 @@ joineq_right_mark                              ERROR: UnsupportedOperationExcept
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
 joineq_right                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+lateral_join_uncorrelated_without_anchor       ERROR: PARSE FAILED: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row via an outer reference
+lateral_join_uncorrelated                      ERROR: UnsupportedOperationException: Rel LateralJoin{relAnchor=1, left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, condition=BoolLiteral{nullable=false, value=true}, joinType=INNER} of type io.substrait.relation.ImmutableLateralJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 mirror_argument_nullability                    [c0:BIGINT, c1:BIGINT?, $f2:BIGINT, $f3:BIGINT?]
 narrowing_count                                [$f0:BIGINT]
 narrowing_is_not_null                          [$f1:BOOLEAN]
@@ -94,6 +96,8 @@ setop_union_all                                [c0:BIGINT, c1:BIGINT?, c2:BIGINT
 setop_union_distinct                           [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 stringlen_declared                             [c0:VARCHAR(10), c1:CHAR(5), c2:BINARY(4), c3:VARCHAR]
 topn_keeps_the_input_schema                    ERROR: UnsupportedOperationException: Rel TopN{input=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, sortFields=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, direction=ASC_NULLS_LAST}], offset=I64Literal{nullable=false, value=0}, count=I64Literal{nullable=false, value=2}, mode=ROWS_ONLY} of type io.substrait.relation.physical.ImmutableTopN not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+update_root_names_a_count                      ERROR: PARSE FAILED: IllegalArgumentException: Plan.Root names count (1) must match input record type depth-first named-field count (2)
+update_root_names_the_table                    [ROWCOUNT:BIGINT]
 virtual_table_emit_mapping                     [col2:VARCHAR]
 virtual_table_literal_type_differs_from_schema ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullable=false})
 virtual_table_row_null_in_required_column      ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})

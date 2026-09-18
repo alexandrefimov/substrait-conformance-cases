@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-18T13:14, duckdb 1.5.5
+DUCKDB: column from run 2026-09-18T15:49, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -48,6 +48,8 @@ joineq_right_mark                              ERROR: signal/exit 139
 joineq_right_semi                              [c0:BIGINT, c1:BIGINT]
 joineq_right_single                            ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension LINE 1: SELECT * FROM from_substrait_json(?) ^
 joineq_right                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
+lateral_join_uncorrelated_without_anchor       [l0:BIGINT, l1:BIGINT, r0:BIGINT, r1:BIGINT]
+lateral_join_uncorrelated                      [l0:BIGINT, l1:BIGINT, r0:BIGINT, r1:BIGINT]
 mirror_argument_nullability                    [c0:BIGINT, c1:BIGINT, rr:BIGINT, rn:BIGINT]
 narrowing_count                                [n:BIGINT]
 narrowing_is_not_null                          [r:BOOLEAN]
@@ -95,6 +97,8 @@ setop_union_all                                [c0:BIGINT, c1:BIGINT, c2:BIGINT,
 setop_union_distinct                           ERROR: signal/exit 139
 stringlen_declared                             [c0:VARCHAR, c1:VARCHAR, c2:BLOB, c3:VARCHAR]
 topn_keeps_the_input_schema                    ERROR: NotImplementedException: Not implemented Error: Unsupported relation type top_n LINE 1: SELECT * FROM from_substrait_json(?) ^
+update_root_names_a_count                      ERROR: Error: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON in substrait.Plan @ relations[0].root.input.update: message subst
+update_root_names_the_table                    ERROR: Error: Was not possible to convert JSON into Substrait plan: INVALID_ARGUMENT: invalid JSON in substrait.Plan @ relations[0].root.input.update: message subst
 virtual_table_emit_mapping                     [col2:INTEGER]
 virtual_table_literal_type_differs_from_schema [c:TINYINT]
 virtual_table_row_null_in_required_column      [c:INTEGER]

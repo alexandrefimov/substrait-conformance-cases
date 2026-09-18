@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-18T13:14, pyarrow 25.0.1
+ACERO: column from run 2026-09-18T15:49, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -48,6 +48,8 @@ joineq_right_mark                              ERROR: ArrowInvalid: Unsupported 
 joineq_right_semi                              ERROR: ArrowInvalid: Unsupported join type
 joineq_right_single                            ERROR: ArrowInvalid: Unsupported join type
 joineq_right                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+lateral_join_uncorrelated_without_anchor       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 24: UNKNOWN_MESSAGE [REDACTED]
+lateral_join_uncorrelated                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 24: UNKNOWN_MESSAGE [REDACTED]
 mirror_argument_nullability                    [c0:int64?, c1:int64?, rr:int64?, rn:int64?]
 narrowing_count                                [n:int64?]
 narrowing_is_not_null                          [r:bool?]
@@ -95,6 +97,8 @@ setop_union_all                                ERROR: ArrowInvalid: UnionNode in
 setop_union_distinct                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
 stringlen_declared                             [c0:extension<varchar{length:10}>, c1:extension<fixed_char{length:5}>, c2:fixed_size_binary[4], c3:string]
 topn_keeps_the_input_schema                    ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 23: UNKNOWN_MESSAGE [REDACTED]
+update_root_names_a_count                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 22: UNKNOWN_MESSAGE [REDACTED]
+update_root_names_the_table                    ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 22: UNKNOWN_MESSAGE [REDACTED]
 virtual_table_emit_mapping                     ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_literal_type_differs_from_schema ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_row_null_in_required_column      ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles

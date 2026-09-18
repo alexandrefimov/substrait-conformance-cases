@@ -1,4 +1,4 @@
-JAVA: column from run 2026-09-18T13:14, substrait-java fff63906
+JAVA: column from run 2026-09-18T15:49, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_set_index                   Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}, I32{nullable=false}]}
@@ -47,6 +47,8 @@ joineq_right_mark                              Struct{nullable=false, fields=[I6
 joineq_right_semi                              Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 joineq_right_single                            Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 joineq_right                                   Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
+lateral_join_uncorrelated_without_anchor       ERROR: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current
+lateral_join_uncorrelated                      Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 mirror_argument_nullability                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=false}, I64{nullable=true}]}
 narrowing_count                                Struct{nullable=false, fields=[I64{nullable=false}]}
 narrowing_is_not_null                          Struct{nullable=false, fields=[Bool{nullable=false}]}
@@ -94,6 +96,8 @@ setop_union_all                                Struct{nullable=false, fields=[I6
 setop_union_distinct                           Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
 stringlen_declared                             Struct{nullable=false, fields=[VarChar{nullable=false, length=10}, FixedChar{nullable=false, length=5}, FixedBinary{nullable=false, length=4}, Str{nullable=false}]}
 topn_keeps_the_input_schema                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+update_root_names_a_count                      ERROR: IllegalArgumentException: Plan.Root names count (1) must match input record type depth-first named-field c
+update_root_names_the_table                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 virtual_table_emit_mapping                     Struct{nullable=false, fields=[Str{nullable=false}]}
 virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: Row field type (I8{nullable=false}) does not match schema field type (I32{nullab
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullab

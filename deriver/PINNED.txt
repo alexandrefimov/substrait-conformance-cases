@@ -51,6 +51,7 @@ joineq_right_anti                              1
 joineq_right_mark                              2
 joineq_right_semi                              1
 joineq_right_single                            1
+lateral_join_uncorrelated                      1
 mirror_argument_nullability                    1  -> functions: MIRROR does not propagate nullability
 narrowing_count                                1
 narrowing_is_not_null                          3

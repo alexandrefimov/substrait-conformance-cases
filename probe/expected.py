@@ -305,6 +305,21 @@ SPEC_SILENT = {
         "does not say whether a mask listed out of schema order selects in schema order or is "
         "invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the "
         "question itself",
+    "lateral_join_uncorrelated_without_anchor":
+        "a lateral join whose right input references nothing, with no rel_anchor: "
+        "logical_relations.md requires the anchor only 'When the right input references the "
+        "current left row', while algebra.proto says 'LateralJoinRel must set RelCommon.rel_anchor' "
+        "- valid under one text and not the other. lateral_join_uncorrelated is the same join with "
+        "the anchor set",
+    "update_root_names_a_count":
+        "an UpdateRel whose root names one column: logical_relations.md gives its output as 'number "
+        "of modified records' and no type, algebra.proto says nothing about it, and WriteRel's "
+        "OUTPUT_MODE_MODIFIED_RECORDS returns the records themselves - neither the width nor the "
+        "type is decided",
+    "update_root_names_the_table":
+        "the same UpdateRel with the table's two names on the root: the reading under which it "
+        "outputs the modified records rather than their number, which the spec states for WriteRel's "
+        "output mode and not for UpdateRel",
 }
 SPEC_SAYS_INVALID = {
     "ctas_keeps_declared_schema":
@@ -461,6 +476,18 @@ expected["cross_preserves_nullability"] = {
 expected["topn_keeps_the_input_schema"] = {
     "schema": [["i64", False], ["i64", True]],
     "source": "physical_relations.md, Top-N Operation: the field order of the input"}
+
+# --- Lateral join ---------------------------------------------------------------------------------
+# "semantically identical to JoinRel, except the right input is evaluated once per row of the left
+# input" (algebra.proto, LateralJoinRel), and logical_relations.md, Lateral Join Operation, says "For
+# field meanings and join-type behavior, refer to the `JoinRel` documentation". Evaluating the right
+# input per left row changes which rows pair up, not the columns, so an inner lateral join of t_rn
+# and t_nr has the schema of join_inner. The right input here references nothing outside itself,
+# which keeps the case clear of how an outer reference is typed.
+expected["lateral_join_uncorrelated"] = {
+    "schema": join_expected("inner"),
+    "source": "algebra.proto, LateralJoinRel: semantically identical to JoinRel, so the spec rules "
+              "for an inner join"}
 
 print(json.dumps({"expected": expected, "rows": rows, "disputed": DISPUTED,
                   "spec_silent": sorted(SPEC_SILENT), "spec_says_invalid": sorted(SPEC_SAYS_INVALID)},
