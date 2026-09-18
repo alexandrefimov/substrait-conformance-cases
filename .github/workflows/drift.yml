@@ -129,7 +129,10 @@ jobs:
             n=$((n + 1))
             printf '%s\t%05d\t%s\n' "$(head -1 "$f" | cut -d' ' -f2)" "$n" "$f"
           done < found | sort -t $'\t' -k1,1 -k2,2n | cut -f3 > ordered
-          while read -r f; do cat "$f" >> blocks && echo >> blocks; done < ordered
+          # The blank line goes before each block rather than after it, so the log still ends on
+          # its last line: a blank line at the end of the file fails git diff --check in the PR
+          # that brings the block in.
+          while read -r f; do echo >> blocks && cat "$f" >> blocks; done < ordered
           rm -f found ordered
           if [ -s blocks ]; then
             cat blocks >> results/DRIFT.txt

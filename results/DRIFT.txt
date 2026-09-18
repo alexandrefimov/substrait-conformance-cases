@@ -15,3 +15,10 @@ repository and one fingerprint over what this side fed the comparison - the plan
 normalize.py for the 98-plan corpus; the bundles, the extract and the code that writes a column for
 the relation corpus. Without those two a moved answer, a regenerated corpus and an edited
 expectation cannot be told apart afterwards.
+
+##### 2026-09-18  GO  substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d
+corpus 0bc86c5, inputs 8e7025e079831084
+  control_join_without_relcommon                 gained (ACCEPTED)
+                                                 was ERROR: panic: runtime error: invalid memory address or nil pointer dereference
+                                                 now [a:i64, b:i64?, c:i64?, d:i64]
+GO: 1 of 106 answers moved (1 gained), 0 gone, 0 new
