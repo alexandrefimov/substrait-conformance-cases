@@ -436,25 +436,35 @@
    },
    "triage": {
     "ISTHMUS": {
-     "outcome": "open",
-     "note": "not reported. At the pinned substrait-java commit, SubstraitRelNodeConverter adds the index as a GROUP_ID call and sets its type explicitly to a required i64, so the width is chosen in the converter rather than inherited from Calcite; a report would ask for i32 there"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/1162",
+      "https://github.com/substrait-io/substrait-java/pull/1287"
+     ],
+     "note": "the issue reports the i64 on a round trip through Calcite; the saved answer is the Calcite schema of the same conversion, where SubstraitRelNodeConverter types the GROUP_ID call it adds as a required i64. The PR proposes the fix and is not merged; this links it, not a rerun of its head"
     },
     "DATAFUSION": {
-     "outcome": "open",
-     "note": "UInt8 is not the i32 the Aggregate page states. Whether it is a deliberate narrowing of the grouping-set index or an artefact of DataFusion's own grouping id has not been established, and the answer decides whether this is a DataFusion issue at all"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/25208"
+     ],
+     "note": "the width is a consequence: the consumer passes DataFusion's internal grouping id through as this column, and that id is a bitmask of the grouping expressions a set leaves out, typed as the smallest unsigned integer that holds it. Run with rows at the pinned commit, the two sets here yield 1 and 2 where the set index is 0 and 1. The issue reports the value, the width and the producer doing the same"
     }
    }
   },
   "validator-aggregate-returns-one-column": {
    "kind": "divergence",
-   "what": "The validator returns a single column for an aggregate whose output has more than one kind of column. On aggregate_grouping_then_measure - one grouping expression and one measure - it answers with the measure alone; on aggregate_grouping_set_index - two grouping expressions over two grouping sets - it answers with the appended i32 index alone. Both times what comes back is the last column of the relation and what is missing is every column before it, so the grouping expressions are not reaching the output at all rather than reaching it with the wrong type.",
+   "what": "The validator returns a single column for these two aggregates, and for the same reason as the two aggregate cases before them: it does not parse the relation-level grouping expressions or their references, and says so - 'not yet implemented: ... grouping_expressions' and '... expression_references'. What is left of the direct output is the measure on aggregate_grouping_then_measure and the appended i32 index on aggregate_grouping_set_index, where it also reports the aggregate invalid for having neither a grouping expression nor a measure.",
    "check": {
     "got_matches": "^\\[(i64\\?|i32)\\]$"
    },
    "triage": {
     "VALIDATOR": {
-     "outcome": "open",
-     "note": "both cases are new here and neither existed when the validator's other aggregate behaviour was reported. A narrower reproducer is needed before filing: the two differ in which single column survives, and it is not yet established whether one code path drops the leading columns or two separate ones each return their own"
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-validator/pull/567"
+     ],
+     "note": "the PR parses relation-level grouping expressions and their references, which is what both cases need; as for the two earlier cases, this links the proposed fix, not a rerun of its head"
     }
    }
   }
