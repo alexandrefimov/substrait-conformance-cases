@@ -153,6 +153,68 @@ def test_set_operations():
         pass
 
 
+def outer_field(anchor, i):
+    """A reference to field i of the row the relation with this rel_anchor binds."""
+    return {"selection": {"directReference": {"structField": {"field": i}},
+                          "outerReference": {"relReference": anchor}}}
+
+
+def test_lateral_join():
+    # No case in the corpus reaches a lateral join, so these checks are the only thing that does.
+    left, right = read("i64", "i64?"), read("i64", "i64?")
+    for kind in derive.LATERAL_JOIN_TYPES:
+        check("lateral %s is the join rule" % kind,
+              schema({"lateralJoin": {"left": left, "right": right, "type": kind,
+                                      "common": {"relAnchor": 1}}}),
+              schema({"join": {"left": left, "right": right, "type": kind}}))
+    # "All other join types are invalid for LateralJoinRel."
+    for kind in ("JOIN_TYPE_RIGHT", "JOIN_TYPE_OUTER", "JOIN_TYPE_RIGHT_SEMI"):
+        try:
+            schema({"lateralJoin": {"left": left, "right": right, "type": kind}})
+            FAILED.append("lateral join type %s was accepted" % kind)
+        except Unsupported:
+            pass
+    # The right input names a field of the current left row through the join's rel_anchor, and its
+    # type is that field's: here the nullable second left column.
+    correlated = {"project": {"input": right, "expressions": [outer_field(7, 1)]}}
+    check("an outer reference resolves against the left row",
+          schema({"lateralJoin": {"left": read("i64", "boolean?"), "right": correlated,
+                                  "type": "JOIN_TYPE_INNER", "common": {"relAnchor": 7}}}),
+          "[i64, bool?, i64, i64?, bool?]")
+    # Without an anchor, a right input that names the left row has nothing to resolve against.
+    try:
+        schema({"lateralJoin": {"left": left, "right": correlated, "type": "JOIN_TYPE_INNER"}})
+        FAILED.append("an outer reference with no binding anchor was resolved")
+    except Unsupported:
+        pass
+    # Without one and without such a reference, the page's reading derives it.
+    check("a lateral join with no anchor and no outer reference",
+          schema({"lateralJoin": {"left": left, "right": right, "type": "JOIN_TYPE_LEFT"}}),
+          "[i64, i64?, i64?, i64?]")
+    # The binding is the join's own. Above the join, in the same plan, the same reference must not
+    # resolve: each call to schema() starts a fresh plan, so a binding left behind is only visible
+    # to a relation that comes after the join in one derivation.
+    above = {"project": {"input": {"lateralJoin": {"left": read("i64", "boolean?"),
+                                                   "right": correlated,
+                                                   "type": "JOIN_TYPE_INNER",
+                                                   "common": {"relAnchor": 7}}},
+                         "expressions": [outer_field(7, 0)]}}
+    try:
+        schema(above)
+        FAILED.append("an outer reference resolved above the lateral join that binds it")
+    except Unsupported:
+        pass
+
+
+def test_update_declines():
+    # The page describes the output only as "number of modified records"; a type would be a guess.
+    try:
+        schema({"update": {}})
+        FAILED.append("the update relation was answered")
+    except Unsupported as why:
+        check("the update refusal names what is missing", "modified records" in str(why), True)
+
+
 def test_emit_and_passthrough():
     body = read("i64", "string", "boolean")
     check("emit reorders and drops",
@@ -171,7 +233,8 @@ def test_emit_and_passthrough():
 
 def main():
     for test in (test_expression_language, test_type_syntax, test_join_types,
-                 test_set_operations, test_emit_and_passthrough):
+                 test_set_operations, test_lateral_join, test_update_declines,
+                 test_emit_and_passthrough):
         test()
     for line in FAILED:
         print("FAILED: %s" % line)

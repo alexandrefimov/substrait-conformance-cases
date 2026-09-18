@@ -40,6 +40,9 @@ class Plan:
                 raise Unsupported("function %r points at urn anchor %s, which the plan does not "
                                   "declare" % (f.get("name"), anchor))
             self.functions[f.get("functionAnchor", 0)] = (urns[anchor], f["name"])
+        # rel_anchor -> the columns an OuterReference.rel_reference to it resolves against, for as
+        # long as the relation that binds it is being derived. Only a lateral join binds one here.
+        self.outer = {}
 
     def declaration(self, reference):
         if reference not in self.functions:
@@ -92,7 +95,7 @@ def expr_type(node, input_fields, plan):
         raise Unsupported("an Expression with %d fields set" % len(node or ()))
     (kind, body), = node.items()
     if kind == "selection":
-        return _selection(body, input_fields)
+        return _selection(body, input_fields, plan)
     if kind == "literal":
         return _literal(body)
     if kind == "scalarFunction":
@@ -102,20 +105,31 @@ def expr_type(node, input_fields, plan):
     raise Unsupported("expression %r" % kind)
 
 
-def _selection(body, input_fields):
-    """A FieldReference into the input record.
+def _selection(body, input_fields, plan):
+    """A FieldReference into the input record, or into the row an outer reference names.
 
-    Only a direct reference from the root is read. An outer reference belongs to a relation none of
-    these plans use, and a masked reference selects several fields at once, which is not one column
-    and so not one expression type.
+    An OuterReference by rel_reference resolves against whatever the relation with that rel_anchor
+    binds; the only such binding here is a lateral join's current left row. The deprecated
+    steps_out form counts subquery boundaries, and there are no subqueries here to count. A masked
+    reference selects several fields at once, which is not one column and so not one type.
     """
-    if "rootReference" not in body:
-        raise Unsupported("a field reference that is not rooted in the input record")
+    if "outerReference" in body:
+        outer = body["outerReference"]
+        if "relReference" not in outer:
+            raise Unsupported("an outer reference by steps_out rather than rel_reference")
+        anchor = outer["relReference"]
+        if anchor not in plan.outer:
+            raise Unsupported("an outer reference to rel_anchor %s, which no enclosing lateral "
+                              "join binds" % anchor)
+        fields = plan.outer[anchor]
+    elif "rootReference" in body:
+        fields = input_fields
+    else:
+        raise Unsupported("a field reference that is neither rooted in the input nor outer")
     segment = body.get("directReference")
     if segment is None:
         raise Unsupported("a masked field reference")
     t = None
-    fields = input_fields
     while segment:
         (seg, spec), = segment.items()
         if seg != "structField":
@@ -283,7 +297,11 @@ def _join(rel, plan):
     """
     left = rel_schema(rel["left"], plan)
     right = rel_schema(rel["right"], plan)
-    kind = rel.get("type", "JOIN_TYPE_UNSPECIFIED")
+    return _join_output(left, right, rel.get("type", "JOIN_TYPE_UNSPECIFIED"))
+
+
+def _join_output(left, right, kind):
+    """The output of a join of these two inputs under one join type, by the Join Types table."""
     if kind not in JOIN_TYPES:
         raise Unsupported("join type %r" % kind)
     sides, nulled = JOIN_TYPES[kind]
@@ -428,6 +446,58 @@ def _write(rel, plan):
     return rel_schema(rel["input"], plan)
 
 
+# "Supported join types: INNER, LEFT, LEFT_SEMI, LEFT_ANTI, LEFT_SINGLE, LEFT_MARK. All other join
+# types are invalid for LateralJoinRel." - logical_relations.md, Lateral Join Operation.
+LATERAL_JOIN_TYPES = ("JOIN_TYPE_INNER", "JOIN_TYPE_LEFT", "JOIN_TYPE_LEFT_SEMI",
+                      "JOIN_TYPE_LEFT_ANTI", "JOIN_TYPE_LEFT_SINGLE", "JOIN_TYPE_LEFT_MARK")
+
+
+def _lateral_join(rel, plan):
+    """Lateral join: "uses the same fields and JoinRel.JoinType enum as Join Operation. For field
+    meanings and join-type behavior, refer to the JoinRel documentation above."
+
+    So the output is the Join rule's, over six of its twelve types. What is particular is the right
+    input, which "may reference fields of the current left row via OuterReference.rel_reference";
+    while it is derived, the join's rel_anchor names the left input's columns.
+
+    The two texts disagree on when that anchor is required. The page makes it conditional: "When the
+    right input references the current left row, LateralJoinRel must set RelCommon.rel_anchor". The
+    comment on LateralJoinRel in algebra.proto makes it unconditional: "LateralJoinRel must set
+    RelCommon.rel_anchor so the right input can reference fields of the current left row." The
+    schema is the same either way. The page's reading is taken - a lateral join without an anchor
+    derives as long as its right input names no left field - because the proto's clause reads as the
+    reason for the anchor rather than as a second requirement; a validator taking the proto's
+    reading would reject such a plan.
+    """
+    kind = rel.get("type", "JOIN_TYPE_UNSPECIFIED")
+    if kind not in LATERAL_JOIN_TYPES:
+        raise Unsupported("join type %r, which is invalid for a lateral join" % kind)
+    left = rel_schema(rel["left"], plan)
+    anchor = (rel.get("common") or {}).get("relAnchor")
+    if anchor is not None:
+        if anchor in plan.outer:
+            raise Unsupported("rel_anchor %s bound twice" % anchor)
+        plan.outer[anchor] = left
+    try:
+        right = rel_schema(rel["right"], plan)
+    finally:
+        if anchor is not None:
+            del plan.outer[anchor]
+    return _join_output(left, right, kind)
+
+
+def _update(rel, plan):
+    """Update: declined, because the specification does not say what it outputs.
+
+    The page's signature table gives the relation one output and describes it only as "Output is
+    number of modified records" - there is no Direct Output Order row, as every other relation that
+    outputs anything has, and neither the page nor algebra.proto gives that number a type, a
+    nullability, or a column count. Answering i64 would be the likeliest guess and still a guess.
+    """
+    raise Unsupported("the update relation's output is described only as 'number of modified "
+                      "records': no Direct Output Order, type or nullability is given")
+
+
 RULES = {
     "read": _read,
     "filter": _passthrough("input"),
@@ -445,6 +515,8 @@ RULES = {
     "window": _window,
     "expand": _expand,
     "write": _write,
+    "lateralJoin": _lateral_join,
+    "update": _update,
 }
 
 
