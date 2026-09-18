@@ -16,7 +16,7 @@ answer and the expectation beside each cell.
 
 ## If your project is here
 
-Twenty-one of the twenty-six reasons behind a divergence link an issue or a PR in the project it is
+Twenty of the twenty-six reasons behind a divergence link an issue or a PR in the project it is
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 

@@ -125,10 +125,15 @@ point where it was made rather than only here.
 
 The **`i32` column** Aggregate appends for a second grouping set and Expand appends always: neither
 page gives its nullability. It is written required, on the grounds that the value is an index every
-output row has. Nothing contradicts it and nothing confirms it. Its width is a known open
-question — `physical_relations.md` calls it i32 and `algebra.proto` calls it int64, which
-[substrait#714](https://github.com/substrait-io/substrait/issues/714) is open on — and the
-documentation table is followed here, as in `expected.py`.
+output row has. Nothing contradicts it and nothing confirms it.
+
+The width of the two columns is a different matter, and they differ from each other in it. For
+Expand it is a known open question: `physical_relations.md` calls the column i32, and the comment
+above `message ExpandRel` in `algebra.proto` calls it int64, which
+[substrait#714](https://github.com/substrait-io/substrait/issues/714) is open on; the documentation
+table is followed here, as in `expected.py`. For Aggregate there is no such question —
+`logical_relations.md` says i32 twice and `algebra.proto` says nothing about the column at all — so
+an implementation returning another width is simply differing from the one text there is.
 
 The **phase of an aggregate call**. The spec names an intermediate output type for a decomposable
 function and lists the phases as "what portion of the operation is required". It nowhere says in one

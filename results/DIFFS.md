@@ -222,11 +222,11 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-va
 
 ### `grouping-set-index-width`
 
-The i32 column an aggregate with more than one grouping set appends comes back at another width. Isthmus returns BIGINT, which is the int64 algebra.proto gives the field and not the i32 the documentation table states; DataFusion returns UInt8, which is neither. The two grouping columns are correct in both, so this is the appended column alone.
+The i32 column an aggregate with more than one grouping set appends comes back at another width: Isthmus returns BIGINT and DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct in both.
 
-Recorded as a divergence, asked of the spec. https://github.com/substrait-io/substrait/issues/714
+Recorded as a divergence, open.
 
-Int64 is what algebra.proto declares for this field, so this answer follows one of the two normative texts. Which of them is meant is the open question.
+Not reported. At the pinned substrait-java commit, SubstraitRelNodeConverter adds the index as a GROUP_ID call and sets its type explicitly to a required i64, so the width is chosen in the converter rather than inherited from Calcite; a report would ask for i32 there.
 
 | case | expected | Isthmus/Calcite answered | the expectation comes from |
 | --- | --- | --- | --- |
@@ -311,11 +311,11 @@ Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/
 
 ### `grouping-set-index-width`
 
-The i32 column an aggregate with more than one grouping set appends comes back at another width. Isthmus returns BIGINT, which is the int64 algebra.proto gives the field and not the i32 the documentation table states; DataFusion returns UInt8, which is neither. The two grouping columns are correct in both, so this is the appended column alone.
+The i32 column an aggregate with more than one grouping set appends comes back at another width: Isthmus returns BIGINT and DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct in both.
 
 Recorded as a divergence, open.
 
-UInt8 follows neither text. Whether it is a deliberate narrowing of the grouping-set index or an artefact of DataFusion's own grouping id has not been established, and the answer decides whether this belongs in that spec thread or in a DataFusion issue.
+UInt8 is not the i32 the Aggregate page states. Whether it is a deliberate narrowing of the grouping-set index or an artefact of DataFusion's own grouping id has not been established, and the answer decides whether this is a DataFusion issue at all.
 
 | case | expected | DataFusion answered | the expectation comes from |
 | --- | --- | --- | --- |
