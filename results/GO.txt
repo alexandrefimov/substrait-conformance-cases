@@ -1,4 +1,4 @@
-GO: column from run 2026-09-18T13:14, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
+GO: column from run 2026-09-18T15:49, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_set_index                   ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 2
@@ -47,6 +47,8 @@ joineq_right_mark                              ERROR: invalid relation: root rel
 joineq_right_semi                              [c0:i64?, c1:i64]
 joineq_right_single                            [c0:i64?, c1:i64?, c2:i64?, c3:i64]
 joineq_right                                   [c0:i64?, c1:i64?, c2:i64?, c3:i64]
+lateral_join_uncorrelated_without_anchor       ERROR: invalid relation: got nil
+lateral_join_uncorrelated                      ERROR: invalid relation: got nil
 mirror_argument_nullability                    [c0:i64, c1:i64?, rr:i64, rn:i64?]
 narrowing_count                                [n:i64]
 narrowing_is_not_null                          [r:boolean]
@@ -94,6 +96,8 @@ setop_union_all                                ERROR: invalid relation: set oper
 setop_union_distinct                           ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 stringlen_declared                             [c0:varchar<10>, c1:fixedchar<5>, c2:fixedbinary<4>, c3:string]
 topn_keeps_the_input_schema                    ERROR: invalid relation: got nil
+update_root_names_a_count                      ERROR: not implemented
+update_root_names_the_table                    ERROR: not implemented
 virtual_table_emit_mapping                     [col2:string]
 virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]

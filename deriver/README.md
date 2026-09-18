@@ -30,7 +30,7 @@ with `git show`, not out of its working tree, so a checkout sitting on a branch 
 change what a rule says. Their bytes are pinned in [spec.pins](spec.pins), and a file serving
 anything else stops the run instead of being derived from.
 
-`DERIVED.txt` is the saved answer for each of the 101 cases. It exists so that the comparison can run
+`DERIVED.txt` is the saved answer for each of the 106 cases. It exists so that the comparison can run
 without a checkout: `deriver/check.py` compares it against `expected.json` and is what
 `probe/selfcheck.sh` calls. Regenerating it needs the checkout; comparing it does not.
 
@@ -161,14 +161,17 @@ answer.
 is number of modified records". There is no Direct Output Order row, which every other relation
 with an output has, and neither the page nor `algebra.proto` gives that number a type, a
 nullability or a column count. The deriver declines the relation rather than answer `i64`, which
-would be the likeliest guess and still a guess.
+would be the likeliest guess and still a guess. `update_root_names_a_count` and
+`update_root_names_the_table` are the same update written for each reading, and `METHOD.md` says
+what the participants make of them.
 
 **When a lateral join must carry a `rel_anchor`.** The page makes it conditional: "When the right
 input references the current left row, `LateralJoinRel` must set `RelCommon.rel_anchor`". The
 comment on the message in `algebra.proto` makes it unconditional: "LateralJoinRel must set
 RelCommon.rel_anchor so the right input can reference fields of the current left row." The schema
 comes out the same either way, so this decides only whether a lateral join with no anchor and no
-outer reference is valid. The page's reading is taken, on the grounds that the proto's clause states
+outer reference is valid, which is what `lateral_join_uncorrelated_without_anchor` asks. The page's
+reading is taken, on the grounds that the proto's clause states
 the anchor's purpose rather than a second requirement.
 
 **Integer division** in a return type expression. The spec declares `divide(integer, integer) =>
@@ -196,9 +199,8 @@ writing these rules again without the manifest in front of them is what would se
 ## What it does not do
 
 Schemas only: no rows, no column names, no validation beyond what deriving a schema happens to
-require. Of the relations `algebra.proto` defines it implements the sixteen the corpus reaches and
-`lateral_join`, which no case reaches and only `deriver/test_derive.py` checks; it declines `update`
-for the reason given below; `reference`, `ddl`, `exchange` and the three extension relations are
+require. Of the relations `algebra.proto` defines it implements seventeen of the eighteen the corpus
+reaches; it declines `update`, the eighteenth, for the reason given above; `reference`, `ddl`, `exchange` and the three extension relations are
 absent. Of the expressions it reads field references — rooted in the input, or an outer reference
 by `rel_reference` to the row a lateral join binds — literals, casts and scalar, aggregate and
 window function calls; not `if_then`, `switch`, `singular_or_list`, `multi_or_list`, subqueries,

@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-18T13:15, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-18T15:50, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_set_index                   [i32]
@@ -47,6 +47,8 @@ joineq_right_mark                              [i64, i64?, i64?, i64]
 joineq_right_semi                              [i64, i64?, i64?, i64]
 joineq_right_single                            [i64, i64?, i64?, i64]
 joineq_right                                   [i64?, i64?, i64?, i64]
+lateral_join_uncorrelated_without_anchor       ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "lateralJoin" at "Plan.relations[0].root.input".
+lateral_join_uncorrelated                      ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "lateralJoin" at "Plan.relations[0].root.input".
 mirror_argument_nullability                    [i64, i64?, i64, i64?]
 narrowing_count                                [i64]
 narrowing_is_not_null                          [bool]
@@ -94,6 +96,8 @@ setop_union_all                                [i64, i64, i64, i64, i64?, i64?, 
 setop_union_distinct                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
 topn_keeps_the_input_schema                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "topN" at "Plan.relations[0].root.input".  Availab
+update_root_names_a_count                      ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
+update_root_names_the_table                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
 virtual_table_emit_mapping                     [unresolved]
 virtual_table_literal_type_differs_from_schema i8
 virtual_table_row_null_in_required_column      i32?

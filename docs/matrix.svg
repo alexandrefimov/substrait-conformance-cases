@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1860" viewBox="0 0 838 1860">
+<svg xmlns="http://www.w3.org/2000/svg" width="838" height="1946" viewBox="0 0 838 1946">
 <defs><pattern id="hatch" width="4" height="4" patternTransform="rotate(135)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#8a8b88" stroke-width="1.6"/></pattern><pattern id="dots" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="4" stroke="#c2c2ba" stroke-width="0.8"/></pattern></defs>
-<rect x="0.0" y="0.0" width="838.0" height="1860.0" rx="1.5" fill="#fdfdfc"/>
+<rect x="0.0" y="0.0" width="838.0" height="1946.0" rx="1.5" fill="#fdfdfc"/>
 <text x="14.0" y="26.0" fill="#14161a" font-size="15.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Declared against derived</text>
-<text x="14.0" y="43.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">102 plans read by 9 implementations, each answer compared with an expectation written from the spec.</text>
+<text x="14.0" y="43.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">106 plans read by 9 implementations, each answer compared with an expectation written from the spec.</text>
 <text x="14.0" y="57.0" fill="#55575c" font-size="10.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">An empty cell is silence — the implementation does not accept that plan — and is never drawn as a colour.</text>
 <rect x="14.0" y="68.0" width="11.0" height="9.0" rx="1.5" fill="#d6d6d1"/>
 <text x="29.0" y="76.0" fill="#55575c" font-size="9.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">matched</text>
@@ -917,145 +917,145 @@
 <rect x="642.0" y="1501.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="704.0" y="1501.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1501.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1525.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">MIRROR</text>
+<text x="14.0" y="1525.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">LATERAL</text>
 <line x1="14" y1="1528.0" x2="824" y2="1528.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1540.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">mirror_argument_nullability</text>
+<text x="14.0" y="1540.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">lateral_join_uncorrelated</text>
 <rect x="270.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="332.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="456.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="518.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="580.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="642.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="704.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="766.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<text x="14.0" y="1555.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">PHYSICAL JOINS</text>
-<line x1="14" y1="1558.0" x2="824" y2="1558.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1570.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_inner</text>
-<rect x="270.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="456.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1561.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1583.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left</text>
+<rect x="704.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1531.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1553.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">lateral_join_uncorrelated_without_anchor</text>
+<rect x="270.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="332.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="394.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="456.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="518.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="580.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="642.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="704.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="766.0" y="1544.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="14.0" y="1568.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">MIRROR</text>
+<line x1="14" y1="1571.0" x2="824" y2="1571.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1583.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">mirror_argument_nullability</text>
 <rect x="270.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="456.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1596.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left_mark</text>
-<rect x="270.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="332.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1587.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1609.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_right_semi</text>
-<rect x="270.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1600.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1622.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_inner</text>
-<rect x="270.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="456.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1613.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1635.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left</text>
-<rect x="270.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="456.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1626.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1648.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left_mark</text>
-<rect x="270.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="332.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1639.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1661.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_right_semi</text>
-<rect x="270.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1652.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1674.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_inner</text>
-<rect x="270.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1665.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1687.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_left</text>
-<rect x="270.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1678.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1700.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_left_mark</text>
-<rect x="270.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="332.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="394.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1691.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1713.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_right_semi</text>
-<rect x="270.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1704.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1728.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">TOP-N</text>
-<line x1="14" y1="1731.0" x2="824" y2="1731.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1743.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">topn_keeps_the_input_schema</text>
-<rect x="270.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="456.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="518.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="580.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="642.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="704.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="766.0" y="1574.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<text x="14.0" y="1598.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">PHYSICAL JOINS</text>
+<line x1="14" y1="1601.0" x2="824" y2="1601.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1613.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_inner</text>
+<rect x="270.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="456.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1604.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1626.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left</text>
+<rect x="270.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="394.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="456.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1617.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1639.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left_mark</text>
+<rect x="270.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="332.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="394.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1630.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1652.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_right_semi</text>
+<rect x="270.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1643.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1665.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_inner</text>
+<rect x="270.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="456.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1656.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1678.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left</text>
+<rect x="270.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="394.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="456.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1669.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1691.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left_mark</text>
+<rect x="270.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="332.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="394.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1682.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1704.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_right_semi</text>
+<rect x="270.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1695.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1717.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_inner</text>
+<rect x="270.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1708.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1730.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_left</text>
+<rect x="270.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="394.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1721.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1743.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_left_mark</text>
+<rect x="270.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="332.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="394.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -1063,40 +1063,84 @@
 <rect x="642.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="704.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1734.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1758.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW FRAMES AND BOUNDS</text>
-<line x1="14" y1="1761.0" x2="824" y2="1761.0" stroke="#dcdcd6" stroke-width="0.6"/>
-<text x="14.0" y="1773.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset</text>
-<rect x="270.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="704.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="766.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1786.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset_expr</text>
+<text x="14.0" y="1756.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_right_semi</text>
+<rect x="270.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1747.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1771.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">TOP-N</text>
+<line x1="14" y1="1774.0" x2="824" y2="1774.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1786.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">topn_keeps_the_input_schema</text>
 <rect x="270.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="332.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="580.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="642.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="704.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1777.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1799.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_output_order</text>
-<rect x="270.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="394.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="456.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="518.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="580.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="642.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="704.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<rect x="766.0" y="1790.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1823.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">918 cells: 449 matched, 103 divergences, 11 unresolved, 6 at a type-system boundary, 295 not accepted, 54 without an expectation.</text>
-<text x="14.0" y="1837.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">8 of these cases each pin a rule no other case pins; 3 rules are pinned by none.</text>
-<text x="14.0" y="1835.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18 · java fff63906 · python 0.31.0 · go cb2d6e648bc0 · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5 · Spark 3.5.4</text>
-<text x="14.0" y="1846.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Acero 25.0.1</text>
+<text x="14.0" y="1801.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">UPDATE</text>
+<line x1="14" y1="1804.0" x2="824" y2="1804.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1816.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">update_root_names_a_count</text>
+<rect x="270.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="332.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="394.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="456.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="518.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="580.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="642.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="704.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="766.0" y="1807.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="14.0" y="1829.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">update_root_names_the_table</text>
+<rect x="270.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="332.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="394.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="456.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="518.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="580.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="642.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="704.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<rect x="766.0" y="1820.0" width="54.0" height="10.0" rx="1.5" fill="url(#dots)"/>
+<text x="14.0" y="1844.0" fill="#8a8b88" font-size="8.0" font-weight="600" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif" letter-spacing="0.06em">WINDOW FRAMES AND BOUNDS</text>
+<line x1="14" y1="1847.0" x2="824" y2="1847.0" stroke="#dcdcd6" stroke-width="0.6"/>
+<text x="14.0" y="1859.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset</text>
+<rect x="270.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="704.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="766.0" y="1850.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1872.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_bound_offset_expr</text>
+<rect x="270.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="394.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="766.0" y="1863.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1885.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">window_output_order</text>
+<rect x="270.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="332.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
+<rect x="394.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="456.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="580.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="642.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="704.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="766.0" y="1876.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<text x="14.0" y="1909.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">954 cells: 452 matched, 103 divergences, 11 unresolved, 6 at a type-system boundary, 301 not accepted, 81 without an expectation.</text>
+<text x="14.0" y="1923.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">8 of these cases each pin a rule no other case pins; 3 rules are pinned by none.</text>
+<text x="14.0" y="1921.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18 · java fff63906 · python 0.31.0 · go cb2d6e648bc0 · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5 · Spark 3.5.4</text>
+<text x="14.0" y="1932.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Acero 25.0.1</text>
 </svg>

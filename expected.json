@@ -1,7 +1,10 @@
 {
  "disputed": {
   "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
+  "lateral_join_uncorrelated_without_anchor": "a lateral join whose right input references nothing, with no rel_anchor: logical_relations.md requires the anchor only 'When the right input references the current left row', while algebra.proto says 'LateralJoinRel must set RelCommon.rel_anchor' - valid under one text and not the other. lateral_join_uncorrelated is the same join with the anchor set",
   "read_projection_mask_reordered": "a projection mask listing fields [2, 0]: field_references.md says 'Right now, you can only mask things out' among its discussion points, which rules out a mask reordering columns but does not say whether a mask listed out of schema order selects in schema order or is invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the question itself",
+  "update_root_names_a_count": "an UpdateRel whose root names one column: logical_relations.md gives its output as 'number of modified records' and no type, algebra.proto says nothing about it, and WriteRel's OUTPUT_MODE_MODIFIED_RECORDS returns the records themselves - neither the width nor the type is decided",
+  "update_root_names_the_table": "the same UpdateRel with the table's two names on the root: the reading under which it outputs the modified records rather than their number, which the spec states for WriteRel's output mode and not for UpdateRel",
   "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but the general one reaches it - type_system.md allows no coercion and requires an explicit cast for all changes in types",
   "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
   "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: nullability is part of a type, so the cast rule would forbid it, yet nullability is also stripped before binding under MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
@@ -721,6 +724,27 @@
     ]
    ],
    "source": "the spec rules for join types and Direct Output Order"
+  },
+  "lateral_join_uncorrelated": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "source": "algebra.proto, LateralJoinRel: semantically identical to JoinRel, so the spec rules for an inner join"
   },
   "mirror_argument_nullability": {
    "schema": [
@@ -1664,7 +1688,10 @@
   "ctas_keeps_declared_schema"
  ],
  "spec_silent": [
+  "lateral_join_uncorrelated_without_anchor",
   "read_projection_mask_reordered",
+  "update_root_names_a_count",
+  "update_root_names_the_table",
   "virtual_table_literal_type_differs_from_schema",
   "virtual_table_row_null_in_required_column",
   "virtual_table_row_nullable_in_required_column",

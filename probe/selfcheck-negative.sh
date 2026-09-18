@@ -961,7 +961,7 @@ import io
 p = 'METHOD.md'
 s = io.open(p, encoding='utf-8').read()
 io.open(p, 'w', encoding='utf-8').write(
-    s.replace('Five of\nthem wait on the spec', 'Four of\nthem wait on the spec', 1))"
+    s.replace('Eight\nof them wait on the spec', 'Four\nof them wait on the spec', 1))"
 
 # The saved coverage map against the script that writes it. A reading added to deriver/mutants.py
 # without regenerating COVERAGE.txt leaves the map reporting coverage it never tested, and the map

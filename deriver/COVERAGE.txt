@@ -13,7 +13,7 @@ told apart:
   read: the projection mask is ignored                     1 case(s): read_projection_mask
   project: the new expressions come before the input       8 case(s): decimal_add, decimal_add_overflow, decimal_divide
   emit: the output mapping is ignored                      17 case(s): aggregate_grouping_field_shared_by_sets, aggregate_grouping_sets_declared_order, decimal_add
-  join inner: the right side becomes nullable              6 case(s): control_join_without_relcommon, join_inner, joineq_inner
+  join inner: the right side becomes nullable              7 case(s): control_join_without_relcommon, join_inner, joineq_inner
   join left: the right side stays required                 5 case(s): join_left, joineq_left, physjoin_hash_left
   join right: the right side is nulled instead of the left 2 case(s): join_right, joineq_right
   join left single: the right side stays required          2 case(s): join_left_single, joineq_left_single

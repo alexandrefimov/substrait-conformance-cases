@@ -1050,6 +1050,45 @@
   }
  },
  {
+  "case": "lateral_join_uncorrelated",
+  "plan": "lateral_join_uncorrelated.json",
+  "binary": "lateral_join_uncorrelated.bin",
+  "generator": "GenLateral",
+  "note": "lateral_join_uncorrelated  an inner lateral join whose right input references nothing, anchor set, expecting t_rn then t_nr unchanged",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ]
+   ],
+   "from": "algebra.proto, LateralJoinRel: semantically identical to JoinRel, so the spec rules for an inner join"
+  }
+ },
+ {
+  "case": "lateral_join_uncorrelated_without_anchor",
+  "plan": "lateral_join_uncorrelated_without_anchor.json",
+  "binary": "lateral_join_uncorrelated_without_anchor.bin",
+  "generator": "GenLateral",
+  "note": "lateral_join_uncorrelated_without_anchor  the same join without rel_anchor: the page allows it, algebra.proto does not",
+  "expectation": {
+   "none": "a lateral join whose right input references nothing, with no rel_anchor: logical_relations.md requires the anchor only 'When the right input references the current left row', while algebra.proto says 'LateralJoinRel must set RelCommon.rel_anchor' - valid under one text and not the other. lateral_join_uncorrelated is the same join with the anchor set",
+   "because": "the spec is silent"
+  }
+ },
+ {
   "case": "mirror_argument_nullability",
   "plan": "mirror_argument_nullability.json",
   "binary": "mirror_argument_nullability.bin",
@@ -2158,6 +2197,28 @@
     ]
    ],
    "from": "physical_relations.md, Top-N Operation: the field order of the input"
+  }
+ },
+ {
+  "case": "update_root_names_a_count",
+  "plan": "update_root_names_a_count.json",
+  "binary": "update_root_names_a_count.bin",
+  "generator": "GenUpdate",
+  "note": "update_root_names_a_count  an update of t_rn with one root name, as the page's count would have",
+  "expectation": {
+   "none": "an UpdateRel whose root names one column: logical_relations.md gives its output as 'number of modified records' and no type, algebra.proto says nothing about it, and WriteRel's OUTPUT_MODE_MODIFIED_RECORDS returns the records themselves - neither the width nor the type is decided",
+   "because": "the spec is silent"
+  }
+ },
+ {
+  "case": "update_root_names_the_table",
+  "plan": "update_root_names_the_table.json",
+  "binary": "update_root_names_the_table.bin",
+  "generator": "GenUpdate",
+  "note": "update_root_names_the_table  the same update with the table's two names, as its modified records would have",
+  "expectation": {
+   "none": "the same UpdateRel with the table's two names on the root: the reading under which it outputs the modified records rather than their number, which the spec states for WriteRel's output mode and not for UpdateRel",
+   "because": "the spec is silent"
   }
  },
  {

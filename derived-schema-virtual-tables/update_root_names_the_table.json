@@ -1,0 +1,64 @@
+{
+ "relations": [
+  {
+   "root": {
+    "input": {
+     "update": {
+      "namedTable": {
+       "names": [
+        "t_rn"
+       ]
+      },
+      "tableSchema": {
+       "names": [
+        "c0",
+        "c1"
+       ],
+       "struct": {
+        "types": [
+         {
+          "i64": {
+           "nullability": "NULLABILITY_REQUIRED"
+          }
+         },
+         {
+          "i64": {
+           "nullability": "NULLABILITY_NULLABLE"
+          }
+         }
+        ],
+        "nullability": "NULLABILITY_REQUIRED"
+       }
+      },
+      "condition": {
+       "literal": {
+        "boolean": true
+       }
+      },
+      "transformations": [
+       {
+        "transformation": {
+         "literal": {
+          "i64": "0"
+         }
+        },
+        "columnTarget": 1
+       }
+      ],
+      "common": {
+       "direct": {}
+      }
+     }
+    },
+    "names": [
+     "c0",
+     "c1"
+    ]
+   }
+  }
+ ],
+ "version": {
+  "minorNumber": 102,
+  "producer": "case-corpus"
+ }
+}

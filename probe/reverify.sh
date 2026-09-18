@@ -112,7 +112,7 @@ echo
 echo "### 1. generating the cases, and the substrait-java side"
 CP="$(cat "$GEN/classpath.txt")"
 rm -rf "$GEN/out"; mkdir -p "$GEN/out"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins GenAggregate GenMirror JsonToBin"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins GenAggregate GenMirror GenLateral GenUpdate JsonToBin"
 SRCS=""; for g in $GENS Tables; do SRCS="$SRCS $GEN/$g.java"; done
 javac -nowarn -cp "$CP" -d "$GEN/out" $SRCS || die "javac of the generators"
 
