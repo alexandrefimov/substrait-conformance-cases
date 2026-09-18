@@ -1,4 +1,4 @@
-DUCKDB: column from run 2026-09-18T15:49, duckdb 1.5.5
+DUCKDB: column from run 2026-09-18T18:39, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
@@ -10,6 +10,8 @@ control_join_without_relcommon                 [a:BIGINT, b:BIGINT, c:BIGINT, d:
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT]
 cross_preserves_nullability                    [l0:BIGINT, l1:BIGINT, r0:BIGINT, r1:BIGINT]
 ctas_keeps_declared_schema                     [Count:BIGINT]
+ddl_view_root_names_nothing                    ERROR: NotImplementedException: Not implemented Error: Unsupported relation type ddl LINE 1: SELECT * FROM from_substrait_json(?) ^
+ddl_view_root_names_the_view                   ERROR: NotImplementedException: Not implemented Error: Unsupported relation type ddl LINE 1: SELECT * FROM from_substrait_json(?) ^
 decimal_add_overflow                           ERROR: OutOfRangeException: Out of Range Error: Overflow in addition of DECIMAL(38) (99999999999999999999999999999999999999 + 99999999999999999999999999999999999999);
 decimal_add                                    [r:DECIMAL(11,2)]
 decimal_divide                                 [r:DOUBLE]

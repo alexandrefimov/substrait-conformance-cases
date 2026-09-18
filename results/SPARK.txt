@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-18T15:50, spark 3.5.4
+SPARK: column from run 2026-09-18T18:40, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -10,6 +10,8 @@ control_join_without_relcommon                 [a:bigint, b:bigint?, c:bigint?, 
 control_passthrough_rn                         [c0:bigint, c1:bigint?]
 cross_preserves_nullability                    [l0:bigint, l1:bigint?, r0:bigint?, r1:bigint]
 ctas_keeps_declared_schema                     []
+ddl_view_root_names_nothing                    ERROR: UnsupportedOperationException: Ddl operation (CREATE,VIEW) not supported
+ddl_view_root_names_the_view                   ERROR: UnsupportedOperationException: Ddl operation (CREATE,VIEW) not supported
 decimal_add_overflow                           [r:decimal(38,9)?]
 decimal_add                                    [r:decimal(11,2)?]
 decimal_divide                                 [r:decimal(17,8)?]

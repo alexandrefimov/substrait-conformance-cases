@@ -325,6 +325,11 @@ SPEC_SAYS_INVALID = {
     "ctas_keeps_declared_schema":
         "the spec requires the input schema to match table_schema (algebra.proto); this case breaks "
         "that deliberately, so what is measured is not the type but whether anyone reports it",
+    "ddl_view_root_names_the_view":
+        "a root naming two columns over a DdlRel, which logical_relations.md gives no output ('Outputs "
+        "0', 'N/A (no output)'): the names have nothing to name, so the plan is invalid and what is "
+        "measured is whether anyone reports it. ddl_view_root_names_nothing is the same view with "
+        "no root name",
 }
 DISPUTED = dict(SPEC_SILENT)
 DISPUTED.update(SPEC_SAYS_INVALID)
@@ -484,6 +489,14 @@ expected["topn_keeps_the_input_schema"] = {
 # input per left row changes which rows pair up, not the columns, so an inner lateral join of t_rn
 # and t_nr has the schema of join_inner. The right input here references nothing outside itself,
 # which keeps the case clear of how an outer reference is typed.
+# --- DDL ------------------------------------------------------------------------------------------
+# logical_relations.md, DDL Operator: "Outputs 0", and under Property Maintenance "N/A (no output)" -
+# the one relation on that page without an output. A root over it has no column to name, so the
+# schema is empty.
+expected["ddl_view_root_names_nothing"] = {
+    "schema": [],
+    "source": "logical_relations.md, DDL Operator: Outputs 0, N/A (no output)"}
+
 expected["lateral_join_uncorrelated"] = {
     "schema": join_expected("inner"),
     "source": "algebra.proto, LateralJoinRel: semantically identical to JoinRel, so the spec rules "

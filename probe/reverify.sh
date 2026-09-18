@@ -34,11 +34,12 @@ SP="${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}"
 # The commits the saved columns were taken against are required by default, so that reproducing them
 # is what the ordinary command does. Writing a pin down and never applying it is how DATAFUSION_COMMIT
 # came to name a commit the columns were not taken at. To run against something else on purpose, pass
-# the variable empty: SJ_EXPECT= or DF_EXPECT=.
+# the variable empty: SJ_EXPECT=, DF_EXPECT= or GO_EXPECT=.
 # shellcheck source=versions.env
 . "$PROBE/versions.env"
 SJ_EXPECT="${SJ_EXPECT-${SUBSTRAIT_JAVA_COMMIT:-}}"
 DF_EXPECT="${DF_EXPECT-${DATAFUSION_COMMIT:-}}"
+GO_EXPECT="${GO_EXPECT-${SUBSTRAIT_GO_COMMIT:-}}"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 FAILED=0
@@ -86,6 +87,12 @@ fi
 if [ -n "$DF_EXPECT" ] && [ "$DF_HEAD" != "$(git -C "$DF" rev-parse --short "$DF_EXPECT" 2>/dev/null)" ]; then
   die "DataFusion is not at $DF_EXPECT (currently $DF_HEAD); pass DF_EXPECT= to run anyway"
 fi
+# The Go probe is not a checkout but a binary built once by probe/setup.sh, and it stays at whatever
+# version it was built at when the pin moves. Only its go.mod says which, so that is what is compared.
+GO_BUILT="$(grep -m1 -o "$SUBSTRAIT_GO_MODULE v[^ ]*" "$SP/gosub9/go.mod" 2>/dev/null | cut -d' ' -f2)"
+if [ -n "$GO_EXPECT" ] && [ "$GO_BUILT" != "$GO_EXPECT" ]; then
+  die "the substrait-go probe in $SP/gosub9 is built at ${GO_BUILT:-an unknown version}, not $GO_EXPECT; rebuild it with probe/setup.sh, or pass GO_EXPECT= to run anyway"
+fi
 # Tracked files must be clean: the probe does not touch them, so anything dirty here is someone
 # else's work. Untracked files no longer block: the probe drops its own example in and takes it
 # out again, and a name collision is caught by its own check below.
@@ -112,7 +119,7 @@ echo
 echo "### 1. generating the cases, and the substrait-java side"
 CP="$(cat "$GEN/classpath.txt")"
 rm -rf "$GEN/out"; mkdir -p "$GEN/out"
-GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins GenAggregate GenMirror GenLateral GenUpdate JsonToBin"
+GENS="GenCases GenDisputed GenSetOps GenJoins GenNarrowing GenEmit GenProjection GenSetData GenStringLen GenPhase GenDecimal GenControl GenWindow GenExpand GenCross GenTopN GenSum GenPhysJoins GenAggregate GenMirror GenLateral GenUpdate GenDdl JsonToBin"
 SRCS=""; for g in $GENS Tables; do SRCS="$SRCS $GEN/$g.java"; done
 javac -nowarn -cp "$CP" -d "$GEN/out" $SRCS || die "javac of the generators"
 

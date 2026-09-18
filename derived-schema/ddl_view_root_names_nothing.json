@@ -1,0 +1,66 @@
+{
+  "relations": [{
+    "root": {
+      "input": {
+        "ddl": {
+          "namedObject": {
+            "names": ["v"]
+          },
+          "tableSchema": {
+            "names": ["c0", "c1"],
+            "struct": {
+              "types": [{
+                "i64": {
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              }, {
+                "i64": {
+                  "nullability": "NULLABILITY_NULLABLE"
+                }
+              }],
+              "nullability": "NULLABILITY_REQUIRED"
+            }
+          },
+          "tableDefaults": {
+          },
+          "object": "DDL_OBJECT_VIEW",
+          "op": "DDL_OP_CREATE",
+          "viewDefinition": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["c0", "c1"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["t_rn"]
+              }
+            }
+          },
+          "common": {
+            "direct": {
+            }
+          }
+        }
+      }
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  }
+}

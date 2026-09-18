@@ -8,7 +8,7 @@ implementation, and every answer beside it is retaken by one command.
 
 | | | |
 | --- | --- | --- |
-| [`derived-schema/`](derived-schema) | 106 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
+| [`derived-schema/`](derived-schema) | 108 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
 | [`tests/relations/`](tests/relations) | 71 hand-written cases pinning what the relation documentation says a relation outputs, schema and rows alike | substrait-java, substrait-go, DuckDB, DataFusion |
 
 [The matrix as a page](https://alexandrefimov.github.io/substrait-conformance-cases/) puts the
@@ -16,11 +16,11 @@ answer and the expectation beside each cell.
 
 ## If your project is here
 
-Twenty-two of the twenty-six reasons behind a divergence link an issue or a PR in the project it is
+Twenty-two of the twenty-seven reasons behind a divergence link an issue or a PR in the project it is
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 
-- [`results/DIFFS.md`](results/DIFFS.md) — your cases out of the 106, each with the expectation, the
+- [`results/DIFFS.md`](results/DIFFS.md) — your cases out of the 108, each with the expectation, the
   answer your build gave, and what came of it.
 - The relation corpus is [on the page](https://alexandrefimov.github.io/substrait-conformance-cases/#relations);
   its reasons are [`results/relations/differed.json`](results/relations/differed.json).
@@ -43,7 +43,7 @@ Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
 
 The columns were taken 2026-09-18 against the versions in `probe/versions.env`; the weekly `drift`
 run reports what has moved since. When something moved, its artifact contains a proposed
-`results/DRIFT.txt` change for a normal reviewed PR. They answer the 97 cases that carry an
+`results/DRIFT.txt` change for a normal reviewed PR. They answer the 98 cases that carry an
 expectation. The nine in the table are consumer paths rather than engines — the Java core, Isthmus
 and Spark all go through substrait-java, DuckDB through its substrait extension — and Gluten, the
 tenth, runs over the virtual-table variant in a cluster.
@@ -61,15 +61,15 @@ of its type system hatched.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
-| substrait-java | 92 | 2 | 3 |
-| substrait-python | 71 | 25 | 1 |
-| substrait-go | 62 | 4 | 31 |
-| substrait-validator | 48 | 30 | 19 |
-| Isthmus/Calcite | 53 | 6 | 38 |
-| DataFusion | 56 | 10 | 31 |
-| DuckDB | 36 | 21 | 40 |
-| Spark | 31 | 6 | 60 |
-| Acero | 4 | 16 | 77 |
+| substrait-java | 92 | 3 | 3 |
+| substrait-python | 71 | 25 | 2 |
+| substrait-go | 62 | 4 | 32 |
+| substrait-validator | 48 | 30 | 20 |
+| Isthmus/Calcite | 53 | 6 | 39 |
+| DataFusion | 56 | 10 | 32 |
+| DuckDB | 36 | 21 | 41 |
+| Spark | 31 | 6 | 61 |
+| Acero | 4 | 16 | 78 |
 
 **The first row is calibration, not a result.** Most plans are built with substrait-java builders,
 by the person who also wrote the generators and the expectations, so its 92 matches say that two
@@ -80,19 +80,19 @@ Four more rows carry a narrower version of the same caveat.
 [The declaration swap](METHOD.md#what-a-match-establishes) puts a false `output_type` into every
 plan that declares one, and five of the rows move with it: 16 of substrait-java's matches, 15 of
 substrait-python's, 13 each of substrait-go's and Isthmus's and 12 of the validator's are the
-declared type read back rather than a derivation. Only 29 of the 106 cases declare an output type, and the
+declared type read back rather than a derivation. Only 29 of the 108 cases declare an output type, and the
 swap reaches nothing else. Acero, DataFusion, DuckDB and Spark answer the swapped plan exactly as
 they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 120 of them, 17 marked as something other
+`differed.json` carries a reason written by hand for all 121 of them, 17 marked as something other
 than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
 column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
 nullability, nor do Gluten's — and one that stops short says so in the head of its
 `results/<NAME>.txt`.
 
-Which relations those 106 plans reach at all is counted in [METHOD.md](METHOD.md#what-the-corpus-covers), from the plans themselves.
+Which relations those 108 plans reach at all is counted in [METHOD.md](METHOD.md#what-the-corpus-covers), from the plans themselves.
 
 ## What would help
 
@@ -124,7 +124,7 @@ answers back. [`probe/README.md`](probe/README.md) has the prerequisites and wha
 
 | | |
 | --- | --- |
-| `derived-schema/` | the 106 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
+| `derived-schema/` | the 108 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
 | `derived-schema-virtual-tables/` | the same cases carrying their own rows |
 | `results/<NAME>.txt` | one column per implementation; `probe/matrix.py`, `probe/diffs.py` and `probe/heatmap.py` draw `results/MATRIX.txt`, `results/DIFFS.md` and the pictures out of them |
 | `expected.json` | the expectations, written by `probe/expected.py` |

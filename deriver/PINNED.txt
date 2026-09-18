@@ -13,6 +13,7 @@ aggregate_sum_i64                              1
 control_join_without_relcommon                 1
 control_passthrough_rn                         0
 cross_preserves_nullability                    1  -> cross: the output becomes nullable
+ddl_view_root_names_nothing                    0
 decimal_add                                    2
 decimal_add_overflow                           2
 decimal_divide                                 2

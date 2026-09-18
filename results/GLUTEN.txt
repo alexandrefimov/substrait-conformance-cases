@@ -1,4 +1,4 @@
-Gluten (Velox) @ f7f5f04, a corpus of 106 cases (102 submitted, 4 not expressible in its proto), 2026-09-18.
+Gluten (Velox) @ f7f5f04, a corpus of 108 cases (104 submitted, 4 not expressible in its proto), 2026-09-18.
 BOUNDARY: carries no nullability; types, arity, column order and rows are checked.
 IMPORTANT: for tables with no data the virtual table is honestly empty, and Velox derives ROW<>,
 so 24 were accepted rather than the 35 of the variant with a synthetic row (results/GLUTEN-ROWS.txt).
@@ -16,6 +16,8 @@ control_join_without_relcommon  ERROR: Exception: VeloxRuntimeError Error Source
 control_passthrough_rn  ROW<>
 cross_preserves_nullability  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: NOT_IMPLEMENTED Reason: Substrait conversion not supported for Rel.
 ctas_keeps_declared_schema  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 executionBehavior: Cannot find field.
+ddl_view_root_names_nothing  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input) ddl: Cannot find field.
+ddl_view_root_names_the_view  ERROR: Exception: VeloxRuntimeError Error Source: RUNTIME Error Code: INVALID_STATE Reason: Failed to parse Substrait JSON: 3 (relations[0].root.input) ddl: Cannot find field.
 decimal_add  ROW<n1_4:DECIMAL(11, 2)>
 decimal_add_overflow  ROW<n1_4:DECIMAL(38, 9)>
 decimal_divide  ROW<n1_4:DECIMAL(21, 8)>

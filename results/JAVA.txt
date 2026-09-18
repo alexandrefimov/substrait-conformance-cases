@@ -1,4 +1,4 @@
-JAVA: column from run 2026-09-18T15:49, substrait-java fff63906
+JAVA: column from run 2026-09-18T18:39, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        Struct{nullable=false, fields=[Str{nullable=false}, I64{nullable=true}]}
 aggregate_grouping_set_index                   Struct{nullable=false, fields=[Str{nullable=true}, I64{nullable=true}, I32{nullable=false}]}
@@ -9,6 +9,8 @@ control_join_without_relcommon                 Struct{nullable=false, fields=[I6
 control_passthrough_rn                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 cross_preserves_nullability                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 ctas_keeps_declared_schema                     Struct{nullable=false, fields=[I32{nullable=true}, I32{nullable=true}]}
+ddl_view_root_names_nothing                    Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
+ddl_view_root_names_the_view                   Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 decimal_add_overflow                           Struct{nullable=false, fields=[Decimal{nullable=false, scale=9, precision=38}]}
 decimal_add                                    Struct{nullable=false, fields=[Decimal{nullable=false, scale=2, precision=11}]}
 decimal_divide                                 Struct{nullable=false, fields=[Decimal{nullable=false, scale=8, precision=21}]}

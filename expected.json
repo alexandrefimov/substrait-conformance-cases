@@ -1,6 +1,7 @@
 {
  "disputed": {
   "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
+  "ddl_view_root_names_the_view": "a root naming two columns over a DdlRel, which logical_relations.md gives no output ('Outputs 0', 'N/A (no output)'): the names have nothing to name, so the plan is invalid and what is measured is whether anyone reports it. ddl_view_root_names_nothing is the same view with no root name",
   "lateral_join_uncorrelated_without_anchor": "a lateral join whose right input references nothing, with no rel_anchor: logical_relations.md requires the anchor only 'When the right input references the current left row', while algebra.proto says 'LateralJoinRel must set RelCommon.rel_anchor' - valid under one text and not the other. lateral_join_uncorrelated is the same join with the anchor set",
   "read_projection_mask_reordered": "a projection mask listing fields [2, 0]: field_references.md says 'Right now, you can only mask things out' among its discussion points, which rules out a mask reordering columns but does not say whether a mask listed out of schema order selects in schema order or is invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the question itself",
   "update_root_names_a_count": "an UpdateRel whose root names one column: logical_relations.md gives its output as 'number of modified records' and no type, algebra.proto says nothing about it, and WriteRel's OUTPUT_MODE_MODIFIED_RECORDS returns the records themselves - neither the width nor the type is decided",
@@ -130,6 +131,10 @@
     ]
    ],
    "source": "logical_relations.md, Cross Product Operation: the same order as the inputs, with neither side padded"
+  },
+  "ddl_view_root_names_nothing": {
+   "schema": [],
+   "source": "logical_relations.md, DDL Operator: Outputs 0, N/A (no output)"
   },
   "decimal_add": {
    "schema": [
@@ -1685,7 +1690,8 @@
   }
  },
  "spec_says_invalid": [
-  "ctas_keeps_declared_schema"
+  "ctas_keeps_declared_schema",
+  "ddl_view_root_names_the_view"
  ],
  "spec_silent": [
   "lateral_join_uncorrelated_without_anchor",

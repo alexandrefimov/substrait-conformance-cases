@@ -190,6 +190,28 @@
   }
  },
  {
+  "case": "ddl_view_root_names_nothing",
+  "plan": "ddl_view_root_names_nothing.json",
+  "binary": "ddl_view_root_names_nothing.bin",
+  "generator": "GenDdl",
+  "note": "ddl_view_root_names_nothing  CREATE VIEW over t_rn with no root name, expecting no columns",
+  "expectation": {
+   "schema": [],
+   "from": "logical_relations.md, DDL Operator: Outputs 0, N/A (no output)"
+  }
+ },
+ {
+  "case": "ddl_view_root_names_the_view",
+  "plan": "ddl_view_root_names_the_view.json",
+  "binary": "ddl_view_root_names_the_view.bin",
+  "generator": "GenDdl",
+  "note": "ddl_view_root_names_the_view  the same view with its two columns named on the root, which a relation with no output cannot have",
+  "expectation": {
+   "none": "a root naming two columns over a DdlRel, which logical_relations.md gives no output ('Outputs 0', 'N/A (no output)'): the names have nothing to name, so the plan is invalid and what is measured is whether anyone reports it. ddl_view_root_names_nothing is the same view with no root name",
+   "because": "the spec says the plan is invalid"
+  }
+ },
+ {
   "case": "decimal_add",
   "plan": "decimal_add.json",
   "binary": "decimal_add.bin",
