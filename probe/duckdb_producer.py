@@ -9,6 +9,7 @@ of precision.
 """
 import argparse
 import json
+import os
 import duckdb
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -73,6 +74,13 @@ for sql in ["SELECT a + b FROM t", "SELECT c + d FROM t", "SELECT c * d FROM t",
     direct = str(con.execute(sql).description[0][1])
     js = con.execute("CALL get_substrait_json(?)", [sql]).fetchone()[0]
     rt = str(con.execute("CALL from_substrait_json(?)", [js]).description[0][1])
+    if os.environ.get("SUBSTRAIT_PLANS_OUT"):
+        # Named the way datafusion_producer_probe.rs names its plans, so the directories line up.
+        name = (sql.replace("SELECT ", "").replace(" FROM t", "").replace(" ", "_").replace("+", "add")
+                .replace("*", "mul").replace("/", "div").replace("(", "_").replace(")", ""))
+        os.makedirs(os.environ["SUBSTRAIT_PLANS_OUT"], exist_ok=True)
+        with open(os.path.join(os.environ["SUBSTRAIT_PLANS_OUT"], name + ".json"), "w") as f:
+            f.write(js)
     mark = "" if direct == rt else "  <-- disagrees with itself"
     print("%-24s %-18s %-18s %s%s" % (sql.replace("SELECT ", "").replace(" FROM t", ""),
                                       direct, rt, "; ".join(declared(json.loads(js))) or "(no calls)", mark))

@@ -35,6 +35,17 @@ public class ProducerIsthmus {
     }
   }
 
+  /** Where SUBSTRAIT_PLANS_OUT asks for it, the plan is kept, named the way datafusion_producer_probe.rs names its own. */
+  static void keep(String sql, com.google.protobuf.Message proto) throws java.io.IOException {
+    String dir = System.getenv("SUBSTRAIT_PLANS_OUT");
+    if (dir == null || dir.isEmpty()) return;
+    String name = sql.replace("SELECT ", "").replace(" FROM t", "").replace(' ', '_')
+        .replace("+", "add").replace("*", "mul").replace("/", "div").replace("(", "_").replace(")", "");
+    java.nio.file.Path d = java.nio.file.Path.of(dir);
+    java.nio.file.Files.createDirectories(d);
+    java.nio.file.Files.write(d.resolve(name + ".pb"), proto.toByteArray());
+  }
+
   public static void main(String[] args) throws Exception {
     String ddl = args[0];
     var catalog = SubstraitCreateStatementParser.processCreateStatementsToCatalog(ddl);
@@ -43,6 +54,7 @@ public class ProducerIsthmus {
       String sql = args[i];
       try {
         Plan proto = new PlanProtoConverter().toProto(s2s.convert(sql, catalog));
+        keep(sql, proto);
         StringBuilder out = new StringBuilder();
         scan(proto, out);
         System.out.println("SQL " + sql);

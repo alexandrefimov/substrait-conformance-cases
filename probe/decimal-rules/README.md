@@ -157,6 +157,37 @@ goes with the declaration. So their `dec(38,9)` is the plan's own type read back
 and the rest are untested here. Nothing in this repository shows an implementation deriving the
 rule above 38 for itself.
 
+## Who writes these functions
+
+A consumer that derives a type other than the formula's only matters if some producer sends it a
+plan calling these functions. `producers.py` reads the plans four producers wrote for the same four
+statements over one table, `a + b`, `c + d`, `c * d` and `a / b`, where `a` is `dec(10,2)`, `b` is
+`dec(5,1)`, and `c` and `d` are both `dec(38,10)`. Each producer probe keeps its plans when
+`SUBSTRAIT_PLANS_OUT` names a directory; the commands are in the docstring of `producers.py`, and
+then
+
+    python3 probe/decimal-rules/producers.py <dir>/spark <dir>/isthmus <dir>/duckdb <dir>/datafusion
+
+Spark (converted by substrait-java's Spark module), Isthmus and DuckDB all write `add:dec_dec` and
+`multiply:dec_dec` from `extension:io.substrait:functions_arithmetic_decimal`. None of them reads the
+type it declares from that file. On `a / b` all three part from the formula: Spark and Isthmus
+declare `dec(17,8)` where the formula gives `dec(21,8)`, the precision difference
+[substrait-io/substrait#1216](https://github.com/substrait-io/substrait/issues/1216) is about, and
+DuckDB turns the division into `divide:fp64_fp64` from `functions_arithmetic`.
+
+On `a + b` all three declare `dec(11,2)`, as the formula does. Above precision 38 they split along
+the same line as the engines. On `c + d` Spark declares `dec(38,9)`, the formula's type, and Isthmus
+and DuckDB declare `dec(38,10)`. On `c * d` Spark declares `dec(38,6)` and the other two
+`dec(38,20)`. So the three producers that name these functions already declare both answers for
+them.
+
+DataFusion's plans for these statements name no extension file. Each function is a bare `add`,
+`multiply` or `divide` whose URN reference is 4294967295, and the plan carries neither
+`extension_urns` nor the older `extension_uris`. It declares `dec(38,10)` and `dec(38,20)` like
+DuckDB, and `dec(15,6)` on `a / b`.
+
+[PRODUCERS.txt](PRODUCERS.txt) is that output, taken 2026-09-18 at the pinned versions.
+
 ## What this does not cover
 
 Gandiva and arrow-rs are read rather than executed. DataFusion publishes no CLI image, and a cargo

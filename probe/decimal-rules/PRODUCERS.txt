@@ -1,0 +1,35 @@
+DECIMAL PRODUCERS: run 2026-09-18 at the versions pinned in probe/versions.env
+Spark 3.5.4 through substrait-java's spark module and Isthmus (Calcite 1.42.0), both substrait-java fff6390;
+DuckDB 1.5.5 with the substrait extension 4ea63dd; DataFusion cc29ea12a.
+Commands are in the docstring of probe/decimal-rules/producers.py.
+
+declared is the output_type the producer wrote; formula is the type the functions_arithmetic_decimal.yaml
+formula gives for the same operands, as rules.substrait computes it. The _a_add_b... rows are DuckDB's
+nested additions and carry no formula column.
+
+### producers.py spark isthmus duckdb datafusion
+
+producer    plan                   function           urn                                                  declared    formula
+spark       a_add_b                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(11,2)   dec(11,2)
+spark       a_div_b                divide:dec_dec     extension:io.substrait:functions_arithmetic_decimal  dec(17,8)   dec(21,8)
+spark       c_add_d                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(38,9)   dec(38,9)
+spark       c_mul_d                multiply:dec_dec   extension:io.substrait:functions_arithmetic_decimal  dec(38,6)   dec(38,6)
+isthmus     a_add_b                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(11,2)   dec(11,2)
+isthmus     a_div_b                divide:dec_dec     extension:io.substrait:functions_arithmetic_decimal  dec(17,8)   dec(21,8)
+isthmus     c_add_d                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(38,10)  dec(38,9)
+isthmus     c_mul_d                multiply:dec_dec   extension:io.substrait:functions_arithmetic_decimal  dec(38,20)  dec(38,6)
+duckdb      __a_add_b_add_b_add_b  add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(13,2)   -
+duckdb      __a_add_b_add_b_add_b  add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(12,2)   
+duckdb      __a_add_b_add_b_add_b  add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(11,2)   
+duckdb      _a_add_b_add_b         add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(12,2)   -
+duckdb      _a_add_b_add_b         add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(11,2)   
+duckdb      a_add_b                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(11,2)   dec(11,2)
+duckdb      a_div_b                divide:fp64_fp64   extension:io.substrait:functions_arithmetic          fp64        dec(21,8)
+duckdb      avg_i                  (no scalar calls)
+duckdb      c_add_d                add:dec_dec        extension:io.substrait:functions_arithmetic_decimal  dec(38,10)  dec(38,9)
+duckdb      c_mul_d                multiply:dec_dec   extension:io.substrait:functions_arithmetic_decimal  dec(38,20)  dec(38,6)
+datafusion  a_add_b                add                (unresolved 4294967295)                              dec(11,2)   dec(11,2)
+datafusion  a_div_b                divide             (unresolved 4294967295)                              dec(15,6)   dec(21,8)
+datafusion  avg_i                  (no scalar calls)
+datafusion  c_add_d                add                (unresolved 4294967295)                              dec(38,10)  dec(38,9)
+datafusion  c_mul_d                multiply           (unresolved 4294967295)                              dec(38,20)  dec(38,6)
