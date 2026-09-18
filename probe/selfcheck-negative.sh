@@ -677,7 +677,11 @@ io.open(p, 'w', encoding='utf-8').write(s.replace(old, 'rows[case] = {\"rows\": 
 io.open('expected.json', 'w', encoding='utf-8').write(
     subprocess.run([sys.executable, p], capture_output=True, text=True, check=True).stdout)"
 
-mutate "the count of entries still needing investigation" "still needs investigation" \
+# The expected fragment names the invariant rather than quoting the sentence: the sentence
+# reads "one of those twenty-eight still needs investigation" with one open entry and
+# "three ... still need investigation" with three, and a fragment carrying the verb
+# stopped matching the day a second entry was opened.
+mutate "the count of entries still needing investigation" "open triaged pairs" \
   python3 -c "
 import io, re
 p = 'METHOD.md'
@@ -937,6 +941,51 @@ p = Path('probe/structural-cases/expected.json')
 d = json.loads(p.read_text())
 for case in d['go'].values(): case['control'] = False
 p.write_text(json.dumps(d))"
+
+# The deriver's own checks, broken where the corpus cannot notice. The rounding of an integer
+# division is the one place: the spec declares the operation and not its rounding, no derivation in
+# these extension files divides at all, and both roundings agree on every positive numerator - so
+# deriver/check.py would stay green and only deriver/test_derive.py can fire.
+mutate "integer division in a return expression rounded the other way" "deriver's own rules" \
+  replace deriver/extensions.py "v = int(v / r)" "v = v // r"
+
+# The saved coverage map against the script that writes it. A reading added to deriver/mutants.py
+# without regenerating COVERAGE.txt leaves the map reporting coverage it never tested, and the map
+# is the only place that says which rules the corpus checks with nothing.
+mutate "the coverage map naming a reading the script does not try" "different readings" \
+  replace deriver/COVERAGE.txt "  cross: the output becomes nullable" \
+                               "  cross: the output becomes something"
+
+# A rule renamed in the deriver without rerunning the probe. COVERAGE.txt and PINNED.txt would then
+# describe code that no longer exists, and the page would keep drawing dots from them; running the
+# probe needs a Substrait checkout, so this is the only place the staleness can be caught here.
+mutate "a derivation rule the mutation table can no longer find" "no longer has" \
+  replace deriver/derive.py 'MARK_COLUMN = Type("boolean", (), True)' \
+                            'MARK = Type("boolean", (), True)'
+
+# The per-case pinning map, which the picture and the page both draw from. A case renamed here
+# without rerunning the probe would be drawn as pinning nothing, and "pins nothing" is a claim about
+# the corpus rather than the absence of one.
+mutate "the pinning map naming a case the corpus does not have" "PINNED.txt covers" \
+  replace deriver/PINNED.txt "cross_preserves_nullability" "cross_preserves_nothing"
+
+# The saved deriver answers. The first mutation is the one that matters - a schema that no longer
+# agrees with expected.json - and the other two are the ways the file can stop being about this
+# corpus at all while every schema in it still matches.
+mutate "a derived schema that no longer matches its expectation" "derived schemas differ" \
+  replace deriver/DERIVED.txt "decimal_add                                    [dec(11,2)]" \
+                              "decimal_add                                    [dec(11,3)]"
+
+mutate "a case missing from the derived column" "different cases" \
+  python3 -c "
+import io
+p = 'deriver/DERIVED.txt'
+lines = [l for l in io.open(p, encoding='utf-8') if not l.startswith('join_inner ')]
+io.open(p, 'w', encoding='utf-8').writelines(lines)"
+
+mutate "the derived column taken against other extension files" "deriver/spec.pins" \
+  replace deriver/DERIVED.txt "50eb32dca7f4eb45ab9c36d1dad4425a3f32da0a" \
+                              "0000000000000000000000000000000000000000"
 
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.

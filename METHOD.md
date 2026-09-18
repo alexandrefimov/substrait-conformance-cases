@@ -129,19 +129,20 @@ fields while preserving the rest of each plan and reports whose output schema mo
 
 | | answers that move | of them with an expectation |
 | --- | ---: | ---: |
-| substrait-java | 15 | 14 |
-| substrait-python | 13 | 13 |
-| substrait-validator | 11 | 11 |
-| substrait-go | 11 | 11 |
-| Isthmus/Calcite | 11 | 11 |
+| substrait-java | 17 | 16 |
+| substrait-python | 15 | 15 |
+| substrait-validator | 13 | 13 |
+| substrait-go | 13 | 13 |
+| Isthmus/Calcite | 13 | 13 |
 | Acero | 0 | 0 |
 | DataFusion | 0 | 0 |
 | DuckDB | 0 | 0 |
 | Spark | 0 | 0 |
 
-Five of the nine answer with the declaration. For substrait-java the fifteen that move are the five
-decimal cases, `aggregate_sum_i64`, `narrowing_count`, the two null predicates, the two aggregation
-phases and the three window cases, plus `ctas_keeps_declared_schema`, which carries no expectation.
+Five of the nine answer with the declaration. For substrait-java the seventeen that move are the five
+decimal cases, `aggregate_sum_i64`, `aggregate_grouping_then_measure`, `mirror_argument_nullability`,
+`narrowing_count`, the two null predicates, the two aggregation phases and the three window cases,
+plus `ctas_keeps_declared_schema`, which carries no expectation.
 The twelve it holds are all `joineq_*`, where the swapped declaration belongs to a join predicate
 whose type never reaches the output schema, so it can be copied without the join's output changing.
 
@@ -151,7 +152,7 @@ a held answer as one the consumer derived is the mistake recorded below. What se
 `Decimal128(15,6)`, `DOUBLE` and `decimal(17,8)`. An answer that differs from the declaration cannot
 be the declaration repeated.
 
-27 of the 98 cases carry an `output_type` and 26 of those have an expectation. The remaining 67
+29 of the 101 cases carry an `output_type` and 28 of those have an expectation. The remaining 68
 scored plans declare none, so the swap reaches nothing in them. These counts measure output
 sensitivity; they do not count independently derived schemas.
 
@@ -223,10 +224,48 @@ read one by one, and a second reader then found seven more that held for most of
 described the rest wrongly. That is why a reason there has to carry a test.
 
 The self-checks verify relationships between committed artifacts. They do not establish that every
-encoded rule matches the spec or that every interpretation of a result is correct. What has not been
-corrected is listed rather than fixed: the rules encoded in `probe/expected.py` still need an
-independent reading against the spec, and `differed.json` names the one divergence still under
-investigation.
+encoded rule matches the spec or that every interpretation of a result is correct. One of those
+readings has since been doubled: [`deriver/`](deriver/README.md) computes an output schema from the
+plan and the spec text, by rules written separately from `expected.py`, and the 96 cases carrying an
+expectation all agree with it. That is the same sentences read twice and agreeing, which is not the
+same as a reading by somebody else - still the first thing the README asks for. `differed.json`
+names the divergences still under investigation.
+
+## What a case is worth as a test
+
+Everything above measures answers. None of it measures the cases, and the two come apart: a rule no
+case reaches agrees with whatever is written about it, and a row of agreement over such a rule reads
+exactly like a row of agreement over a rule three cases pin.
+
+`deriver/mutants.py` measures that directly, because the deriver makes it cheap to. Each derivation
+rule is replaced by another reading of the same specification sentence - not by a random error - and
+the scored cases are derived again. A reading the corpus tells apart is a rule some case pins; a
+reading it cannot tell apart is a rule this repository states and tests with nothing.
+[`deriver/COVERAGE.txt`](deriver/COVERAGE.txt) is the saved run and
+[`deriver/PINNED.txt`](deriver/PINNED.txt) its per-case half.
+
+Its first run could not tell seven readings apart, and four of those were rules no case reached.
+Two were not small: the column order of an aggregate that has both grouping expressions and
+measures, which no case had at once, and the `MIRROR` nullability rule that every function in the
+specification takes by default, whose only calls reaching an output schema read required decimal
+columns. The grouping-set index column accounted for two more - both cases that had two grouping
+sets cut it with an emit mapping, which `expected.py` had noticed in a comment and no case had
+fixed. Three cases close all four, and seven differing cells appeared that the corpus could not
+previously have seen, among them that index column coming back at three widths: `i32` from
+substrait-java and substrait-python, `i64` from Isthmus and `UInt8` from DataFusion.
+
+Three readings are still pinned by nothing, and the distinction between them matters more than the
+count. Two cannot be reached by a valid plan at all: the spec requires a set operation's inputs to
+agree on their field types and a write's input to match its `table_schema`, so no legal plan tells
+the primary input from any other, or the input's schema from the declared one. Those rules are
+unobservable rather than unchecked. The third - whether a projection mask selects fields or states
+an order - is a question the spec leaves open, so a case asserting either reading would be asserting
+this repository's choice; the deriver declines such a plan instead.
+
+What this does not measure is the battery itself. It holds 37 readings, and a rule nobody wrote a
+second reading for is absent from the count rather than reported as covered. What survives that gap
+is the per-case half: a reading only one case tells apart stops being checked the day that case is
+removed, however many readings the battery grows to.
 
 ## Acero input-schema correction
 
@@ -238,13 +277,13 @@ Retaking the whole Acero column — 78 cases then — with the same pinned PyArr
 
 ## Reports and generator sources
 
-[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: twenty of its twenty-four reasons link an issue or PR. Of the seventeen cells it marks as something other than a divergence, six are limits of a type system, eleven a type the validator never resolved. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
+[FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: twenty-one of its twenty-six reasons link an issue or PR. Of the seventeen cells it marks as something other than a divergence, six are limits of a type system, eleven a type the validator never resolved. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
 
 A refusal is not recorded that way, and mostly should not be: a participant that says it does not implement a relation has already said everything a reason could, and 201 of the cells are that. [refused.json](refused.json) holds the ones that are not. In eleven cells where a participant died rather than refused — ten in the DuckDB extension, one in Acero — what came back is a signal and not a message, and an engine that cannot do something is not in the condition of one that dies trying, whatever its support. Those carry a reason with a predicate and a triage, exactly as a divergence does, and `probe/check_differed.py` requires the file and the columns to name the same cells in both directions.
 
 The general answer for the other 190 would be to compare a refusal against what the engine declares it supports, which needs no reasons written by hand at all. The spec ships no such declaration today: at v0.102.0 `dialects/` holds the schema and its fixtures and not one engine's file.
 
-What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are twenty-eight of them; one of those twenty-eight still needs investigation and says what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
+What came of a divergence is recorded beside it, and per participant rather than per reason, because one reason can cover four of them and no single report covers all four. Each entry says `reported`, `spec-question`, `ours` — the expectation or this harness is wrong — or `open`, and there are thirty-one of them; three of those thirty-one still need investigation and say what is missing. `open` includes an observation that has been examined but still needs a narrower reproducer or an ownership decision. A `reported` entry can link existing work, including a PR without a separate issue; its note states any coverage limits. It does not change the saved measurement or mean that a proposed fix has been rerun. What `probe/check_differed.py` requires is that every divergence carries an entry for every participant whose cells it covers, that only a divergence carries one, and that every link it names appears in FINDINGS.md.
 
 ## What the corpus covers
 
@@ -254,16 +293,16 @@ cases reach at all — and `probe/coverage.py` counts that from the plans themse
 <!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->
 | relation | cases | | relation | cases |
 | --- | ---: | --- | --- | ---: |
-| `read` | 98 | | `cross` | 1 |
+| `read` | 101 | | `cross` | 1 |
 | `filter` | 1 | | `write` | 1 |
 | `fetch` | 1 | | `hash_join` | 4 |
-| `aggregate` | 7 | | `merge_join` | 4 |
+| `aggregate` | 9 | | `merge_join` | 4 |
 | `sort` | 1 | | `nested_loop_join` | 4 |
 | `join` | 26 | | `window` | 3 |
-| `project` | 9 | | `expand` | 2 |
+| `project` | 10 | | `expand` | 2 |
 | `set` | 16 | | `top_n` | 1 |
 
-16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 98 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
+16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 101 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
 <!-- /coverage -->
 
 Apache 2.0, the plans included, so a case can go straight into another project's tests.

@@ -78,6 +78,32 @@ def check_expected():
     return ns
 
 
+def pinning():
+    """What deriver/mutants.py found: which case pins a rule nothing else pins, and which rules
+    nothing pins at all.
+
+    The matrix says how the nine answered each case. It cannot say what a case is worth as a test,
+    and the two are not the same question: two of these cases looked complete here while hiding the
+    column they were about behind an emit mapping. Both files are saved artifacts, so this reads
+    them rather than rerunning the probe, which needs a Substrait checkout.
+    """
+    sole, unpinned = {}, []
+    path = os.path.join(ROOT, "deriver/PINNED.txt")
+    for line in io.open(path, encoding="utf-8"):
+        m = re.match(r"^(\S+)\s+\d+\s+-> (.+)$", line.rstrip())
+        if m:
+            sole[m.group(1)] = [r.strip() for r in m.group(2).split(";")]
+    body = io.open(os.path.join(ROOT, "deriver/COVERAGE.txt"), encoding="utf-8").read()
+    tail = body.split("not told apart", 1)
+    if len(tail) == 2:
+        for line in tail[1].splitlines()[1:]:
+            if line.startswith("  ") and not line.strip().startswith("the other reading:"):
+                unpinned.append(line.strip())
+    if not sole or not unpinned:
+        raise SystemExit("FAILED: deriver/PINNED.txt or deriver/COVERAGE.txt says nothing")
+    return sole, unpinned
+
+
 def build():
     ns = check_expected()
     expected, disputed = ns["EXPECTED"], ns["DISPUTED"]
@@ -157,8 +183,15 @@ def build():
     groups = [{"label": GROUP_LABEL.get(p, p), "cases": prefixes[p]} for p in order]
 
     labels = [c[0] for c in COLUMNS]
+    sole, unpinned = pinning()
+    unknown = set(sole) - set(cells)
+    if unknown:
+        raise SystemExit("FAILED: deriver/PINNED.txt names cases the corpus does not have: %s"
+                         % ", ".join(sorted(unknown)))
     return {
         "participants": labels,
+        "sole": sole,
+        "unpinned": unpinned,
         "versions": versions,
         "boundaries": boundaries,
         "taken": ", ".join(sorted(taken)),
@@ -302,6 +335,15 @@ def svg(model, theme):
             counts.get(UNRESOLVED, 0), counts.get(BOUNDARY, 0), counts.get(UNSUPPORTED, 0),
             counts.get(NOSPEC, 0)),
          t["ink3"], 9, family=SANS)
+    # What the cells cannot say: how much of the corpus is load-bearing. deriver/mutants.py replaces
+    # each derivation rule with another reading of the same spec sentence; a case that is the only
+    # one to tell some reading apart is a case whose removal leaves that rule unchecked, and a
+    # reading no case tells apart is a rule this repository states and nothing here tests. Neither
+    # is visible in a grid of answers, and both change what a green row is worth.
+    text(PAD, y + 34,
+         "%d of these cases each pin a rule no other case pins; %d rules are pinned by none."
+         % (len(model["sole"]), len(model["unpinned"])),
+         t["ink3"], 9, family=SANS)
     # What was measured, in the picture itself: a screenshot of it travels without the README, and a
     # matrix that does not say which builds it read is a claim nobody can check or repeat. The line
     # is wrapped rather than sized to fit, so a longer commit or one more participant moves the text
@@ -418,6 +460,18 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
 /* The bar that marks a case asserting rows, in the gutter of its name, the way the picture draws
    it. A space when the case asserts none, so the names still line up. */
 #rel-matrix .rel-rowmark { display: inline-block; width: 8px; color: var(--ink-3); }
+/* The section under the matrix: what a grid of answers cannot say about its own rows. Set in the
+   body face rather than the mono one - it is prose about the corpus, not an artifact from it. */
+.pinning { margin: 26px 0 0; max-width: 60em; }
+.pinning ul { margin: 6px 0 0; padding-left: 1.2em; }
+.pinning li { margin: 2px 0; font: 12px/1.5 var(--mono); }
+.pinning .pin-note { color: var(--ink-3); }
+/* The dot that marks a case which is the only one to pin some derivation rule: remove it and that
+   rule stops being checked by anything. In the gutter of the name, and an empty span when the case
+   pins nothing, so the names still line up - the same shape as the rows bar above. It is not a
+   verdict and carries no state colour: a case can be load-bearing and still be one every
+   participant refuses. */
+tbody th.case .pin { display: inline-block; width: 9px; color: var(--ink-3); font-size: 11px; }
 /* The relation table's own name column is wider than the matrix's: its case names carry a group
    prefix and a rule, where the other corpus names a case in one word. */
 #rel-matrix tbody th.case { padding-right: 22px; }
@@ -604,6 +658,22 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     </div>
   </div>
 
+  <section class="pinning">
+    <h2>What the grid cannot show</h2>
+    <p>A row of agreement is worth what the case behind it pins. <code>deriver/</code> derives each
+    schema a second time from the specification, and <code>deriver/mutants.py</code> then replaces
+    each of its rules with another reading of the same sentence and rederives: a reading no case
+    tells apart is a rule this corpus states and tests with nothing. The dot beside a case name
+    marks the %(pin_count)d cases that are the only ones to pin some reading — remove one and that
+    rule goes unchecked.</p>
+    <p>%(unpinned_count)d readings are pinned by nothing:</p>
+    <ul>%(unpinned)s</ul>
+    <p class="pin-note">Two of the three cannot be reached by a valid plan at all — the specification
+    requires a set operation's inputs to agree on types and a write's input to match its
+    <code>table_schema</code>, so no legal plan distinguishes the readings. The third is a question
+    the specification leaves open, and the deriver declines such a plan rather than picking a side.</p>
+  </section>
+
   <section class="relations">%(relations)s</section>
 
   <footer>
@@ -673,7 +743,11 @@ footer dd { margin: 0; color: var(--ink-2); overflow-wrap: anywhere; }
     for (var k = 0; k < g.n; k++, at++) {
       var tr = document.createElement("tr");
       tr.dataset.r = at;
-      var cells = '<th class="case">' + esc(D.cases[at]) + '</th>';
+      var pins = D.sole[D.cases[at]];
+      var pinMark = pins ?
+        '<span class="pin" title="' + esc('the only case that pins: ' + pins.join('; ')) +
+        '">\u2022</span>' : '<span class="pin"></span>';
+      var cells = '<th class="case">' + pinMark + esc(D.cases[at]) + '</th>';
       for (var c = 0; c < D.participants.length; c++) {
         var st = D.cells[at][c], tracked = D.tracking[at][c];
         var ruleId = D.answers[at][c][1], reason = D.rules[ruleId];
@@ -886,6 +960,7 @@ def page(model):
         "disputed": model["disputed"],
         "rules": model["rules"],
         "scored": {p: list(scored(model, p)) for p in model["participants"]},
+        "sole": model["sole"],
     }
     states = [{"name": STATE_NAME[s], "note": STATE_NOTE[s],
                "tone": {DIVERGENCE: "c-div", UNRESOLVED: "c-unr"}.get(s, "c-bnd")}
@@ -923,6 +998,9 @@ def page(model):
         "repo": REPO,
         "versions": versions,
         "boundaries": html.escape(boundaries),
+        "pin_count": len(model["sole"]),
+        "unpinned_count": len(model["unpinned"]),
+        "unpinned": "".join("<li>%s</li>" % html.escape(r) for r in model["unpinned"]),
         "data": script_data.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":")),
         "states": script_data.dumps(states, ensure_ascii=False),
     }

@@ -1,8 +1,10 @@
-SPARK: column from run 2026-09-09T07:35, spark 3.5.4
+SPARK: column from run 2026-09-17T22:21, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
+aggregate_grouping_set_index                   ERROR: IllegalArgumentException: requirement failed
 aggregate_grouping_sets_declared_order         ERROR: IllegalArgumentException: requirement failed
+aggregate_grouping_then_measure                [c:string, s:bigint?]
 aggregate_sum_i64                              ERROR: IllegalArgumentException: requirement failed
 control_join_without_relcommon                 [a:bigint, b:bigint?, c:bigint?, d:bigint]
 control_passthrough_rn                         [c0:bigint, c1:bigint?]
@@ -46,6 +48,7 @@ joineq_right_mark                              ERROR: UnsupportedOperationExcept
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SINGLE
 joineq_right                                   [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
+mirror_argument_nullability                    [c0:bigint, c1:bigint?, rr:bigint, rn:bigint?]
 narrowing_count                                ERROR: IllegalArgumentException: requirement failed
 narrowing_is_not_null                          [r:boolean]
 narrowing_is_null                              [r:boolean]

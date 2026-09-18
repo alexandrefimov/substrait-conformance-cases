@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-09. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-17. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 2 cases
@@ -30,7 +30,7 @@ Both normative texts say a column follows the expand fields - physical_relations
 | [expand_consistent_fields](../derived-schema/expand_consistent_fields.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns |
 | [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
 
-## substrait-python — 24 cases
+## substrait-python — 25 cases
 
 `results/PYTHON.txt`, substrait 0.31.0.
 
@@ -48,7 +48,7 @@ ExpandRel.SwitchingField in algebra.proto states the rule outright, and substrai
 
 ### `python-go-aggregate-all-required`
 
-substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index.
+substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index. aggregate_grouping_set_index is the same two disjoint sets with emit unset, so substrait-python returns the grouping-set index column as well and the two grouping keys still come back required.
 
 Recorded as a divergence, reported. https://github.com/substrait-io/substrait-python/issues/268
 
@@ -57,6 +57,7 @@ The report includes both grouping-set layouts used here: disjoint keys and one s
 | case | expected | substrait-python answered | the expectation comes from |
 | --- | --- | --- | --- |
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:str, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
+| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[c:str, a:i64, g:i32]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
 | [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:str, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
 ### `python-join-concatenates-the-inputs`
@@ -119,7 +120,7 @@ The contrast is inside this column: the same rule, the same two inputs and the s
 
 ### `python-go-aggregate-all-required`
 
-substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index.
+substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index. aggregate_grouping_set_index is the same two disjoint sets with emit unset, so substrait-python returns the grouping-set index column as well and the two grouping keys still come back required.
 
 Recorded as a divergence, reported. https://github.com/substrait-io/substrait-go/pull/324
 
@@ -130,7 +131,7 @@ The PR makes each grouping key nullable when absent from any set; the shared key
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:string, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 | [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:string, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
-## substrait-validator — 28 cases
+## substrait-validator — 30 cases
 
 `results/VALIDATOR.txt`, substrait-validator 0.1.4 at 2a10470.
 
@@ -146,6 +147,19 @@ The PR parses relation-level grouping expressions and their references, covering
 | --- | --- | --- | --- |
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[i32, unresolved]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 | [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[i32, unresolved]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
+
+### `validator-aggregate-returns-one-column`
+
+The validator returns a single column for an aggregate whose output has more than one kind of column. On aggregate_grouping_then_measure - one grouping expression and one measure - it answers with the measure alone; on aggregate_grouping_set_index - two grouping expressions over two grouping sets - it answers with the appended i32 index alone. Both times what comes back is the last column of the relation and what is missing is every column before it, so the grouping expressions are not reaching the output at all rather than reaching it with the wrong type.
+
+Recorded as a divergence, open.
+
+Both cases are new here and neither existed when the validator's other aggregate behaviour was reported. A narrower reproducer is needed before filing: the two differ in which single column survives, and it is not yet established whether one code path drops the leading columns or two separate ones each return their own.
+
+| case | expected | substrait-validator answered | the expectation comes from |
+| --- | --- | --- | --- |
+| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[i32]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
+| [aggregate_grouping_then_measure](../derived-schema/aggregate_grouping_then_measure.json) | `[str, i64?]` | `[i64?]` | Aggregate: grouping expressions in declaration order, then measures; the one grouping set contains c, and sum:i64 declares return i64? |
 
 ### `validator-does-not-resolve`
 
@@ -202,9 +216,21 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-va
 | [setop_union_all](../derived-schema/setop_union_all.json) | `[i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
 | [setop_union_distinct](../derived-schema/setop_union_distinct.json) | `[i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
 
-## Isthmus/Calcite — 5 cases
+## Isthmus/Calcite — 6 cases
 
 `results/ISTHMUS.txt`, substrait-java fff63906.
+
+### `grouping-set-index-width`
+
+The i32 column an aggregate with more than one grouping set appends comes back at another width. Isthmus returns BIGINT, which is the int64 algebra.proto gives the field and not the i32 the documentation table states; DataFusion returns UInt8, which is neither. The two grouping columns are correct in both, so this is the appended column alone.
+
+Recorded as a divergence, asked of the spec. https://github.com/substrait-io/substrait/issues/714
+
+Int64 is what algebra.proto declares for this field, so this answer follows one of the two normative texts. Which of them is meant is the open question.
+
+| case | expected | Isthmus/Calcite answered | the expectation comes from |
+| --- | --- | --- | --- |
+| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[c:VARCHAR?, a:BIGINT?, $f2:BIGINT]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
 
 ### `isthmus-setop-nullable-if-any-input-is`
 
@@ -233,7 +259,7 @@ A fix, opened without a separate issue.
 | --- | --- | --- | --- |
 | [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
 
-## DataFusion — 9 cases
+## DataFusion — 10 cases
 
 `results/DATAFUSION.txt`, datafusion cc29ea12a.
 
@@ -283,6 +309,18 @@ Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/
 | --- | --- | --- | --- |
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:Utf8?, a:Int64?]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 
+### `grouping-set-index-width`
+
+The i32 column an aggregate with more than one grouping set appends comes back at another width. Isthmus returns BIGINT, which is the int64 algebra.proto gives the field and not the i32 the documentation table states; DataFusion returns UInt8, which is neither. The two grouping columns are correct in both, so this is the appended column alone.
+
+Recorded as a divergence, open.
+
+UInt8 follows neither text. Whether it is a deliberate narrowing of the grouping-set index or an artefact of DataFusion's own grouping id has not been established, and the answer decides whether this belongs in that spec thread or in a DataFusion issue.
+
+| case | expected | DataFusion answered | the expectation comes from |
+| --- | --- | --- | --- |
+| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[c:Utf8?, a:Int64?, g:UInt8]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
+
 ### `no-string-with-length`
 
 Neither type system has a string carrying a length, so varchar<10> and fixedchar<5> cannot come back as declared. DataFusion returns FixedSizeBinary(4) for the fixed-size binary and differs only on the two strings; DuckDB has no fixed-size binary either and returns BLOB.
@@ -293,7 +331,7 @@ Recorded as a limit of this type system.
 | --- | --- | --- | --- |
 | [stringlen_declared](../derived-schema/stringlen_declared.json) | `[vchar(10), fchar(5), fbin(4), str]` | `[c0:Utf8, c1:Utf8, c2:FixedSizeBinary(4), c3:Utf8]` | a read with no operations: the schema is base_schema |
 
-## DuckDB — 20 cases
+## DuckDB — 21 cases
 
 `results/DUCKDB.txt`, duckdb 1.5.5.
 
@@ -347,7 +385,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/duckdb-subst
 
 ### `duckdb-sum-returns-hugeint`
 
-functions_arithmetic.yaml declares sum:i64 as returning i64? with nullability DECLARED_OUTPUT, and the plan carries that output_type. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column.
+functions_arithmetic.yaml declares sum:i64 as returning i64? with nullability DECLARED_OUTPUT, and the plan carries that output_type. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column. aggregate_grouping_then_measure adds a required grouping column beside the measure; that column is returned correctly and the measure is still HUGEINT.
 
 Recorded as a divergence, reported. https://github.com/substrait-io/duckdb-substrait-extension/issues/276
 
@@ -355,6 +393,7 @@ Reported as a comment on substrait-io/duckdb-substrait-extension#276 rather than
 
 | case | expected | DuckDB answered | the expectation comes from |
 | --- | --- | --- | --- |
+| [aggregate_grouping_then_measure](../derived-schema/aggregate_grouping_then_measure.json) | `[str, i64?]` | `[c:VARCHAR, s:HUGEINT]` | Aggregate: grouping expressions in declaration order, then measures; the one grouping set contains c, and sum:i64 declares return i64? |
 | [aggregate_sum_i64](../derived-schema/aggregate_sum_i64.json) | `[i64?]` | `[s:HUGEINT]` | sum(i64) in functions_arithmetic.yaml declares return: i64? with nullability: DECLARED_OUTPUT, and algebra.proto requires the plan's output_type to be set to exactly that, so the YAML is the answer and the plan repeats it |
 | [window_bound_offset](../derived-schema/window_bound_offset.json) | `[i64, i64?]` | `[v:BIGINT, s:HUGEINT]` | the input followed by the window expression; sum:i64 returns i64? in functions_arithmetic.yaml |
 
@@ -434,7 +473,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-ja
 | --- | --- | --- | --- |
 | [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:bigint, k1:string]` | Read / Direct Output Order: the schema after projection is applied |
 
-## Acero — 15 cases
+## Acero — 16 cases
 
 `results/ACERO.txt`, pyarrow 25.0.1.
 
@@ -458,6 +497,7 @@ Probe/structural_cases.py acero isolates identity and reordered emit over a requ
 | [joineq_inner](../derived-schema/joineq_inner.json) | `[i64, i64?, i64?, i64]` | `[c0:int64?, c1:int64?, c2:int64?, c3:int64?]` | the spec rules for join types and Direct Output Order |
 | [joineq_left](../derived-schema/joineq_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:int64?, c1:int64?, c2:int64?, c3:int64?]` | the spec rules for join types and Direct Output Order |
 | [joineq_right](../derived-schema/joineq_right.json) | `[i64?, i64?, i64?, i64]` | `[c0:int64?, c1:int64?, c2:int64?, c3:int64?]` | the spec rules for join types and Direct Output Order |
+| [mirror_argument_nullability](../derived-schema/mirror_argument_nullability.json) | `[i64, i64?, i64, i64?]` | `[c0:int64?, c1:int64?, rr:int64?, rn:int64?]` | MIRROR nullability: add(required, required) is required and add(required, nullable) is nullable, over a project that keeps its input |
 | [narrowing_count](../derived-schema/narrowing_count.json) | `[i64]` | `[n:int64?]` | the declared return of count: i64 required |
 | [narrowing_is_not_null](../derived-schema/narrowing_is_not_null.json) | `[bool]` | `[r:bool?]` | is_not_null returns a required boolean |
 | [narrowing_is_null](../derived-schema/narrowing_is_null.json) | `[bool]` | `[r:bool?]` | is_null returns a required boolean |

@@ -1,0 +1,85 @@
+{
+  "extensions": [{
+    "extensionFunction": {
+      "functionAnchor": 5,
+      "name": "sum:i64",
+      "extensionUrnReference": 5
+    }
+  }],
+  "relations": [{
+    "root": {
+      "input": {
+        "aggregate": {
+          "common": {
+            "direct": {
+            }
+          },
+          "input": {
+            "read": {
+              "common": {
+                "direct": {
+                }
+              },
+              "baseSchema": {
+                "names": ["a", "b", "c"],
+                "struct": {
+                  "types": [{
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }, {
+                    "string": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }],
+                  "nullability": "NULLABILITY_REQUIRED"
+                }
+              },
+              "namedTable": {
+                "names": ["foo"]
+              }
+            }
+          },
+          "groupings": [{
+            "expressionReferences": [0]
+          }, {
+            "expressionReferences": [1]
+          }],
+          "groupingExpressions": [{
+            "selection": {
+              "directReference": {
+                "structField": {
+                  "field": 2
+                }
+              },
+              "rootReference": {
+              }
+            }
+          }, {
+            "selection": {
+              "directReference": {
+                "structField": {
+                }
+              },
+              "rootReference": {
+              }
+            }
+          }]
+        }
+      },
+      "names": ["c", "a", "g"]
+    }
+  }],
+  "version": {
+    "minorNumber": 102,
+    "producer": "case-corpus"
+  },
+  "extensionUrns": [{
+    "extensionUrnAnchor": 5,
+    "urn": "extension:io.substrait:functions_arithmetic"
+  }]
+}

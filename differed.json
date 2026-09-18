@@ -277,7 +277,7 @@
    "check": {
     "no_field_nullable": true
    },
-   "what": "substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index.",
+   "what": "substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index. aggregate_grouping_set_index is the same two disjoint sets with emit unset, so substrait-python returns the grouping-set index column as well and the two grouping keys still come back required.",
    "triage": {
     "GO": {
      "outcome": "reported",
@@ -359,9 +359,9 @@
   },
   "duckdb-sum-returns-hugeint": {
    "kind": "divergence",
-   "what": "functions_arithmetic.yaml declares sum:i64 as returning i64? with nullability DECLARED_OUTPUT, and the plan carries that output_type. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column.",
+   "what": "functions_arithmetic.yaml declares sum:i64 as returning i64? with nullability DECLARED_OUTPUT, and the plan carries that output_type. DuckDB binds its own SUM over BIGINT, whose result is HUGEINT - a wider native type, not the one the function was called under. The widening is deliberate on DuckDB's side, and it is still a type the plan did not ask for; nullability is not compared here, as everywhere in this column. aggregate_grouping_then_measure adds a required grouping column beside the measure; that column is returned correctly and the measure is still HUGEINT.",
    "check": {
-    "got_matches": "^\\[(v:BIGINT, )?s:HUGEINT\\]$"
+    "got_matches": "^\\[(v:BIGINT, |c:VARCHAR, )?s:HUGEINT\\]$"
    },
    "triage": {
     "DUCKDB": {
@@ -424,6 +424,42 @@
      "note": "the contrast is inside this column: the same rule, the same two inputs and the same join type, right on the logical message and wrong on two physical ones. The report names the cause, HashJoinRel and MergeJoinRel concatenating their inputs without reading the join type. Whether the other nine join types behave the same way is not established here, because these cases carry only inner, left and left mark"
     }
    }
+  },
+  "grouping-set-index-width": {
+   "kind": "divergence",
+   "what": "The i32 column an aggregate with more than one grouping set appends comes back at another width. Isthmus returns BIGINT, which is the int64 algebra.proto gives the field and not the i32 the documentation table states; DataFusion returns UInt8, which is neither. The two grouping columns are correct in both, so this is the appended column alone.",
+   "check": {
+    "got_matches": {
+     "ISTHMUS": "^\\[c:VARCHAR\\?, a:BIGINT\\?, \\$f2:BIGINT\\]$",
+     "DATAFUSION": "^\\[c:Utf8\\?, a:Int64\\?, g:UInt8\\]$"
+    }
+   },
+   "triage": {
+    "ISTHMUS": {
+     "outcome": "spec-question",
+     "note": "int64 is what algebra.proto declares for this field, so this answer follows one of the two normative texts. Which of them is meant is the open question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/714"
+     ]
+    },
+    "DATAFUSION": {
+     "outcome": "open",
+     "note": "UInt8 follows neither text. Whether it is a deliberate narrowing of the grouping-set index or an artefact of DataFusion's own grouping id has not been established, and the answer decides whether this belongs in that spec thread or in a DataFusion issue"
+    }
+   }
+  },
+  "validator-aggregate-returns-one-column": {
+   "kind": "divergence",
+   "what": "The validator returns a single column for an aggregate whose output has more than one kind of column. On aggregate_grouping_then_measure - one grouping expression and one measure - it answers with the measure alone; on aggregate_grouping_set_index - two grouping expressions over two grouping sets - it answers with the appended i32 index alone. Both times what comes back is the last column of the relation and what is missing is every column before it, so the grouping expressions are not reaching the output at all rather than reaching it with the wrong type.",
+   "check": {
+    "got_matches": "^\\[(i64\\?|i32)\\]$"
+   },
+   "triage": {
+    "VALIDATOR": {
+     "outcome": "open",
+     "note": "both cases are new here and neither existed when the validator's other aggregate behaviour was reported. A narrower reproducer is needed before filing: the two differ in which single column survives, and it is not yet established whether one code path drops the leading columns or two separate ones each return their own"
+    }
+   }
   }
  },
  "cells": {
@@ -439,6 +475,7 @@
    "joineq_inner": "acero-required-kept-only-on-a-bare-read",
    "joineq_left": "acero-required-kept-only-on-a-bare-read",
    "joineq_right": "acero-required-kept-only-on-a-bare-read",
+   "mirror_argument_nullability": "acero-required-kept-only-on-a-bare-read",
    "narrowing_count": "acero-required-kept-only-on-a-bare-read",
    "narrowing_is_not_null": "acero-required-kept-only-on-a-bare-read",
    "narrowing_is_null": "acero-required-kept-only-on-a-bare-read",
@@ -446,6 +483,7 @@
   },
   "DATAFUSION": {
    "aggregate_grouping_field_shared_by_sets": "grouping-key-nullability",
+   "aggregate_grouping_set_index": "grouping-set-index-width",
    "decimal_add_overflow": "decimal-own-derivation",
    "decimal_divide": "decimal-own-derivation",
    "decimal_multiply_overflow": "decimal-own-derivation",
@@ -456,6 +494,7 @@
    "stringlen_declared": "no-string-with-length"
   },
   "DUCKDB": {
+   "aggregate_grouping_then_measure": "duckdb-sum-returns-hugeint",
    "aggregate_sum_i64": "duckdb-sum-returns-hugeint",
    "decimal_divide": "duckdb-decimal-divide-returns-double",
    "decimal_multiply": "decimal-own-derivation",
@@ -484,6 +523,7 @@
    "physjoin_merge_left": "go-physical-join-keeps-input-nullability"
   },
   "ISTHMUS": {
+   "aggregate_grouping_set_index": "grouping-set-index-width",
    "read_projection_mask": "read-projection-ignored",
    "setop_intersection_multiset": "isthmus-setop-nullable-if-any-input-is",
    "setop_intersection_multiset_all": "isthmus-setop-nullable-if-any-input-is",
@@ -492,7 +532,9 @@
   },
   "PYTHON": {
    "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
+   "aggregate_grouping_set_index": "python-go-aggregate-all-required",
    "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required",
+   "expand_switching_nullability": "python-expand-switching-stays-required",
    "join_left": "python-join-concatenates-the-inputs",
    "join_left_mark": "python-join-concatenates-the-inputs",
    "join_left_single": "python-join-concatenates-the-inputs",
@@ -507,14 +549,13 @@
    "joineq_right": "python-join-concatenates-the-inputs",
    "joineq_right_mark": "python-join-concatenates-the-inputs",
    "joineq_right_single": "python-join-concatenates-the-inputs",
-   "read_projection_mask": "read-projection-ignored",
-   "expand_switching_nullability": "python-expand-switching-stays-required",
    "physjoin_hash_left": "python-join-concatenates-the-inputs",
    "physjoin_hash_left_mark": "python-join-concatenates-the-inputs",
    "physjoin_merge_left": "python-join-concatenates-the-inputs",
    "physjoin_merge_left_mark": "python-join-concatenates-the-inputs",
    "physjoin_nested_left": "python-join-concatenates-the-inputs",
-   "physjoin_nested_left_mark": "python-join-concatenates-the-inputs"
+   "physjoin_nested_left_mark": "python-join-concatenates-the-inputs",
+   "read_projection_mask": "read-projection-ignored"
   },
   "SPARK": {
    "decimal_add": "spark-decimal-result-nullable",
@@ -526,7 +567,9 @@
   },
   "VALIDATOR": {
    "aggregate_grouping_field_shared_by_sets": "validator-aggregate-gives-i32-and-unresolved",
+   "aggregate_grouping_set_index": "validator-aggregate-returns-one-column",
    "aggregate_grouping_sets_declared_order": "validator-aggregate-gives-i32-and-unresolved",
+   "aggregate_grouping_then_measure": "validator-aggregate-returns-one-column",
    "emit_aggregate": "validator-does-not-resolve",
    "join_left_mark": "validator-join-concatenates-the-inputs",
    "join_right_anti": "validator-join-concatenates-the-inputs",

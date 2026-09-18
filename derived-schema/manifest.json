@@ -21,6 +21,30 @@
   }
  },
  {
+  "case": "aggregate_grouping_set_index",
+  "plan": "aggregate_grouping_set_index.json",
+  "binary": "aggregate_grouping_set_index.bin",
+  "generator": "GenAggregate",
+  "note": "aggregate_grouping_set_index  two grouping sets and emit unset, so the grouping-set index column reaches the output",
+  "expectation": {
+   "schema": [
+    [
+     "str",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "from": "Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set"
+  }
+ },
+ {
   "case": "aggregate_grouping_sets_declared_order",
   "plan": "aggregate_grouping_sets_declared_order.json",
   "binary": "aggregate_grouping_sets_declared_order.bin",
@@ -39,6 +63,26 @@
     ]
    ],
    "from": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps"
+  }
+ },
+ {
+  "case": "aggregate_grouping_then_measure",
+  "plan": "aggregate_grouping_then_measure.json",
+  "binary": "aggregate_grouping_then_measure.bin",
+  "generator": "GenAggregate",
+  "note": "aggregate_grouping_then_measure  one grouping expression and one measure, of different types, with emit unset",
+  "expectation": {
+   "schema": [
+    [
+     "str",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "Aggregate: grouping expressions in declaration order, then measures; the one grouping set contains c, and sum:i64 declares return i64?"
   }
  },
  {
@@ -1003,6 +1047,34 @@
     ]
    ],
    "from": "the spec rules for join types and Direct Output Order"
+  }
+ },
+ {
+  "case": "mirror_argument_nullability",
+  "plan": "mirror_argument_nullability.json",
+  "binary": "mirror_argument_nullability.bin",
+  "generator": "GenMirror",
+  "note": "mirror_argument_nullability  add:i64_i64 over (required, required) and over (required, nullable)",
+  "expectation": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "from": "MIRROR nullability: add(required, required) is required and add(required, nullable) is nullable, over a project that keeps its input"
   }
  },
  {

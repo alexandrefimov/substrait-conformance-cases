@@ -55,7 +55,7 @@ git branch --show-current
   Change the owning source or generator first, then regenerate its outputs. Do
   not independently hand-edit `derived-schema/`,
   `derived-schema-virtual-tables/`, `expected.json`, `results/MATRIX.txt`,
-  `docs/matrix*.svg`, or `docs/index.html`.
+  `docs/matrix*.svg`, `docs/index.html`, or `deriver/DERIVED.txt`.
 - `results/<NAME>.txt` records a measurement against `probe/versions.env`.
   Update a pin together with the reproduced column and its provenance. A
   `LATEST=1` drift run is an observation, not a replacement for the pinned

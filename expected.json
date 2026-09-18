@@ -20,6 +20,23 @@
    ],
    "source": "Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps"
   },
+  "aggregate_grouping_set_index": {
+   "schema": [
+    [
+     "str",
+     true
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i32",
+     false
+    ]
+   ],
+   "source": "Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set"
+  },
   "aggregate_grouping_sets_declared_order": {
    "schema": [
     [
@@ -32,6 +49,19 @@
     ]
    ],
    "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps"
+  },
+  "aggregate_grouping_then_measure": {
+   "schema": [
+    [
+     "str",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "Aggregate: grouping expressions in declaration order, then measures; the one grouping set contains c, and sum:i64 declares return i64?"
   },
   "aggregate_sum_i64": {
    "schema": [
@@ -690,6 +720,27 @@
     ]
    ],
    "source": "the spec rules for join types and Direct Output Order"
+  },
+  "mirror_argument_nullability": {
+   "schema": [
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ],
+    [
+     "i64",
+     false
+    ],
+    [
+     "i64",
+     true
+    ]
+   ],
+   "source": "MIRROR nullability: add(required, required) is required and add(required, nullable) is nullable, over a project that keeps its input"
   },
   "narrowing_count": {
    "schema": [

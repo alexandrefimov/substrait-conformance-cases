@@ -226,6 +226,43 @@ expected["aggregate_grouping_sets_declared_order"] = {
     "source": "Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two "
               "grouping expressions emit [0, 1] keeps"}
 
+# The three cases above assert what an aggregate does with two grouping sets or with none, and what
+# a plain read does. What they never assert is the column order of an aggregate that has both kinds
+# of column at once, or the index column the comment above says the emit drops. Those two, and the
+# default nullability rule for every function the spec declares, were rules this file stated and no
+# case here could have contradicted.
+#
+# aggregate_grouping_then_measure: one grouping expression over c (string, required, and in the only
+# grouping set so it stays required) followed by one measure. "The list of grouping expressions in
+# declaration order followed by the list of measures in declaration order" is the order; sum(i64)
+# returns i64? by its declaration. The two columns have different types, so the reverse order is a
+# different schema.
+expected["aggregate_grouping_then_measure"] = {
+    "schema": [["str", False], ["i64", True]],
+    "source": "Aggregate: grouping expressions in declaration order, then measures; the one "
+              "grouping set contains c, and sum:i64 declares return i64?"}
+
+# aggregate_grouping_set_index: the same two grouping sets as ..._sets_declared_order, with no emit.
+# Neither set contains the other's expression, so both columns are nullable, and the spec's extra
+# column follows them: "an aggregate relation with more than one grouping set receives an extra i32
+# column on the right-hand side". Its width is the i32 the page states; its nullability no page
+# states, and it is written required here because the value is the index of the set a row came from,
+# which every output row has.
+expected["aggregate_grouping_set_index"] = {
+    "schema": [["str", True], ["i64", True], ["i32", False]],
+    "source": "Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index "
+              "the spec appends when there is more than one set"}
+
+# mirror_argument_nullability: add(i64, i64) carries no nullability key in functions_arithmetic.yaml,
+# so it takes the default MIRROR - "if at least one of the input arguments are nullable, the return
+# type is also nullable. If all arguments are non-nullable, the return type will be non-nullable."
+# The project keeps its input and appends add(c0, c0) and add(c0, c1) over t_rn (required, nullable),
+# so one output column exercises each half of that sentence.
+expected["mirror_argument_nullability"] = {
+    "schema": [["i64", False], ["i64", True], ["i64", False], ["i64", True]],
+    "source": "MIRROR nullability: add(required, required) is required and add(required, nullable) "
+              "is nullable, over a project that keeps its input"}
+
 # Cases without an expectation come in two different kinds and must not be merged. For the first no
 # rule in the spec reaches the case - a hole the corpus has to name rather than quietly patch. For
 # the second the spec does answer, with "this plan is invalid", and what is measured there is not the

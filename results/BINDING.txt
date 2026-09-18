@@ -17,36 +17,36 @@ Four rewrites, and each answer is read against the first:
   unknown    the short name becomes one no extension file declares. A refusal means names are
              resolved at all; an unchanged answer means the call is carried through unbound.
 
-The control covers 17 of the 39 cases that declare a function. multiply and divide have no partner
+The control covers 18 of the 42 cases that declare a function. multiply and divide have no partner
 returning the same type, and a case whose swapped anchor is referenced from a join key is left out:
 Acero accepts only equal or is_not_distinct_from there, and the substrait-java Spark path has no
 conversion for not_equal, so swapping one would refuse for a reason that is not about binding. The
 rewrite is per declaration and a declaration is shared by every call that references it, which is
 why that exclusion is per case rather than per call.
 
-mismatch reaches six cases. An alternative signature has to be declared in the same extension file
+mismatch reaches eight cases. An alternative signature has to be declared in the same extension file
 or the key would simply be absent, which is the unknown column again, and only add:i32_i32, avg:i64
 and sum:i64 have one. sum is the useful one twice over: sum:i8 returns the i64? that sum:i64
 returns, so the declared output type still agrees with the key and a refusal there could only be
 about the arguments.
 
-            control               mismatch              signature             unknown               
-            same / refused / n    same / refused / n    same / refused / n    same / refused / n    
-JAVA        17 / 0 / 18           6 / 0 / 7             12 / 27 / 40          12 / 27 / 40          
-PYTHON      17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           39 / 0 / 40           
-VALIDATOR   17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           39 / 0 / 40           
-DUCKDB      16 / 0 / 18           6 / 0 / 7             39 / 0 / 40           16 / 20 / 40          
-GO          17 / 0 / 18           6 / 0 / 7             15 / 22 / 40          34 / 5 / 40           
-ACERO       17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           23 / 12 / 40          
-DATAFUSION  17 / 0 / 18           6 / 0 / 7             39 / 0 / 40           18 / 20 / 40          
-ISTHMUS     17 / 0 / 18           4 / 0 / 7             12 / 18 / 40          12 / 18 / 40          
-SPARK       17 / 0 / 18           6 / 0 / 7             12 / 16 / 40          12 / 16 / 40          
+            control               mismatch              signature             unknown
+            same / refused / n    same / refused / n    same / refused / n    same / refused / n
+JAVA        18 / 0 / 19           8 / 0 / 9             13 / 29 / 43          13 / 29 / 43
+PYTHON      18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           42 / 0 / 43
+VALIDATOR   18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           42 / 0 / 43
+DUCKDB      17 / 0 / 19           8 / 0 / 9             42 / 0 / 43           17 / 22 / 43
+GO          18 / 0 / 19           8 / 0 / 9             16 / 24 / 43          37 / 5 / 43
+ACERO       18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           24 / 13 / 43
+DATAFUSION  18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           19 / 22 / 43
+ISTHMUS     18 / 0 / 19           6 / 0 / 9             13 / 20 / 43          13 / 20 / 43
+SPARK       18 / 0 / 19           8 / 0 / 9             13 / 18 / 43          13 / 18 / 43
 
 Nothing refuses the mismatch. Every participant accepts sum:i8 over an i64 argument and add:i8_i8
 over i32 ones, including the three that refuse a key they cannot find. Looking the key up and
 checking it against the call are different things, and only the first is done anywhere here.
 Isthmus's count of unchanged answers is lower than the rest for a reason that is not a changed
-answer: two of its six cases refuse in both corpora with a message that prints the function name,
+answer: three of its nine cases refuse in both corpora with a message that prints the function name,
 so the text moves when the name does.
 
 Four behaviours on the other columns, and the control is clean for all nine.

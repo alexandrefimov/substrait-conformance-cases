@@ -2,7 +2,7 @@ Output-schema sensitivity to the declared type: probe/lie_matrix.sh, 2026-09-17.
 
 Every declared output_type in the corpus is swapped for a false one (probe/make_lied_corpus.py:
 decimal -> dec(20,2), i64 -> i32, i32 -> i64, bool -> i32, and a struct for a struct of the same
-arity with each field swapped) and nothing else about the plan changes. 27 of the 98 cases carry an
+arity with each field swapped) and nothing else about the plan changes. 29 of the 101 cases carry an
 output_type and are therefore touched.
 
   follows    - the output changed and matched the script's type-swap pattern
@@ -24,6 +24,7 @@ Gluten is still outside, for the same reason it is outside reverify.sh: its colu
 cluster by hand.
 
 case                              JAVA                PYTHON              VALIDATOR           DUCKDB              GO                  ACERO               DATAFUSION          ISTHMUS             SPARK
+aggregate_grouping_then_measure   follows             follows             follows             held                follows             both fail           held                follows             held
 aggregate_sum_i64                 follows             follows             follows             held                follows             held                held                follows             both fail
 ctas_keeps_declared_schema        follows             both fail           both fail           held                held                both fail           both fail           held                held
 decimal_add                       follows             follows             follows             held                follows             held                held                follows             held
@@ -43,6 +44,7 @@ joineq_right_anti                 held                held                held  
 joineq_right_mark                 held                held                held                both fail           both fail           both fail           held                both fail           both fail
 joineq_right_semi                 held                held                held                held                held                both fail           held                both fail           both fail
 joineq_right_single               held                held                held                both fail           held                both fail           both fail           both fail           both fail
+mirror_argument_nullability       follows             follows             follows             held                follows             held                held                follows             held
 narrowing_count                   follows             follows             follows             held                follows             held                held                follows             both fail
 narrowing_is_not_null             changed             changed             changed             held                changed             held                held                changed             held
 narrowing_is_null                 changed             changed             changed             held                changed             held                held                changed             held
@@ -52,11 +54,4 @@ window_bound_offset               follows             follows             both f
 window_bound_offset_expr          follows             both fail           both fail           both fail           both fail           both fail           both fail           both fail           held
 window_output_order               follows             follows             both fail           both fail           both fail           both fail           both fail           both fail           both fail
 
-Five of the nine answer with the declaration. substrait-java moves on 15 cases, 14 of which carry an
-expectation; ctas_keeps_declared_schema does not. substrait-python moves on 13, and the validator,
-substrait-go and Isthmus on 11 each, every one of those carrying an expectation.
-
-The other four never move: DuckDB, Acero, DataFusion and Spark answer the swapped plan exactly as
-they answer the original. That is the distinction this table exists for. An answer that matches the
-declaration proves nothing on its own - it may be the declaration read back - and only a participant
-whose answer holds under the swap has derived it.
+RESULT: the swap matrix was built over 9 participants

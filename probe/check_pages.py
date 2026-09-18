@@ -30,7 +30,8 @@ WORDS = {"no": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6
          "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
          "nineteen": 19, "twenty": 20, "twenty-one": 21, "twenty-two": 22, "twenty-three": 23,
          "twenty-four": 24, "twenty-five": 25, "twenty-six": 26, "twenty-seven": 27,
-         "twenty-eight": 28, "twenty-nine": 29, "thirty": 30}
+         "twenty-eight": 28, "twenty-nine": 29, "thirty": 30, "thirty-one": 31,
+         "thirty-two": 32, "thirty-three": 33, "thirty-four": 34, "thirty-five": 35}
 
 # The pages spell small numbers as words and large ones as digits, in the same sentence, so a
 # pattern has to accept either. Anything else - "several", "a few" - is not a number this can check
@@ -104,10 +105,14 @@ def facts():
         moved = {k for k, x in verdict.get(col, {}).items() if x in ("follows", "changed")}
         return len({k for k in moved if k in exp["expected"]} - set(dif["cells"].get(col, {})))
 
-    trio = {c: read_back(c) for c in ("VALIDATOR", "GO", "ISTHMUS")}
-    if len(set(trio.values())) != 1:
-        raise SystemExit("FAILED: the README says the validator, substrait-go and Isthmus read back "
-                         "the same number of matches, and they now differ: %r" % trio)
+    # The README used to say "11 each of the validator's, substrait-go's and Isthmus's", and this
+    # asserted that all three were equal - true when written, and it stopped being true the moment
+    # the validator diverged on one of the cases it follows. Only the pair the sentence still joins
+    # with "each" is asserted now; the numbers themselves are checked one by one below, so a
+    # rewording of the sentence is allowed and a wrong number in it is not.
+    if read_back("GO") != read_back("ISTHMUS"):
+        raise SystemExit("FAILED: the README pairs substrait-go with Isthmus on read-back matches, "
+                         "and they now differ: %d and %d" % (read_back("GO"), read_back("ISTHMUS")))
 
     f = {
         "cases": len(cases),
@@ -139,7 +144,8 @@ def facts():
         "cases carrying an output_type": len(in_table),
         "matches substrait-java reads back": read_back("JAVA"),
         "matches substrait-python reads back": read_back("PYTHON"),
-        "matches each of the other three reads back": next(iter(trio.values())),
+        "matches substrait-go and Isthmus each read back": read_back("GO"),
+        "matches the validator reads back": read_back("VALIDATOR"),
         "of those with an expectation": len(in_table & set(exp["expected"])),
         "scored plans with no output_type": len(set(exp["expected"]) - in_table),
     }
@@ -246,8 +252,10 @@ CLAIMS = [
      r"%s of substrait-java's matches" % NUMBER),
     ("README.md", "matches substrait-python reads back",
      r"%s of\s+substrait-python's" % NUMBER),
-    ("README.md", "matches each of the other three reads back",
-     r"%s each of the validator's" % NUMBER),
+    ("README.md", "matches substrait-go and Isthmus each read back",
+     r"%s each of substrait-go's" % NUMBER),
+    ("README.md", "matches the validator reads back",
+     r"%s of the validator's" % NUMBER),
 
     ("METHOD.md", "cases carrying an output_type",
      r"%s of the \d+ cases carry an `output_type`" % NUMBER),

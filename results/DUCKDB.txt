@@ -1,8 +1,10 @@
-DUCKDB: column from run 2026-09-09T07:34, duckdb 1.5.5
+DUCKDB: column from run 2026-09-17T22:20, duckdb 1.5.5
 BOUNDARY: carries no nullability in its logical types - types, arity and order are compared.
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT]
+aggregate_grouping_set_index                   ERROR: BinderException: Binder Error: Positional reference 3 out of range (total 2 columns) LINE 1: SELECT * FROM from_substrait_json(?) ^
 aggregate_grouping_sets_declared_order         [c:VARCHAR, a:BIGINT]
+aggregate_grouping_then_measure                [c:VARCHAR, s:HUGEINT]
 aggregate_sum_i64                              [s:HUGEINT]
 control_join_without_relcommon                 [a:BIGINT, b:BIGINT, c:BIGINT, d:BIGINT]
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT]
@@ -46,6 +48,7 @@ joineq_right_mark                              ERROR: signal/exit 139
 joineq_right_semi                              [c0:BIGINT, c1:BIGINT]
 joineq_right_single                            ERROR: NotImplementedException: Not implemented Error: Unsupported JoinRel join type: advanced_extension LINE 1: SELECT * FROM from_substrait_json(?) ^
 joineq_right                                   [c0:BIGINT, c1:BIGINT, c2:BIGINT, c3:BIGINT]
+mirror_argument_nullability                    [c0:BIGINT, c1:BIGINT, rr:BIGINT, rn:BIGINT]
 narrowing_count                                [n:BIGINT]
 narrowing_is_not_null                          [r:BOOLEAN]
 narrowing_is_null                              [r:BOOLEAN]
