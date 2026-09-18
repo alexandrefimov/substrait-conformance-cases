@@ -7,7 +7,7 @@ exists. Regenerate with:
 
   SUBSTRAIT_DIR=<substrait checkout> python3 -m deriver.mutants --verbose > deriver/COVERAGE.txt
 
-37 alternative readings: 34 the corpus tells apart, 3 it does not
+39 alternative readings: 36 the corpus tells apart, 3 it does not
 
 told apart:
   read: the projection mask is ignored                     1 case(s): read_projection_mask
@@ -41,6 +41,8 @@ told apart:
   expand: the index column comes first                     2 case(s): expand_consistent_fields, expand_switching_nullability
   expand: a switching field is required if any duplicate is 1 case(s): expand_switching_nullability
   window: the window columns come before the input         3 case(s): window_bound_offset, window_bound_offset_expr, window_output_order
+  ddl: the output is the declared table schema             1 case(s): ddl_view_root_names_nothing
+  ddl: the output is the view definition's                 1 case(s): ddl_view_root_names_nothing
   functions: MIRROR does not propagate nullability         1 case(s): mirror_argument_nullability
   functions: DECLARED_OUTPUT mirrors its arguments         9 case(s): aggregate_grouping_then_measure, aggregate_sum_i64, narrowing_count
   functions: the phase does not select the intermediate type 1 case(s): phase_intermediate

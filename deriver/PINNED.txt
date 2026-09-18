@@ -1,6 +1,6 @@
 Which case pins which rule: probe by deriver/mutants.py --per-case.
 
-Per scored case: how many of the 37 alternative readings in deriver/mutants.py its
+Per scored case: how many of the 39 alternative readings in deriver/mutants.py its
 answer tells apart, and, after ->, the readings no other case tells apart. A case
 with none of the second kind can be removed without any rule going unchecked; one
 with some cannot. A count of 0 is not a hole - see per_case() in that file.
@@ -13,7 +13,7 @@ aggregate_sum_i64                              1
 control_join_without_relcommon                 1
 control_passthrough_rn                         0
 cross_preserves_nullability                    1  -> cross: the output becomes nullable
-ddl_view_root_names_nothing                    0
+ddl_view_root_names_nothing                    2  -> ddl: the output is the declared table schema; ddl: the output is the view definition's
 decimal_add                                    2
 decimal_add_overflow                           2
 decimal_divide                                 2

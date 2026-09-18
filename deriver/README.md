@@ -36,16 +36,18 @@ without a checkout: `deriver/check.py` compares it against `expected.json` and i
 
 ## What came out
 
-All 96 cases that carry an expectation agree with it. None differs. The five without one — the CTAS
-whose input does not match its `table_schema`, and the four virtual tables whose row literals differ
-from their declared schema — get an answer here anyway, because the rules below take a read's
-schema from `base_schema` and never look at a virtual table's rows. That is a position on where a
-read's schema comes from, not an answer to the question those cases hold open, which is whether a
-row may disagree with the schema above it at all.
+All 98 cases that carry an expectation agree with it. None differs. Of the ten without one it
+answers seven. The CTAS whose input does not match its `table_schema` and the four virtual tables
+whose row literals differ from their declared schema get an answer because the rules below take a
+read's schema from `base_schema` and never look at a virtual table's rows. That is a position on
+where a read's schema comes from, not an answer to the question those cases hold open, which is
+whether a row may disagree with the schema above it at all. The DDL view whose root names columns
+and the lateral join without an anchor are answered by readings set out below. The three it
+declines are the two updates and the mask listed out of schema order.
 
-On 62 of those 96 cases at least one participant is recorded in `differed.json` as diverging — not
+On 63 of those 98 cases at least one participant is recorded in `differed.json` as diverging — not
 a limit of its type system and not an unresolved type, but an answer the spec rule says should have
-been something else. The deriver gives the expectation's schema on all 62. That says nothing new
+been something else. The deriver gives the expectation's schema on all 63. That says nothing new
 about the participants; what it says is that the expectation each of them is recorded against was
 read twice rather than once, which is the part a reader had no way to check before.
 
@@ -79,8 +81,8 @@ not: a rule no case reaches agrees with anything. `deriver/mutants.py` measures 
 rule is replaced by another reading of the same sentence — not by a random error — and the scored
 cases are rederived. [COVERAGE.txt](COVERAGE.txt) is the saved run.
 
-Of 37 alternative readings the corpus tells 34 apart. The first run of this probe, over a narrower battery, told only 25 apart, and the
-four it could not were rules no case reached:
+Of 39 alternative readings the corpus tells 36 apart. The first run of this probe, over a narrower
+battery, told only 25 apart, and the four it could not were rules no case reached:
 
 | the rule | why nothing reached it | what closed it |
 | --- | --- | --- |
@@ -165,6 +167,18 @@ would be the likeliest guess and still a guess. `update_root_names_a_count` and
 `update_root_names_the_table` are the same update written for each reading, and `METHOD.md` says
 what the participants make of them.
 
+**What a DDL outputs, and what its root may name.** The DDL signature table gives "Outputs | 0" and
+"Property Maintenance | N/A (no output)", and `basics.md` says that row answers "Does the operator
+produce an output". So a `DdlRel` derives no columns, and neither its `table_schema` nor its
+`view_definition` is read as its output. What had to be chosen is how to write that: an answer here
+is a column list, so no output is the empty list, and the text does not say whether a plan with no
+output yields an empty result or none at all. The root is the other half. `RelRoot` in
+`algebra.proto` says "The number of names must match the number of named fields in the output
+type", which over no output is zero, so `ddl_view_root_names_the_view`, whose root names the view's
+two columns, is invalid by that sentence. The deriver reads no root names, so it answers that plan
+`[]`, as it answers `ddl_view_root_names_nothing`, in the same way it answers the CTAS whose input
+does not match its `table_schema`.
+
 **When a lateral join must carry a `rel_anchor`.** The page makes it conditional: "When the right
 input references the current left row, `LateralJoinRel` must set `RelCommon.rel_anchor`". The
 comment on the message in `algebra.proto` makes it unconditional: "LateralJoinRel must set
@@ -196,16 +210,22 @@ same evaluator as the four whose notes were not. For `emit_*`, the aggregates an
 named the answer outright, and independence on those six is weaker than on the other 75. Somebody
 writing these rules again without the manifest in front of them is what would settle it.
 
+The `DdlRel` rule came later and was written without that exposure. Its author opened `deriver/`,
+`AGENTS.md`, the two DDL plans and the spec at v0.102.0, and none of `probe/`, `expected.json`, the
+manifest, the generators, the columns or the pages, which is where the expectation and the answers
+are written down. The comparison with the expectation ran only after the rule, its test and its two
+alternative readings existed.
+
 ## What it does not do
 
 Schemas only: no rows, no column names, no validation beyond what deriving a schema happens to
-require. Of the relations `algebra.proto` defines it implements seventeen of the nineteen the corpus
-reaches. It declines `update` for the reason given above; `ddl`, which the corpus reaches too, is
-absent, as are `reference`, `exchange` and the three extension relations. Of the expressions it reads field references — rooted in the input, or an outer reference
-by `rel_reference` to the row a lateral join binds — literals, casts and scalar, aggregate and
-window function calls; not `if_then`, `switch`, `singular_or_list`, `multi_or_list`, subqueries,
-lambdas, nested constructors, or enum and type arguments. Type variations are ignored. A variadic
-function binds only in its consistent form.
+require. Of the relations `algebra.proto` defines it implements eighteen of the nineteen the corpus
+reaches, and declines `update` for the reason given above. Absent are `reference`, `exchange` and
+the three extension relations, which no case reaches. Of the expressions it reads field references —
+rooted in the input, or an outer reference by `rel_reference` to the row a lateral join binds —
+literals, casts and scalar, aggregate and window function calls; not `if_then`, `switch`,
+`singular_or_list`, `multi_or_list`, subqueries, lambdas, nested constructors, or enum and type
+arguments. Type variations are ignored. A variadic function binds only in its consistent form.
 
 Every one of those is a stop rather than a guess: the case is reported as not derived, with the
 reason, and counted apart from a case answered wrongly. An answer that might be a guess would be

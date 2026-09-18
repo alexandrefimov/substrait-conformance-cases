@@ -140,6 +140,12 @@ MUTATIONS = [
      "    return rel_schema(rel[\"input\"], plan)",
      "    return (types.from_named_struct(rel[\"tableSchema\"]) if \"tableSchema\" in rel\n"
      "            else rel_schema(rel[\"input\"], plan))"),
+    ("derive.py", "ddl: the output is the declared table schema",
+     "DdlRel.table_schema as the output: the view's columns rather than none",
+     "    return []", "    return types.from_named_struct(rel[\"tableSchema\"])"),
+    ("derive.py", "ddl: the output is the view definition's",
+     "the view body as the one input the signature counts, passed through as a write's is",
+     "    return []", "    return rel_schema(rel[\"viewDefinition\"], plan)"),
     ("extensions.py", "functions: MIRROR does not propagate nullability",
      "the return type expression alone deciding, as in DECLARED_OUTPUT",
      "        return derived.with_nullable(any(a.nullable for a in args))", "        return derived"),

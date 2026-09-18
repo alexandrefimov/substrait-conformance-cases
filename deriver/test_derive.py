@@ -215,6 +215,35 @@ def test_update_declines():
         check("the update refusal names what is missing", "modified records" in str(why), True)
 
 
+def test_ddl_has_no_output():
+    # "Outputs | 0": a create view has no columns, not the view's columns and not its body's.
+    body = read("i64", "i64?")
+    view = {"ddl": {"namedObject": {"names": ["v"]},
+                    "tableSchema": body["read"]["baseSchema"],
+                    "object": "DDL_OBJECT_VIEW", "op": "DDL_OP_CREATE",
+                    "viewDefinition": body, "common": {"direct": {}}}}
+    check("a create view outputs no columns", schema(view), "[]")
+    # The signature is the operator's, not the operation's: a drop, with no schema and no body,
+    # outputs the same nothing.
+    check("a drop table outputs no columns",
+          schema({"ddl": {"namedObject": {"names": ["t"]}, "object": "DDL_OBJECT_TABLE",
+                          "op": "DDL_OP_DROP"}}), "[]")
+    # Root names are not read. Naming the view's columns over a DDL breaks RelRoot's count rule,
+    # and still derives what naming nothing does.
+    for names in ([], ["c0", "c1"]):
+        root = {"input": view}
+        if names:
+            root["names"] = names
+        check("a DDL root naming %d fields" % len(names),
+              types.render_schema(derive.schema_of({"relations": [{"root": root}]})), "[]")
+    # An emit mapping over no columns has nothing to select.
+    try:
+        schema({"ddl": dict(view["ddl"], common={"emit": {"outputMapping": [0]}})})
+        FAILED.append("an emit mapping over a DDL's output was accepted")
+    except Unsupported:
+        pass
+
+
 def test_emit_and_passthrough():
     body = read("i64", "string", "boolean")
     check("emit reorders and drops",
@@ -234,7 +263,7 @@ def test_emit_and_passthrough():
 def main():
     for test in (test_expression_language, test_type_syntax, test_join_types,
                  test_set_operations, test_lateral_join, test_update_declines,
-                 test_emit_and_passthrough):
+                 test_ddl_has_no_output, test_emit_and_passthrough):
         test()
     for line in FAILED:
         print("FAILED: %s" % line)
