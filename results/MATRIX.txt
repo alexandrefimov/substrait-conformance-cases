@@ -1,4 +1,4 @@
-Schema derivation matrix: 10 implementations x 106 cases.
+Schema derivation matrix: 10 implementations x 108 cases.
 Built by probe/matrix.py from the columns in results.
 Every column taken 2026-09-18.
 Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.
@@ -7,7 +7,7 @@ order are compared. Acero and Spark carry it and are compared on it. Gluten take
 the comparison against the expectations at all.
 String length is lost by DataFusion and DuckDB: their type systems have no string with a length.
 · means the case was not run through that implementation.
-PARTIAL COLUMN: Gluten - 102 of 106, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
+PARTIAL COLUMN: Gluten - 104 of 108, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
 
 case                                          substrait-java                    Isthmus                           python                            validator                         substrait-go                      Spark                             DataFusion                        DuckDB                            Acero                             Gluten
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -20,6 +20,8 @@ control_join_without_relcommon                {I64{R}, I64{N}, I64{N}, I64{R}]} 
 control_passthrough_rn                        {I64{R}, I64{N}]}                 [c0:BIGINT, c1:BIGINT?]           [c0:i64, c1:i64?]                 [c0:i64, c1:i64?]                 [c0:i64, c1:i64?]                 [c0:bigint, c1:bigint?]           [c0:Int64, c1:Int64?]             [c0:BIGINT, c1:BIGINT]            [c0:int64, c1:int64?]             ROW<>
 cross_preserves_nullability                   {I64{R}, I64{N}, I64{N}, I64{R}]} [c0:BIGINT, c1:BIGINT?, c00:BIGIN…[l0:i64, l1:i64?, r0:i64?, r1:i64][i64, i64?, i64?, i64]            [l0:i64, l1:i64?, r0:i64?, r1:i64][l0:bigint, l1:bigint?, r0:bigint…[l0:Int64, l1:Int64?, r0:Int64?, …[l0:BIGINT, l1:BIGINT, r0:BIGINT,…- ArrowNotImplementedError: conve…- Exception: VeloxRuntimeError Er…
 ctas_keeps_declared_schema                    {I32{N}, I32{N}]}                 [total:BIGINT, doubled:INTEGER?]  - Exception: Unhandled rel_type w…—                                 []                                []                                - This feature is not implemented…[Count:BIGINT]                    - ArrowNotImplementedError: conve…- Exception: VeloxRuntimeError Er…
+ddl_view_root_names_nothing                   {I64{R}, I64{N}]}                 - UnsupportedOperationException: …- Exception: Unhandled rel_type d…—                                 - not implemented                 - UnsupportedOperationException: …- This feature is not implemented…- NotImplementedException: Not im…- ArrowNotImplementedError: conve…- Exception: VeloxRuntimeError Er…
+ddl_view_root_names_the_view                  {I64{R}, I64{N}]}                 - UnsupportedOperationException: …- Exception: Unhandled rel_type d…—                                 - not implemented                 - UnsupportedOperationException: …- This feature is not implemented…- NotImplementedException: Not im…- ArrowNotImplementedError: conve…- Exception: VeloxRuntimeError Er…
 decimal_add                                   {Decimal{R, scale=2, precision=11…[$f4:DECIMAL(11,2)]               [r:dec(11,2)]                     [dec(11,2)]                       [r:decimal<11,2>]                 [r:decimal(11,2)?]                [r:Decimal128(11, 2)]             [r:DECIMAL(11,2)]                 [r:decimal128(11, 2)?]            ROW<n1_4:DECIMAL(11, 2)>
 decimal_add_overflow                          {Decimal{R, scale=9, precision=38…[$f4:DECIMAL(38,9)]               [r:dec(38,9)]                     [dec(38,9)]                       [r:decimal<38,9>]                 [r:decimal(38,9)?]                [r:Decimal128(38, 10)]            - OutOfRangeException: Out of Ran…- ArrowInvalid: Decimal precision…ROW<n1_4:DECIMAL(38, 9)>
 decimal_divide                                {Decimal{R, scale=8, precision=21…[$f4:DECIMAL(21,8)]               [r:dec(21,8)]                     [dec(21,8)]                       [r:decimal<21,8>]                 [r:decimal(17,8)?]                [r:Decimal128(15, 6)]             [r:DOUBLE]                        [r:decimal128(16, 7)?]            ROW<n1_4:DECIMAL(21, 8)>

@@ -199,9 +199,9 @@ writing these rules again without the manifest in front of them is what would se
 ## What it does not do
 
 Schemas only: no rows, no column names, no validation beyond what deriving a schema happens to
-require. Of the relations `algebra.proto` defines it implements seventeen of the eighteen the corpus
-reaches; it declines `update`, the eighteenth, for the reason given above; `reference`, `ddl`, `exchange` and the three extension relations are
-absent. Of the expressions it reads field references — rooted in the input, or an outer reference
+require. Of the relations `algebra.proto` defines it implements seventeen of the nineteen the corpus
+reaches. It declines `update` for the reason given above; `ddl`, which the corpus reaches too, is
+absent, as are `reference`, `exchange` and the three extension relations. Of the expressions it reads field references — rooted in the input, or an outer reference
 by `rel_reference` to the row a lateral join binds — literals, casts and scalar, aggregate and
 window function calls; not `if_then`, `switch`, `singular_or_list`, `multi_or_list`, subqueries,
 lambdas, nested constructors, or enum and type arguments. Type variations are ignored. A variadic

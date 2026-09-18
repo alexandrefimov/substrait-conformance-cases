@@ -1,4 +1,4 @@
-GO: column from run 2026-09-18T17:57, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d
+GO: column from run 2026-09-18T18:39, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_set_index                   ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 2
@@ -9,6 +9,8 @@ control_join_without_relcommon                 [a:i64, b:i64?, c:i64?, d:i64]
 control_passthrough_rn                         [c0:i64, c1:i64?]
 cross_preserves_nullability                    [l0:i64, l1:i64?, r0:i64?, r1:i64]
 ctas_keeps_declared_schema                     []
+ddl_view_root_names_nothing                    ERROR: not implemented
+ddl_view_root_names_the_view                   ERROR: not implemented
 decimal_add_overflow                           [r:decimal<38,9>]
 decimal_add                                    [r:decimal<11,2>]
 decimal_divide                                 [r:decimal<21,8>]

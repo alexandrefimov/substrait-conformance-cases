@@ -391,6 +391,21 @@
     }
    }
   },
+  "java-ddl-derives-the-table-schema": {
+   "kind": "divergence",
+   "what": "The page gives DdlRel no output. substrait-java derives one anyway: AbstractDdlRel.deriveRecordType returns the table_schema the relation carries. These cases cannot tell that from the view definition's own output, which has the same two columns; the code can. Isthmus writes this DdlRel for CREATE VIEW with the view's columns on the root, so substrait-java's producer and its core agree with each other and not with the page.",
+   "check": {
+    "got_matches": {
+     "JAVA": "^Struct\\{nullable=false, fields=\\[I64\\{nullable=false\\}, I64\\{nullable=true\\}\\]\\}$"
+    }
+   },
+   "triage": {
+    "JAVA": {
+     "outcome": "open",
+     "note": "not reported; substrait-java 1180 and PR 1181 were about a created view keeping its declared schema through a round trip, not about what the relation outputs"
+    }
+   }
+  },
   "python-expand-switching-stays-required": {
    "kind": "divergence",
    "what": "A switching field takes the type class its duplicates share and is nullable if any of them is, which algebra.proto states on SwitchingField itself. The field here switches between t_rn's required column and its nullable one, and substrait-python returns it required. It returns the duplicate index the same case asks for, which substrait-java does not - each of the two carries one rule and misses the other.",
@@ -605,6 +620,7 @@
    "virtual_table_emit_mapping": "validator-does-not-resolve"
   },
   "JAVA": {
+   "ddl_view_root_names_nothing": "java-ddl-derives-the-table-schema",
    "expand_consistent_fields": "java-expand-omits-the-duplicate-index",
    "expand_switching_nullability": "java-expand-omits-the-duplicate-index"
   }

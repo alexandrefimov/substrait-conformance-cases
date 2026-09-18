@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-18T15:49, pyarrow 25.0.1
+ACERO: column from run 2026-09-18T18:39, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -10,6 +10,8 @@ control_join_without_relcommon                 ERROR: ArrowInvalid: A join rel's
 control_passthrough_rn                         [c0:int64, c1:int64?]
 cross_preserves_nullability                    ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug cross {   common {     direct {     }   }   left {     read {       comm
 ctas_keeps_declared_schema                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug write {   named_table {     names: "dst1"   }   table_schema {     names
+ddl_view_root_names_nothing                    ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug ddl {   named_object {     names: "v"   }   table_schema {     names: "c
+ddl_view_root_names_the_view                   ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug ddl {   named_object {     names: "v"   }   table_schema {     names: "c
 decimal_add_overflow                           ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 39
 decimal_add                                    [r:decimal128(11, 2)?]
 decimal_divide                                 [r:decimal128(16, 7)?]

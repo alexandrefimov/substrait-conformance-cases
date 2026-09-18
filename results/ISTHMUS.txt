@@ -1,4 +1,4 @@
-ISTHMUS: column from run 2026-09-18T15:50, substrait-java fff63906
+ISTHMUS: column from run 2026-09-18T18:40, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
 aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
@@ -9,6 +9,8 @@ control_join_without_relcommon                 [c0:BIGINT, c1:BIGINT?, c00:BIGIN
 control_passthrough_rn                         [c0:BIGINT, c1:BIGINT?]
 cross_preserves_nullability                    [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 ctas_keeps_declared_schema                     [total:BIGINT, doubled:INTEGER?]
+ddl_view_root_names_nothing                    ERROR: UnsupportedOperationException: null
+ddl_view_root_names_the_view                   ERROR: UnsupportedOperationException: null
 decimal_add_overflow                           [$f4:DECIMAL(38,9)]
 decimal_add                                    [$f4:DECIMAL(11,2)]
 decimal_divide                                 [$f4:DECIMAL(21,8)]

@@ -46,7 +46,7 @@ WORDS = {1: "One", 2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Sev
 # with an `input`, and a shape test counts it as a relation nobody has heard of. Following the
 # fields instead means a name this file does not know is caught wherever it stands, leaf relations
 # included.
-REL_FIELDS = ("input", "inputs", "left", "right")
+REL_FIELDS = ("input", "inputs", "left", "right", "viewDefinition")
 
 
 def relations_in(plan, seen):

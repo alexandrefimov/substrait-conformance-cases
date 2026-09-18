@@ -13,9 +13,21 @@ for the spec and some are ours, and each says which.
 Columns taken 2026-09-18. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
-## substrait-java — 2 cases
+## substrait-java — 3 cases
 
 `results/JAVA.txt`, substrait-java fff63906.
+
+### `java-ddl-derives-the-table-schema`
+
+The page gives DdlRel no output. substrait-java derives one anyway: AbstractDdlRel.deriveRecordType returns the table_schema the relation carries. These cases cannot tell that from the view definition's own output, which has the same two columns; the code can. Isthmus writes this DdlRel for CREATE VIEW with the view's columns on the root, so substrait-java's producer and its core agree with each other and not with the page.
+
+Recorded as a divergence, open.
+
+Not reported; substrait-java 1180 and PR 1181 were about a created view keeping its declared schema through a round trip, not about what the relation outputs.
+
+| case | expected | substrait-java answered | the expectation comes from |
+| --- | --- | --- | --- |
+| [ddl_view_root_names_nothing](../derived-schema/ddl_view_root_names_nothing.json) | `[]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | logical_relations.md, DDL Operator: Outputs 0, N/A (no output) |
 
 ### `java-expand-omits-the-duplicate-index`
 
