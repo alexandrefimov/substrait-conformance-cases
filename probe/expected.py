@@ -299,6 +299,12 @@ SPEC_SILENT = {
         "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but "
         "the general one reaches it - type_system.md allows no coercion and requires an explicit "
         "cast for all changes in types",
+    "read_projection_mask_reordered":
+        "a projection mask listing fields [2, 0]: field_references.md says 'Right now, you can only "
+        "mask things out' among its discussion points, which rules out a mask reordering columns but "
+        "does not say whether a mask listed out of schema order selects in schema order or is "
+        "invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the "
+        "question itself",
 }
 SPEC_SAYS_INVALID = {
     "ctas_keeps_declared_schema":

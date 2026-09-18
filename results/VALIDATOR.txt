@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-17T22:21, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-09-18T13:15, substrait-validator 0.1.4 at 2a10470
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_set_index                   [i32]
@@ -74,6 +74,7 @@ precision_timestamp_p06                        [c:unresolved]
 precision_timestamp_p07                        [c:unresolved]
 precision_timestamp_p09                        [c:unresolved]
 precision_timestamp_p12                        [c:unresolved]
+read_projection_mask_reordered                 [bool, i64]
 read_projection_mask                           [i64, bool]
 setdata_intersection_multiset_all              i64
 setdata_intersection_multiset                  i64

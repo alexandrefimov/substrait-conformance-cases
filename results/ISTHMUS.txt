@@ -1,4 +1,4 @@
-ISTHMUS: column from run 2026-09-17T22:21, substrait-java fff63906
+ISTHMUS: column from run 2026-09-18T13:15, substrait-java fff63906
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
 aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
@@ -74,6 +74,7 @@ precision_timestamp_p06                        [c:TIMESTAMP(6)]
 precision_timestamp_p07                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 7, max precision in Calcite type system is set to 6
 precision_timestamp_p09                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 9, max precision in Calcite type system is set to 6
 precision_timestamp_p12                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 12, max precision in Calcite type system is set to 6
+read_projection_mask_reordered                 [c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]
 read_projection_mask                           [c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]
 setdata_intersection_multiset_all              [v:BIGINT]
 setdata_intersection_multiset                  [v:BIGINT]

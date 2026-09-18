@@ -129,6 +129,11 @@ def facts():
                                   for p, t in rule.get("triage", {}).items()
                                   if t["outcome"] == "open"),
         "cases pending a spec answer": len(exp["spec_silent"]),
+        # The virtual-table cases are one of the questions the spec leaves open, not all of them:
+        # the pages name their count beside the question they wait on, and it stopped being the
+        # same number as the total the day a second question joined them.
+        "virtual-table cases pending a spec answer":
+            sum(1 for c in exp["spec_silent"] if c.startswith("virtual_table_")),
         # The reasons that carry a link to the project the divergence is about. The README states
         # this above the fold, where it answers the first thing a maintainer arriving from an issue
         # wants to know, so it is the number most worth catching when it moves.
@@ -208,7 +213,8 @@ CLAIMS = [
     ("README.md", "reasons linking a report",
      r"%s of the [\w-]+ reasons behind a divergence link an issue" % NUMBER),
     ("README.md", "reasons", r"[\w-]+ of the %s reasons behind a divergence link an issue" % NUMBER),
-    ("README.md", "cases pending a spec answer", r"%s cases here go unscored" % NUMBER),
+    ("README.md", "virtual-table cases pending a spec answer",
+     r"%s cases here go unscored" % NUMBER),
     ("README.md", "scored", r"They answer the %s cases that carry an expectation" % NUMBER),
     ("README.md", "differing cells", r"a reason written by hand for all %s of them" % NUMBER),
     ("README.md", "cells that are not a divergence",
@@ -245,7 +251,9 @@ CLAIMS = [
      r"%s cases carry no expectation on purpose" % NUMBER),
 
     ("METHOD.md", "unscored", r"%s cases carry no expectation" % NUMBER),
-    ("METHOD.md", "cases pending a spec answer", r"%s have virtual-table row types" % NUMBER),
+    ("METHOD.md", "cases pending a spec answer", r"%s of them wait on the spec" % NUMBER),
+    ("METHOD.md", "virtual-table cases pending a spec answer",
+     r"%s have virtual-table row types" % NUMBER),
     ("README.md", "cases carrying an output_type",
      r"Only %s of the \d+ cases declare an output type" % NUMBER),
     ("README.md", "matches substrait-java reads back",
