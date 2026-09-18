@@ -49,7 +49,7 @@ def main(argv):
     rows, report = [], []
     for name, path in cases():
         schema, why = derived(path)
-        rows.append((name, types.render_schema(schema) if schema else None, why))
+        rows.append((name, None if schema is None else types.render_schema(schema), why))
         if name in expected:
             want = [[t, bool(n)] for t, n in expected[name]["schema"]]
             got = None if schema is None else [[types.render(f), f.nullable] for f in schema]
@@ -106,7 +106,7 @@ def main(argv):
     if unanswered:
         print("\nno expectation to compare against (%d):" % len(unanswered))
         for name, verdict, got, _, _, why in unanswered:
-            print("  %-46s %s" % (name, _render(got) if got else "not derived: %s" % why))
+            print("  %-46s %s" % (name, "not derived: %s" % why if got is None else _render(got)))
     return 1 if tally.get("differ") else 0
 
 

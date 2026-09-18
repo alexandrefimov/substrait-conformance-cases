@@ -498,6 +498,30 @@ def _update(rel, plan):
                       "records': no Direct Output Order, type or nullability is given")
 
 
+def _ddl(rel, plan):
+    """DDL: no output, and so no columns.
+
+    The signature table of the DDL (Data Definition Language) Operator in logical_relations.md
+    reads "Outputs | 0", "Property Maintenance | N/A (no output)" and "Direct Output Order | N/A".
+    The question that row answers is in basics.md, Relational Signatures: "Does the operator
+    produce an output". A DdlRel produces none, whatever object and operation it names. Its
+    `table_schema` is "The names of all the columns and their type" of the object being defined,
+    and its `view_definition` is "A Rel representing the "body" of a VIEW"; the page calls neither
+    an output, and neither is read here.
+
+    Under a plan root this is the plan's whole output. RelRoot in algebra.proto says of its names:
+    "The number of names must match the number of named fields in the output type". For a relation
+    with no output that number can only be zero, so a root naming fields over a DDL breaks that
+    sentence. Root names are read nowhere in this file, since they carry no type, and such a plan
+    derives the same empty schema as one whose root names nothing.
+
+    An answer here is a list of columns, so "no output" is written as the empty list. The text does
+    not say whether a plan with no output yields an empty result or no result at all, and a column
+    list cannot tell the two apart; either way it has no column whose type could be guessed.
+    """
+    return []
+
+
 RULES = {
     "read": _read,
     "filter": _passthrough("input"),
@@ -517,6 +541,7 @@ RULES = {
     "write": _write,
     "lateralJoin": _lateral_join,
     "update": _update,
+    "ddl": _ddl,
 }
 
 
