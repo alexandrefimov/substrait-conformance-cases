@@ -26,7 +26,9 @@ for line in io.open(RAW, encoding="utf-8"):
         at = answer.find(cut)
         if at >= 0:
             answer = answer[:at]
-    rows.append((m.group(1), answer))
+    # A message whose last word was a name Velox left empty ends in the space before " Retriable:",
+    # and a column line ending in a space is one git diff --check rejects.
+    rows.append((m.group(1), answer.rstrip()))
 
 # A run that produced nothing, or half a corpus, used to be indistinguishable from a column of
 # refusals once it was written to a file.
