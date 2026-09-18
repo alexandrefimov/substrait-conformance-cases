@@ -111,10 +111,11 @@ probe reports readings rather than a coverage percentage.
 
 `probe/heatmap.py` reads [PINNED.txt](PINNED.txt) and [COVERAGE.txt](COVERAGE.txt) when it draws.
 The picture gains one line under its tallies — how many cases pin a rule nothing else pins, and how
-many rules nothing pins — and the page gains a dot in the gutter of those case names and a section
-saying which three readings are pinned by nothing and why. Neither is a verdict about a
-participant, so neither carries a state colour: a case can be load-bearing and still be one most
-implementations refuse.
+many rules nothing pins — and the page gains an *only check* column between the case names and the
+participants, marking those cases, and a section saying which three readings are pinned by nothing
+and why. Neither is a verdict about a participant, so neither carries a state colour, and the column
+is drawn unlike a participant's so that it does not read as a tenth one: a case can be load-bearing
+and still be one most implementations refuse.
 
 Both files are saved artifacts, because regenerating them needs a Substrait checkout and drawing
 does not. `deriver/check.py` keeps them honest against the corpus and against `mutants.py`, and
