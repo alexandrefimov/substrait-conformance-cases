@@ -210,6 +210,12 @@ same evaluator as the four whose notes were not. For `emit_*`, the aggregates an
 named the answer outright, and independence on those six is weaker than on the other 75. Somebody
 writing these rules again without the manifest in front of them is what would settle it.
 
+The `DdlRel` rule came later and was written without that exposure. Its author opened `deriver/`,
+`AGENTS.md`, the two DDL plans and the spec at v0.102.0, and none of `probe/`, `expected.json`, the
+manifest, the generators, the columns or the pages, which is where the expectation and the answers
+are written down. The comparison with the expectation ran only after the rule, its test and its two
+alternative readings existed.
+
 ## What it does not do
 
 Schemas only: no rows, no column names, no validation beyond what deriving a schema happens to
