@@ -471,8 +471,8 @@ h2 { font: 500 11px/1.4 var(--mono); letter-spacing: 0.09em; text-transform: upp
    unlike them on purpose - no verdict square, a quieter header, a rule on its right - because it
    describes the case, not an implementation's answer, and must not read as a tenth participant. A
    case can be the only check of a rule and still be one most participants refuse. */
-thead th.only-check { width: 1%%; white-space: nowrap; font-weight: 400; color: var(--ink-3);
-  border-right: 1px solid var(--rule); padding: 0 8px; }
+thead th.only-check { width: 1%%; line-height: 1.2; font-weight: 400; color: var(--ink-3);
+  border-right: 1px solid var(--rule); padding: 0 4px; }
 thead th.only-check a { color: inherit; text-decoration: underline dotted; }
 tbody td.only-check { text-align: center; color: var(--ink-3); font-size: 11px;
   border-right: 1px solid var(--rule); cursor: help; }
@@ -513,7 +513,7 @@ thead th { position: sticky; top: 0; z-index: 2; background: var(--surface);
            border-bottom: 1px solid var(--rule-strong); font: 500 11px var(--mono);
            color: var(--ink-2); padding: 10px 6px; text-align: center; height: 42px;
            vertical-align: middle; }
-thead th:not(.corner) { width: auto; min-width: 68px; }
+thead th:not(.corner):not(.only-check) { width: auto; min-width: 68px; }
 thead th .column-name { display: inline-block; white-space: nowrap; }
 thead th.corner { text-align: left; padding-left: 14px; width: 1%%; white-space: nowrap;
                   left: 0; z-index: 3; }
