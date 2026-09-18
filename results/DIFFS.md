@@ -103,7 +103,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-py
 
 ## substrait-go — 4 cases
 
-`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.0.0.20260902180101-cb2d6e648bc0.
+`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d.
 
 ### `go-physical-join-keeps-input-nullability`
 

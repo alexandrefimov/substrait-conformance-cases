@@ -57,9 +57,9 @@ public final class Tables {
 
   /**
    * An empty RelCommon with a direct output. Real producers always set it (in substrait-java that is
-   * RelProtoConverter.common), while hand-assembled plans leave it out - and substrait-go dies on
-   * that. It is set here so the cases stay realistic; control_join_without_relcommon is the separate
-   * case kept for the finding itself.
+   * RelProtoConverter.common), while hand-assembled plans leave it out. It is set here so the cases
+   * stay realistic; control_join_without_relcommon is the separate case that leaves it out on
+   * purpose.
    */
   public static RelCommon direct() {
     return RelCommon.newBuilder().setDirect(RelCommon.Direct.newBuilder()).build();
