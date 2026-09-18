@@ -209,8 +209,10 @@ TOML
   echo "DataFusion runner: $R/target/debug/relation_case"
 fi
 
-# Everything below is the Python side: the runners written in it, and probe/relations/expected.py.
-case "$ONLY" in GO|JAVA|DATAFUSION) exit 0 ;; esac
+# Everything below is the Python side: the DuckDB runner and probe/relations/expected.py. It is built
+# for every participant, not only DuckDB, because retake.sh writes the extract with it before it runs
+# anyone; built for DuckDB alone, `setup.sh GO` followed by `retake.sh GO` stopped at "no relations
+# probe environment".
 
 python3 -m venv "$ENV_DIR"
 # pyyaml is not the measurement's: it is what tests/relations compiles a case with. The environment
