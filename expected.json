@@ -1,6 +1,7 @@
 {
  "disputed": {
   "ctas_keeps_declared_schema": "the spec requires the input schema to match table_schema (algebra.proto); this case breaks that deliberately, so what is measured is not the type but whether anyone reports it",
+  "read_projection_mask_reordered": "a projection mask listing fields [2, 0]: field_references.md says 'Right now, you can only mask things out' among its discussion points, which rules out a mask reordering columns but does not say whether a mask listed out of schema order selects in schema order or is invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the question itself",
   "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but the general one reaches it - type_system.md allows no coercion and requires an explicit cast for all changes in types",
   "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
   "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: nullability is part of a type, so the cast rule would forbid it, yet nullability is also stripped before binding under MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
@@ -1663,6 +1664,7 @@
   "ctas_keeps_declared_schema"
  ],
  "spec_silent": [
+  "read_projection_mask_reordered",
   "virtual_table_literal_type_differs_from_schema",
   "virtual_table_row_null_in_required_column",
   "virtual_table_row_nullable_in_required_column",

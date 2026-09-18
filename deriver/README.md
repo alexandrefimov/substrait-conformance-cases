@@ -98,8 +98,10 @@ The three still not told apart are not gaps, and each for its own reason:
   differ, `ctas_keeps_declared_schema`, is invalid on purpose and carries no expectation for exactly
   that reason.
 - **A projection mask selects, keeping schema order, rather than listing an order.** Here the
-  specification itself does not decide, so a case would have to pick a reading to assert. The
-  deriver declines such a mask instead, and the question is one of the open ones below.
+  specification itself does not decide, so a case asserting a reading would be asserting this
+  repository's choice. `read_projection_mask_reordered` measures what the participants do instead,
+  with no expectation, and the deriver declines such a mask; the question is one of the open ones
+  below.
 
 Two of those are the corpus reporting a property of the format rather than a hole in itself: a rule
 that no legal plan can exercise is unobservable, not unchecked. That distinction is the reason this
@@ -141,10 +143,12 @@ sentence that a call ending at the intermediate step outputs that type. Reading 
 the only way the phases have a type at all, so that reading is applied; it is a reading, not a
 quotation.
 
-A **projection mask listing its fields out of order**. `algebra.proto` says a mask "does not
-fundamentally alter the structure of data beyond the elimination of unnecessary elements", which
-reads as removal and not reordering, while the order of the `struct_items` reads as an order. No
-case in the corpus distinguishes them. Rather than pick one silently, such a mask stops the run.
+A **projection mask listing its fields out of order**. `field_references.md` says, among its
+discussion points, "Right now, you can only mask things out", and `algebra.proto` that a mask "does
+not fundamentally alter the structure of data beyond the elimination of unnecessary elements". That
+rules out a mask reordering columns, but not whether a mask listed out of schema order selects in
+schema order or is invalid. `read_projection_mask_reordered` puts the question to the participants
+without asserting an answer, and the deriver declines such a mask rather than pick one.
 
 **Right single and right mark joins**. The Join Types table describes each as its left counterpart
 "with the right and left inputs switched", while the direct output order in the signature table

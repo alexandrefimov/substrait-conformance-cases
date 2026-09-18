@@ -1,13 +1,13 @@
-Schema derivation matrix: 10 implementations x 101 cases.
+Schema derivation matrix: 10 implementations x 102 cases.
 Built by probe/matrix.py from the columns in results.
-Columns taken 2026-09-17, except: Gluten 2026-09-07.
+Columns taken 2026-09-18, except: Gluten 2026-09-07.
 Versions are in probe/versions.env. Full values and each participant's boundaries are in results/<NAME>.txt.
 BOUNDARIES: DuckDB is the only participant carrying no nullability - for it types, arity and
 order are compared. Acero and Spark carry it and are compared on it. Gluten takes no part in
 the comparison against the expectations at all.
 String length is lost by DataFusion and DuckDB: their type systems have no string with a length.
 · means the case was not run through that implementation.
-PARTIAL COLUMN: Gluten - 74 of 101, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
+PARTIAL COLUMN: Gluten - 74 of 102, four *_ALL cases are not expressible in its proto (see results/GLUTEN.txt)
 
 case                                          substrait-java                    Isthmus                           python                            validator                         substrait-go                      Spark                             DataFusion                        DuckDB                            Acero                             Gluten
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -86,6 +86,7 @@ precision_timestamp_p07                       {PrecisionTimestamp{R, precision=�
 precision_timestamp_p09                       {PrecisionTimestamp{R, precision=…- IllegalArgumentException: unsup…[c:precision_timestamp(9)]        [c:unresolved]                    [c:precision_timestamp<9>]        - UnsupportedOperationException: …[c:Timestamp(Nanosecond, None)]   [c:TIMESTAMP]                     - ArrowNotImplementedError: subst…- Exception: VeloxRuntimeError Er…
 precision_timestamp_p12                       {PrecisionTimestamp{R, precision=…- IllegalArgumentException: unsup…[c:precision_timestamp(12)]       [c:unresolved]                    - panic: Invalid precision invali…- UnsupportedOperationException: …- This feature is not implemented…- InvalidInputException: Invalid …- ArrowNotImplementedError: Unrec…- Exception: VeloxRuntimeError Er…
 read_projection_mask                          {I64{R}, Bool{R}]}                [c0:BIGINT, c1:VARCHAR, c2:BOOLEA…[k0:i64, k1:str, ?:bool]  !! name…[i64, bool]                       - invalid relation: root relation…[k0:bigint, k1:string]            [k0:Int64, k1:Boolean]            [k0:BIGINT, k1:BOOLEAN]           - ArrowNotImplementedError: subst…ROW<n0_0:BIGINT,n0_1:VARCHAR,n0_2…
+read_projection_mask_reordered                {Bool{R}, I64{R}]}                [c0:BIGINT, c1:VARCHAR, c2:BOOLEA…[k0:i64, k1:str, ?:bool]  !! name…[bool, i64]                       - invalid relation: root relation…[k0:bigint, k1:string]            [k0:Boolean, k1:Int64]            [k0:BOOLEAN, k1:BIGINT]           - ArrowNotImplementedError: subst…·
 setdata_intersection_multiset                 {I64{R}]}                         [v:BIGINT]                        [v:i64]                           i64                               [v:i64]                           - UnsupportedOperationException: …[v:Int64]                         - signal/exit 139                 - ArrowNotImplementedError: NotIm…- Unsupported SetRel op: 4
 setdata_intersection_multiset_all             {I64{R}]}                         [v:BIGINT]                        [v:i64]                           i64                               [v:i64]                           - UnsupportedOperationException: …[v:Int64]                         - signal/exit 139                 - ArrowInvalid: Unknown union type·
 setdata_intersection_primary                  {I64{R}]}                         - UnsupportedOperationException: …[v:i64]                           i64                               [v:i64]                           - UnsupportedOperationException: …[v:Int64]                         - NotImplementedException: Not im…- ArrowNotImplementedError: NotIm…- Unsupported SetRel op: 3

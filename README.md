@@ -8,7 +8,7 @@ implementation, and every answer beside it is retaken by one command.
 
 | | | |
 | --- | --- | --- |
-| [`derived-schema/`](derived-schema) | 101 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
+| [`derived-schema/`](derived-schema) | 102 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
 | [`tests/relations/`](tests/relations) | 71 hand-written cases pinning what the relation documentation says a relation outputs, schema and rows alike | substrait-java, substrait-go, DuckDB, DataFusion |
 
 [The matrix as a page](https://alexandrefimov.github.io/substrait-conformance-cases/) puts the
@@ -20,7 +20,7 @@ Twenty-two of the twenty-six reasons behind a divergence link an issue or a PR i
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 
-- [`results/DIFFS.md`](results/DIFFS.md) — your cases out of the 101, each with the expectation, the
+- [`results/DIFFS.md`](results/DIFFS.md) — your cases out of the 102, each with the expectation, the
   answer your build gave, and what came of it.
 - The relation corpus is [on the page](https://alexandrefimov.github.io/substrait-conformance-cases/#relations);
   its reasons are [`results/relations/differed.json`](results/relations/differed.json).
@@ -41,7 +41,7 @@ Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
     DuckDB       fp64
     Acero        dec(16,7)
 
-The columns were taken 2026-09-17 against the versions in `probe/versions.env`; the weekly `drift`
+The columns were taken 2026-09-18 against the versions in `probe/versions.env`; the weekly `drift`
 run reports what has moved since. When something moved, its artifact contains a proposed
 `results/DRIFT.txt` change for a normal reviewed PR. They answer the 96 cases that carry an
 expectation. The nine in the table are consumer paths rather than engines — the Java core, Isthmus
@@ -80,7 +80,7 @@ Four more rows carry a narrower version of the same caveat.
 [The declaration swap](METHOD.md#what-a-match-establishes) puts a false `output_type` into every
 plan that declares one, and five of the rows move with it: 16 of substrait-java's matches, 15 of
 substrait-python's, 13 each of substrait-go's and Isthmus's and 12 of the validator's are the
-declared type read back rather than a derivation. Only 29 of the 101 cases declare an output type, and the
+declared type read back rather than a derivation. Only 29 of the 102 cases declare an output type, and the
 swap reaches nothing else. Acero, DataFusion, DuckDB and Spark answer the swapped plan exactly as
 they answer the original.
 
@@ -92,7 +92,7 @@ column is also compared only as far as its own type system reaches — DuckDB's 
 nullability, nor do Gluten's — and one that stops short says so in the head of its
 `results/<NAME>.txt`.
 
-Which relations those 101 plans reach at all is counted in [METHOD.md](METHOD.md#what-the-corpus-covers), from the plans themselves.
+Which relations those 102 plans reach at all is counted in [METHOD.md](METHOD.md#what-the-corpus-covers), from the plans themselves.
 
 ## What would help
 
@@ -101,10 +101,12 @@ Which relations those 101 plans reach at all is counted in [METHOD.md](METHOD.md
   [sixteen rest on a step the specification never states](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8),
   thirteen of them joins. An answer on those sixteen is worth more than a fresh pass over the rest,
   and a wrong expectation is reported as a divergence against an implementation that was right.
-- **From the spec, one answer.** When a virtual table's rows disagree with the schema it declares —
+- **From the spec, two answers.** When a virtual table's rows disagree with the schema it declares —
   an i8 literal in an i32 column, a null in a required one — which wins? Four cases here go unscored
-  pending one; the fifth case without an expectation is a plan invalid on purpose, where a refusal
-  is the right answer.
+  pending one. And what does a projection mask listed out of schema order yield? The spec says a
+  mask can "only mask things out", yet every participant here that applies the mask puts the
+  columns in the listed order; one case waits on that. The sixth case without an expectation is a
+  plan invalid on purpose, where a refusal is the right answer.
 
 ## Running it
 
@@ -122,7 +124,7 @@ answers back. [`probe/README.md`](probe/README.md) has the prerequisites and wha
 
 | | |
 | --- | --- |
-| `derived-schema/` | the 101 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
+| `derived-schema/` | the 102 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
 | `derived-schema-virtual-tables/` | the same cases carrying their own rows |
 | `results/<NAME>.txt` | one column per implementation; `probe/matrix.py`, `probe/diffs.py` and `probe/heatmap.py` draw `results/MATRIX.txt`, `results/DIFFS.md` and the pictures out of them |
 | `expected.json` | the expectations, written by `probe/expected.py` |

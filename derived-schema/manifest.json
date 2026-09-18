@@ -1622,6 +1622,17 @@
   }
  },
  {
+  "case": "read_projection_mask_reordered",
+  "plan": "read_projection_mask_reordered.json",
+  "binary": "read_projection_mask_reordered.bin",
+  "generator": "GenProjection",
+  "note": "read_projection_mask_reordered  the mask lists fields [2, 0]; the spec does not say what that yields",
+  "expectation": {
+   "none": "a projection mask listing fields [2, 0]: field_references.md says 'Right now, you can only mask things out' among its discussion points, which rules out a mask reordering columns but does not say whether a mask listed out of schema order selects in schema order or is invalid - read_projection_mask lists [0, 2] to stay clear of this, and this case is the question itself",
+   "because": "the spec is silent"
+  }
+ },
+ {
   "case": "setdata_intersection_multiset",
   "plan": "setdata_intersection_multiset.json",
   "binary": "setdata_intersection_multiset.bin",

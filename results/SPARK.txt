@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-17T22:21, spark 3.5.4
+SPARK: column from run 2026-09-18T13:15, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -75,6 +75,7 @@ precision_timestamp_p06                        [c:timestamp_ntz]
 precision_timestamp_p07                        ERROR: UnsupportedOperationException: Unsupported precision: 7. Spark stores time values as microseconds, so the precision must
 precision_timestamp_p09                        ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so the precision must
 precision_timestamp_p12                        ERROR: UnsupportedOperationException: Unsupported precision: 12. Spark stores time values as microseconds, so the precision must
+read_projection_mask_reordered                 [k0:bigint, k1:string]
 read_projection_mask                           [k0:bigint, k1:string]
 setdata_intersection_multiset_all              ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET_ALL
 setdata_intersection_multiset                  ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET

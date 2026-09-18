@@ -19,19 +19,29 @@ import java.util.List;
  * took. Listing [0, 2] gives [i64, bool] under either reading, and what the case is for - whether the
  * projection is applied at all - is unchanged, because a consumer that ignores it answers with all
  * three columns either way.
+ *
+ * <p>read_projection_mask_reordered is the question itself: the same read with the mask listing
+ * [2, 0]. It carries no expectation, because the spec gives none, and what it measures is which
+ * reading each participant takes - schema order, the listed order, or a refusal.
  */
 public class GenProjection {
   public static void main(String[] args) throws Exception {
     Path out = Paths.get(args[0]);
     Files.createDirectories(out);
+    write(out, "read_projection_mask", List.of(0, 2),
+        "the mask selects fields [0, 2], expecting [i64, bool] / (10, true)");
+    write(out, "read_projection_mask_reordered", List.of(2, 0),
+        "the mask lists fields [2, 0]; the spec does not say what that yields");
+  }
 
+  static void write(Path out, String name, List<Integer> fields, String note) throws Exception {
+    Expression.MaskExpression.StructSelect.Builder select =
+        Expression.MaskExpression.StructSelect.newBuilder();
+    for (int f : fields) {
+      select.addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(f));
+    }
     Expression.MaskExpression mask =
-        Expression.MaskExpression.newBuilder()
-            .setSelect(
-                Expression.MaskExpression.StructSelect.newBuilder()
-                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(0))
-                    .addStructItems(Expression.MaskExpression.StructItem.newBuilder().setField(2)))
-            .build();
+        Expression.MaskExpression.newBuilder().setSelect(select).build();
 
     Rel read =
         Rel.newBuilder()
@@ -52,9 +62,8 @@ public class GenProjection {
                         RelRoot.newBuilder().setInput(read).addAllNames(List.of("k0", "k1"))))
             .build();
 
-    Files.writeString(
-        out.resolve("read_projection_mask.json"), JsonFormat.printer().print(plan) + "\n");
-    System.out.println("=== read_projection_mask  the mask selects fields [0, 2], expecting [i64, bool] / (10, true)");
+    Files.writeString(out.resolve(name + ".json"), JsonFormat.printer().print(plan) + "\n");
+    System.out.println("=== " + name + "  " + note);
     try {
       System.out.println(
           "    substrait-java: "

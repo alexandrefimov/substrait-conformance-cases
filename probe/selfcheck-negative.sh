@@ -949,6 +949,12 @@ p.write_text(json.dumps(d))"
 mutate "integer division in a return expression rounded the other way" "deriver's own rules" \
   replace deriver/extensions.py "v = int(v / r)" "v = v // r"
 
+# The virtual-table cases counted apart from every case pending a spec answer. The two were one
+# number until a second open question joined the first, and a page counting the virtual tables by
+# the total would have said "five have virtual-table row types" of four.
+mutate "the virtual-table cases counted by the total" "virtual-table cases pending a spec answer" \
+  replace METHOD.md "Four have virtual-table row types" "Five have virtual-table row types"
+
 # The saved coverage map against the script that writes it. A reading added to deriver/mutants.py
 # without regenerating COVERAGE.txt leaves the map reporting coverage it never tested, and the map
 # is the only place that says which rules the corpus checks with nothing.

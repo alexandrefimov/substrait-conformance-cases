@@ -38,10 +38,14 @@ every case without exception is narrower: no expectation here reads a plan, and 
 implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
 is why the first thing the README asks for is somebody else's reading of it.
 
-Five cases carry no expectation, for two different reasons that `expected.json` keeps apart. Four have
-virtual-table row types or nullability different from the declared schema. They remain unscored
-pending clarification of exact type equality versus compatibility between a row and its schema;
-the `spec_silent` category records this unresolved question. The fifth, under `spec_says_invalid`, is a CTAS whose input
+Six cases carry no expectation, for two different reasons that `expected.json` keeps apart. Five of
+them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
+different from the declared schema, and remain unscored pending clarification of exact type
+equality versus compatibility between a row and its schema. The fifth is a projection mask listing
+its fields as [2, 0]: `field_references.md` says that "right now, you can only mask things out", and
+not what a mask listed out of schema order yields. Of the participants that apply the mask at all,
+all four put the columns in the listed order and none keeps the schema's; four more ignore the mask
+and Acero does not implement it. The sixth case, under `spec_says_invalid`, is a CTAS whose input
 schema does not match its `table_schema`. The spec requires them to match, so this plan is invalid
 and what is worth measuring is whether the violation is reported.
 
@@ -152,7 +156,7 @@ a held answer as one the consumer derived is the mistake recorded below. What se
 `Decimal128(15,6)`, `DOUBLE` and `decimal(17,8)`. An answer that differs from the declaration cannot
 be the declaration repeated.
 
-29 of the 101 cases carry an `output_type` and 28 of those have an expectation. The remaining 68
+29 of the 102 cases carry an `output_type` and 28 of those have an expectation. The remaining 68
 scored plans declare none, so the swap reaches nothing in them. These counts measure output
 sensitivity; they do not count independently derived schemas.
 
@@ -293,7 +297,7 @@ cases reach at all — and `probe/coverage.py` counts that from the plans themse
 <!-- coverage: written by probe/coverage.py, checked by probe/selfcheck.sh -->
 | relation | cases | | relation | cases |
 | --- | ---: | --- | --- | ---: |
-| `read` | 101 | | `cross` | 1 |
+| `read` | 102 | | `cross` | 1 |
 | `filter` | 1 | | `write` | 1 |
 | `fetch` | 1 | | `hash_join` | 4 |
 | `aggregate` | 9 | | `merge_join` | 4 |
@@ -302,7 +306,7 @@ cases reach at all — and `probe/coverage.py` counts that from the plans themse
 | `project` | 10 | | `expand` | 2 |
 | `set` | 16 | | `top_n` | 1 |
 
-16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 101 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
+16 of the 24 relations `algebra.proto` defines at spec 0.102.0 appear in these 102 plans; `filter`, `fetch` and `sort` only under an emit mapping, which needs something to sit on. No case reaches `lateral_join`, `extension_single`, `extension_multi`, `extension_leaf`, `reference`, `ddl`, `update`, `exchange`.
 <!-- /coverage -->
 
 Apache 2.0, the plans included, so a case can go straight into another project's tests.

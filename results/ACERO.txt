@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-17T22:20, pyarrow 25.0.1
+ACERO: column from run 2026-09-18T13:14, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -75,6 +75,7 @@ precision_timestamp_p06                        ERROR: ArrowNotImplementedError: 
 precision_timestamp_p07                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (7)
 precision_timestamp_p09                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 precision_timestamp_p12                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (12)
+read_projection_mask_reordered                 ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 read_projection_mask                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 setdata_intersection_multiset_all              ERROR: ArrowInvalid: Unknown union type
 setdata_intersection_multiset                  ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
