@@ -274,12 +274,14 @@ expected["mirror_argument_nullability"] = {
 # declared schema is what comes out. What no sentence settles is whether a plan whose rows disagree
 # with it is well-formed at all, and who has to say so. The spec writes a field-specific match rule
 # whenever it wants one - WriteRel's table_schema, DynamicParameter's literal - and wrote none
-# between VirtualTable's rows and base_schema. That absence is the claim; substrait-io/substrait#1211
-# asks for it to be closed.
+# between VirtualTable's rows and base_schema. That absence is the claim. The rule was asked for in
+# substrait-io/substrait#1211 and the question withdrawn there: the producers that write rows under
+# a base_schema, Isthmus and substrait-java's Spark module, write each row literal with its column's
+# exact type, nullability included, so only a hand-written plan disagrees.
 #
 # Two of the four are closer to answered than the other two, and the reasons say so rather than
-# sharing one sentence. Whether the first should move to SPEC_SAYS_INVALID is a live question, not
-# something to settle quietly here while #1211 is open on all four together.
+# sharing one sentence. Whether virtual_table_row_null_in_required_column belongs in
+# SPEC_SAYS_INVALID instead is this repository's issue 10.
 SPEC_SILENT = {
     # Each reason stands on its own. They used to say "same", which reads off the entry above it -
     # and expected.json is written sorted by key, so the literal-type one ended up under the CTAS

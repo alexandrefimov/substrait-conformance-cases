@@ -213,8 +213,6 @@ CLAIMS = [
     ("README.md", "reasons linking a report",
      r"%s of the [\w-]+ reasons behind a divergence link an issue" % NUMBER),
     ("README.md", "reasons", r"[\w-]+ of the %s reasons behind a divergence link an issue" % NUMBER),
-    ("README.md", "virtual-table cases pending a spec answer",
-     r"%s cases here go unscored" % NUMBER),
     ("README.md", "scored", r"They answer the %s cases that carry an expectation" % NUMBER),
     ("README.md", "differing cells", r"a reason written by hand for all %s of them" % NUMBER),
     ("README.md", "cells that are not a divergence",
