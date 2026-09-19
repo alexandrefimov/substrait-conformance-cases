@@ -38,14 +38,15 @@ every case without exception is narrower: no expectation here reads a plan, and 
 implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
 is why the first thing the README asks for is somebody else's reading of it.
 
-Ten cases carry no expectation, for two different reasons that `expected.json` keeps apart. Eight
-of them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
-different from the declared schema, and remain unscored pending clarification of exact type
-equality versus compatibility between a row and its schema. One is a projection mask listing its
-fields as [2, 0]: `field_references.md` says that "right now, you can only mask things out", and not
-what a mask listed out of schema order yields. Of the participants that apply the mask at all, all
-four put the columns in the listed order and none keeps the schema's; four more ignore the mask and
-Acero does not implement it.
+Ten cases carry no expectation, for two different reasons that `expected.json` keeps apart. Eight of
+them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
+different from the declared schema: no sentence settles whether such a row is valid, and the
+producers that write rows under a declared schema, Isthmus and substrait-java's Spark module, never
+write one, so they stay unscored. One is a projection mask listing its fields as [2, 0]:
+`field_references.md` says that "right now, you can only mask things out", and not what a mask
+listed out of schema order yields. Of the participants that apply the mask at all, all four put the
+columns in the listed order and none keeps the schema's; four more ignore the mask and Acero does
+not implement it.
 
 One is a lateral join without a `rel_anchor`, whose right input references nothing. The spec answers
 it twice: `logical_relations.md` requires the anchor only when the right input references the

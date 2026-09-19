@@ -101,12 +101,10 @@ Which relations those 108 plans reach at all is counted in [METHOD.md](METHOD.md
   [sixteen rest on a step the specification never states](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8),
   thirteen of them joins. An answer on those sixteen is worth more than a fresh pass over the rest,
   and a wrong expectation is reported as a divergence against an implementation that was right.
-- **From the spec, two answers.** When a virtual table's rows disagree with the schema it declares —
-  an i8 literal in an i32 column, a null in a required one — which wins? Four cases here go unscored
-  pending one. And what does a projection mask listed out of schema order yield? The spec says a
-  mask can "only mask things out", yet every participant here that applies the mask puts the
-  columns in the listed order; one case waits on that. The sixth case without an expectation is a
-  plan invalid on purpose, where a refusal is the right answer.
+- **From the spec, one answer.** What does a projection mask listed out of schema order yield? The
+  spec says a mask can "only mask things out", yet DuckDB's substrait extension writes a mask of
+  `[2, 0]` for `SELECT c2, c0`, and every participant here that applies the mask puts the columns in
+  the listed order; one case waits on that.
 
 ## Running it
 

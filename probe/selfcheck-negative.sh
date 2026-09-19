@@ -957,11 +957,11 @@ mutate "the virtual-table cases counted by the total" "virtual-table cases pendi
 
 mutate "the cases pending a spec answer counted as the virtual tables alone" "(cases pending a spec answer)" \
   python3 -c "
-import io
+import io, re
 p = 'METHOD.md'
 s = io.open(p, encoding='utf-8').read()
 io.open(p, 'w', encoding='utf-8').write(
-    s.replace('Eight\nof them wait on the spec', 'Four\nof them wait on the spec', 1))"
+    re.sub(r'\bEight(\s+of\s+them\s+wait\s+on\s+the\s+spec)', r'Four\1', s, count=1))"
 
 # The saved coverage map against the script that writes it. A reading added to deriver/mutants.py
 # without regenerating COVERAGE.txt leaves the map reporting coverage it never tested, and the map
