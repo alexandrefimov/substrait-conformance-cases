@@ -1,0 +1,31 @@
+union_all_mixed	SELECT c0 FROM t_rn UNION ALL SELECT c0 FROM t_nr
+union_distinct_mixed	SELECT c0 FROM t_rn UNION SELECT c0 FROM t_nr
+intersect_mixed	SELECT c0 FROM t_rn INTERSECT SELECT c0 FROM t_nr
+except_mixed	SELECT c0 FROM t_rn EXCEPT SELECT c0 FROM t_nr
+exists_or	SELECT c0 FROM t_rn WHERE EXISTS (SELECT 1 FROM t_nr WHERE t_nr.c1 = t_rn.c0) OR c1 > 0
+in_or	SELECT c0 FROM t_rn WHERE c0 IN (SELECT c1 FROM t_nr) OR c1 > 0
+in_subquery	SELECT c0 FROM t_rn WHERE c0 IN (SELECT c1 FROM t_nr)
+not_in	SELECT c0 FROM t_rn WHERE c0 NOT IN (SELECT c0 FROM t_nr)
+not_exists	SELECT c0 FROM t_rn WHERE NOT EXISTS (SELECT 1 FROM t_nr WHERE t_nr.c1 = t_rn.c0)
+scalar_subquery	SELECT c0, (SELECT max(c1) FROM t_nr WHERE t_nr.c0 = t_rn.c0) AS m FROM t_rn
+left_join	SELECT t_rn.c0, t_nr.c1 FROM t_rn LEFT JOIN t_nr ON t_rn.c0 = t_nr.c1
+full_join	SELECT t_rn.c0, t_nr.c1 FROM t_rn FULL JOIN t_nr ON t_rn.c0 = t_nr.c1
+join_reordered	SELECT t_nr.c1, t_rn.c1 FROM t_rn JOIN t_nr ON t_rn.c0 = t_nr.c1
+rollup	SELECT c0, c1, count(*) AS n FROM t_rn GROUP BY ROLLUP(c0, c1)
+grouping_sets	SELECT c0, c1, sum(c0) AS s FROM t_rn GROUP BY GROUPING SETS ((c0), (c1))
+grouping_fn	SELECT c0, GROUPING(c0) AS g FROM t_rn GROUP BY ROLLUP(c0)
+mask_reorder	SELECT c2, c0 FROM t_mix
+mask_filter	SELECT c1 FROM t_mix WHERE c2
+limit_offset	SELECT c0 FROM t_rn ORDER BY c0 LIMIT 5 OFFSET 2
+limit_only	SELECT c0 FROM t_rn LIMIT 5
+count_distinct	SELECT count(DISTINCT c0) AS d, sum(c1) AS s FROM t_rn
+values_literal	SELECT * FROM (VALUES (1, 2), (3, 4)) AS v(a, b)
+values_expr	SELECT a, b FROM (VALUES (1 + 1, 2)) AS v(a, b)
+ts_ns_literal	SELECT c0 FROM t_rn WHERE TIMESTAMP '2020-01-01 00:00:00.123456789' > TIMESTAMP '2019-01-01 00:00:00'
+ts_ns_column	SELECT ts FROM t_ts WHERE ts > TIMESTAMP '2020-01-01 00:00:00.123456789'
+aggs	SELECT sum(c0) AS s, avg(c0) AS a, count(c1) AS n, min(c1) AS m FROM t_rn
+arith	SELECT c0 + 1 AS x, c0 / 2 AS y FROM t_rn
+filter_project	SELECT c1, c0 FROM t_rn WHERE c0 > 1
+window	SELECT c0, sum(c1) OVER (ORDER BY c0 ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS w FROM t_rn
+dec_add	SELECT a + b AS x FROM t_dec
+dec_div	SELECT a / b AS x FROM t_dec

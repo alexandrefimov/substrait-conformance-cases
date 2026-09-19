@@ -379,7 +379,10 @@ against the type after a `get_substrait_json` / `from_substrait_json` round trip
 `datafusion_producer_probe.rs` does it for DataFusion and writes the plans it produced to
 `$SUBSTRAIT_PLANS_OUT`. `SchemaOfBin.java` reads those written plans back through substrait-java, so
 one implementation's declaration can be handed to another. `go-producer/` prints
-what substrait-go computes as a function's return type from the extension declaration. It requires
+what substrait-go computes as a function's return type from the extension declaration. `producer-shapes/` is the
+wider version of the same question: it turns one list of SQL into plans from DuckDB, DataFusion,
+Isthmus and Spark, prints what each plan contains, and hands a chosen plan to every consumer, which
+is how a divergence in the corpus is checked against what producers actually write. It requires
 Go 1.24 or newer, separately from the consumer probe's Go 1.23 minimum:
 
     (cd probe/go-producer && GOTOOLCHAIN=local go run .)
