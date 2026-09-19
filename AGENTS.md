@@ -69,7 +69,8 @@ installed; [deriver/README.md](deriver/README.md) is a second, independent readi
    outside this repository writes a plan of the same shape from SQL, when the implementation crashes
    or returns wrong rows, or when the spec contradicts itself or does not decide a plan a producer
    writes. Its first paragraph says which, and a producer's case is reproduced with that producer's
-   plan, not the corpus case. Anything else stays `open`, with a note on what was checked.
+   plan, not the corpus case; `probe/producer-shapes/` asks four producers for one and hands it to
+   the consumers. Anything else stays `open`, with a note on what was checked.
 5. **The declaration experiments,** if the case declares an `output_type` or calls a function.
    `probe/lie_matrix.sh` swaps the declared output types and shows who repeats them;
    `probe/binding_matrix.sh` renames the declared functions and shows who resolves the call anyway.
