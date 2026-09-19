@@ -65,7 +65,11 @@ installed; [deriver/README.md](deriver/README.md) is a second, independent readi
    `probe/check_differed.py` can test, and a triage per participant: `reported`, `spec-question`,
    `ours` or `open`. `open` means nobody has taken the difference anywhere yet, so before writing it
    search that implementation's tracker and `FINDINGS.md`: an `open` entry for a difference that was
-   already reported is wrong in a way no check catches.
+   already reported is wrong in a way no check catches. An issue goes upstream only when a producer
+   outside this repository writes a plan of the same shape from SQL, when the implementation crashes
+   or returns wrong rows, or when the spec contradicts itself or does not decide a plan a producer
+   writes. Its first paragraph says which, and a producer's case is reproduced with that producer's
+   plan, not the corpus case. Anything else stays `open`, with a note on what was checked.
 5. **The declaration experiments,** if the case declares an `output_type` or calls a function.
    `probe/lie_matrix.sh` swaps the declared output types and shows who repeats them;
    `probe/binding_matrix.sh` renames the declared functions and shows who resolves the call anyway.
