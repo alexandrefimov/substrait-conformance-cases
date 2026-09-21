@@ -223,20 +223,17 @@
   },
   "python-join-concatenates-the-inputs": {
    "kind": "divergence",
-   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single, and for a mark join it appends the mark column without dropping the right side. The physical joins answer the same way: HashJoinRel, MergeJoinRel and NestedLoopJoinRel all reach one deriver, so left widens nothing and a mark join keeps both sides there too, while their inner cases match for the reason inner always matches here.",
+   "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single. The physical joins answer the same way: HashJoinRel, MergeJoinRel and NestedLoopJoinRel all reach one deriver, so left widens nothing there too, while their inner cases match for the reason inner always matches here. The mark joins match since 0.33.0, which returns one side and the mark column.",
    "check": {
-    "inputs_concatenated": {
-     "mark_suffix": true
-    }
+    "inputs_concatenated": {}
    },
    "triage": {
     "PYTHON": {
      "outcome": "reported",
      "at": [
-      "https://github.com/substrait-io/substrait-python/issues/263",
       "https://github.com/substrait-io/substrait-python/issues/267"
      ],
-     "note": "263 is the four mark joins, reproduced by these cases; 267 is the ten left, right, outer and single ones, reproduced by probe/python_nullability.py. Both reports are written about JoinRel, and the physjoin_* cells show the same two answers arriving through HashJoinRel, MergeJoinRel and NestedLoopJoinRel, which neither report mentions"
+     "note": "267 is the ten left, right, outer and single joins, reproduced by probe/python_nullability.py. 263 was the four mark joins; its fix (substrait-python PR 265) shipped in 0.33.0, and those cells match at that pin. 267 is written about JoinRel, and the physjoin_* cells show the same answer arriving through HashJoinRel, MergeJoinRel and NestedLoopJoinRel, which it does not mention"
     }
    }
   },
@@ -558,25 +555,18 @@
    "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required",
    "expand_switching_nullability": "python-expand-switching-stays-required",
    "join_left": "python-join-concatenates-the-inputs",
-   "join_left_mark": "python-join-concatenates-the-inputs",
    "join_left_single": "python-join-concatenates-the-inputs",
    "join_outer": "python-join-concatenates-the-inputs",
    "join_right": "python-join-concatenates-the-inputs",
-   "join_right_mark": "python-join-concatenates-the-inputs",
    "join_right_single": "python-join-concatenates-the-inputs",
    "joineq_left": "python-join-concatenates-the-inputs",
-   "joineq_left_mark": "python-join-concatenates-the-inputs",
    "joineq_left_single": "python-join-concatenates-the-inputs",
    "joineq_outer": "python-join-concatenates-the-inputs",
    "joineq_right": "python-join-concatenates-the-inputs",
-   "joineq_right_mark": "python-join-concatenates-the-inputs",
    "joineq_right_single": "python-join-concatenates-the-inputs",
    "physjoin_hash_left": "python-join-concatenates-the-inputs",
-   "physjoin_hash_left_mark": "python-join-concatenates-the-inputs",
    "physjoin_merge_left": "python-join-concatenates-the-inputs",
-   "physjoin_merge_left_mark": "python-join-concatenates-the-inputs",
    "physjoin_nested_left": "python-join-concatenates-the-inputs",
-   "physjoin_nested_left_mark": "python-join-concatenates-the-inputs",
    "read_projection_mask": "read-projection-ignored"
   },
   "SPARK": {

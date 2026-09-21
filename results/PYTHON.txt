@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-09-18T18:39, substrait 0.31.0
+PYTHON: column from run 2026-09-21T19:59, substrait 0.33.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64]
 aggregate_grouping_set_index                   [c:str, a:i64, g:i32]
@@ -27,25 +27,25 @@ expand_consistent_fields                       [?:i64, ?:i64?, ?:i32]  !! names 
 expand_switching_nullability                   [?:i64, ?:i64, ?:i32]  !! names 0, types 3
 join_inner                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_left_anti                                 [c0:i64, c1:i64?]
-join_left_mark                                 [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+join_left_mark                                 [c0:i64, c1:i64?, c2:bool?]
 join_left_semi                                 [c0:i64, c1:i64?]
 join_left_single                               [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_left                                      [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_outer                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_right_anti                                [c0:i64?, c1:i64]
-join_right_mark                                [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+join_right_mark                                [c0:i64?, c1:i64, c2:bool?]
 join_right_semi                                [c0:i64?, c1:i64]
 join_right_single                              [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_right                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_inner                                   [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_left_anti                               [c0:i64, c1:i64?]
-joineq_left_mark                               [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+joineq_left_mark                               [c0:i64, c1:i64?, c2:bool?]
 joineq_left_semi                               [c0:i64, c1:i64?]
 joineq_left_single                             [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_left                                    [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_outer                                   [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_right_anti                              [c0:i64?, c1:i64]
-joineq_right_mark                              [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+joineq_right_mark                              [c0:i64?, c1:i64, c2:bool?]
 joineq_right_semi                              [c0:i64?, c1:i64]
 joineq_right_single                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
 joineq_right                                   [c0:i64, c1:i64?, c2:i64?, c3:i64]
@@ -58,15 +58,15 @@ narrowing_is_null                              [r:bool]
 phase_final                                    [r:i64?]
 phase_intermediate                             [r:[i64, i64]]  !! names 3, types 1
 physjoin_hash_inner                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_hash_left_mark                        [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+physjoin_hash_left_mark                        [c0:i64, c1:i64?, c2:bool?]
 physjoin_hash_left                             [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_hash_right_semi                       [c0:i64?, c1:i64]
 physjoin_merge_inner                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_merge_left_mark                       [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+physjoin_merge_left_mark                       [c0:i64, c1:i64?, c2:bool?]
 physjoin_merge_left                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_merge_right_semi                      [c0:i64?, c1:i64]
 physjoin_nested_inner                          [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_nested_left_mark                      [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+physjoin_nested_left_mark                      [c0:i64, c1:i64?, c2:bool?]
 physjoin_nested_left                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
 physjoin_nested_right_semi                     [c0:i64?, c1:i64]
 precision_timestamp_p00                        [c:precision_timestamp(0)]

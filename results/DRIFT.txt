@@ -22,3 +22,28 @@ corpus 0bc86c5, inputs 8e7025e079831084
                                                  was ERROR: panic: runtime error: invalid memory address or nil pointer dereference
                                                  now [a:i64, b:i64?, c:i64?, d:i64]
 GO: 1 of 106 answers moved (1 gained), 0 gone, 0 new
+
+##### 2026-09-21  PYTHON  substrait 0.33.0
+corpus 5266439, inputs 6d3a6e957ebb9f8b
+  join_left_mark                                 answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64, c1:i64?, c2:bool?]
+  join_right_mark                                answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64?, c1:i64, c2:bool?]
+  joineq_left_mark                               answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64, c1:i64?, c2:bool?]
+  joineq_right_mark                              answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64?, c1:i64, c2:bool?]
+  physjoin_hash_left_mark                        answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64, c1:i64?, c2:bool?]
+  physjoin_merge_left_mark                       answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64, c1:i64?, c2:bool?]
+  physjoin_nested_left_mark                      answer
+                                                 was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
+                                                 now [c0:i64, c1:i64?, c2:bool?]
+PYTHON: 7 of 108 answers moved (7 answer), 0 gone, 0 new
