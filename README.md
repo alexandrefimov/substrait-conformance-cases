@@ -41,7 +41,7 @@ Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
     DuckDB       fp64
     Acero        dec(16,7)
 
-The columns were taken 2026-09-18 against the versions in `probe/versions.env`; the weekly `drift`
+The columns were taken 2026-09-18, 2026-09-21 against the versions in `probe/versions.env`; the weekly `drift`
 run reports what has moved since. When something moved, its artifact contains a proposed
 `results/DRIFT.txt` change for a normal reviewed PR. They answer the 98 cases that carry an
 expectation. The nine in the table are consumer paths rather than engines — the Java core, Isthmus
@@ -62,7 +62,7 @@ of its type system hatched.
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
 | substrait-java | 92 | 3 | 3 |
-| substrait-python | 71 | 25 | 2 |
+| substrait-python | 78 | 18 | 2 |
 | substrait-go | 62 | 4 | 32 |
 | substrait-validator | 48 | 30 | 20 |
 | Isthmus/Calcite | 53 | 6 | 39 |
@@ -86,7 +86,7 @@ they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 121 of them, 17 marked as something other
+`differed.json` carries a reason written by hand for all 114 of them, 17 marked as something other
 than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
 column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
 nullability, nor do Gluten's — and one that stops short says so in the head of its
