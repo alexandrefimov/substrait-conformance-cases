@@ -951,9 +951,9 @@ mutate "integer division in a return expression rounded the other way" "deriver'
 
 # The virtual-table cases counted apart from every case pending a spec answer. The two were one
 # number until a second open question joined the first, and a page counting the virtual tables by
-# the total would have said "five have virtual-table row types" of four.
+# the total would have said "seven have virtual-table row types" of three.
 mutate "the virtual-table cases counted by the total" "virtual-table cases pending a spec answer" \
-  replace METHOD.md "Four have virtual-table row types" "Five have virtual-table row types"
+  replace METHOD.md "Three have virtual-table row types" "Seven have virtual-table row types"
 
 mutate "the cases pending a spec answer counted as the virtual tables alone" "(cases pending a spec answer)" \
   python3 -c "
@@ -961,7 +961,7 @@ import io, re
 p = 'METHOD.md'
 s = io.open(p, encoding='utf-8').read()
 io.open(p, 'w', encoding='utf-8').write(
-    re.sub(r'\bEight(\s+of\s+them\s+wait\s+on\s+the\s+spec)', r'Four\1', s, count=1))"
+    re.sub(r'\bSeven(\s+of\s+them\s+wait\s+on\s+the\s+spec)', r'Three\1', s, count=1))"
 
 # The saved coverage map against the script that writes it. A reading added to deriver/mutants.py
 # without regenerating COVERAGE.txt leaves the map reporting coverage it never tested, and the map

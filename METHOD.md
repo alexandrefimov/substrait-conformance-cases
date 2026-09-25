@@ -38,8 +38,8 @@ every case without exception is narrower: no expectation here reads a plan, and 
 implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
 is why the first thing the README asks for is somebody else's reading of it.
 
-Ten cases carry no expectation, for two different reasons that `expected.json` keeps apart. Eight of
-them wait on the spec, under `spec_silent`. Four have virtual-table row types or nullability
+Ten cases carry no expectation, for two different reasons that `expected.json` keeps apart. Seven of
+them wait on the spec, under `spec_silent`. Three have virtual-table row types or nullability
 different from the declared schema: no sentence settles whether such a row is valid, and the
 producers that write rows under a declared schema, Isthmus and substrait-java's Spark module, never
 write one, so they stay unscored. One is a projection mask listing its fields as [2, 0]:
@@ -61,10 +61,15 @@ producer cannot write the plan without choosing. Only substrait-java answers eit
 and Isthmus disagree. The core derives the table's columns and refuses the one-name root; Isthmus
 converts the two-name plan into a single `ROWCOUNT` column.
 
-The other two, under `spec_says_invalid`, are plans the spec rules out, so what is worth measuring
+The other three, under `spec_says_invalid`, are plans the spec rules out, so what is worth measuring
 is whether the violation is reported. One is a CTAS whose input schema does not match its
-`table_schema`, which the spec requires it to match. The other is a root that names two columns
-over a `DdlRel`, a relation `logical_relations.md` gives no output at all.
+`table_schema`, which the spec requires it to match. One is a root that names two columns over a
+`DdlRel`, a relation `logical_relations.md` gives no output at all. The third is a virtual table with
+a null in a column its schema declares required. It needs no rule matching rows to the schema:
+`type_system.md` makes null "a special value of a nullable type", so the table outputs a value its
+own schema rules out. substrait-java's core, Isthmus and the Spark module refuse it over the null.
+The validator refuses every virtual table written with `expressions`, this one included, for a reason
+that has nothing to do with the null; the other participants that read a virtual table accept it.
 
 ## What the corpus is made of
 
