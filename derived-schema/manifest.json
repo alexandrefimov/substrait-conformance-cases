@@ -2280,8 +2280,8 @@
   "generator": "GenDisputed",
   "note": "virtual_table_row_null_in_required_column  (base_schema declares i32, the value is null)",
   "expectation": {
-   "none": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
-   "because": "the spec is silent"
+   "none": "a null value in a column the schema declares required: type_system.md says nullability 'describes whether values of this type can be null' and that 'null is considered to be a special value of a nullable type', and Direct Schema 'defines the schema of the output of the read', so the table outputs a value its own schema rules out. No match rule between rows and base_schema is needed for that, and what is measured is whether anyone reports it",
+   "because": "the spec says the plan is invalid"
   }
  },
  {

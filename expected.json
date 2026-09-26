@@ -7,7 +7,7 @@
   "update_root_names_a_count": "an UpdateRel whose root names one column: logical_relations.md gives its output as 'number of modified records' and no type, algebra.proto says nothing about it, and WriteRel's OUTPUT_MODE_MODIFIED_RECORDS returns the records themselves - neither the width nor the type is decided",
   "update_root_names_the_table": "the same UpdateRel with the table's two names on the root: the reading under which it outputs the modified records rather than their number, which the spec states for WriteRel's output mode and not for UpdateRel",
   "virtual_table_literal_type_differs_from_schema": "an i8 literal in a column the schema declares i32: no rule names virtual table rows, but the general one reaches it - type_system.md allows no coercion and requires an explicit cast for all changes in types",
-  "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: no rule covers a virtual table's rows against its base_schema, but this one is barely a question - type_system.md defines REQUIRED as a type whose values cannot be null, and the row supplies one",
+  "virtual_table_row_null_in_required_column": "a null value in a column the schema declares required: type_system.md says nullability 'describes whether values of this type can be null' and that 'null is considered to be a special value of a nullable type', and Direct Schema 'defines the schema of the output of the read', so the table outputs a value its own schema rules out. No match rule between rows and base_schema is needed for that, and what is measured is whether anyone reports it",
   "virtual_table_row_nullable_in_required_column": "a nullable literal in a column the schema declares required: nullability is part of a type, so the cast rule would forbid it, yet nullability is also stripped before binding under MIRROR and DECLARED_OUTPUT - the spec is in tension with itself and settles nothing here",
   "virtual_table_row_required_in_nullable_column": "a required literal in a column the schema declares nullable: the same tension the other way round, and the direction engines widen silently"
  },
@@ -1691,7 +1691,8 @@
  },
  "spec_says_invalid": [
   "ctas_keeps_declared_schema",
-  "ddl_view_root_names_the_view"
+  "ddl_view_root_names_the_view",
+  "virtual_table_row_null_in_required_column"
  ],
  "spec_silent": [
   "lateral_join_uncorrelated_without_anchor",
@@ -1699,7 +1700,6 @@
   "update_root_names_a_count",
   "update_root_names_the_table",
   "virtual_table_literal_type_differs_from_schema",
-  "virtual_table_row_null_in_required_column",
   "virtual_table_row_nullable_in_required_column",
   "virtual_table_row_required_in_nullable_column"
  ]

@@ -268,7 +268,7 @@ expected["mirror_argument_nullability"] = {
 # the second the spec does answer, with "this plan is invalid", and what is measured there is not the
 # type but whether anyone reports the violation.
 #
-# What "silent" means for the four below is narrower than it used to say here, and the narrowing
+# What "silent" means for the three virtual-table cases below is narrower than it used to say here, and the narrowing
 # matters. It is not that the spec fails to say which schema a consumer reports: Direct Schema
 # "defines the schema of the output of the read" (logical_relations.md, Read Properties), so the
 # declared schema is what comes out. What no sentence settles is whether a plan whose rows disagree
@@ -279,17 +279,13 @@ expected["mirror_argument_nullability"] = {
 # a base_schema, Isthmus and substrait-java's Spark module, write each row literal with its column's
 # exact type, nullability included, so only a hand-written plan disagrees.
 #
-# Two of the four are closer to answered than the other two, and the reasons say so rather than
-# sharing one sentence. Whether virtual_table_row_null_in_required_column belongs in
-# SPEC_SAYS_INVALID instead is this repository's issue 10.
+# One of the three, the i8 literal, is closer to answered than the other two, and the reasons say so
+# rather than sharing one sentence. A fourth, virtual_table_row_null_in_required_column, used to stand
+# here and is under SPEC_SAYS_INVALID: it needs no match rule, only the definition of a type.
 SPEC_SILENT = {
     # Each reason stands on its own. They used to say "same", which reads off the entry above it -
     # and expected.json is written sorted by key, so the literal-type one ended up under the CTAS
     # entry and its "same" said the plan was invalid, which is not the question there at all.
-    "virtual_table_row_null_in_required_column":
-        "a null value in a column the schema declares required: no rule covers a virtual table's "
-        "rows against its base_schema, but this one is barely a question - type_system.md defines "
-        "REQUIRED as a type whose values cannot be null, and the row supplies one",
     "virtual_table_row_nullable_in_required_column":
         "a nullable literal in a column the schema declares required: nullability is part of a type, "
         "so the cast rule would forbid it, yet nullability is also stripped before binding under "
@@ -332,6 +328,12 @@ SPEC_SAYS_INVALID = {
         "0', 'N/A (no output)'): the names have nothing to name, so the plan is invalid and what is "
         "measured is whether anyone reports it. ddl_view_root_names_nothing is the same view with "
         "no root name",
+    "virtual_table_row_null_in_required_column":
+        "a null value in a column the schema declares required: type_system.md says nullability "
+        "'describes whether values of this type can be null' and that 'null is considered to be a "
+        "special value of a nullable type', and Direct Schema 'defines the schema of the output of "
+        "the read', so the table outputs a value its own schema rules out. No match rule between "
+        "rows and base_schema is needed for that, and what is measured is whether anyone reports it",
 }
 DISPUTED = dict(SPEC_SILENT)
 DISPUTED.update(SPEC_SAYS_INVALID)
