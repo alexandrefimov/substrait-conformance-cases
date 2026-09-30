@@ -225,9 +225,10 @@ nullability and the grouping-set index. Three added cases closed four gaps and e
 new differing cells. The index came back as i32 from Java and Python, i64 from Isthmus and UInt8
 from DataFusion.
 
-Three readings remain undistinguished. Two are unobservable in valid plans: set inputs must
-agree on field types, and write input must match `table_schema`. The third is the unresolved
-projection-mask order; the deriver declines it rather than asserting a choice.
+Four readings remain undistinguished. Three are unobservable in valid plans: set inputs must
+agree on field types, write input must match `table_schema`, and call arguments must match the
+implementation named by their signature. The fourth is the unresolved projection-mask order;
+the deriver declines it rather than asserting a choice.
 
 The battery covers only its authored alternatives. A rule without an alternative is absent,
 not proved covered. Per-case results identify readings that would lose their sole check if a

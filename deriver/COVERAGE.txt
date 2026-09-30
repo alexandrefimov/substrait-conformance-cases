@@ -7,7 +7,7 @@ exists. Regenerate with:
 
   SUBSTRAIT_DIR=<substrait checkout> python3 -m deriver.mutants --verbose > deriver/COVERAGE.txt
 
-39 alternative readings: 36 the corpus tells apart, 3 it does not
+42 alternative readings: 38 the corpus tells apart, 4 it does not
 
 told apart:
   read: the projection mask is ignored                     1 case(s): read_projection_mask
@@ -46,6 +46,8 @@ told apart:
   functions: MIRROR does not propagate nullability         1 case(s): mirror_argument_nullability
   functions: DECLARED_OUTPUT mirrors its arguments         9 case(s): aggregate_grouping_then_measure, aggregate_sum_i64, narrowing_count
   functions: the phase does not select the intermediate type 1 case(s): phase_intermediate
+  functions: an empty signature names no implementation    1 case(s): window_output_order
+  functions: every mode binds nullability as DISCRETE does 4 case(s): mirror_argument_nullability, narrowing_count, narrowing_is_not_null
 
 not told apart - the rule is stated here and checked by nothing:
   read: the mask is read in the order its items are listed
@@ -54,3 +56,5 @@ not told apart - the rule is stated here and checked by nothing:
       the other reading: "the field order of the inputs" with no primary
   write: the output is the declared table schema
       the other reading: WriteRel.table_schema as the output rather than the input
+  functions: a signature binds any impl of its function
+      the other reading: the signature choosing a function and the arguments choosing among its implementations
