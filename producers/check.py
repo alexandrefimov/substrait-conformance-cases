@@ -3,16 +3,20 @@
     python3 producers/check.py              # compare results/producers/*.txt with a fresh check
     python3 producers/check.py --write      # rewrite them
     python3 producers/check.py --print P    # one producer's column on stdout
+    SUBSTRAIT_DIR=<checkout> python3 producers/check.py --derive   # rewrite producers/DERIVED.txt
 
-Needs python3 and nothing else: it reads the committed .json plans and the deriver's saved rules, so
-probe/selfcheck.sh can run it without any producer installed.
+The deriver reads the extension files out of a Substrait checkout, so what it derives for these
+plans is saved in producers/DERIVED.txt, as deriver/DERIVED.txt is for the corpus, and --derive is
+the one mode that needs the checkout. The others need python3 alone and read the saved derivations,
+so probe/selfcheck.sh runs them without any producer or checkout; a plan whose calls the saved file
+does not cover, or covers under another name, fails the check rather than being compared stale.
 
 Two things are checked, each against a sentence of the specification at v0.102.0:
 
 P1  Every function call's declared `output_type` against the return type deriver/calls.py derives
     for it from the extension that declares the function. The deriver reads no declared type; the
-    comparison is made here. A call the deriver finds no impl for is `unbound`; one it has no rule
-    for is `declined` and not scored.
+    comparison is made here. A call with no `output_type` is `missing`, whatever it binds to. A call
+    the deriver finds no impl for is `unbound`; one it has no rule for is `declined` and not scored.
 P2  "Field names in depth-first order. The number of names must match the number of named fields
     in the output type." (algebra.proto, RelRoot.names). The output type is the deriver's.
 
@@ -28,9 +32,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 
-from deriver import calls, derive, type_model as types  # noqa: E402
+from deriver import type_model as types  # noqa: E402
 
 PLANS = os.path.join(HERE, "plans")
+DERIVED = os.path.join(HERE, "DERIVED.txt")
 RESULTS = os.path.join(ROOT, "results", "producers")
 QUERIES = [l.split("\t")[0] for l in open(os.path.join(HERE, "queries.tsv"))
            if l.strip() and not l.startswith("#")]
@@ -59,44 +64,121 @@ def named_fields(fields):
     return n
 
 
-def check_plan(doc):
-    """(summary, [detail lines]) for one plan."""
+def plans():
+    """(producer, query, path of the .json or .err) for every committed answer, in column order."""
+    out = []
+    for p in sorted(x for x in os.listdir(PLANS) if os.path.isdir(os.path.join(PLANS, x))):
+        for q in QUERIES:
+            for ext in (".json", ".err"):
+                f = os.path.join(PLANS, p, q + ext)
+                if os.path.exists(f):
+                    out.append((p, q, f))
+    return out
+
+
+def derive_all():
+    """What the deriver makes of every committed plan, as the lines of producers/DERIVED.txt."""
+    from deriver import calls, derive
+    lines = ["# What deriver/ derives for each committed producer plan: the root schema, then one line",
+             "# per function call. Written by `SUBSTRAIT_DIR=<checkout> python3 producers/check.py --derive`;",
+             "# read by producers/check.py. Tab-separated: plan, root or call path, then the answer.",
+             "#"]
+    for pin in open(os.path.join(ROOT, "deriver", "spec.pins")):
+        if not pin.startswith("#") and pin.strip():
+            lines.append("#  " + pin.strip())
+    for p, q, f in plans():
+        if not f.endswith(".json"):
+            continue
+        doc, key = json.load(open(f)), "%s/%s" % (p, q)
+        try:
+            fields = derive.schema_of(doc)
+            n = named_fields(fields)
+            lines.append("\t".join([key, "root", "-" if n is None else str(n), types.render_schema(fields)]))
+        except types.Unsupported as why:
+            lines.append("\t".join([key, "root", "declined", str(why)]))
+        for r in calls.derive_calls(doc):
+            lines.append("\t".join([key, r["path"], r["name"], r["status"],
+                                    r["type"] if r["status"] == "derived" else r["reason"]]))
+    return "\n".join(lines) + "\n"
+
+
+def saved():
+    """producers/DERIVED.txt read back: {plan: {"root": [...], "calls": [(path, name, status, answer)]}}."""
+    out = {}
+    for line in open(DERIVED):
+        if line.startswith("#") or not line.strip():
+            continue
+        f = line.rstrip("\n").split("\t")
+        entry = out.setdefault(f[0], {"root": None, "calls": []})
+        if f[1] == "root":
+            entry["root"] = f[2:]
+        else:
+            entry["calls"].append(tuple(f[1:5]))
+    return out
+
+
+def covers(doc, entry):
+    """Why the saved derivations do not describe this plan, or None when they do."""
+    if entry is None:
+        return "no saved derivation"
+    for path, name, _, _ in entry["calls"]:
+        try:
+            call = at(doc, path)
+        except (KeyError, IndexError, TypeError):
+            return "a saved call path the plan does not have: %s" % path
+        ref = call.get("functionReference", 0)
+        declared = [e["extensionFunction"]["name"] for e in doc.get("extensions", [])
+                    if "extensionFunction" in e and e["extensionFunction"].get("functionAnchor", 0) == ref]
+        if declared != [name]:
+            return "the call at %s is %s in the plan, %s in the saved derivation" % (path, declared, name)
+    return None
+
+
+def check_plan(doc, entry):
+    """(summary, [detail lines]) for one plan and its saved derivation."""
     details = []
-    records = calls.derive_calls(doc)
-    differ = unbound = declined = 0
-    for r in records:
-        call = at(doc, r["path"])
-        declared = call.get("outputType")
+    differ = unbound = declined = missing = 0
+    for path, name, status, answer in entry["calls"]:
+        declared = at(doc, path).get("outputType")
+        if not declared:
+            # A call without an output_type fails on its own, whatever it binds to: algebra.proto
+            # makes the field the call's statement of its type, and there is nothing to compare.
+            missing += 1
+            details.append("  %-24s no output_type" % name)
         try:
             shown = types.render_field(types.from_plan(declared)) if declared else "none"
         except types.Unsupported as why:
             shown = "unreadable (%s)" % why
-        if r["status"] == "unbound":
+        if status == "unbound":
             unbound += 1
-            details.append("  %-24s unbound: %s" % (r["name"], r["reason"]))
-        elif r["status"] == "declined":
+            details.append("  %-24s unbound: %s" % (name, answer))
+        elif status == "declined":
             declined += 1
-        elif shown != r["type"]:
+        elif declared and shown != answer:
             differ += 1
-            details.append("  %-24s declared %-14s derived %s" % (r["name"], shown, r["type"]))
-    summary = "calls %d, differ %d, unbound %d, declined %d" % (len(records), differ, unbound, declined)
+            details.append("  %-24s declared %-14s derived %s" % (name, shown, answer))
+    summary = "calls %d, differ %d, missing %d, unbound %d, declined %d" % (
+        len(entry["calls"]), differ, missing, unbound, declined)
 
     roots = [x["root"] for x in doc.get("relations", []) if "root" in x]
-    try:
-        n = named_fields(derive.schema_of(doc))
-        names = len(roots[0].get("names", [])) if roots else 0
-        if n is None:
-            summary += "; names not checked (list or map)"
-        elif n == names:
-            summary += "; names ok"
-        else:
-            summary += "; names %d for %d named fields" % (names, n)
-    except types.Unsupported as why:
-        summary += "; schema declined (%s)" % why
+    names = len(roots[0].get("names", [])) if roots else 0
+    count = entry["root"][0]
+    if count == "declined":
+        summary += "; schema declined (%s)" % entry["root"][1]
+    elif count == "-":
+        summary += "; names not checked (list or map)"
+    elif int(count) == names:
+        summary += "; names ok"
+    else:
+        summary += "; names %d for %s named fields" % (names, count)
     return summary, details
 
 
-def column(producer):
+class Stale(Exception):
+    """producers/DERIVED.txt no longer describes the committed plans."""
+
+
+def column(producer, derivations):
     d = os.path.join(PLANS, producer)
     header = open(os.path.join(d, "PRODUCER.txt")).read().strip()
     # Fields the release the corpus targets no longer has, written by producers/sync_plans.py: an
@@ -112,7 +194,12 @@ def column(producer):
         if os.path.exists(err):
             out.append("%-22s REFUSED: %s" % (q, open(err).read().strip()))
         elif os.path.exists(plan):
-            summary, details = check_plan(json.load(open(plan)))
+            doc = json.load(open(plan))
+            entry = derivations.get("%s/%s" % (producer, q))
+            why = covers(doc, entry)
+            if why:
+                raise Stale("%s/%s: %s" % (producer, q, why))
+            summary, details = check_plan(doc, entry)
             if q in removed:
                 summary += "; removed fields: %s" % ", ".join(removed[q])
             out.append("%-22s %s" % (q, summary))
@@ -123,23 +210,37 @@ def column(producer):
 
 
 def main(argv):
-    producers = sorted(p for p in os.listdir(PLANS) if os.path.isdir(os.path.join(PLANS, p)))
-    if argv[1:2] == ["--print"]:
-        sys.stdout.write(column(argv[2]))
+    if "--derive" in argv:
+        open(DERIVED, "w").write(derive_all())
+        print("wrote %s" % os.path.relpath(DERIVED, ROOT))
         return 0
-    stale = []
-    for p in producers:
-        text, path = column(p), os.path.join(RESULTS, p.upper() + ".txt")
-        if "--write" in argv:
-            os.makedirs(RESULTS, exist_ok=True)
-            open(path, "w").write(text)
-        elif not os.path.exists(path) or open(path).read() != text:
-            stale.append(os.path.relpath(path, ROOT))
+    producers = sorted(p for p in os.listdir(PLANS) if os.path.isdir(os.path.join(PLANS, p)))
+    derivations = saved()
+    plans_now = {"%s/%s" % (p, q) for p, q, f in plans() if f.endswith(".json")}
+    extra = sorted(set(derivations) - plans_now)
+    try:
+        if extra:
+            raise Stale("saved derivations for plans that are not committed: %s" % ", ".join(extra[:3]))
+        if argv[1:2] == ["--print"]:
+            sys.stdout.write(column(argv[2], derivations))
+            return 0
+        stale = []
+        for p in producers:
+            text, path = column(p, derivations), os.path.join(RESULTS, p.upper() + ".txt")
+            if "--write" in argv:
+                os.makedirs(RESULTS, exist_ok=True)
+                open(path, "w").write(text)
+            elif not os.path.exists(path) or open(path).read() != text:
+                stale.append(os.path.relpath(path, ROOT))
+    except Stale as why:
+        print("FAILED producer derivations cover their plans: %s; rerun "
+              "SUBSTRAIT_DIR=<checkout> python3 producers/check.py --derive" % why)
+        return 1
     if stale:
         print("FAILED producer columns match their plans: %s differs from a fresh check; "
               "rerun python3 producers/check.py --write and read the diff" % ", ".join(stale))
         return 1
-    print("ok      producer columns match their plans (%d producers)" % len(producers))
+    print("ok      producer columns match their plans and derivations (%d producers)" % len(producers))
     return 0
 
 

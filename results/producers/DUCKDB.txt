@@ -1,0 +1,78 @@
+DUCKDB: plans from duckdb 1.5.5 4ea63dd, checked against the specification at v0.102.0
+
+union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; schema declined (a field reference that is neither rooted in the input nor outer)
+intersect_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+except_mixed           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+exists_or              calls 3, differ 1, missing 0, unbound 1, declined 1; names ok
+  is_not_distinct_from:any_any declared bool?          derived bool
+  constant_or_null         unbound: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+in_or                  calls 3, differ 1, missing 0, unbound 1, declined 1; names ok
+  equal:any_any            declared bool?          derived bool
+  constant_or_null         unbound: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+in_subquery            calls 2, differ 2, missing 0, unbound 0, declined 0; names ok
+  lte:any_any              declared bool?          derived bool
+  equal:any_any            declared bool?          derived bool
+not_in                 calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+not_exists             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  is_not_distinct_from:any_any declared bool?          derived bool
+scalar_subquery        calls 3, differ 2, missing 0, unbound 0, declined 0; names ok
+  is_not_null:any          declared bool?          derived bool
+  is_not_distinct_from:any_any declared bool?          derived bool
+left_join              calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  equal:any_any            declared bool?          derived bool
+full_join              calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  equal:any_any            declared bool?          derived bool
+join_reordered         calls 2, differ 2, missing 0, unbound 0, declined 0; names ok
+  lte:any_any              declared bool?          derived bool
+  equal:any_any            declared bool?          derived bool
+rollup                 calls 1, differ 0, missing 0, unbound 0, declined 1; schema declined (phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them)
+grouping_sets          calls 1, differ 1, missing 0, unbound 0, declined 0; names 3 for 4 named fields
+  sum:i64                  declared dec(38,0)?     derived i64?
+grouping_fn            calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'grouping' points at urn anchor 0, which the plan does not declare)
+  grouping                 unbound: function 'grouping' points at urn anchor 0, which the plan does not declare
+mask_reorder           calls 0, differ 0, missing 0, unbound 0, declined 0; schema declined (a projection mask listing fields out of order: [2, 0])
+mask_filter            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_offset           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_only             calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+count_distinct         calls 2, differ 2, missing 0, unbound 0, declined 0; names ok
+  count:any                declared i64?           derived i64
+  sum:i64                  declared dec(38,0)?     derived i64?
+values_literal         calls 0, differ 0, missing 0, unbound 0, declined 0; schema declined (a read with no base schema)
+values_expr            calls 0, differ 0, missing 0, unbound 0, declined 0; schema declined (a read with no base schema)
+ts_ns_literal          calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+ts_ns_column           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+aggs                   calls 4, differ 2, missing 0, unbound 1, declined 0; schema declined (the intermediate input of avg:i64: declared struct, called with i64)
+  sum:i64                  declared dec(38,0)?     derived i64?
+  avg:i64                  unbound: the intermediate input of avg:i64: declared struct, called with i64
+  count:any                declared i64?           derived i64
+arith                  calls 2, differ 1, missing 0, unbound 0, declined 0; names ok
+  add:i64_i64              declared i64?           derived i64
+filter_project         calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  gt:any_any               declared bool?          derived bool
+window                 calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  sum:i64                  declared dec(38,0)?     derived i64?
+dec_add                calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  add:dec_dec              declared dec(11,2)?     derived dec(12,2)?
+dec_div                calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_avg_dec             calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (the intermediate input of avg:dec: declared struct, called with decimal)
+  avg:dec                  unbound: the intermediate input of avg:dec: declared struct, called with decimal
+fn_sum_dec             calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (the intermediate input of sum:dec: declared decimal=38, called with 10)
+  sum:dec                  unbound: the intermediate input of sum:dec: declared decimal=38, called with 10
+fn_minmax_i64          calls 2, differ 0, missing 0, unbound 0, declined 2; schema declined (a projection mask listing fields out of order: [1, 0])
+fn_count_star          calls 2, differ 1, missing 0, unbound 0, declined 1; schema declined (phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them)
+  count:any                declared i64?           derived i64
+fn_dec_mul             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  multiply:dec_dec         declared dec(15,3)?     derived dec(26,3)?
+fn_cmp_bool            calls 4, differ 1, missing 0, unbound 2, declined 1; schema declined (function 'constant_or_null' points at urn anchor 0, which the plan does not declare)
+  constant_or_null         unbound: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+  is_not_null:any          declared bool?          derived bool
+  constant_or_null         unbound: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+fn_str                 calls 3, differ 2, missing 0, unbound 1, declined 0; schema declined (function '||' points at urn anchor 0, which the plan does not declare)
+  upper:str                declared str?           derived str
+  ||                       unbound: function '||' points at urn anchor 0, which the plan does not declare
+  char_length:str          declared i64?           derived i64
+fn_cast                calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_cast_str_int        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_try_cast            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_case                calls 2, differ 0, missing 0, unbound 0, declined 2; schema declined (a projection mask listing fields out of order: [1, 0])

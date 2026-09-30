@@ -1006,6 +1006,15 @@ mutate "the derived column taken against other extension files" "deriver/spec.pi
   replace deriver/DERIVED.txt "50eb32dca7f4eb45ab9c36d1dad4425a3f32da0a" \
                               "0000000000000000000000000000000000000000"
 
+# The producer columns against the plans they were checked from, and the saved derivations against
+# the plans they describe. A declared type changed in a committed plan has to move its column; a
+# derivation saved for a plan that is not committed has to be noticed rather than skipped.
+mutate "a producer plan declaring another type than its column shows" "producer columns match their plans" \
+  replace producers/plans/spark35/aggs.json '"fp64"' '"i64"'
+
+mutate "a saved derivation for a plan that is not there" "producer derivations cover their plans" \
+  replace producers/DERIVED.txt "isthmus/fn_avg_dec	root" "isthmus/fn_avg_decimal	root"
+
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.
 mutate "an absolute path" "absolute path in" \
