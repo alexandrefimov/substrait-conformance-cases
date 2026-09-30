@@ -1,0 +1,172 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "name": "count",
+        "extensionUrnReference": 4294967295
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  4,
+                  5,
+                  6
+                ]
+              }
+            },
+            "input": {
+              "aggregate": {
+                "common": {
+                  "emit": {
+                    "outputMapping": [
+                      0,
+                      1,
+                      3,
+                      2
+                    ]
+                  }
+                },
+                "input": {
+                  "read": {
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "projection": {
+                      "select": {
+                        "structItems": [
+                          {},
+                          {
+                            "field": 1
+                          }
+                        ]
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "t_rn"
+                      ]
+                    }
+                  }
+                },
+                "groupings": [
+                  {
+                    "expressionReferences": [
+                      0,
+                      1
+                    ]
+                  },
+                  {
+                    "expressionReferences": [
+                      0
+                    ]
+                  },
+                  {}
+                ],
+                "measures": [
+                  {
+                    "measure": {
+                      "invocation": "AGGREGATION_INVOCATION_ALL",
+                      "arguments": [
+                        {
+                          "value": {
+                            "literal": {
+                              "i64": "1"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "groupingExpressions": [
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {}
+                      },
+                      "rootReference": {}
+                    }
+                  },
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 1
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 1
+                    }
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 3
+                    }
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c0",
+          "c1",
+          "n"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

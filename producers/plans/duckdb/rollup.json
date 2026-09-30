@@ -1,0 +1,123 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "count:",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "aggregate": {
+            "input": {
+              "read": {
+                "baseSchema": {
+                  "names": [
+                    "c0",
+                    "c1"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "projection": {
+                  "select": {
+                    "structItems": [
+                      {},
+                      {
+                        "field": 1
+                      }
+                    ]
+                  },
+                  "maintainSingularStruct": true
+                },
+                "namedTable": {
+                  "names": [
+                    "t_rn"
+                  ]
+                }
+              }
+            },
+            "groupings": [
+              {},
+              {
+                "expressionReferences": [
+                  0
+                ]
+              },
+              {
+                "expressionReferences": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "measures": [
+              {
+                "measure": {
+                  "functionReference": 1,
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  }
+                }
+              }
+            ],
+            "groupingExpressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 1
+                    }
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c0",
+          "c1",
+          "n"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_aggregate_generic"
+    }
+  ]
+}

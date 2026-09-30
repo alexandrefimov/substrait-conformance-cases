@@ -684,6 +684,13 @@ python3 deriver/check.py --quiet \
   && ok "the saved derived schemas agree with expected.json" \
   || fail "derived schemas differ from the expectations"
 
+echo
+echo "### the producer columns are what their committed plans check to"
+# producers/plans holds what each producer wrote at its pin; results/producers/<P>.txt is what
+# producers/check.py makes of those plans with the deriver's rules. Retaking the plans needs the
+# producers and is producers/run.sh; checking them needs python3 alone.
+python3 producers/check.py || FAILED=1
+
 echo "### the pages state the numbers the files hold"
 # The table above is checked against check_expected.py; the sentences around it were not checked at
 # all, and that is where the numbers went stale.

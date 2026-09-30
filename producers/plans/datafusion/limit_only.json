@@ -1,0 +1,66 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "fetch": {
+            "input": {
+              "read": {
+                "baseSchema": {
+                  "names": [
+                    "c0",
+                    "c1"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "projection": {
+                  "select": {
+                    "structItems": [
+                      {}
+                    ]
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "t_rn"
+                  ]
+                }
+              }
+            },
+            "offsetExpr": {
+              "literal": {
+                "i64": "0"
+              }
+            },
+            "countExpr": {
+              "literal": {
+                "i64": "5"
+              }
+            }
+          }
+        },
+        "names": [
+          "c0"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

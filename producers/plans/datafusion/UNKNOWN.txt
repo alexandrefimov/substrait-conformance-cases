@@ -1,0 +1,8 @@
+union_distinct_mixed: Grouping.1
+intersect_mixed: Grouping.1
+except_mixed: Grouping.1
+scalar_subquery: Grouping.1
+rollup: Grouping.1
+grouping_sets: Grouping.1
+grouping_fn: Grouping.1
+count_distinct: Grouping.1

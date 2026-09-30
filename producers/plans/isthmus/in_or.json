@@ -1,0 +1,224 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "or:bool",
+        "extensionUrnReference": 1
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 2,
+        "name": "gt:any_any",
+        "extensionUrnReference": 2
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2
+                ]
+              }
+            },
+            "input": {
+              "filter": {
+                "common": {
+                  "direct": {}
+                },
+                "input": {
+                  "read": {
+                    "common": {
+                      "direct": {}
+                    },
+                    "baseSchema": {
+                      "names": [
+                        "C0",
+                        "C1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "T_RN"
+                      ]
+                    }
+                  }
+                },
+                "condition": {
+                  "scalarFunction": {
+                    "functionReference": 1,
+                    "outputType": {
+                      "bool": {
+                        "nullability": "NULLABILITY_NULLABLE"
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "value": {
+                          "subquery": {
+                            "inPredicate": {
+                              "needles": [
+                                {
+                                  "selection": {
+                                    "directReference": {
+                                      "structField": {}
+                                    },
+                                    "rootReference": {}
+                                  }
+                                }
+                              ],
+                              "haystack": {
+                                "project": {
+                                  "common": {
+                                    "emit": {
+                                      "outputMapping": [
+                                        2
+                                      ]
+                                    }
+                                  },
+                                  "input": {
+                                    "read": {
+                                      "common": {
+                                        "direct": {}
+                                      },
+                                      "baseSchema": {
+                                        "names": [
+                                          "C0",
+                                          "C1"
+                                        ],
+                                        "struct": {
+                                          "types": [
+                                            {
+                                              "i64": {
+                                                "nullability": "NULLABILITY_NULLABLE"
+                                              }
+                                            },
+                                            {
+                                              "i64": {
+                                                "nullability": "NULLABILITY_REQUIRED"
+                                              }
+                                            }
+                                          ],
+                                          "nullability": "NULLABILITY_REQUIRED"
+                                        }
+                                      },
+                                      "namedTable": {
+                                        "names": [
+                                          "T_NR"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "expressions": [
+                                    {
+                                      "selection": {
+                                        "directReference": {
+                                          "structField": {
+                                            "field": 1
+                                          }
+                                        },
+                                        "rootReference": {}
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "value": {
+                          "scalarFunction": {
+                            "functionReference": 2,
+                            "outputType": {
+                              "bool": {
+                                "nullability": "NULLABILITY_NULLABLE"
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "value": {
+                                  "selection": {
+                                    "directReference": {
+                                      "structField": {
+                                        "field": 1
+                                      }
+                                    },
+                                    "rootReference": {}
+                                  }
+                                }
+                              },
+                              {
+                                "value": {
+                                  "literal": {
+                                    "i64": "0"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "C0"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 2,
+      "urn": "extension:io.substrait:functions_comparison"
+    },
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_boolean"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

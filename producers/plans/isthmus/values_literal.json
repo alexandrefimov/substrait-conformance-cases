@@ -1,0 +1,79 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "common": {
+              "direct": {}
+            },
+            "baseSchema": {
+              "names": [
+                "A",
+                "B"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "virtualTable": {
+              "expressions": [
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 1
+                      }
+                    },
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    }
+                  ]
+                },
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 3
+                      }
+                    },
+                    {
+                      "literal": {
+                        "i32": 4
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "names": [
+          "A",
+          "B"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

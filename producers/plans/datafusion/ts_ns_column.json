@@ -1,0 +1,90 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "name": "gt",
+        "extensionUrnReference": 4294967295
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "filter": {
+            "input": {
+              "read": {
+                "baseSchema": {
+                  "names": [
+                    "ts"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "precisionTimestamp": {
+                          "precision": 9,
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "projection": {
+                  "select": {
+                    "structItems": [
+                      {}
+                    ]
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "t_ts"
+                  ]
+                }
+              }
+            },
+            "condition": {
+              "scalarFunction": {
+                "outputType": {
+                  "bool": {
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "arguments": [
+                  {
+                    "value": {
+                      "selection": {
+                        "directReference": {
+                          "structField": {}
+                        },
+                        "rootReference": {}
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "literal": {
+                        "precisionTimestamp": {
+                          "precision": 9,
+                          "value": "1577836800123456789"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "names": [
+          "ts"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

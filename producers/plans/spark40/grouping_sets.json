@@ -1,0 +1,345 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "sum:i64",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  4,
+                  5,
+                  6
+                ]
+              },
+              "hint": {
+                "outputNames": [
+                  "c0",
+                  "c1",
+                  "s"
+                ]
+              }
+            },
+            "input": {
+              "aggregate": {
+                "common": {
+                  "direct": {}
+                },
+                "input": {
+                  "expand": {
+                    "common": {
+                      "direct": {},
+                      "hint": {
+                        "outputNames": [
+                          "c0",
+                          "c0",
+                          "c1",
+                          "spark_grouping_id"
+                        ]
+                      }
+                    },
+                    "input": {
+                      "project": {
+                        "common": {
+                          "emit": {
+                            "outputMapping": [
+                              2,
+                              3,
+                              4
+                            ]
+                          },
+                          "hint": {
+                            "outputNames": [
+                              "c0",
+                              "c0",
+                              "c1"
+                            ]
+                          }
+                        },
+                        "input": {
+                          "read": {
+                            "common": {
+                              "direct": {}
+                            },
+                            "baseSchema": {
+                              "names": [
+                                "c0",
+                                "c1"
+                              ],
+                              "struct": {
+                                "types": [
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_NULLABLE"
+                                    }
+                                  },
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_NULLABLE"
+                                    }
+                                  }
+                                ],
+                                "nullability": "NULLABILITY_REQUIRED"
+                              }
+                            },
+                            "namedTable": {
+                              "names": [
+                                "spark_catalog",
+                                "default",
+                                "t_rn"
+                              ]
+                            }
+                          }
+                        },
+                        "expressions": [
+                          {
+                            "selection": {
+                              "directReference": {
+                                "structField": {}
+                              },
+                              "rootReference": {}
+                            }
+                          },
+                          {
+                            "selection": {
+                              "directReference": {
+                                "structField": {}
+                              },
+                              "rootReference": {}
+                            }
+                          },
+                          {
+                            "selection": {
+                              "directReference": {
+                                "structField": {
+                                  "field": 1
+                                }
+                              },
+                              "rootReference": {}
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "fields": [
+                      {
+                        "switchingField": {
+                          "duplicates": [
+                            {
+                              "selection": {
+                                "directReference": {
+                                  "structField": {}
+                                },
+                                "rootReference": {}
+                              }
+                            },
+                            {
+                              "selection": {
+                                "directReference": {
+                                  "structField": {}
+                                },
+                                "rootReference": {}
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "switchingField": {
+                          "duplicates": [
+                            {
+                              "selection": {
+                                "directReference": {
+                                  "structField": {}
+                                },
+                                "rootReference": {}
+                              }
+                            },
+                            {
+                              "literal": {
+                                "null": {
+                                  "i64": {
+                                    "nullability": "NULLABILITY_NULLABLE"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "switchingField": {
+                          "duplicates": [
+                            {
+                              "literal": {
+                                "null": {
+                                  "i64": {
+                                    "nullability": "NULLABILITY_NULLABLE"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "selection": {
+                                "directReference": {
+                                  "structField": {
+                                    "field": 2
+                                  }
+                                },
+                                "rootReference": {}
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "switchingField": {
+                          "duplicates": [
+                            {
+                              "literal": {
+                                "i64": "1"
+                              }
+                            },
+                            {
+                              "literal": {
+                                "i64": "2"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "groupings": [
+                  {
+                    "expressionReferences": [
+                      0,
+                      1,
+                      2
+                    ]
+                  }
+                ],
+                "measures": [
+                  {
+                    "measure": {
+                      "functionReference": 1,
+                      "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
+                      "invocation": "AGGREGATION_INVOCATION_ALL",
+                      "arguments": [
+                        {
+                          "value": {
+                            "selection": {
+                              "directReference": {
+                                "structField": {}
+                              },
+                              "rootReference": {}
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "groupingExpressions": [
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 1
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  },
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 2
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  },
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 3
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 1
+                    }
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 3
+                    }
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c0",
+          "c1",
+          "s"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "substrait-spark"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_arithmetic"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "baseSchema": {
+              "names": [
+                "c0",
+                "c1",
+                "c2"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "string": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "bool": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "filter": {
+              "selection": {
+                "directReference": {
+                  "structField": {
+                    "field": 2
+                  }
+                },
+                "rootReference": {}
+              }
+            },
+            "projection": {
+              "select": {
+                "structItems": [
+                  {
+                    "field": 1
+                  }
+                ]
+              },
+              "maintainSingularStruct": true
+            },
+            "namedTable": {
+              "names": [
+                "t_mix"
+              ]
+            }
+          }
+        },
+        "names": [
+          "c1"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  }
+}

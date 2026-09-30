@@ -1,0 +1,38 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "virtualTable": {
+              "expressions": [
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    },
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "names": [
+          "a",
+          "b"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  }
+}

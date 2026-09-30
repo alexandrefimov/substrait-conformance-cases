@@ -1,0 +1,43 @@
+# id	SQL	what the query is for; a finding it reached is named. Tables: producers/tables.py
+union_all_mixed	SELECT c0 FROM t_rn UNION ALL SELECT c0 FROM t_nr	set inputs differing only in nullability: substrait-go 329, validator 579
+union_distinct_mixed	SELECT c0 FROM t_rn UNION SELECT c0 FROM t_nr	UNION DISTINCT operator choice: duckdb-substrait-extension 277
+intersect_mixed	SELECT c0 FROM t_rn INTERSECT SELECT c0 FROM t_nr	INTERSECT operator choice and input nullability: substrait-go 329, duckdb-substrait-extension 277
+except_mixed	SELECT c0 FROM t_rn EXCEPT SELECT c0 FROM t_nr	EXCEPT operator choice
+exists_or	SELECT c0 FROM t_rn WHERE EXISTS (SELECT 1 FROM t_nr WHERE t_nr.c1 = t_rn.c0) OR c1 > 0	EXISTS under OR, written as a mark join: substrait-go 331
+in_or	SELECT c0 FROM t_rn WHERE c0 IN (SELECT c1 FROM t_nr) OR c1 > 0	IN subquery under OR
+in_subquery	SELECT c0 FROM t_rn WHERE c0 IN (SELECT c1 FROM t_nr)	IN subquery
+not_in	SELECT c0 FROM t_rn WHERE c0 NOT IN (SELECT c0 FROM t_nr)	NOT IN subquery, written as a mark join: substrait-go 331
+not_exists	SELECT c0 FROM t_rn WHERE NOT EXISTS (SELECT 1 FROM t_nr WHERE t_nr.c1 = t_rn.c0)	NOT EXISTS subquery
+scalar_subquery	SELECT c0, (SELECT max(c1) FROM t_nr WHERE t_nr.c0 = t_rn.c0) AS m FROM t_rn	correlated scalar subquery
+left_join	SELECT t_rn.c0, t_nr.c1 FROM t_rn LEFT JOIN t_nr ON t_rn.c0 = t_nr.c1	LEFT JOIN padding a required column: substrait-python 267
+full_join	SELECT t_rn.c0, t_nr.c1 FROM t_rn FULL JOIN t_nr ON t_rn.c0 = t_nr.c1	FULL JOIN padding both sides
+join_reordered	SELECT t_nr.c1, t_rn.c1 FROM t_rn JOIN t_nr ON t_rn.c0 = t_nr.c1	join output order after the optimizer
+rollup	SELECT c0, c1, count(*) AS n FROM t_rn GROUP BY ROLLUP(c0, c1)	ROLLUP as grouping sets over a required column: substrait-python 268
+grouping_sets	SELECT c0, c1, sum(c0) AS s FROM t_rn GROUP BY GROUPING SETS ((c0), (c1))	explicit grouping sets
+grouping_fn	SELECT c0, GROUPING(c0) AS g FROM t_rn GROUP BY ROLLUP(c0)	GROUPING()
+mask_reorder	SELECT c2, c0 FROM t_mix	projection mask listing fields out of order: substrait 1225, substrait-go 333, substrait-python 264
+mask_filter	SELECT c1 FROM t_mix WHERE c2	projection mask under a filter
+limit_offset	SELECT c0 FROM t_rn ORDER BY c0 LIMIT 5 OFFSET 2	LIMIT with OFFSET as count_expr/offset_expr: substrait-go 334
+limit_only	SELECT c0 FROM t_rn LIMIT 5	LIMIT without OFFSET: substrait-go 334
+count_distinct	SELECT count(DISTINCT c0) AS d, sum(c1) AS s FROM t_rn	count(DISTINCT) beside a plain aggregate
+values_literal	SELECT * FROM (VALUES (1, 2), (3, 4)) AS v(a, b)	VALUES as a virtual table: validator 584
+values_expr	SELECT a, b FROM (VALUES (1 + 1, 2)) AS v(a, b)	VALUES with an expression row
+ts_ns_literal	SELECT c0 FROM t_rn WHERE TIMESTAMP '2020-01-01 00:00:00.123456789' > TIMESTAMP '2019-01-01 00:00:00'	nanosecond timestamp literals
+ts_ns_column	SELECT ts FROM t_ts WHERE ts > TIMESTAMP '2020-01-01 00:00:00.123456789'	nanosecond timestamp literal against a column: duckdb-substrait-extension 268
+aggs	SELECT sum(c0) AS s, avg(c0) AS a, count(c1) AS n, min(c1) AS m FROM t_rn	declared aggregate output types over i64: substrait 1210, DataFusion 25049
+arith	SELECT c0 + 1 AS x, c0 / 2 AS y FROM t_rn	i64 addition and division
+filter_project	SELECT c1, c0 FROM t_rn WHERE c0 > 1	filter under a reordering projection
+window	SELECT c0, sum(c1) OVER (ORDER BY c0 ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS w FROM t_rn	sum over a ROWS frame
+dec_add	SELECT a + b AS x FROM t_dec	decimal addition result type
+dec_div	SELECT a / b AS x FROM t_dec	decimal division result type
+fn_avg_dec	SELECT avg(a) AS x FROM t_dec	avg over a decimal: substrait 1252
+fn_sum_dec	SELECT sum(a) AS x FROM t_dec	sum over a decimal
+fn_minmax_i64	SELECT min(c1) AS lo, max(c0) AS hi FROM t_rn	min and max over nullable and required i64
+fn_count_star	SELECT count(*) AS n, count(c1) AS m FROM t_rn	count(*) and count over a nullable column
+fn_dec_mul	SELECT a * b AS x FROM t_dec	decimal multiplication result type
+fn_cmp_bool	SELECT c0 = c1 AS e, c0 < c1 AND c1 IS NOT NULL AS l FROM t_rn	comparison and boolean nullability
+fn_str	SELECT upper(c1) AS u, c1 || 'z' AS c, length(c1) AS n FROM t_mix	string functions and concatenation
+fn_cast	SELECT CAST(c0 AS VARCHAR(20)) AS s, CAST(c1 AS DOUBLE) AS d FROM t_rn	cast targets and failure behavior
+fn_cast_str_int	SELECT CAST(c1 AS INTEGER) AS x FROM t_mix	a cast that can fail at run time
+fn_try_cast	SELECT TRY_CAST(c1 AS INTEGER) AS x FROM t_mix	a cast that returns null on failure
+fn_case	SELECT CASE WHEN c1 IS NULL THEN 0 ELSE c1 END AS x, coalesce(c1, c0) AS y FROM t_rn	CASE and coalesce nullability
