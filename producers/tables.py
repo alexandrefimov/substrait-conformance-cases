@@ -1,5 +1,8 @@
 """The tables every producer plans against, with their rows, written once and rendered per producer.
 
+They are the corpus's shared tables, as the engine probes in probe/ register them for the consumers
+(t_ts is registered there for these plans alone), so a plan written here can be read there.
+
     python3 producers/tables.py duckdb|isthmus|spark|datafusion
 
 prints one SQL statement per line. The rows matter even to a producer that never executes: DuckDB
@@ -19,8 +22,9 @@ TABLES = [
      ["(10, 'x', true)", "(20, 'y', false)"]),
     ("t_ts", [("ts", "TIMESTAMP_NS", False)],
      ["(TIMESTAMP_NS '2021-01-01 00:00:00.123456789')"]),
-    ("t_dec", [("a", "DECIMAL(10,2)", False), ("b", "DECIMAL(5,1)", False)],
-     ["(1.00, 2.0)", "(2.50, 0.5)"]),
+    ("t_dec", [("c0", "DECIMAL(10,2)", False), ("c1", "DECIMAL(5,1)", False),
+               ("c2", "DECIMAL(38,10)", False), ("c3", "DECIMAL(38,10)", False)],
+     ["(1.00, 3.0, 9999999999999999999999999999.9999999999, 9999999999999999999999999999.9999999999)"]),
 ]
 
 # A nanosecond timestamp without a time zone, in each dialect. Spark has no nanoseconds, and its

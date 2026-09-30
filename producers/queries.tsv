@@ -28,13 +28,13 @@ aggs	SELECT sum(c0) AS s, avg(c0) AS a, count(c1) AS n, min(c1) AS m FROM t_rn	d
 arith	SELECT c0 + 1 AS x, c0 / 2 AS y FROM t_rn	i64 addition and division
 filter_project	SELECT c1, c0 FROM t_rn WHERE c0 > 1	filter under a reordering projection
 window	SELECT c0, sum(c1) OVER (ORDER BY c0 ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS w FROM t_rn	sum over a ROWS frame
-dec_add	SELECT a + b AS x FROM t_dec	decimal addition result type
-dec_div	SELECT a / b AS x FROM t_dec	decimal division result type
-fn_avg_dec	SELECT avg(a) AS x FROM t_dec	avg over a decimal: substrait 1252
-fn_sum_dec	SELECT sum(a) AS x FROM t_dec	sum over a decimal
+dec_add	SELECT c0 + c1 AS x FROM t_dec	decimal addition result type
+dec_div	SELECT c0 / c1 AS x FROM t_dec	decimal division result type
+fn_avg_dec	SELECT avg(c0) AS x FROM t_dec	avg over a decimal: substrait 1252
+fn_sum_dec	SELECT sum(c0) AS x FROM t_dec	sum over a decimal
 fn_minmax_i64	SELECT min(c1) AS lo, max(c0) AS hi FROM t_rn	min and max over nullable and required i64
 fn_count_star	SELECT count(*) AS n, count(c1) AS m FROM t_rn	count(*) and count over a nullable column
-fn_dec_mul	SELECT a * b AS x FROM t_dec	decimal multiplication result type
+fn_dec_mul	SELECT c0 * c1 AS x FROM t_dec	decimal multiplication result type
 fn_cmp_bool	SELECT c0 = c1 AS e, c0 < c1 AND c1 IS NOT NULL AS l FROM t_rn	comparison and boolean nullability
 fn_str	SELECT upper(c1) AS u, c1 || 'z' AS c, length(c1) AS n FROM t_mix	string functions and concatenation
 fn_cast	SELECT CAST(c0 AS VARCHAR(20)) AS s, CAST(c1 AS DOUBLE) AS d FROM t_rn	cast targets and failure behavior

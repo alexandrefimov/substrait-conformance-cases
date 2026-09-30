@@ -40,6 +40,8 @@ SCHEMAS = {
     "s2": pa.schema([pa.field("c0", pa.int64(), nullable=False), pa.field("c1", pa.int64(), nullable=False), pa.field("c2", pa.int64(), nullable=True), pa.field("c3", pa.int64(), nullable=True), pa.field("c4", pa.int64(), nullable=False), pa.field("c5", pa.int64(), nullable=False), pa.field("c6", pa.int64(), nullable=True), pa.field("c7", pa.int64(), nullable=True)]),
     "s3": pa.schema([pa.field("c0", pa.int64(), nullable=False), pa.field("c1", pa.int64(), nullable=True), pa.field("c2", pa.int64(), nullable=False), pa.field("c3", pa.int64(), nullable=True), pa.field("c4", pa.int64(), nullable=False), pa.field("c5", pa.int64(), nullable=True), pa.field("c6", pa.int64(), nullable=False), pa.field("c7", pa.int64(), nullable=True)]),
     "t_xnull": pa.schema([pa.field("c0", pa.int64(), nullable=True)]),
+    # Read by the producer plans in producers/, not by the corpus: a nanosecond timestamp column.
+    "t_ts": pa.schema([pa.field("ts", pa.timestamp("ns"), nullable=False)]),
 }
 
 

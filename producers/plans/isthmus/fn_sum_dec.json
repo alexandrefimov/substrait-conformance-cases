@@ -21,7 +21,7 @@
                 "common": {
                   "emit": {
                     "outputMapping": [
-                      2
+                      4
                     ]
                   }
                 },
@@ -32,8 +32,10 @@
                     },
                     "baseSchema": {
                       "names": [
-                        "A",
-                        "B"
+                        "C0",
+                        "C1",
+                        "C2",
+                        "C3"
                       ],
                       "struct": {
                         "types": [
@@ -48,6 +50,20 @@
                             "decimal": {
                               "scale": 1,
                               "precision": 5,
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "decimal": {
+                              "scale": 10,
+                              "precision": 38,
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "decimal": {
+                              "scale": 10,
+                              "precision": 38,
                               "nullability": "NULLABILITY_REQUIRED"
                             }
                           }

@@ -37,6 +37,8 @@ con.execute("CREATE TABLE s1 (c0 BIGINT NOT NULL, c1 BIGINT NOT NULL, c2 BIGINT 
 con.execute("CREATE TABLE s2 (c0 BIGINT NOT NULL, c1 BIGINT NOT NULL, c2 BIGINT, c3 BIGINT, c4 BIGINT NOT NULL, c5 BIGINT NOT NULL, c6 BIGINT, c7 BIGINT)")
 con.execute("CREATE TABLE s3 (c0 BIGINT NOT NULL, c1 BIGINT, c2 BIGINT NOT NULL, c3 BIGINT, c4 BIGINT NOT NULL, c5 BIGINT, c6 BIGINT NOT NULL, c7 BIGINT)")
 con.execute("CREATE TABLE t_xnull (c0 BIGINT)")
+# Read by the producer plans in producers/, not by the corpus.
+con.execute("CREATE TABLE t_ts (ts TIMESTAMP_NS NOT NULL)")
 
 try:
     text = args.plan.read_text()

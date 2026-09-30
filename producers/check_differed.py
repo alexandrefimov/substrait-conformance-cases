@@ -41,7 +41,9 @@ def main():
     doc = json.load(open(os.path.join(HERE, "differed.json")))
     rules, bad = doc["rules"], []
     used = set()
-    producers = sorted(f[:-4] for f in os.listdir(RESULTS) if f.endswith(".txt"))
+    # One column per producer directory in producers/plans; CONSUME.txt beside them is not one.
+    producers = sorted(p.upper() for p in os.listdir(os.path.join(HERE, "plans"))
+                       if os.path.isdir(os.path.join(HERE, "plans", p)))
     for name, rule in rules.items():
         if rule.get("kind") not in doc["kinds"]:
             bad.append("%s: kind %r is not one of %s" % (name, rule.get("kind"), sorted(doc["kinds"])))

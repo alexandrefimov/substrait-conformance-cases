@@ -4,7 +4,7 @@ union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; name
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 intersect_mixed        calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 except_mixed           calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
-exists_or              REFUSED: IllegalStateException: Couldn't find c1#33L in [c0#30L,c1#31L]
+exists_or              REFUSED: IllegalStateException: Couldn't find c1#39L in [c0#36L,c1#37L]
 in_or                  calls 2, differ 0, missing 0, unbound 0, declined 1; names ok
 in_subquery            calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 not_in                 calls 4, differ 0, missing 0, unbound 0, declined 0; names ok
@@ -41,7 +41,7 @@ fn_minmax_i64          calls 2, differ 0, missing 0, unbound 0, declined 0; name
 fn_count_star          calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_dec_mul             calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_cmp_bool            calls 4, differ 0, missing 0, unbound 0, declined 0; names ok
-fn_str                 REFUSED: UnsupportedOperationException: Unable to convert the expression length(c1#113) AS n#222
+fn_str                 REFUSED: UnsupportedOperationException: Unable to convert the expression length(c1#119) AS n#230
 fn_cast                calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_cast_str_int        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_try_cast            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok

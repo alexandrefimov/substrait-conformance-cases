@@ -1,7 +1,7 @@
 // The corpus through the DataFusion consumer. A standalone example: the checkout it is dropped
 // into is not modified, the plans are read from this repository (SUBSTRAIT_CORPUS_DIR), and nothing
 // is copied anywhere. It goes into datafusion/substrait/examples/ and is removed after the run.
-use datafusion::arrow::datatypes::{DataType, Field, Schema};
+use datafusion::arrow::datatypes::{DataType, Field, Schema, TimeUnit};
 use datafusion::common::{Result, TableReference};
 use datafusion::datasource::empty::EmptyTable;
 use datafusion::prelude::SessionContext;
@@ -50,6 +50,15 @@ fn ctx() -> Result<SessionContext> {
     ctx.register_table(
         TableReference::bare("t_xnull"),
         Arc::new(EmptyTable::new(Arc::new(Schema::new(vec![Field::new("c0", DataType::Int64, true)])))),
+    )?;
+    // Read by the producer plans in producers/, not by the corpus: a nanosecond timestamp column.
+    ctx.register_table(
+        TableReference::bare("t_ts"),
+        Arc::new(EmptyTable::new(Arc::new(Schema::new(vec![Field::new(
+            "ts",
+            DataType::Timestamp(TimeUnit::Nanosecond, None),
+            false,
+        )])))),
     )?;
     {
         use datafusion::arrow::array::{ArrayRef, BooleanArray, Int64Array, StringArray};

@@ -24,8 +24,10 @@
               "read": {
                 "baseSchema": {
                   "names": [
-                    "a",
-                    "b"
+                    "c0",
+                    "c1",
+                    "c2",
+                    "c3"
                   ],
                   "struct": {
                     "types": [
@@ -40,6 +42,20 @@
                         "decimal": {
                           "scale": 1,
                           "precision": 5,
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "decimal": {
+                          "scale": 10,
+                          "precision": 38,
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "decimal": {
+                          "scale": 10,
+                          "precision": 38,
                           "nullability": "NULLABILITY_REQUIRED"
                         }
                       }
