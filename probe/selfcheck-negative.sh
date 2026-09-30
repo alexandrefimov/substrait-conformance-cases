@@ -1015,6 +1015,9 @@ mutate "a producer plan declaring another type than its column shows" "producer 
 mutate "a saved derivation for a plan that is not there" "producer derivations cover their plans" \
   replace producers/DERIVED.txt "isthmus/fn_avg_dec	root" "isthmus/fn_avg_decimal	root"
 
+mutate "a producer reason that no longer matches its calls" "every differing producer call has one reason" \
+  replace producers/differed.json 'sum:i64 declared dec' 'sum:i32 declared dec'
+
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.
 mutate "an absolute path" "absolute path in" \

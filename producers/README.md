@@ -31,6 +31,15 @@ Fields the release no longer defines are listed after the summary, since a plan 
 older release; which relation a producer chose for a SQL construct is left to the consumer and row
 checks still to come.
 
+## Why a call differs
+
+[differed.json](differed.json) gives every differing, missing or unbound call, and every root whose
+names do not count out, one reason. A reason matches the column's lines by a pattern per producer,
+which is also its claim: `probe/selfcheck.sh` runs [check_differed.py](check_differed.py), which
+fails when a line has no reason, two, or when a reason matches nothing any more. A divergence says
+per producer whether it was `reported`, is a `spec-question`, is `ours`, or is still `open`; a
+`boundary` is a limit of the producer's type system rather than a finding.
+
 ## One reading, not two
 
 In `derived-schema/` an expectation is read twice, by `probe/expected.py` and by the deriver, and a

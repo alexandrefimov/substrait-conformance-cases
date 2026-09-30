@@ -690,6 +690,7 @@ echo "### the producer columns are what their committed plans check to"
 # producers/check.py makes of those plans with the deriver's rules. Retaking the plans needs the
 # producers and is producers/run.sh; checking them needs python3 alone.
 python3 producers/check.py || FAILED=1
+python3 producers/check_differed.py || FAILED=1
 
 echo "### the pages state the numbers the files hold"
 # The table above is checked against check_expected.py; the sentences around it were not checked at
