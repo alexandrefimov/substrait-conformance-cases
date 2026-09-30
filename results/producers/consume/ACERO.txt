@@ -1,0 +1,207 @@
+ACERO: the committed producer plans, pyarrow 25.0.1
+Carries nullability (the probe prints f.nullable); it is compared alongside the types.
+
+datafusion__aggs                               ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__arith                              ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__count_distinct                     ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__dec_add                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__dec_div                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__except_mixed                       ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__exists_or                          ERROR: ArrowInvalid: Unsupported join type
+datafusion__filter_project                     ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_avg_dec                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_case                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_cast_str_int                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_cast                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_cmp_bool                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_count_star                      ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_dec_mul                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_minmax_i64                      ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_str                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_sum_dec                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_try_cast                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__full_join                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__grouping_fn                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__grouping_sets                      ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__in_or                              ERROR: ArrowInvalid: Unsupported join type
+datafusion__in_subquery                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__intersect_mixed                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__join_reordered                     ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__left_join                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__limit_offset                       ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__limit_only                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__mask_filter                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__mask_reorder                       ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__not_exists                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__not_in                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__rollup                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__scalar_subquery                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__ts_ns_column                       ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__ts_ns_literal                      ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__union_all_mixed                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__union_distinct_mixed               ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__values_expr                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+datafusion__values_literal                     ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+datafusion__window                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__aggs                                   ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__arith                                  ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__count_distinct                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__dec_add                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__dec_div                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__except_mixed                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+duckdb__exists_or                              ERROR: ArrowInvalid: Unsupported join type
+duckdb__filter_project                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_avg_dec                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_case                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_cast_str_int                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_cast                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_cmp_bool                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_count_star                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_dec_mul                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_minmax_i64                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_str                                 ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_sum_dec                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_try_cast                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__full_join                              ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__grouping_fn                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__grouping_sets                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__in_or                                  ERROR: ArrowInvalid: Unsupported join type
+duckdb__in_subquery                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__intersect_mixed                        ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_PRIMARY
+duckdb__join_reordered                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__left_join                              ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__limit_offset                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__limit_only                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__mask_filter                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__mask_reorder                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__not_exists                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__not_in                                 ERROR: ArrowInvalid: Unsupported join type
+duckdb__rollup                                 ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__scalar_subquery                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__ts_ns_column                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__ts_ns_literal                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__union_all_mixed                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__union_distinct_mixed                   ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__values_expr                            ERROR: ArrowInvalid: While converting goo.gle/debug no anonymous struct type was provided to which names could be attached.
+duckdb__values_literal                         ERROR: ArrowInvalid: While converting goo.gle/debug no anonymous struct type was provided to which names could be attached.
+duckdb__window                                 ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   input {     read {       base_schema {         names: "c0"
+isthmus__aggs                                  [S:int64?, A:double?, N:int64?, M:int64?]
+isthmus__arith                                 [X:int64?, Y:int64?]
+isthmus__count_distinct                        ERROR: ArrowNotImplementedError: Unsupported aggregation invocation 'AGGREGATION_INVOCATION_DISTINCT'.  Only AGGREGATION_INVOCATION_ALL is supported
+isthmus__dec_add                               [X:decimal128(11, 2)?]
+isthmus__dec_div                               [X:decimal128(16, 7)?]
+isthmus__except_mixed                          ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+isthmus__exists_or                             ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   set_predicate {     predicate_op: PREDICATE_OP_EXISTS
+isthmus__filter_project                        [C1:int64?, C0:int64?]
+isthmus__fn_avg_dec                            [X:decimal128(10, 2)?]
+isthmus__fn_case                               [X:int64?, Y:int64?]
+isthmus__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
+isthmus__fn_cast                               [S:extension<varchar{length:20}>?, D:double?]
+isthmus__fn_cmp_bool                           [E:bool?, L:bool?]
+isthmus__fn_count_star                         [N:int64?, M:int64?]
+isthmus__fn_dec_mul                            [X:decimal128(16, 3)?]
+isthmus__fn_minmax_i64                         [LO:int64?, HI:int64?]
+isthmus__fn_str                                ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function upper to an Arrow call expression
+isthmus__fn_sum_dec                            [X:decimal128(38, 2)?]
+isthmus__full_join                             [C0:int64?, C1:int64?]
+isthmus__grouping_sets                         ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
+isthmus__in_or                                 ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
+isthmus__in_subquery                           ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
+isthmus__intersect_mixed                       ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
+isthmus__join_reordered                        [C1:int64?, C1:int64?]
+isthmus__left_join                             [C0:int64?, C1:int64?]
+isthmus__limit_offset                          [C0:int64?]
+isthmus__limit_only                            [C0:int64?]
+isthmus__mask_filter                           [C1:string?]
+isthmus__mask_reorder                          [C2:bool?, C0:int64?]
+isthmus__not_exists                            ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   set_predicate {     predicate_op: PREDICATE_OP_EXISTS
+isthmus__not_in                                ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
+isthmus__rollup                                ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
+isthmus__scalar_subquery                       ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   scalar {     input {       aggregate {         common {
+isthmus__ts_ns_column                          ERROR: ArrowInvalid: substrait literal did not have any literal type set
+isthmus__ts_ns_literal                         ERROR: ArrowInvalid: substrait literal did not have any literal type set
+isthmus__union_all_mixed                       [C0:int64?]
+isthmus__union_distinct_mixed                  ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
+isthmus__values_expr                           ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+isthmus__values_literal                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+isthmus__window                                ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug window_function {   function_reference: 1   sorts {     expr {
+spark35__aggs                                  [s:int64?, a:double?, n:int64?, m:int64?]
+spark35__arith                                 [x:int64?, y:double?]
+spark35__count_distinct                        ERROR: ArrowNotImplementedError: Unsupported aggregation invocation 'AGGREGATION_INVOCATION_DISTINCT'.  Only AGGREGATION_INVOCATION_ALL is supported
+spark35__dec_add                               [x:decimal128(11, 2)?]
+spark35__dec_div                               [x:decimal128(16, 7)?]
+spark35__except_mixed                          ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function is_not_distinct_from to an Arrow call expression
+spark35__filter_project                        [c1:int64?, c0:int64?]
+spark35__fn_avg_dec                            [x:decimal128(10, 2)?]
+spark35__fn_case                               [x:int64?, y:int64?]
+spark35__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
+spark35__fn_cast                               [s:string?, d:double?]
+spark35__fn_cmp_bool                           [e:bool?, l:bool?]
+spark35__fn_count_star                         ERROR: ArrowInvalid: Expected an aggregate call #count to have a direct reference
+spark35__fn_dec_mul                            [x:decimal128(16, 3)?]
+spark35__fn_minmax_i64                         [lo:int64?, hi:int64?]
+spark35__fn_sum_dec                            [x:decimal128(38, 2)?]
+spark35__fn_try_cast                           ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
+spark35__full_join                             [c0:int64?, c1:int64?]
+spark35__grouping_fn                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark35__grouping_sets                         ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark35__in_or                                 ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
+spark35__in_subquery                           ERROR: ArrowInvalid: attempted to rename schema with 2 fields but only 1 new names were given
+spark35__intersect_mixed                       ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function is_not_distinct_from to an Arrow call expression
+spark35__join_reordered                        [c1:int64?, c1:int64?]
+spark35__left_join                             [c0:int64?, c1:int64?]
+spark35__limit_offset                          [c0:int64?]
+spark35__limit_only                            [c0:int64?]
+spark35__mask_filter                           [c1:string?]
+spark35__mask_reorder                          [c2:bool?, c0:int64?]
+spark35__not_exists                            ERROR: ArrowInvalid: attempted to rename schema with 2 fields but only 1 new names were given
+spark35__not_in                                ERROR: ArrowInvalid: Only `equal` or `is_not_distinct_from` are supported for join key comparison but got or_kleene
+spark35__rollup                                ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark35__scalar_subquery                       ERROR: ArrowInvalid: No match for FieldRef.FieldPath(1) in : int64
+spark35__ts_ns_column                          ERROR: ArrowInvalid: substrait literal did not have any literal type set
+spark35__ts_ns_literal                         [c0:int64?]
+spark35__union_all_mixed                       [c0:int64?]
+spark35__union_distinct_mixed                  ERROR: ArrowInvalid: No match for FieldRef.FieldPath(0) in
+spark35__values_expr                           ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+spark35__values_literal                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+spark35__window                                ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co
+spark40__aggs                                  [s:int64?, a:double?, n:int64?, m:int64?]
+spark40__arith                                 [x:int64?, y:double?]
+spark40__count_distinct                        ERROR: ArrowNotImplementedError: Unsupported aggregation invocation 'AGGREGATION_INVOCATION_DISTINCT'.  Only AGGREGATION_INVOCATION_ALL is supported
+spark40__dec_add                               [x:decimal128(11, 2)?]
+spark40__dec_div                               [x:decimal128(16, 7)?]
+spark40__except_mixed                          ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function is_not_distinct_from to an Arrow call expression
+spark40__filter_project                        [c1:int64?, c0:int64?]
+spark40__fn_avg_dec                            [x:decimal128(10, 2)?]
+spark40__fn_case                               [x:int64?, y:int64?]
+spark40__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
+spark40__fn_cast                               [s:string?, d:double?]
+spark40__fn_cmp_bool                           [e:bool?, l:bool?]
+spark40__fn_count_star                         ERROR: ArrowInvalid: Expected an aggregate call #count to have a direct reference
+spark40__fn_dec_mul                            [x:decimal128(16, 3)?]
+spark40__fn_minmax_i64                         [lo:int64?, hi:int64?]
+spark40__fn_sum_dec                            [x:decimal128(38, 2)?]
+spark40__fn_try_cast                           ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
+spark40__full_join                             [c0:int64?, c1:int64?]
+spark40__grouping_fn                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark40__grouping_sets                         ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark40__in_or                                 ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
+spark40__in_subquery                           ERROR: ArrowInvalid: attempted to rename schema with 2 fields but only 1 new names were given
+spark40__intersect_mixed                       ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function is_not_distinct_from to an Arrow call expression
+spark40__join_reordered                        [c1:int64?, c1:int64?]
+spark40__left_join                             [c0:int64?, c1:int64?]
+spark40__limit_offset                          [c0:int64?]
+spark40__limit_only                            [c0:int64?]
+spark40__mask_filter                           [c1:string?]
+spark40__mask_reorder                          [c2:bool?, c0:int64?]
+spark40__not_exists                            ERROR: ArrowInvalid: attempted to rename schema with 2 fields but only 1 new names were given
+spark40__not_in                                ERROR: ArrowInvalid: Only `equal` or `is_not_distinct_from` are supported for join key comparison but got or_kleene
+spark40__rollup                                ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }     hint {       4: UNKNOWN_STRIN
+spark40__scalar_subquery                       ERROR: ArrowInvalid: No match for FieldRef.FieldPath(1) in : int64
+spark40__ts_ns_column                          ERROR: ArrowInvalid: substrait literal did not have any literal type set
+spark40__ts_ns_literal                         [c0:int64?]
+spark40__union_all_mixed                       [c0:int64?]
+spark40__union_distinct_mixed                  ERROR: ArrowInvalid: No match for FieldRef.FieldPath(0) in
+spark40__values_expr                           ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+spark40__values_literal                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
+spark40__window                                ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co

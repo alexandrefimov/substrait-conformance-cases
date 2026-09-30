@@ -1,0 +1,207 @@
+SPARK: the committed producer plans, spark 3.5.4
+Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
+
+datafusion__aggs                               ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__arith                              ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
+datafusion__count_distinct                     ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__dec_add                            ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
+datafusion__dec_div                            ERROR: IllegalStateException: Function 'divide' references URN anchor -1, but no URN is registered at that anchor
+datafusion__except_mixed                       ERROR: IllegalStateException: Function 'is_not_distinct_from' references URN anchor -1, but no URN is registered at that
+datafusion__exists_or                          ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__filter_project                     ERROR: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_avg_dec                         ERROR: IllegalStateException: Function 'avg' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_case                            ERROR: IllegalStateException: Function 'is_null' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_cast_str_int                    [x:string]
+datafusion__fn_cast                            [s:string, d:double?]
+datafusion__fn_cmp_bool                        ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_count_star                      ERROR: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_dec_mul                         ERROR: IllegalStateException: Function 'multiply' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_minmax_i64                      ERROR: IllegalStateException: Function 'max' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_str                             ERROR: IllegalStateException: Function 'upper' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_sum_dec                         ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_try_cast                        [x:string]
+datafusion__full_join                          ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__grouping_fn                        ERROR: IllegalStateException: Function 'bitwise_and' references URN anchor -1, but no URN is registered at that anchor
+datafusion__grouping_sets                      ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__in_or                              ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__in_subquery                        ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__intersect_mixed                    ERROR: IllegalStateException: Function 'is_not_distinct_from' references URN anchor -1, but no URN is registered at that
+datafusion__join_reordered                     ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__left_join                          ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__limit_offset                       [c0:bigint]
+datafusion__limit_only                         [c0:bigint]
+datafusion__mask_filter                        [c1:boolean]
+datafusion__mask_reorder                       [c2:boolean, c0:string]
+datafusion__not_exists                         ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__not_in                             ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__rollup                             ERROR: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anchor
+datafusion__scalar_subquery                    ERROR: IllegalStateException: Function 'max' references URN anchor -1, but no URN is registered at that anchor
+datafusion__ts_ns_column                       ERROR: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
+datafusion__ts_ns_literal                      [c0:bigint]
+datafusion__union_all_mixed                    [c0:bigint?]
+datafusion__union_distinct_mixed               [c0:bigint?]
+datafusion__values_expr                        [a:bigint, b:bigint]
+datafusion__values_literal                     [a:bigint, b:bigint]
+datafusion__window                             ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+duckdb__aggs                                   [s:bigint?, a:double?, n:bigint, m:bigint?]
+duckdb__arith                                  [x:bigint?, y:bigint]
+duckdb__count_distinct                         [d:bigint, s:bigint?]
+duckdb__dec_add                                [x:decimal(38,10)]
+duckdb__dec_div                                [x:decimal(38,10)]
+duckdb__except_mixed                           ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY
+duckdb__exists_or                              ERROR: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anch
+duckdb__filter_project                         [c1:bigint?, c0:bigint]
+duckdb__fn_avg_dec                             [x:decimal(14,6)?]
+duckdb__fn_case                                [x:bigint, y:bigint]
+duckdb__fn_cast_str_int                        [x:string]
+duckdb__fn_cast                                [s:string, d:double?]
+duckdb__fn_cmp_bool                            ERROR: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anch
+duckdb__fn_count_star                          [n:bigint, m:bigint]
+duckdb__fn_dec_mul                             [x:decimal(38,10)]
+duckdb__fn_minmax_i64                          [lo:bigint?, hi:bigint?]
+duckdb__fn_str                                 ERROR: IllegalStateException: Function '||' references URN anchor 0, but no URN is registered at that anchor
+duckdb__fn_sum_dec                             [x:decimal(20,2)?]
+duckdb__fn_try_cast                            [x:string]
+duckdb__full_join                              [c0:bigint?, c1:bigint?]
+duckdb__grouping_fn                            ERROR: IllegalStateException: Function 'grouping' references URN anchor 0, but no URN is registered at that anchor
+duckdb__grouping_sets                          ERROR: IllegalArgumentException: Plan.Root names count (3) must match input record type depth-first named-field count (4)
+duckdb__in_or                                  ERROR: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anch
+duckdb__in_subquery                            [c0:bigint?]
+duckdb__intersect_mixed                        ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_PRIMARY
+duckdb__join_reordered                         [c1:bigint, c1:bigint]
+duckdb__left_join                              [c0:bigint?, c1:bigint?]
+duckdb__limit_offset                           [c0:bigint]
+duckdb__limit_only                             [c0:bigint]
+duckdb__mask_filter                            [c1:bigint]
+duckdb__mask_reorder                           [c2:bigint, c0:string]
+duckdb__not_exists                             [c0:bigint?]
+duckdb__not_in                                 ERROR: UnsupportedOperationException: Unsupported join type LEFT_MARK
+duckdb__rollup                                 ERROR: IllegalArgumentException: Plan.Root names count (3) must match input record type depth-first named-field count (4)
+duckdb__scalar_subquery                        [c0:bigint, m:bigint?]
+duckdb__ts_ns_column                           ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so a type must declare
+duckdb__ts_ns_literal                          [c0:bigint]
+duckdb__union_all_mixed                        [c0:bigint?]
+duckdb__union_distinct_mixed                   ERROR: IllegalArgumentException: Unhandled type: ROOTTYPE_NOT_SET
+duckdb__values_expr                            ERROR: IllegalArgumentException: Row named-field count (2) does not match schema names count (0)
+duckdb__values_literal                         ERROR: IllegalArgumentException: Row named-field count (2) does not match schema names count (0)
+duckdb__window                                 [c0:bigint, w:bigint?]
+isthmus__aggs                                  [S:bigint?, A:double?, N:bigint, M:bigint?]
+isthmus__arith                                 ERROR: IllegalArgumentException: requirement failed
+isthmus__count_distinct                        [D:bigint, S:bigint?]
+isthmus__dec_add                               [X:decimal(11,2)?]
+isthmus__dec_div                               [X:decimal(17,8)?]
+isthmus__except_mixed                          ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY
+isthmus__exists_or                             ERROR: UnsupportedOperationException: Expression type io.substrait.expression.ImmutableExpression.SetPredicate not handled by vi
+isthmus__filter_project                        [C1:bigint?, C0:bigint]
+isthmus__fn_avg_dec                            [X:decimal(14,6)?]
+isthmus__fn_case                               [X:bigint?, Y:bigint?]
+isthmus__fn_cast_str_int                       [X:int?]
+isthmus__fn_cast                               [S:string, D:double?]
+isthmus__fn_cmp_bool                           [E:boolean?, L:boolean?]
+isthmus__fn_count_star                         [N:bigint, M:bigint]
+isthmus__fn_dec_mul                            [X:decimal(16,3)?]
+isthmus__fn_minmax_i64                         [LO:bigint?, HI:bigint?]
+isthmus__fn_str                                ERROR: IllegalArgumentException: Unable to convert scalar function char_length(string).
+isthmus__fn_sum_dec                            [X:decimal(20,2)?]
+isthmus__full_join                             [C0:bigint?, C1:bigint?]
+isthmus__grouping_sets                         ERROR: IllegalArgumentException: requirement failed
+isthmus__in_or                                 [C0:bigint]
+isthmus__in_subquery                           [C0:bigint]
+isthmus__intersect_mixed                       ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET
+isthmus__join_reordered                        [C1:bigint, C1:bigint?]
+isthmus__left_join                             [C0:bigint, C1:bigint?]
+isthmus__limit_offset                          [C0:bigint]
+isthmus__limit_only                            [C0:bigint]
+isthmus__mask_filter                           [C1:string]
+isthmus__mask_reorder                          [C2:boolean, C0:bigint]
+isthmus__not_exists                            ERROR: UnsupportedOperationException: Expression type io.substrait.expression.ImmutableExpression.SetPredicate not handled by vi
+isthmus__not_in                                [C0:bigint]
+isthmus__rollup                                ERROR: IllegalArgumentException: requirement failed
+isthmus__scalar_subquery                       ERROR: UnsupportedOperationException: Expression type io.substrait.expression.ImmutableFieldReference not handled by visitor typ
+isthmus__ts_ns_column                          [TS:timestamp_ntz]
+isthmus__ts_ns_literal                         [C0:bigint]
+isthmus__union_all_mixed                       [C0:bigint?]
+isthmus__union_distinct_mixed                  ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
+isthmus__values_expr                           [A:int, B:int]
+isthmus__values_literal                        [A:int, B:int]
+isthmus__window                                ERROR: UnsupportedOperationException: Expression type io.substrait.expression.ImmutableExpression.WindowFunctionInvocation not h
+spark35__aggs                                  [s:bigint?, a:double?, n:bigint, m:bigint?]
+spark35__arith                                 [x:bigint?, y:double?]
+spark35__count_distinct                        [d:bigint, s:bigint?]
+spark35__dec_add                               [x:decimal(11,2)?]
+spark35__dec_div                               [x:decimal(17,8)?]
+spark35__except_mixed                          [c0:bigint?]
+spark35__filter_project                        [c1:bigint?, c0:bigint?]
+spark35__fn_avg_dec                            [x:decimal(14,6)?]
+spark35__fn_case                               [x:bigint?, y:bigint?]
+spark35__fn_cast_str_int                       [x:int?]
+spark35__fn_cast                               [s:string?, d:double?]
+spark35__fn_cmp_bool                           [e:boolean?, l:boolean?]
+spark35__fn_count_star                         [n:bigint, m:bigint]
+spark35__fn_dec_mul                            [x:decimal(16,3)?]
+spark35__fn_minmax_i64                         [lo:bigint?, hi:bigint?]
+spark35__fn_sum_dec                            [x:decimal(20,2)?]
+spark35__fn_try_cast                           [x:int?]
+spark35__full_join                             [c0:bigint?, c1:bigint?]
+spark35__grouping_fn                           [c0:bigint?, g:tinyint]
+spark35__grouping_sets                         [c0:bigint?, c1:bigint?, s:bigint?]
+spark35__in_or                                 [c0:bigint?]
+spark35__in_subquery                           [c0:bigint?]
+spark35__intersect_mixed                       [c0:bigint?]
+spark35__join_reordered                        [c1:bigint?, c1:bigint?]
+spark35__left_join                             [c0:bigint?, c1:bigint?]
+spark35__limit_offset                          [c0:bigint?]
+spark35__limit_only                            [c0:bigint?]
+spark35__mask_filter                           [c1:string?]
+spark35__mask_reorder                          [c2:boolean?, c0:bigint?]
+spark35__not_exists                            [c0:bigint?]
+spark35__not_in                                [c0:bigint?]
+spark35__rollup                                [c0:bigint?, c1:bigint?, n:bigint]
+spark35__scalar_subquery                       [c0:bigint?, m:bigint?]
+spark35__ts_ns_column                          [ts:timestamp_ntz?]
+spark35__ts_ns_literal                         [c0:bigint?]
+spark35__union_all_mixed                       [c0:bigint?]
+spark35__union_distinct_mixed                  [c0:bigint?]
+spark35__values_expr                           [a:int, b:int]
+spark35__values_literal                        [a:int, b:int]
+spark35__window                                [c0:bigint?, w:bigint?]
+spark40__aggs                                  [s:bigint?, a:double?, n:bigint, m:bigint?]
+spark40__arith                                 [x:bigint?, y:double?]
+spark40__count_distinct                        [d:bigint, s:bigint?]
+spark40__dec_add                               [x:decimal(11,2)?]
+spark40__dec_div                               [x:decimal(17,8)?]
+spark40__except_mixed                          [c0:bigint?]
+spark40__filter_project                        [c1:bigint?, c0:bigint?]
+spark40__fn_avg_dec                            [x:decimal(14,6)?]
+spark40__fn_case                               [x:bigint?, y:bigint?]
+spark40__fn_cast_str_int                       [x:int?]
+spark40__fn_cast                               [s:string?, d:double?]
+spark40__fn_cmp_bool                           [e:boolean?, l:boolean?]
+spark40__fn_count_star                         [n:bigint, m:bigint]
+spark40__fn_dec_mul                            [x:decimal(16,3)?]
+spark40__fn_minmax_i64                         [lo:bigint?, hi:bigint?]
+spark40__fn_sum_dec                            [x:decimal(20,2)?]
+spark40__fn_try_cast                           [x:int?]
+spark40__full_join                             [c0:bigint?, c1:bigint?]
+spark40__grouping_fn                           [c0:bigint?, g:tinyint]
+spark40__grouping_sets                         [c0:bigint?, c1:bigint?, s:bigint?]
+spark40__in_or                                 [c0:bigint?]
+spark40__in_subquery                           [c0:bigint?]
+spark40__intersect_mixed                       [c0:bigint?]
+spark40__join_reordered                        [c1:bigint?, c1:bigint?]
+spark40__left_join                             [c0:bigint?, c1:bigint?]
+spark40__limit_offset                          [c0:bigint?]
+spark40__limit_only                            [c0:bigint?]
+spark40__mask_filter                           [c1:string?]
+spark40__mask_reorder                          [c2:boolean?, c0:bigint?]
+spark40__not_exists                            [c0:bigint?]
+spark40__not_in                                [c0:bigint?]
+spark40__rollup                                [c0:bigint?, c1:bigint?, n:bigint]
+spark40__scalar_subquery                       [c0:bigint?, m:bigint?]
+spark40__ts_ns_column                          [ts:timestamp_ntz?]
+spark40__ts_ns_literal                         [c0:bigint?]
+spark40__union_all_mixed                       [c0:bigint?]
+spark40__union_distinct_mixed                  [c0:bigint?]
+spark40__values_expr                           [a:int, b:int]
+spark40__values_literal                        [a:int, b:int]
+spark40__window                                [c0:bigint?, w:bigint?]

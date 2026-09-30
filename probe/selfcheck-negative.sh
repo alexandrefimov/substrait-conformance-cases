@@ -1018,6 +1018,9 @@ mutate "a saved derivation for a plan that is not there" "producer derivations c
 mutate "a producer reason that no longer matches its calls" "every differing producer call has one reason" \
   replace producers/differed.json 'sum:i64 declared dec' 'sum:i32 declared dec'
 
+mutate "a consumer answer changed without redrawing the consumer matrix" "the consumer matrix matches the consumer columns" \
+  replace results/producers/consume/GO.txt "ERROR: invalid relation: missing required Offset field for Fetch Relation" "[c0:i64]"
+
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.
 mutate "an absolute path" "absolute path in" \

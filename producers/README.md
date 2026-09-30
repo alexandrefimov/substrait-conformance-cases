@@ -31,6 +31,21 @@ Fields the release no longer defines are listed after the summary, since a plan 
 older release; which relation a producer chose for a SQL construct is left to the consumer and row
 checks still to come.
 
+## What the consumers make of them
+
+`producers/consume.sh` hands every committed plan to the nine consumers of the main corpus, through
+the same runners at the same pins, and writes their answers to
+[results/producers/consume/](../results/producers/consume). Each producer spells the shared tables
+its own way (Spark as `spark_catalog.default.t_rn`, Isthmus upper-cased), and which catalog a name
+resolves in is the deployment's business rather than a rule of the specification, so
+[catalog_names.py](catalog_names.py) gives the consumers a copy with the bare lower-case names the
+engine probes register; the committed plans keep the producer's spelling.
+[check_consume.py](check_consume.py) reads those answers with the parsers of
+`probe/check_expected.py` and draws [CONSUME.txt](../results/producers/CONSUME.txt): per plan and
+consumer, the deriver's schema (`=`), another one (`x`), a refusal (`E`), or an accepted plan the
+deriver has no schema for (`a`). As in the main corpus, the validator's schema outranks its
+diagnostics, so a plan it derives a schema for and also reports an error on is read by its schema.
+
 ## Why a call differs
 
 [differed.json](differed.json) gives every differing, missing or unbound call, and every root whose
@@ -56,6 +71,8 @@ SUBSTRAIT_JAVA_DIR=<checkout> DF_DIR=<checkout> bash producers/run.sh         # 
 UPDATE_PLANS=1 SUBSTRAIT_JAVA_DIR=<checkout> DF_DIR=<checkout> bash producers/run.sh
 SUBSTRAIT_DIR=<substrait checkout> python3 producers/check.py --derive      # producers/DERIVED.txt
 python3 producers/check.py --write                                          # the columns
+UPDATE_CONSUME=1 SUBSTRAIT_JAVA_DIR=<checkout> DF_DIR=<checkout> bash producers/consume.sh
+python3 producers/check_consume.py --write                                  # CONSUME.txt
 ```
 
 `run.sh` needs the probe environment (`probe/setup.sh`), the relations one
