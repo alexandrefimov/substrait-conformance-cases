@@ -47,3 +47,127 @@ corpus 5266439, inputs 6d3a6e957ebb9f8b
                                                  was [c0:i64, c1:i64?, c2:i64?, ?:i64, ?:bool?]  !! names 3, types 5
                                                  now [c0:i64, c1:i64?, c2:bool?]
 PYTHON: 7 of 108 answers moved (7 answer), 0 gone, 0 new
+
+##### 2026-09-28  PYTHON  substrait 0.34.0
+corpus db91d93, inputs 49708a7f59f3b144
+  read_projection_mask                           answer
+                                                 was [k0:i64, k1:str, ?:bool]  !! names 2, types 3
+                                                 now [k0:i64, k1:bool]
+  read_projection_mask_reordered                 answer
+                                                 was [k0:i64, k1:str, ?:bool]  !! names 2, types 3
+                                                 now [k0:bool, k1:i64]
+PYTHON: 2 of 108 answers moved (2 answer), 0 gone, 0 new
+
+##### 2026-09-28  GO  substrait-go/v9 v9.0.0-alpha.1.0.20260923145012-f8e5ffec6826
+corpus db91d93, inputs da2bc06ca65a5696
+  emit_fetch                                     gained (ACCEPTED)
+                                                 was ERROR: invalid relation: missing required Offset field for Fetch Relation
+                                                 now [k0:boolean, k1:i64]
+GO: 1 of 108 answers moved (1 gained), 0 gone, 0 new
+
+##### 2026-09-28  VALIDATOR  substrait-validator 0.1.4 at 301eac7
+corpus db91d93, inputs da2bc06ca65a5696
+  setdata_intersection_multiset                  answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_intersection_multiset_all              answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_intersection_primary                   answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_minus_multiset                         answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_minus_primary                          answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_minus_primary_all                      answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_union_all                              answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setdata_union_distinct                         answer (SCHEMA)
+                                                 was i64
+                                                 now [i64]
+  setop_intersection_multiset                    answer (SCHEMA)
+                                                 was [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+                                                 now [i64, i64, i64, i64, i64, i64, i64, i64?]
+  setop_intersection_multiset_all                answer (SCHEMA)
+                                                 was [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+                                                 now [i64, i64, i64, i64, i64, i64, i64, i64?]
+  setop_intersection_primary                     answer (SCHEMA)
+                                                 was [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+                                                 now [i64, i64, i64, i64, i64, i64?, i64?, i64?]
+  setop_union_all                                answer (SCHEMA)
+                                                 was [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+                                                 now [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
+  setop_union_distinct                           answer (SCHEMA)
+                                                 was [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+                                                 now [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
+  virtual_table_emit_mapping                     answer (SCHEMA)
+                                                 was [unresolved]
+                                                 now [str]
+  virtual_table_literal_type_differs_from_schema answer (SCHEMA)
+                                                 was i8
+                                                 now [c:i8]
+  virtual_table_row_null_in_required_column      answer (SCHEMA)
+                                                 was i32?
+                                                 now [c:i32?]
+  virtual_table_row_nullable_in_required_column  answer (SCHEMA)
+                                                 was i32?
+                                                 now [c:i32?]
+  virtual_table_row_required_in_nullable_column  answer (SCHEMA)
+                                                 was i32
+                                                 now [c:i32]
+VALIDATOR: 18 of 108 answers moved (18 answer), 0 gone, 0 new
+
+##### 2026-09-28  ISTHMUS  substrait-java 4d21734d
+corpus db91d93, inputs da2bc06ca65a5696
+  aggregate_grouping_set_index                   answer (ACCEPTED)
+                                                 was [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
+                                                 now [c:VARCHAR?, a:BIGINT?, $f2:INTEGER]
+ISTHMUS: 1 of 108 answers moved (1 answer), 0 gone, 0 new
+
+##### 2026-09-28  DATAFUSION  datafusion 991fd23dd
+corpus db91d93, inputs da2bc06ca65a5696
+  phase_intermediate                             refusal (REJECTED)
+                                                 was ERROR: Substrait error: Names list must match exactly to nested schema, but found 1 uses for 3 names
+                                                 now ERROR: This feature is not implemented: Unsupported aggregation phase: AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE
+  setop_intersection_multiset                    answer (ACCEPTED)
+                                                 was [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
+                                                 now [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64, c6:Int64, c7:Int64?]
+  setop_intersection_multiset_all                answer (ACCEPTED)
+                                                 was [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
+                                                 now [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64, c6:Int64, c7:Int64?]
+  setop_intersection_primary                     answer (ACCEPTED)
+                                                 was [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
+                                                 now [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64?, c6:Int64?, c7:Int64?]
+DATAFUSION: 4 of 108 answers moved (3 answer, 1 refusal), 0 gone, 0 new
+
+##### 2026-09-28  relations/GO  github.com/substrait-io/substrait-go/v9 v9.0.0-alpha.1.0.20260923145012-f8e5ffec6826, github.com/substrait-io/substrait-protobuf/go v0.85.0, pinning github.com/substrait-io/substrait v0.87.0
+corpus db91d93, inputs 9ff8a43cb19798db
+  emit/on_fetch/mapping-on-a-fetch               gained
+                                                 was ERROR: invalid relation: missing required Offset field for Fetch Relation
+                                                 now [v:string, k:i64?]
+  fetch/count/unset-means-all                    gained
+                                                 was ERROR: invalid relation: missing required Offset field for Fetch Relation
+                                                 now [k:i64?, v:string]
+  fetch/offset-and-count/window                  gained
+                                                 was ERROR: invalid relation: missing required Offset field for Fetch Relation
+                                                 now [k:i64?, v:string]
+relations/GO: 3 of 71 answers moved (3 gained), 0 gone, 0 new
+
+##### 2026-09-28  relations/DATAFUSION  datafusion 991fd23dd, substrait crate 0.63.0
+corpus db91d93, inputs 5eeaca9e7fcb8e81
+  set/intersection_multiset/output-nullability   answer
+                                                 was [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+                                                 now [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+  set/intersection_multiset_all/output-nullability answer
+                                                 was [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+                                                 now [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+  set/intersection_primary/output-nullability    answer
+                                                 was [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+                                                 now [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64?, c6:i64?, c7:i64?]
+relations/DATAFUSION: 3 of 71 answers moved (3 answer), 0 gone, 0 new
