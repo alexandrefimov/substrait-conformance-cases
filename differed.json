@@ -37,7 +37,7 @@
   },
   "read-projection-ignored": {
    "kind": "divergence",
-   "what": "ReadRel.projection masks the read's columns before anything else; both return the unmasked schema, all three columns of it. substrait-python labels the first two with the root's names and the third with none, which its probe flags; Isthmus keeps the schema's own names.",
+   "what": "ReadRel.projection masks the read's columns before anything else; Isthmus returns the unmasked schema, all three columns of it, under the schema's own names.",
    "check": {
     "first_input": true
    },
@@ -48,12 +48,6 @@
       "https://github.com/substrait-io/substrait-java/pull/1280"
      ],
      "note": "a fix, opened without a separate issue"
-    },
-    "PYTHON": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-python/issues/264"
-     ]
     }
    }
   },
@@ -566,8 +560,7 @@
    "joineq_right_single": "python-join-concatenates-the-inputs",
    "physjoin_hash_left": "python-join-concatenates-the-inputs",
    "physjoin_merge_left": "python-join-concatenates-the-inputs",
-   "physjoin_nested_left": "python-join-concatenates-the-inputs",
-   "read_projection_mask": "read-projection-ignored"
+   "physjoin_nested_left": "python-join-concatenates-the-inputs"
   },
   "SPARK": {
    "decimal_add": "spark-decimal-result-nullable",

@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-18, 2026-09-21. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-18, 2026-09-30. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -42,9 +42,9 @@ Both normative texts say a column follows the expand fields - physical_relations
 | [expand_consistent_fields](../derived-schema/expand_consistent_fields.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns |
 | [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
 
-## substrait-python — 18 cases
+## substrait-python — 17 cases
 
-`results/PYTHON.txt`, substrait 0.33.0.
+`results/PYTHON.txt`, substrait 0.34.0.
 
 ### `python-expand-switching-stays-required`
 
@@ -95,16 +95,6 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-py
 | [physjoin_hash_left](../derived-schema/physjoin_hash_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
 | [physjoin_merge_left](../derived-schema/physjoin_merge_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
 | [physjoin_nested_left](../derived-schema/physjoin_nested_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
-
-### `read-projection-ignored`
-
-ReadRel.projection masks the read's columns before anything else; both return the unmasked schema, all three columns of it. substrait-python labels the first two with the root's names and the third with none, which its probe flags; Isthmus keeps the schema's own names.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-python/issues/264
-
-| case | expected | substrait-python answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[k0:i64, k1:str, ?:bool]  !! names 2, types 3` | Read / Direct Output Order: the schema after projection is applied |
 
 ## substrait-go — 4 cases
 
@@ -254,7 +244,7 @@ The updated reproducer in the issue covers these four intersection and minus ope
 
 ### `read-projection-ignored`
 
-ReadRel.projection masks the read's columns before anything else; both return the unmasked schema, all three columns of it. substrait-python labels the first two with the root's names and the third with none, which its probe flags; Isthmus keeps the schema's own names.
+ReadRel.projection masks the read's columns before anything else; Isthmus returns the unmasked schema, all three columns of it, under the schema's own names.
 
 Recorded as a divergence, reported. https://github.com/substrait-io/substrait-java/pull/1280
 
