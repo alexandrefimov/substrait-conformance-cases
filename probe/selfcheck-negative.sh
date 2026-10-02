@@ -352,14 +352,14 @@ mutate "a misspelled input-check option" "has unknown options" \
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['validator-join-concatenates-the-inputs']['check'] = {'inputs_concatenated': {'mark_sufix': True}}
+d['rules']['python-join-concatenates-the-inputs']['check'] = {'inputs_concatenated': {'mark_sufix': True}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "an input check hidden by another input check" "has multiple input checks" \
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['validator-join-concatenates-the-inputs']['check']['first_input'] = True
+d['rules']['python-join-concatenates-the-inputs']['check']['first_input'] = True
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "an empty pattern that checks no output" "must be a nonempty regular expression" \

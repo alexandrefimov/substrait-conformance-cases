@@ -16,7 +16,7 @@ answer and the expectation beside each cell.
 
 ## If your project is here
 
-Twenty-one of the twenty-six reasons behind a divergence link an issue or a PR in the project it is
+Nineteen of the twenty-four reasons behind a divergence link an issue or a PR in the project it is
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 
@@ -64,7 +64,7 @@ of its type system hatched.
 | substrait-java | 92 | 3 | 3 |
 | substrait-python | 79 | 17 | 2 |
 | substrait-go | 62 | 4 | 32 |
-| substrait-validator | 48 | 30 | 20 |
+| substrait-validator | 64 | 14 | 20 |
 | Isthmus/Calcite | 57 | 4 | 37 |
 | DataFusion | 56 | 10 | 32 |
 | DuckDB | 36 | 21 | 41 |
@@ -86,7 +86,7 @@ they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 111 of them, 17 marked as something other
+`differed.json` carries a reason written by hand for all 95 of them, 16 marked as something other
 than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
 column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
 nullability, nor do Gluten's — and one that stops short says so in the head of its

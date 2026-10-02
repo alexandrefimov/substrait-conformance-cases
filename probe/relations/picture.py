@@ -116,7 +116,8 @@ def build():
     cells = {label: models[label]["state"] for label, _ in COLUMNS}
     return {"groups": groups, "cells": cells, "models": models, "versions": versions,
             "declares_rows": declares_rows, "cases": cases,
-            "taken": models[COLUMNS[0][0]]["head"].split("from run ", 1)[1][:10]}
+            "taken": ", ".join(sorted({model["head"].split("from run ", 1)[1][:10]
+                                      for model in models.values()}))}
 
 
 def wrap(text, width, first_indent, indent, char_w):
