@@ -169,21 +169,6 @@
     }
    }
   },
-  "datafusion-intersection-takes-the-first-input": {
-   "kind": "divergence",
-   "what": "DataFusion returns the first input's nullability for intersection. Its union shows this is not what it does everywhere - that answer is nullable wherever any input is, which the first input is not - while minus cannot tell the two apart, because there the spec's pattern is the first input.",
-   "check": {
-    "first_input": true
-   },
-   "triage": {
-    "DATAFUSION": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/apache/datafusion/issues/25042"
-     ]
-    }
-   }
-  },
   "python-join-concatenates-the-inputs": {
    "kind": "divergence",
    "what": "substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single. The physical joins answer the same way: HashJoinRel, MergeJoinRel and NestedLoopJoinRel all reach one deriver, so left widens nothing there too, while their inner cases match for the reason inner always matches here. The mark joins match since 0.33.0, which returns one side and the mark column.",
@@ -445,9 +430,6 @@
    "decimal_divide": "decimal-own-derivation",
    "decimal_multiply_overflow": "decimal-own-derivation",
    "phase_final": "avg-over-integers-returns-float",
-   "setop_intersection_multiset": "datafusion-intersection-takes-the-first-input",
-   "setop_intersection_multiset_all": "datafusion-intersection-takes-the-first-input",
-   "setop_intersection_primary": "datafusion-intersection-takes-the-first-input",
    "stringlen_declared": "no-string-with-length"
   },
   "DUCKDB": {

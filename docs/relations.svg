@@ -277,17 +277,17 @@
 <text x="14.0" y="728.0" fill="#8a8b88" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Set operations</text>
 <text x="23.0" y="743.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_multiset/output-nullability</text>
 <rect x="307.0" y="735.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="373.0" y="735.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="373.0" y="735.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="439.0" y="735.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="505.0" y="735.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="23.0" y="756.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_multiset_all/output-nullability</text>
 <rect x="307.0" y="748.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="373.0" y="748.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="373.0" y="748.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="439.0" y="748.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="505.0" y="748.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="23.0" y="769.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">intersection_primary/output-nullability</text>
 <rect x="307.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="373.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="373.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="439.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="505.0" y="761.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="23.0" y="782.0" fill="#55575c" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">minus_multiset/output-nullability</text>
@@ -511,7 +511,7 @@
 <rect x="505.0" y="1370.0" width="58.0" height="10.0" rx="1.5" fill="url(#dots)"/>
 <text x="14.0" y="1401.0" fill="#8a8b88" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">the bar left of a case marks one that asserts rows</text>
 <text x="14.0" y="1414.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-java  bc050d37, substrait protos 0.102.0, JDK 17.0.20.1</text>
-<text x="14.0" y="1425.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DataFusion      cc29ea12a, substrait crate 0.63.0</text>
+<text x="14.0" y="1425.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DataFusion      c922f8811, substrait crate 0.63.0</text>
 <text x="14.0" y="1436.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-go    substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d, substrait-protobuf/go v0.85.0,</text>
 <text x="14.0" y="1447.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" xml:space="preserve">                pinning substrait v0.87.0</text>
 <text x="14.0" y="1458.0" fill="#8a8b88" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB          1.5.5, substrait extension 4ea63dd</text>
