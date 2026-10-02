@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-18, 2026-09-30. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-18, 2026-09-30, 2026-10-02. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -126,9 +126,9 @@ The PR makes each grouping key nullable when absent from any set; the shared key
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:string, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 | [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:string, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
-## substrait-validator — 30 cases
+## substrait-validator — 14 cases
 
-`results/VALIDATOR.txt`, substrait-validator 0.1.4 at 2a10470.
+`results/VALIDATOR.txt`, substrait-validator 0.1.4 at 0a5d3d6.
 
 ### `validator-aggregate-gives-i32-and-unresolved`
 
@@ -174,42 +174,6 @@ Recorded as a type this participant never resolved.
 | [precision_timestamp_p07](../derived-schema/precision_timestamp_p07.json) | `[precision_timestamp(7)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 | [precision_timestamp_p09](../derived-schema/precision_timestamp_p09.json) | `[precision_timestamp(9)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 | [precision_timestamp_p12](../derived-schema/precision_timestamp_p12.json) | `[precision_timestamp(12)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
-| [virtual_table_emit_mapping](../derived-schema/virtual_table_emit_mapping.json) | `[str]` | `[unresolved]` | RelCommon.emit over a virtual table: the listed order of direct outputs |
-
-### `validator-join-concatenates-the-inputs`
-
-The validator applies the join type on inner, outer, left, right, left semi, left anti and left single, all of which match - plain right included, which is the point of the contrast. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-validator/issues/580
-
-The two right-single cells are adjacent evidence, outside what that issue reports.
-
-| case | expected | substrait-validator answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [join_left_mark](../derived-schema/join_left_mark.json) | `[i64, i64?, bool?]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [join_right_anti](../derived-schema/join_right_anti.json) | `[i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [join_right_mark](../derived-schema/join_right_mark.json) | `[i64?, i64, bool?]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [join_right_semi](../derived-schema/join_right_semi.json) | `[i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [join_right_single](../derived-schema/join_right_single.json) | `[i64?, i64?, i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_left_mark](../derived-schema/joineq_left_mark.json) | `[i64, i64?, bool?]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right_anti](../derived-schema/joineq_right_anti.json) | `[i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right_mark](../derived-schema/joineq_right_mark.json) | `[i64?, i64, bool?]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right_semi](../derived-schema/joineq_right_semi.json) | `[i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right_single](../derived-schema/joineq_right_single.json) | `[i64?, i64?, i64?, i64]` | `[i64, i64?, i64?, i64]` | the spec rules for join types and Direct Output Order |
-
-### `validator-setop-takes-the-first-input`
-
-The validator returns the first input's nullability for every set operation, union included.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-validator/issues/579
-
-| case | expected | substrait-validator answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [setop_intersection_multiset](../derived-schema/setop_intersection_multiset.json) | `[i64, i64, i64, i64, i64, i64, i64, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_intersection_multiset_all](../derived-schema/setop_intersection_multiset_all.json) | `[i64, i64, i64, i64, i64, i64, i64, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_intersection_primary](../derived-schema/setop_intersection_primary.json) | `[i64, i64, i64, i64, i64, i64?, i64?, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_union_all](../derived-schema/setop_union_all.json) | `[i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_union_distinct](../derived-schema/setop_union_distinct.json) | `[i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]` | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | the Output Type Derivation Examples table in the spec |
 
 ## Isthmus/Calcite — 6 cases
 

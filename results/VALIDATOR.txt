@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-09-18T18:40, substrait-validator 0.1.4 at 2a10470
+VALIDATOR: column from run 2026-10-02T15:27, substrait-validator 0.1.4 at 0a5d3d6
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_set_index                   [i32]
@@ -11,11 +11,11 @@ cross_preserves_nullability                    [i64, i64?, i64?, i64]
 ctas_keeps_declared_schema                     —
 ddl_view_root_names_nothing                    —
 ddl_view_root_names_the_view                   —
-decimal_add_overflow                           [dec(38,9)]
 decimal_add                                    [dec(11,2)]
+decimal_add_overflow                           [dec(38,9)]
 decimal_divide                                 [dec(21,8)]
-decimal_multiply_overflow                      [dec(38,6)]
 decimal_multiply                               [dec(16,3)]
+decimal_multiply_overflow                      [dec(38,6)]
 emit_aggregate                                 [unresolved, unresolved]
 emit_fetch                                     [bool, i64]
 emit_filter                                    [bool, i64]
@@ -26,31 +26,31 @@ emit_sort                                      [bool, i64]
 expand_consistent_fields                       —
 expand_switching_nullability                   —
 join_inner                                     [i64, i64?, i64?, i64]
+join_left                                      [i64, i64?, i64?, i64?]
 join_left_anti                                 [i64, i64?]
-join_left_mark                                 [i64, i64?, i64?, i64]
+join_left_mark                                 [i64, i64?, bool?]
 join_left_semi                                 [i64, i64?]
 join_left_single                               [i64, i64?, i64?, i64?]
-join_left                                      [i64, i64?, i64?, i64?]
 join_outer                                     [i64?, i64?, i64?, i64?]
-join_right_anti                                [i64, i64?, i64?, i64]
-join_right_mark                                [i64, i64?, i64?, i64]
-join_right_semi                                [i64, i64?, i64?, i64]
-join_right_single                              [i64, i64?, i64?, i64]
 join_right                                     [i64?, i64?, i64?, i64]
+join_right_anti                                [i64?, i64]
+join_right_mark                                [i64?, i64, bool?]
+join_right_semi                                [i64?, i64]
+join_right_single                              [i64?, i64?, i64?, i64]
 joineq_inner                                   [i64, i64?, i64?, i64]
+joineq_left                                    [i64, i64?, i64?, i64?]
 joineq_left_anti                               [i64, i64?]
-joineq_left_mark                               [i64, i64?, i64?, i64]
+joineq_left_mark                               [i64, i64?, bool?]
 joineq_left_semi                               [i64, i64?]
 joineq_left_single                             [i64, i64?, i64?, i64?]
-joineq_left                                    [i64, i64?, i64?, i64?]
 joineq_outer                                   [i64?, i64?, i64?, i64?]
-joineq_right_anti                              [i64, i64?, i64?, i64]
-joineq_right_mark                              [i64, i64?, i64?, i64]
-joineq_right_semi                              [i64, i64?, i64?, i64]
-joineq_right_single                            [i64, i64?, i64?, i64]
 joineq_right                                   [i64?, i64?, i64?, i64]
-lateral_join_uncorrelated_without_anchor       ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "lateralJoin" at "Plan.relations[0].root.input".
+joineq_right_anti                              [i64?, i64]
+joineq_right_mark                              [i64?, i64, bool?]
+joineq_right_semi                              [i64?, i64]
+joineq_right_single                            [i64?, i64?, i64?, i64]
 lateral_join_uncorrelated                      ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "lateralJoin" at "Plan.relations[0].root.input".
+lateral_join_uncorrelated_without_anchor       ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "lateralJoin" at "Plan.relations[0].root.input".
 mirror_argument_nullability                    [i64, i64?, i64, i64?]
 narrowing_count                                [i64]
 narrowing_is_not_null                          [bool]
@@ -58,16 +58,16 @@ narrowing_is_null                              [bool]
 phase_final                                    [i64?]
 phase_intermediate                             [[i64, i64]]
 physjoin_hash_inner                            —
-physjoin_hash_left_mark                        —
 physjoin_hash_left                             —
+physjoin_hash_left_mark                        —
 physjoin_hash_right_semi                       —
 physjoin_merge_inner                           —
-physjoin_merge_left_mark                       —
 physjoin_merge_left                            —
+physjoin_merge_left_mark                       —
 physjoin_merge_right_semi                      —
 physjoin_nested_inner                          —
-physjoin_nested_left_mark                      —
 physjoin_nested_left                           —
+physjoin_nested_left_mark                      —
 physjoin_nested_right_semi                     —
 precision_timestamp_p00                        [c:unresolved]
 precision_timestamp_p01                        [c:unresolved]
@@ -78,33 +78,33 @@ precision_timestamp_p06                        [c:unresolved]
 precision_timestamp_p07                        [c:unresolved]
 precision_timestamp_p09                        [c:unresolved]
 precision_timestamp_p12                        [c:unresolved]
-read_projection_mask_reordered                 [bool, i64]
 read_projection_mask                           [i64, bool]
-setdata_intersection_multiset_all              i64
-setdata_intersection_multiset                  i64
-setdata_intersection_primary                   i64
-setdata_minus_multiset                         i64
-setdata_minus_primary_all                      i64
-setdata_minus_primary                          i64
-setdata_union_all                              i64
-setdata_union_distinct                         i64
-setop_intersection_multiset_all                [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
-setop_intersection_multiset                    [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
-setop_intersection_primary                     [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+read_projection_mask_reordered                 [bool, i64]
+setdata_intersection_multiset                  [i64]
+setdata_intersection_multiset_all              [i64]
+setdata_intersection_primary                   [i64]
+setdata_minus_multiset                         [i64]
+setdata_minus_primary                          [i64]
+setdata_minus_primary_all                      [i64]
+setdata_union_all                              [i64]
+setdata_union_distinct                         [i64]
+setop_intersection_multiset                    [i64, i64, i64, i64, i64, i64, i64, i64?]
+setop_intersection_multiset_all                [i64, i64, i64, i64, i64, i64, i64, i64?]
+setop_intersection_primary                     [i64, i64, i64, i64, i64, i64?, i64?, i64?]
 setop_minus_multiset                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
-setop_minus_primary_all                        [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
 setop_minus_primary                            [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
-setop_union_all                                [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
-setop_union_distinct                           [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_minus_primary_all                        [i64, i64, i64, i64, i64?, i64?, i64?, i64?]
+setop_union_all                                [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
+setop_union_distinct                           [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
 topn_keeps_the_input_schema                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "topN" at "Plan.relations[0].root.input".  Availab
 update_root_names_a_count                      ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
 update_root_names_the_table                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
-virtual_table_emit_mapping                     [unresolved]
-virtual_table_literal_type_differs_from_schema i8
-virtual_table_row_null_in_required_column      i32?
-virtual_table_row_nullable_in_required_column  i32?
-virtual_table_row_required_in_nullable_column  i32
-window_bound_offset_expr                       ERROR: Failed to parse relations field: Failed to parse input field: Failed to parse windowFunctions field: Failed to parse lowerBound field: Message type "substrait.E
+virtual_table_emit_mapping                     [str]
+virtual_table_literal_type_differs_from_schema [c:i8]
+virtual_table_row_null_in_required_column      [c:i32?]
+virtual_table_row_nullable_in_required_column  [c:i32?]
+virtual_table_row_required_in_nullable_column  [c:i32]
 window_bound_offset                            —
+window_bound_offset_expr                       ERROR: Failed to parse relations field: Failed to parse input field: Failed to parse windowFunctions field: Failed to parse lowerBound field: Message type "substrait.E
 window_output_order                            —
