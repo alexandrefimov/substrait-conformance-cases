@@ -16,7 +16,7 @@ answer and the expectation beside each cell.
 
 ## If your project is here
 
-Nineteen of the twenty-four reasons behind a divergence link an issue or a PR in the project it is
+Eighteen of the twenty-three reasons behind a divergence link an issue or a PR in the project it is
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 
@@ -66,7 +66,7 @@ of its type system hatched.
 | substrait-go | 62 | 4 | 32 |
 | substrait-validator | 64 | 14 | 20 |
 | Isthmus/Calcite | 57 | 4 | 37 |
-| DataFusion | 56 | 10 | 32 |
+| DataFusion | 59 | 7 | 32 |
 | DuckDB | 36 | 21 | 41 |
 | Spark | 31 | 6 | 61 |
 | Acero | 4 | 16 | 78 |
@@ -86,7 +86,7 @@ they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 95 of them, 16 marked as something other
+`differed.json` carries a reason written by hand for all 92 of them, 16 marked as something other
 than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
 column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
 nullability, nor do Gluten's — and one that stops short says so in the head of its
@@ -154,7 +154,7 @@ One story per column. substrait-java answers 58 of the 63 scored cases and refus
 refuses 28, eight of them the set operations, whose inputs it requires to agree on a nullability
 these cases deliberately vary. DuckDB and DataFusion execute, so they are the two measured against
 the rows that 47 of the cases assert. DuckDB's 11 divergences all show in the schema, five of them
-in the rows as well, and so do DataFusion's 6, two of them in the rows: so far the rows have
+in the rows as well, and so do DataFusion's 3, two of them in the rows: so far the rows have
 confirmed an answer rather than caught one. Both reach the rows of 31 cases and return the same rows
 on 26. The other five are the emit cases, where DataFusion returns the rows the case asserts and
 DuckDB does not. The hatched cells are substrait-java and substrait-go agreeing about a schema and

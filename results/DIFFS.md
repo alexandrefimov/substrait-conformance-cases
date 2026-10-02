@@ -194,9 +194,9 @@ The updated reproducer in the issue covers these four intersection and minus ope
 | [setop_minus_primary](../derived-schema/setop_minus_primary.json) | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | `[c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]` | the Output Type Derivation Examples table in the spec |
 | [setop_minus_primary_all](../derived-schema/setop_minus_primary_all.json) | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | `[c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]` | the Output Type Derivation Examples table in the spec |
 
-## DataFusion — 10 cases
+## DataFusion — 7 cases
 
-`results/DATAFUSION.txt`, datafusion cc29ea12a.
+`results/DATAFUSION.txt`, datafusion c922f8811.
 
 How far this column goes. DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
@@ -209,18 +209,6 @@ Recorded as a divergence, asked of the spec. https://github.com/substrait-io/sub
 | case | expected | DataFusion answered | the expectation comes from |
 | --- | --- | --- | --- |
 | [phase_final](../derived-schema/phase_final.json) | `[i64?]` | `[r:Float64?]` | the declared return of avg:i64 in functions_arithmetic.yaml |
-
-### `datafusion-intersection-takes-the-first-input`
-
-DataFusion returns the first input's nullability for intersection. Its union shows this is not what it does everywhere - that answer is nullable wherever any input is, which the first input is not - while minus cannot tell the two apart, because there the spec's pattern is the first input.
-
-Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/25042
-
-| case | expected | DataFusion answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [setop_intersection_multiset](../derived-schema/setop_intersection_multiset.json) | `[i64, i64, i64, i64, i64, i64, i64, i64?]` | `[c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_intersection_multiset_all](../derived-schema/setop_intersection_multiset_all.json) | `[i64, i64, i64, i64, i64, i64, i64, i64?]` | `[c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]` | the Output Type Derivation Examples table in the spec |
-| [setop_intersection_primary](../derived-schema/setop_intersection_primary.json) | `[i64, i64, i64, i64, i64, i64?, i64?, i64?]` | `[c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]` | the Output Type Derivation Examples table in the spec |
 
 ### `decimal-own-derivation`
 
