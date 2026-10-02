@@ -870,7 +870,7 @@ mutate "a reason that no longer describes its cell" "no longer matches its reaso
 import json
 p = 'results/relations/differed.json'
 d = json.load(open(p))
-d['rules']['go-hash-join-ignores-the-join-type']['check']['got_matches']['GO'] = '^this-answer-never-appears$'
+d['rules']['go-grouping-sets-one-column-per-pair']['check']['got_matches']['GO'] = '^this-answer-never-appears$'
 json.dump(d, open(p, 'w'), indent=2)"
 
 mutate "a reason kept after its cell stopped differing" "no longer differs" \
@@ -878,7 +878,7 @@ mutate "a reason kept after its cell stopped differing" "no longer differs" \
 import json
 p = 'results/relations/differed.json'
 d = json.load(open(p))
-d['cells']['GO']['join/inner/output-nullability'] = 'go-hash-join-ignores-the-join-type'
+d['cells']['GO']['join/inner/output-nullability'] = 'go-grouping-sets-one-column-per-pair'
 json.dump(d, open(p, 'w'), indent=2)"
 
 mutate "a relation participant CI does not retake" "probe/relations/replay.sh accepts" \

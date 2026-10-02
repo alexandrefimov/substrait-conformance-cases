@@ -1,4 +1,4 @@
-GO: column from run 2026-09-18T18:39, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d
+GO: column from run 2026-10-02T17:20, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_set_index                   ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 2
@@ -11,13 +11,13 @@ cross_preserves_nullability                    [l0:i64, l1:i64?, r0:i64?, r1:i64
 ctas_keeps_declared_schema                     []
 ddl_view_root_names_nothing                    ERROR: not implemented
 ddl_view_root_names_the_view                   ERROR: not implemented
-decimal_add_overflow                           [r:decimal<38,9>]
 decimal_add                                    [r:decimal<11,2>]
+decimal_add_overflow                           [r:decimal<38,9>]
 decimal_divide                                 [r:decimal<21,8>]
-decimal_multiply_overflow                      [r:decimal<38,6>]
 decimal_multiply                               [r:decimal<16,3>]
+decimal_multiply_overflow                      [r:decimal<38,6>]
 emit_aggregate                                 [k0:boolean, k1:i64]
-emit_fetch                                     ERROR: invalid relation: missing required Offset field for Fetch Relation
+emit_fetch                                     [k0:boolean, k1:i64]
 emit_filter                                    [k0:boolean, k1:i64]
 emit_join                                      [k0:boolean, k1:i64]
 emit_project                                   [k0:boolean, k1:i64]
@@ -26,31 +26,31 @@ emit_sort                                      [k0:boolean, k1:i64]
 expand_consistent_fields                       ERROR: not implemented
 expand_switching_nullability                   ERROR: not implemented
 join_inner                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
+join_left                                      [c0:i64, c1:i64?, c2:i64?, c3:i64?]
 join_left_anti                                 [c0:i64, c1:i64?]
 join_left_mark                                 ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
 join_left_semi                                 [c0:i64, c1:i64?]
 join_left_single                               [c0:i64, c1:i64?, c2:i64?, c3:i64?]
-join_left                                      [c0:i64, c1:i64?, c2:i64?, c3:i64?]
 join_outer                                     [c0:i64?, c1:i64?, c2:i64?, c3:i64?]
+join_right                                     [c0:i64?, c1:i64?, c2:i64?, c3:i64]
 join_right_anti                                [c0:i64?, c1:i64]
 join_right_mark                                ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
 join_right_semi                                [c0:i64?, c1:i64]
 join_right_single                              [c0:i64?, c1:i64?, c2:i64?, c3:i64]
-join_right                                     [c0:i64?, c1:i64?, c2:i64?, c3:i64]
 joineq_inner                                   [c0:i64, c1:i64?, c2:i64?, c3:i64]
+joineq_left                                    [c0:i64, c1:i64?, c2:i64?, c3:i64?]
 joineq_left_anti                               [c0:i64, c1:i64?]
 joineq_left_mark                               ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
 joineq_left_semi                               [c0:i64, c1:i64?]
 joineq_left_single                             [c0:i64, c1:i64?, c2:i64?, c3:i64?]
-joineq_left                                    [c0:i64, c1:i64?, c2:i64?, c3:i64?]
 joineq_outer                                   [c0:i64?, c1:i64?, c2:i64?, c3:i64?]
+joineq_right                                   [c0:i64?, c1:i64?, c2:i64?, c3:i64]
 joineq_right_anti                              [c0:i64?, c1:i64]
 joineq_right_mark                              ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 0
 joineq_right_semi                              [c0:i64?, c1:i64]
 joineq_right_single                            [c0:i64?, c1:i64?, c2:i64?, c3:i64]
-joineq_right                                   [c0:i64?, c1:i64?, c2:i64?, c3:i64]
-lateral_join_uncorrelated_without_anchor       ERROR: invalid relation: got nil
 lateral_join_uncorrelated                      ERROR: invalid relation: got nil
+lateral_join_uncorrelated_without_anchor       ERROR: invalid relation: got nil
 mirror_argument_nullability                    [c0:i64, c1:i64?, rr:i64, rn:i64?]
 narrowing_count                                [n:i64]
 narrowing_is_not_null                          [r:boolean]
@@ -58,16 +58,16 @@ narrowing_is_null                              [r:boolean]
 phase_final                                    [r:i64?]
 phase_intermediate                             [r:struct<i64, i64>]
 physjoin_hash_inner                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_hash_left_mark                        ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 4
-physjoin_hash_left                             [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_hash_right_semi                       ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+physjoin_hash_left                             [c0:i64, c1:i64?, c2:i64?, c3:i64?]
+physjoin_hash_left_mark                        [c0:i64, c1:i64?, c2:boolean?]
+physjoin_hash_right_semi                       [c0:i64?, c1:i64]
 physjoin_merge_inner                           [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_merge_left_mark                       ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 4
-physjoin_merge_left                            [c0:i64, c1:i64?, c2:i64?, c3:i64]
-physjoin_merge_right_semi                      ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 4
+physjoin_merge_left                            [c0:i64, c1:i64?, c2:i64?, c3:i64?]
+physjoin_merge_left_mark                       [c0:i64, c1:i64?, c2:boolean?]
+physjoin_merge_right_semi                      [c0:i64?, c1:i64]
 physjoin_nested_inner                          ERROR: not implemented
-physjoin_nested_left_mark                      ERROR: not implemented
 physjoin_nested_left                           ERROR: not implemented
+physjoin_nested_left_mark                      ERROR: not implemented
 physjoin_nested_right_semi                     ERROR: not implemented
 precision_timestamp_p00                        [c:precision_timestamp<0>]
 precision_timestamp_p01                        [c:precision_timestamp<1>]
@@ -78,22 +78,22 @@ precision_timestamp_p06                        [c:precision_timestamp<6>]
 precision_timestamp_p07                        [c:precision_timestamp<7>]
 precision_timestamp_p09                        [c:precision_timestamp<9>]
 precision_timestamp_p12                        ERROR: panic: Invalid precision invalid TimePrecision value 12
-read_projection_mask_reordered                 ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
 read_projection_mask                           ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
-setdata_intersection_multiset_all              [v:i64]
+read_projection_mask_reordered                 ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
 setdata_intersection_multiset                  [v:i64]
+setdata_intersection_multiset_all              [v:i64]
 setdata_intersection_primary                   [v:i64]
 setdata_minus_multiset                         [v:i64]
-setdata_minus_primary_all                      [v:i64]
 setdata_minus_primary                          [v:i64]
+setdata_minus_primary_all                      [v:i64]
 setdata_union_all                              [v:i64]
 setdata_union_distinct                         [v:i64]
-setop_intersection_multiset_all                ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_intersection_multiset                    ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
+setop_intersection_multiset_all                ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_intersection_primary                     ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_minus_multiset                           ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
-setop_minus_primary_all                        ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_minus_primary                            ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
+setop_minus_primary_all                        ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_union_all                                ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 setop_union_distinct                           ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64, i64, i64, i64?, i64?, i64?, i64?>, got struct<i64, i64, i6
 stringlen_declared                             [c0:varchar<10>, c1:fixedchar<5>, c2:fixedbinary<4>, c3:string]
@@ -105,6 +105,6 @@ virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]
 virtual_table_row_nullable_in_required_column  [c:i32]
 virtual_table_row_required_in_nullable_column  [c:i32?]
-window_bound_offset_expr                       ERROR: not implemented
 window_bound_offset                            ERROR: not implemented
+window_bound_offset_expr                       ERROR: not implemented
 window_output_order                            ERROR: not implemented

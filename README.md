@@ -16,7 +16,7 @@ answer and the expectation beside each cell.
 
 ## If your project is here
 
-Eighteen of the twenty-three reasons behind a divergence link an issue or a PR in the project it is
+Seventeen of the twenty-two reasons behind a divergence link an issue or a PR in the project it is
 about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
 DuckDB's extension, Arrow. Yours may be among them already.
 
@@ -63,7 +63,7 @@ of its type system hatched.
 | --- | ---: | ---: | ---: |
 | substrait-java | 92 | 3 | 3 |
 | substrait-python | 79 | 17 | 2 |
-| substrait-go | 62 | 4 | 32 |
+| substrait-go | 69 | 2 | 27 |
 | substrait-validator | 64 | 14 | 20 |
 | Isthmus/Calcite | 57 | 4 | 37 |
 | DataFusion | 59 | 7 | 32 |
@@ -86,7 +86,7 @@ they answer the original.
 
 *Differed* means the answer disagrees
 with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 92 of them, 16 marked as something other
+`differed.json` carries a reason written by hand for all 90 of them, 16 marked as something other
 than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
 column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
 nullability, nor do Gluten's — and one that stops short says so in the head of its
@@ -151,7 +151,7 @@ way from a report back to the cases that reproduce it.
 </picture>
 
 One story per column. substrait-java answers 58 of the 63 scored cases and refuses 5. substrait-go
-refuses 28, eight of them the set operations, whose inputs it requires to agree on a nullability
+refuses 21, eight of them the set operations, whose inputs it requires to agree on a nullability
 these cases deliberately vary. DuckDB and DataFusion execute, so they are the two measured against
 the rows that 47 of the cases assert. DuckDB's 11 divergences all show in the schema, five of them
 in the rows as well, and so do DataFusion's 3, two of them in the rows: so far the rows have

@@ -598,7 +598,7 @@
 <text x="14.0" y="997.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">emit_fetch</text>
 <rect x="270.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="332.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="394.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="394.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="518.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="580.0" y="988.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
@@ -988,7 +988,7 @@
 <text x="14.0" y="1669.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left</text>
 <rect x="270.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="332.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#e05a58"/>
-<rect x="394.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#e05a58"/>
+<rect x="394.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -998,7 +998,7 @@
 <text x="14.0" y="1682.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left_mark</text>
 <rect x="270.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="332.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="394.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="394.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1673.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -1008,7 +1008,7 @@
 <text x="14.0" y="1695.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_right_semi</text>
 <rect x="270.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="332.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="394.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="394.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1686.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -1028,7 +1028,7 @@
 <text x="14.0" y="1721.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left</text>
 <rect x="270.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="332.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#e05a58"/>
-<rect x="394.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#e05a58"/>
+<rect x="394.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -1038,7 +1038,7 @@
 <text x="14.0" y="1734.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left_mark</text>
 <rect x="270.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="332.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="394.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="394.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1725.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -1048,7 +1048,7 @@
 <text x="14.0" y="1747.5" fill="#b3b6b3" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_right_semi</text>
 <rect x="270.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="332.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="394.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="394.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="456.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="518.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="580.0" y="1738.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
@@ -1161,8 +1161,8 @@
 <rect x="642.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="704.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="766.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<text x="14.0" y="1952.0" fill="#7e827f" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 484 matched, 76 divergences, 10 unresolved, 6 at a type-system boundary, 306 not accepted, 90 without an expectation.</text>
+<text x="14.0" y="1952.0" fill="#7e827f" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 491 matched, 74 divergences, 10 unresolved, 6 at a type-system boundary, 301 not accepted, 90 without an expectation.</text>
 <text x="14.0" y="1966.0" fill="#7e827f" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">9 of these cases each pin a rule no other case pins; 3 rules are pinned by none.</text>
-<text x="14.0" y="1964.0" fill="#7e827f" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-09-30, 2026-10-02 · java bc050d37 · python 0.34.0 · go df007ba63b7d · validator 0a5d3d6 · Isthmus bc050d37 · DataFusion c922f8811</text>
+<text x="14.0" y="1964.0" fill="#7e827f" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-09-30, 2026-10-02 · java bc050d37 · python 0.34.0 · go 8c239c67dd92 · validator 0a5d3d6 · Isthmus bc050d37 · DataFusion c922f8811</text>
 <text x="14.0" y="1975.0" fill="#7e827f" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB 1.5.5 · Spark 3.5.4 · Acero 25.0.1</text>
 </svg>

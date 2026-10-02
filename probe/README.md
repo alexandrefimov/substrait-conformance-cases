@@ -126,7 +126,7 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 | substrait-java, Isthmus/Calcite | `bc050d37` in the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
 | substrait-python | 0.34.0 | `python_one.py` |
 | substrait-validator | built from `main` at `0a5d3d6` | `validator_one.py` |
-| substrait-go | v9 at `df007ba63b7d` | `go/main.go` |
+| substrait-go | v9 at `8c239c67dd92` | `go/main.go` |
 | DataFusion | `c922f8811` | `datafusion_corpus_probe.rs` |
 | DuckDB | 1.5.5, substrait community extension | `duckdb_one.py` |
 | Acero | pyarrow 25.0.1 | `acero_one.py` |
