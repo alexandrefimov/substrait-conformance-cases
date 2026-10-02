@@ -1,7 +1,7 @@
-ISTHMUS: column from run 2026-09-18T18:40, substrait-java fff63906
+ISTHMUS: column from run 2026-10-02T16:02, substrait-java bc050d37
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
-aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:BIGINT]
+aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:INTEGER]
 aggregate_grouping_sets_declared_order         [c:VARCHAR?, a:BIGINT?]
 aggregate_grouping_then_measure                [c:VARCHAR, $f1:BIGINT?]
 aggregate_sum_i64                              [$f0:BIGINT?]
@@ -11,11 +11,11 @@ cross_preserves_nullability                    [c0:BIGINT, c1:BIGINT?, c00:BIGIN
 ctas_keeps_declared_schema                     [total:BIGINT, doubled:INTEGER?]
 ddl_view_root_names_nothing                    ERROR: UnsupportedOperationException: null
 ddl_view_root_names_the_view                   ERROR: UnsupportedOperationException: null
-decimal_add_overflow                           [$f4:DECIMAL(38,9)]
 decimal_add                                    [$f4:DECIMAL(11,2)]
+decimal_add_overflow                           [$f4:DECIMAL(38,9)]
 decimal_divide                                 [$f4:DECIMAL(21,8)]
-decimal_multiply_overflow                      [$f4:DECIMAL(38,6)]
 decimal_multiply                               [$f4:DECIMAL(16,3)]
+decimal_multiply_overflow                      [$f4:DECIMAL(38,6)]
 emit_aggregate                                 [c2:BOOLEAN, c0:BIGINT]
 emit_fetch                                     [c2:BOOLEAN, c0:BIGINT]
 emit_filter                                    [c2:BOOLEAN, c0:BIGINT]
@@ -26,31 +26,31 @@ emit_sort                                      [c2:BOOLEAN, c0:BIGINT]
 expand_consistent_fields                       ERROR: UnsupportedOperationException: null
 expand_switching_nullability                   ERROR: UnsupportedOperationException: null
 join_inner                                     [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+join_left                                      [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
 join_left_anti                                 [c0:BIGINT, c1:BIGINT?]
 join_left_mark                                 ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK
 join_left_semi                                 [c0:BIGINT, c1:BIGINT?]
 join_left_single                               ERROR: UnsupportedOperationException: Unsupported join type: LEFT_SINGLE
-join_left                                      [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
 join_outer                                     [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+join_right                                     [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 join_right_anti                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_ANTI
 join_right_mark                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_MARK
 join_right_semi                                ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
 join_right_single                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
-join_right                                     [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 joineq_inner                                   [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
+joineq_left                                    [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
 joineq_left_anti                               [c0:BIGINT, c1:BIGINT?]
 joineq_left_mark                               ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK
 joineq_left_semi                               [c0:BIGINT, c1:BIGINT?]
 joineq_left_single                             ERROR: UnsupportedOperationException: Unsupported join type: LEFT_SINGLE
-joineq_left                                    [c0:BIGINT, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
 joineq_outer                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT?]
+joineq_right                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
 joineq_right_anti                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_ANTI
 joineq_right_mark                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_MARK
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type: RIGHT_SINGLE
-joineq_right                                   [c0:BIGINT?, c1:BIGINT?, c00:BIGINT?, c10:BIGINT]
-lateral_join_uncorrelated_without_anchor       ERROR: PARSE FAILED: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row via an outer reference
 lateral_join_uncorrelated                      ERROR: UnsupportedOperationException: Rel LateralJoin{relAnchor=1, left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, condition=BoolLiteral{nullable=false, value=true}, joinType=INNER} of type io.substrait.relation.ImmutableLateralJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+lateral_join_uncorrelated_without_anchor       ERROR: PARSE FAILED: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row via an outer reference
 mirror_argument_nullability                    [c0:BIGINT, c1:BIGINT?, $f2:BIGINT, $f3:BIGINT?]
 narrowing_count                                [$f0:BIGINT]
 narrowing_is_not_null                          [$f1:BOOLEAN]
@@ -58,16 +58,16 @@ narrowing_is_null                              [$f1:BOOLEAN]
 phase_final                                    [$f0:BIGINT?]
 phase_intermediate                             [$f0:ROW[f0:BIGINT, f1:BIGINT]]
 physjoin_hash_inner                            ERROR: UnsupportedOperationException: Rel HashJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=INNER} of type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
-physjoin_hash_left_mark                        ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_left                             ERROR: UnsupportedOperationException: Rel HashJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=LEFT} of type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+physjoin_hash_left_mark                        ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_right_semi                       ERROR: UnsupportedOperationException: Rel HashJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=RIGHT_SEMI} of type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 physjoin_merge_inner                           ERROR: UnsupportedOperationException: Rel MergeJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=INNER} of type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
-physjoin_merge_left_mark                       ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_left                            ERROR: UnsupportedOperationException: Rel MergeJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=LEFT} of type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+physjoin_merge_left_mark                       ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_right_semi                      ERROR: UnsupportedOperationException: Rel MergeJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, keys=[ComparisonJoinKey{left=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, right=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, comparison=SimpleComparison{type=EQ}}], joinType=RIGHT_SEMI} of type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 physjoin_nested_inner                          ERROR: UnsupportedOperationException: Rel NestedLoopJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, condition=BoolLiteral{nullable=false, value=true}, joinType=INNER} of type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
-physjoin_nested_left_mark                      ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_left                           ERROR: UnsupportedOperationException: Rel NestedLoopJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, condition=BoolLiteral{nullable=false, value=true}, joinType=LEFT} of type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+physjoin_nested_left_mark                      ERROR: PARSE FAILED: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_right_semi                     ERROR: UnsupportedOperationException: Rel NestedLoopJoin{left=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, right=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}, names=[c0, c1]}, names=[t_nr]}, condition=BoolLiteral{nullable=false, value=true}, joinType=RIGHT_SEMI} of type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 precision_timestamp_p00                        [c:TIMESTAMP(0)]
 precision_timestamp_p01                        [c:TIMESTAMP(1)]
@@ -75,25 +75,25 @@ precision_timestamp_p02                        [c:TIMESTAMP(2)]
 precision_timestamp_p03                        [c:TIMESTAMP(3)]
 precision_timestamp_p04                        [c:TIMESTAMP(4)]
 precision_timestamp_p06                        [c:TIMESTAMP(6)]
-precision_timestamp_p07                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 7, max precision in Calcite type system is set to 6
-precision_timestamp_p09                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 9, max precision in Calcite type system is set to 6
-precision_timestamp_p12                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 12, max precision in Calcite type system is set to 6
-read_projection_mask_reordered                 [c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]
-read_projection_mask                           [c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]
-setdata_intersection_multiset_all              [v:BIGINT]
+precision_timestamp_p07                        [c:TIMESTAMP(7)]
+precision_timestamp_p09                        [c:TIMESTAMP(9)]
+precision_timestamp_p12                        ERROR: IllegalArgumentException: unsupported precision_timestamp precision 12, max precision in Calcite type system is set to 9
+read_projection_mask                           [c0:BIGINT, c2:BOOLEAN]
+read_projection_mask_reordered                 [c2:BOOLEAN, c0:BIGINT]
 setdata_intersection_multiset                  [v:BIGINT]
+setdata_intersection_multiset_all              [v:BIGINT]
 setdata_intersection_primary                   ERROR: UnsupportedOperationException: Unsupported set operation: INTERSECTION_PRIMARY
 setdata_minus_multiset                         ERROR: UnsupportedOperationException: Unsupported set operation: MINUS_MULTISET
-setdata_minus_primary_all                      [v:BIGINT]
 setdata_minus_primary                          [v:BIGINT]
+setdata_minus_primary_all                      [v:BIGINT]
 setdata_union_all                              [v:BIGINT]
 setdata_union_distinct                         [v:BIGINT]
-setop_intersection_multiset_all                [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 setop_intersection_multiset                    [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_intersection_multiset_all                [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 setop_intersection_primary                     ERROR: UnsupportedOperationException: Unsupported set operation: INTERSECTION_PRIMARY
 setop_minus_multiset                           ERROR: UnsupportedOperationException: Unsupported set operation: MINUS_MULTISET
-setop_minus_primary_all                        [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 setop_minus_primary                            [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
+setop_minus_primary_all                        [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 setop_union_all                                [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 setop_union_distinct                           [c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]
 stringlen_declared                             [c0:VARCHAR(10), c1:CHAR(5), c2:BINARY(4), c3:VARCHAR]
@@ -105,6 +105,6 @@ virtual_table_literal_type_differs_from_schema ERROR: PARSE FAILED: IllegalArgum
 virtual_table_row_null_in_required_column      ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_nullable_in_required_column  ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_required_in_nullable_column  ERROR: PARSE FAILED: IllegalArgumentException: Row field type (I32{nullable=false}) does not match schema field type (I32{nullable=true})
-window_bound_offset_expr                       ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=VirtualTableScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}]}, names=[v]}, rows=[NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=1}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=2}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=3}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=4}]}]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, direction=ASC_NULLS_LAST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 window_bound_offset                            ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=VirtualTableScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}]}, names=[v]}, rows=[NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=1}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=2}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=3}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=4}]}]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, direction=ASC_NULLS_LAST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+window_bound_offset_expr                       ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=VirtualTableScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}]}, names=[v]}, rows=[NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=1}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=2}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=3}]}, NestedStruct{nullable=false, fields=[I64Literal{nullable=false, value=4}]}]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, direction=ASC_NULLS_LAST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
 window_output_order                            ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, Str{nullable=false}, Bool{nullable=false}]}, names=[c0, c1, c2]}, names=[t_mix]}, windowFunctions=[WindowRelFunctionInvocation{declaration=row_number:, arguments=[], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Unbounded{}, upperBound=Unbounded{}, boundsType=UNSPECIFIED}, WindowRelFunctionInvocation{declaration=cume_dist:, arguments=[], options=[], outputType=FP64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Unbounded{}, upperBound=Unbounded{}, boundsType=UNSPECIFIED}], partitionExpressions=[], sorts=[]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.

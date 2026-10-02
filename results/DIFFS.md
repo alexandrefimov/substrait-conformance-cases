@@ -15,7 +15,7 @@ finding to its reproducers.
 
 ## substrait-java — 3 cases
 
-`results/JAVA.txt`, substrait-java fff63906.
+`results/JAVA.txt`, substrait-java bc050d37.
 
 ### `java-ddl-derives-the-table-schema`
 
@@ -175,21 +175,9 @@ Recorded as a type this participant never resolved.
 | [precision_timestamp_p09](../derived-schema/precision_timestamp_p09.json) | `[precision_timestamp(9)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 | [precision_timestamp_p12](../derived-schema/precision_timestamp_p12.json) | `[precision_timestamp(12)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 
-## Isthmus/Calcite — 6 cases
+## Isthmus/Calcite — 4 cases
 
-`results/ISTHMUS.txt`, substrait-java fff63906.
-
-### `grouping-set-index-width`
-
-The i32 column an aggregate with more than one grouping set appends comes back at another width: Isthmus returns BIGINT and DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct in both.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-java/issues/1162 https://github.com/substrait-io/substrait-java/pull/1287
-
-The issue reports the i64 on a round trip through Calcite; the saved answer is the Calcite schema of the same conversion, where SubstraitRelNodeConverter types the GROUP_ID call it adds as a required i64. The PR proposes the fix and is not merged; this links it, not a rerun of its head.
-
-| case | expected | Isthmus/Calcite answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[c:VARCHAR?, a:BIGINT?, $f2:BIGINT]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
+`results/ISTHMUS.txt`, substrait-java bc050d37.
 
 ### `isthmus-setop-nullable-if-any-input-is`
 
@@ -205,18 +193,6 @@ The updated reproducer in the issue covers these four intersection and minus ope
 | [setop_intersection_multiset_all](../derived-schema/setop_intersection_multiset_all.json) | `[i64, i64, i64, i64, i64, i64, i64, i64?]` | `[c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]` | the Output Type Derivation Examples table in the spec |
 | [setop_minus_primary](../derived-schema/setop_minus_primary.json) | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | `[c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]` | the Output Type Derivation Examples table in the spec |
 | [setop_minus_primary_all](../derived-schema/setop_minus_primary_all.json) | `[i64, i64, i64, i64, i64?, i64?, i64?, i64?]` | `[c0:BIGINT, c1:BIGINT?, c2:BIGINT?, c3:BIGINT?, c4:BIGINT?, c5:BIGINT?, c6:BIGINT?, c7:BIGINT?]` | the Output Type Derivation Examples table in the spec |
-
-### `read-projection-ignored`
-
-ReadRel.projection masks the read's columns before anything else; Isthmus returns the unmasked schema, all three columns of it, under the schema's own names.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-java/pull/1280
-
-A fix, opened without a separate issue.
-
-| case | expected | Isthmus/Calcite answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [read_projection_mask](../derived-schema/read_projection_mask.json) | `[i64, bool]` | `[c0:BIGINT, c1:VARCHAR, c2:BOOLEAN]` | Read / Direct Output Order: the schema after projection is applied |
 
 ## DataFusion — 10 cases
 
@@ -270,7 +246,7 @@ Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/
 
 ### `grouping-set-index-width`
 
-The i32 column an aggregate with more than one grouping set appends comes back at another width: Isthmus returns BIGINT and DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct in both.
+The i32 column an aggregate with more than one grouping set appends comes back as DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct.
 
 Recorded as a divergence, reported. https://github.com/apache/datafusion/issues/25208
 

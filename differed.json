@@ -35,22 +35,6 @@
     "all_fields_are": "unresolved"
    }
   },
-  "read-projection-ignored": {
-   "kind": "divergence",
-   "what": "ReadRel.projection masks the read's columns before anything else; Isthmus returns the unmasked schema, all three columns of it, under the schema's own names.",
-   "check": {
-    "first_input": true
-   },
-   "triage": {
-    "ISTHMUS": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-java/pull/1280"
-     ],
-     "note": "a fix, opened without a separate issue"
-    }
-   }
-  },
   "grouping-key-nullability": {
    "kind": "divergence",
    "what": "A field grouped on by every set stays required; one absent from some set becomes nullable. DataFusion makes the key nullable.",
@@ -402,22 +386,13 @@
   },
   "grouping-set-index-width": {
    "kind": "divergence",
-   "what": "The i32 column an aggregate with more than one grouping set appends comes back at another width: Isthmus returns BIGINT and DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct in both.",
+   "what": "The i32 column an aggregate with more than one grouping set appends comes back as DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct.",
    "check": {
     "got_matches": {
-     "ISTHMUS": "^\\[c:VARCHAR\\?, a:BIGINT\\?, \\$f2:BIGINT\\]$",
      "DATAFUSION": "^\\[c:Utf8\\?, a:Int64\\?, g:UInt8\\]$"
     }
    },
    "triage": {
-    "ISTHMUS": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-java/issues/1162",
-      "https://github.com/substrait-io/substrait-java/pull/1287"
-     ],
-     "note": "the issue reports the i64 on a round trip through Calcite; the saved answer is the Calcite schema of the same conversion, where SubstraitRelNodeConverter types the GROUP_ID call it adds as a required i64. The PR proposes the fix and is not merged; this links it, not a rerun of its head"
-    },
     "DATAFUSION": {
      "outcome": "reported",
      "at": [
@@ -505,8 +480,6 @@
    "physjoin_merge_left": "go-physical-join-keeps-input-nullability"
   },
   "ISTHMUS": {
-   "aggregate_grouping_set_index": "grouping-set-index-width",
-   "read_projection_mask": "read-projection-ignored",
    "setop_intersection_multiset": "isthmus-setop-nullable-if-any-input-is",
    "setop_intersection_multiset_all": "isthmus-setop-nullable-if-any-input-is",
    "setop_minus_primary": "isthmus-setop-nullable-if-any-input-is",
