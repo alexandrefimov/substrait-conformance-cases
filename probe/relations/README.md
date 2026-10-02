@@ -84,7 +84,7 @@ where.
 Each reason carries a test of an output property, so a judgement that has stopped describing the
 answer fails rather than sitting there. Where the cause is one the 98-case corpus already records,
 the reason keeps that file's id under `same_as` instead of restating it: one engine should not get
-two stories. Six of the ten do, which is the relation cases reaching the same defects along
+two stories. Five of the nine do, which is the relation cases reaching the same defects along
 different plans — the emit mapping on four relations that corpus does not reach, among them.
 
 ## Adding a participant

@@ -1,4 +1,4 @@
-DATAFUSION: column from run 2026-09-18T18:39, datafusion cc29ea12a
+DATAFUSION: column from run 2026-10-02T18:20, datafusion c922f8811
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 aggregate_grouping_field_shared_by_sets        [c:Utf8?, a:Int64?]
@@ -57,7 +57,7 @@ narrowing_count                                [n:Int64]
 narrowing_is_not_null                          [r:Boolean]
 narrowing_is_null                              [r:Boolean]
 phase_final                                    [r:Float64?]
-phase_intermediate                             ERROR: Substrait error: Names list must match exactly to nested schema, but found 1 uses for 3 names
+phase_intermediate                             ERROR: This feature is not implemented: Unsupported aggregation phase: AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE
 physjoin_hash_inner                            ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
 physjoin_hash_left                             ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
 physjoin_hash_left_mark                        ERROR: This feature is not implemented: HashJoin(HashJoinRel { common: Some(RelCommon { hint: None, advanced_extension: None, emit_kind: Some(Direct(Direct)) }), left:
@@ -89,9 +89,9 @@ setdata_minus_primary                          [v:Int64]
 setdata_minus_primary_all                      [v:Int64]
 setdata_union_all                              [v:Int64]
 setdata_union_distinct                         [v:Int64]
-setop_intersection_multiset                    [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
-setop_intersection_multiset_all                [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
-setop_intersection_primary                     [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
+setop_intersection_multiset                    [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64, c6:Int64, c7:Int64?]
+setop_intersection_multiset_all                [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64, c6:Int64, c7:Int64?]
+setop_intersection_primary                     [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64, c5:Int64?, c6:Int64?, c7:Int64?]
 setop_minus_multiset                           ERROR: This feature is not implemented: Unsupported set operator: MinusMultiset
 setop_minus_primary                            [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]
 setop_minus_primary_all                        [c0:Int64, c1:Int64, c2:Int64, c3:Int64, c4:Int64?, c5:Int64?, c6:Int64?, c7:Int64?]

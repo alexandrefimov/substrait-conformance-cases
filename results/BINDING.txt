@@ -1,4 +1,5 @@
 Whether the function a call names is resolved: probe/binding_matrix.sh, 2026-09-17.
+DataFusion row retaken at c922f8811, 2026-10-02.
 
 Only Plan.extensions[].extensionFunction.name is rewritten. Arguments, schemas and declared output
 types stay exactly as they were, so nothing here can be refused for a shape the plan no longer has.
@@ -38,7 +39,7 @@ VALIDATOR   18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           42
 DUCKDB      17 / 0 / 19           8 / 0 / 9             42 / 0 / 43           17 / 22 / 43
 GO          18 / 0 / 19           8 / 0 / 9             16 / 24 / 43          37 / 5 / 43
 ACERO       18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           24 / 13 / 43
-DATAFUSION  18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           19 / 22 / 43
+DATAFUSION  18 / 0 / 19           8 / 0 / 9             42 / 0 / 43           20 / 22 / 43
 ISTHMUS     18 / 0 / 19           6 / 0 / 9             13 / 20 / 43          13 / 20 / 43
 SPARK       18 / 0 / 19           8 / 0 / 9             13 / 18 / 43          13 / 18 / 43
 
@@ -57,6 +58,9 @@ scalar function with this key was found."
 
 DuckDB, DataFusion and Acero resolve the short name against their own registry rather than against
 the declaration. add:str_str binds, because add is one of their own; no_such_function does not.
+
+DataFusion rejects phase_intermediate before function lookup. The unknown rewrite therefore returns
+the same unsupported-phase error as the original; that unchanged refusal says nothing about binding.
 
 substrait-python resolves nothing and says nothing: it answers every rewrite with the schema it
 answered the original with, and prints no diagnostic at all.

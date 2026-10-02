@@ -127,7 +127,7 @@ fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you s
 | substrait-python | 0.34.0 | `python_one.py` |
 | substrait-validator | built from `main` at `0a5d3d6` | `validator_one.py` |
 | substrait-go | v9 at `8c239c67dd92` | `go/main.go` |
-| DataFusion | `cc29ea12a` | `datafusion_corpus_probe.rs` |
+| DataFusion | `c922f8811` | `datafusion_corpus_probe.rs` |
 | DuckDB | 1.5.5, substrait community extension | `duckdb_one.py` |
 | Acero | pyarrow 25.0.1 | `acero_one.py` |
 | Spark | 3.5.4 | `SparkSchemaOf.java` |
@@ -346,8 +346,8 @@ Choose an unused example filename if `corpus_producer.rs` already exists. The mo
 checks `count`, `sum`, `avg` and `min` over an empty named table and reports whether
 each exported call carries `output_type`. It does not infer a missing type or pass
 the plan through a consumer. `--check` fails if a declaration is missing. This
-mode was verified against DataFusion main at `8a9228164`; the matrix's separate
-version pin continues to describe its saved measurements.
+mode was verified at `c922f8811`: all four calls carry `output_type`. This checks
+producer declarations only; aggregation phases and the declared AVG contract are separate checks.
 
 **Where each implementation differs.** `diffs.py` writes `results/DIFFS.md`, which is `differed.json`
 joined to the columns and the expectations: per participant, the cases that differ, the expectation,

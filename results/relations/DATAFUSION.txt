@@ -1,4 +1,4 @@
-DATAFUSION: relations column from run 2026-09-12T00:13, datafusion cc29ea12a, substrait crate 0.63.0
+DATAFUSION: relations column from run 2026-10-02T18:24, datafusion c922f8811, substrait crate 0.63.0
 Corpus tests/relations at fingerprint 996a7b806bf4, 71 cases.
 BOUNDARY: DataFusion executes and its types carry nullability, so a `score` line is compared on the whole schema and, where the case declares rows, on the rows too.
 The schema is the one its consumer derives for the logical plan; the rows are what executing that plan returns.
@@ -54,9 +54,9 @@ score   read/projection/mask-drops-a-column                       [c0:i64, c2:bo
 observe read/projection/mask-reorders                             [first:bool, second:i64]
 score   read/virtual_table/literal-rows                           [n:i64, s:string?] rows (1, 'a') (2, null)
 score   reference/subtree/maintains-the-referred-output           ERROR: This feature is not implemented: Substrait plan with more than 1 relation trees not supported. Number of relation trees: 2
-score   set/intersection_multiset/output-nullability              [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
-score   set/intersection_multiset_all/output-nullability          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
-score   set/intersection_primary/output-nullability               [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
+score   set/intersection_multiset/output-nullability              [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+score   set/intersection_multiset_all/output-nullability          [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64, c6:i64, c7:i64?]
+score   set/intersection_primary/output-nullability               [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64, c5:i64?, c6:i64?, c7:i64?]
 score   set/minus_multiset/output-nullability                     ERROR: This feature is not implemented: Unsupported set operator: MinusMultiset
 score   set/minus_primary/output-nullability                      [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 score   set/minus_primary_all/output-nullability                  [c0:i64, c1:i64, c2:i64, c3:i64, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
