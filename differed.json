@@ -185,21 +185,6 @@
     }
    }
   },
-  "validator-setop-takes-the-first-input": {
-   "kind": "divergence",
-   "what": "The validator returns the first input's nullability for every set operation, union included.",
-   "check": {
-    "first_input": true
-   },
-   "triage": {
-    "VALIDATOR": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-validator/issues/579"
-     ]
-    }
-   }
-  },
   "datafusion-intersection-takes-the-first-input": {
    "kind": "divergence",
    "what": "DataFusion returns the first input's nullability for intersection. Its union shows this is not what it does everywhere - that answer is nullable wherever any input is, which the first input is not - while minus cannot tell the two apart, because there the spec's pattern is the first input.",
@@ -228,22 +213,6 @@
       "https://github.com/substrait-io/substrait-python/issues/267"
      ],
      "note": "267 is the ten left, right, outer and single joins, reproduced by probe/python_nullability.py. 263 was the four mark joins; its fix (substrait-python PR 265) shipped in 0.33.0, and those cells match at that pin. 267 is written about JoinRel, and the physjoin_* cells show the same answer arriving through HashJoinRel, MergeJoinRel and NestedLoopJoinRel, which it does not mention"
-    }
-   }
-  },
-  "validator-join-concatenates-the-inputs": {
-   "kind": "divergence",
-   "what": "The validator applies the join type on inner, outer, left, right, left semi, left anti and left single, all of which match - plain right included, which is the point of the contrast. On the five it leaves unimplemented - right semi, right anti, right single and a mark join on either side - the concatenated inputs stay in place as the schema, with their own nullability and no mark column.",
-   "check": {
-    "inputs_concatenated": {}
-   },
-   "triage": {
-    "VALIDATOR": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-validator/issues/580"
-     ],
-     "note": "the two right-single cells are adjacent evidence, outside what that issue reports"
     }
    }
   },
@@ -576,16 +545,6 @@
    "aggregate_grouping_sets_declared_order": "validator-aggregate-gives-i32-and-unresolved",
    "aggregate_grouping_then_measure": "validator-aggregate-returns-one-column",
    "emit_aggregate": "validator-does-not-resolve",
-   "join_left_mark": "validator-join-concatenates-the-inputs",
-   "join_right_anti": "validator-join-concatenates-the-inputs",
-   "join_right_mark": "validator-join-concatenates-the-inputs",
-   "join_right_semi": "validator-join-concatenates-the-inputs",
-   "join_right_single": "validator-join-concatenates-the-inputs",
-   "joineq_left_mark": "validator-join-concatenates-the-inputs",
-   "joineq_right_anti": "validator-join-concatenates-the-inputs",
-   "joineq_right_mark": "validator-join-concatenates-the-inputs",
-   "joineq_right_semi": "validator-join-concatenates-the-inputs",
-   "joineq_right_single": "validator-join-concatenates-the-inputs",
    "precision_timestamp_p00": "validator-does-not-resolve",
    "precision_timestamp_p01": "validator-does-not-resolve",
    "precision_timestamp_p02": "validator-does-not-resolve",
@@ -594,13 +553,7 @@
    "precision_timestamp_p06": "validator-does-not-resolve",
    "precision_timestamp_p07": "validator-does-not-resolve",
    "precision_timestamp_p09": "validator-does-not-resolve",
-   "precision_timestamp_p12": "validator-does-not-resolve",
-   "setop_intersection_multiset": "validator-setop-takes-the-first-input",
-   "setop_intersection_multiset_all": "validator-setop-takes-the-first-input",
-   "setop_intersection_primary": "validator-setop-takes-the-first-input",
-   "setop_union_all": "validator-setop-takes-the-first-input",
-   "setop_union_distinct": "validator-setop-takes-the-first-input",
-   "virtual_table_emit_mapping": "validator-does-not-resolve"
+   "precision_timestamp_p12": "validator-does-not-resolve"
   },
   "JAVA": {
    "ddl_view_root_names_nothing": "java-ddl-derives-the-table-schema",
