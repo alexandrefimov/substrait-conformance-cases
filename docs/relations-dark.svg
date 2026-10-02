@@ -229,34 +229,39 @@
 <rect x="307.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<rect x="439.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="608.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="14.0" y="622.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="629.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_left_single/wire-9</text>
 <rect x="307.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="373.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<rect x="439.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="#e05a58"/>
+<rect x="439.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="621.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="14.0" y="635.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="642.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_right_anti/wire-8</text>
 <rect x="307.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<rect x="439.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="634.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="14.0" y="648.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="655.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">hash_right_semi/wire-6</text>
 <rect x="307.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<rect x="439.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="647.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="14.0" y="661.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="668.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">merge_left_anti/wire-7</text>
 <rect x="307.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
-<rect x="439.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="660.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
 <rect x="14.0" y="674.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="681.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">nested_loop_left_anti/wire-7</text>
@@ -345,7 +350,8 @@
 <rect x="307.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="439.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="896.0" width="58.0" height="10.0" rx="1.5" fill="#e05a58"/>
 <rect x="14.0" y="910.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="917.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">on_join/mapping-on-a-join</text>
@@ -402,14 +408,16 @@
 <rect x="307.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="439.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="1023.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="14.0" y="1037.0" width="3.0" height="8.0" rx="1.5" fill="#7e827f"/>
 <text x="23.0" y="1044.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">offset-and-count/window</text>
 <rect x="307.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <rect x="307.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="373.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
-<rect x="439.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="none" stroke="#2b2f35" stroke-width="0.8"/>
+<rect x="439.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
+<rect x="439.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="505.0" y="1036.0" width="58.0" height="10.0" rx="1.5" fill="#363a40"/>
 <text x="14.0" y="1060.0" fill="#7e827f" font-size="9.0" font-weight="500" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">Window</text>
 <text x="23.0" y="1075.0" fill="#b3b6b3" font-size="8.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">lead/nullable-whatever-the-argument</text>
@@ -512,8 +520,8 @@
 <text x="14.0" y="1401.0" fill="#7e827f" font-size="8.5" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">the bar left of a case marks one that asserts rows</text>
 <text x="14.0" y="1414.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-java  bc050d37, substrait protos 0.102.0, JDK 17.0.20.1</text>
 <text x="14.0" y="1425.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DataFusion      cc29ea12a, substrait crate 0.63.0</text>
-<text x="14.0" y="1436.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-go    substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d, substrait-protobuf/go v0.85.0,</text>
+<text x="14.0" y="1436.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">substrait-go    substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92, substrait-protobuf/go v0.85.0,</text>
 <text x="14.0" y="1447.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" xml:space="preserve">                pinning substrait v0.87.0</text>
 <text x="14.0" y="1458.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB          1.5.5, substrait extension 4ea63dd</text>
-<text x="14.0" y="1469.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-12, 2026-09-18, 2026-10-02; probe/relations/replay.sh reproduces one</text>
+<text x="14.0" y="1469.0" fill="#7e827f" font-size="7.5" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-12, 2026-10-02; probe/relations/replay.sh reproduces one</text>
 </svg>

@@ -104,20 +104,6 @@
         }
       }
     },
-    "go-hash-join-ignores-the-join-type": {
-      "kind": "divergence",
-      "what": "HashJoinRel.directOutputSchema at plan/relations.go:2111 is left.RecordType().Concat(right.RecordType()) and never reads the join type, so every physical join returns both inputs with their own nullability. Three of the four cases emit one side only and are refused on arity instead; this one asks for four columns, so it is accepted, and b0 comes back required where left single makes the right side nullable.",
-      "check": {
-        "got_matches": {
-          "GO": "^\\[a0:i64, a1:i64\\?, b0:i64, b1:i64\\?\\]$"
-        }
-      },
-      "triage": {
-        "GO": {
-          "outcome": "open"
-        }
-      }
-    },
     "go-grouping-sets-one-column-per-pair": {
       "kind": "divergence",
       "what": "AggregateRel.directOutputSchema at plan/relations.go:1175 walks the grouping references of every set and appends the referenced expression's type for each, so an expression named by two sets contributes two columns and everything after it shifts. It also never appends the trailing i32 of the grouping set index, and does not widen a grouping column absent from some set. With disjoint sets the two orders coincide and only the missing i32 shows, as an arity refusal on the case beside this one.",
@@ -198,7 +184,6 @@
     },
     "GO": {
       "aggregate/grouping_sets/overlapping-sets": "go-grouping-sets-one-column-per-pair",
-      "join_physical/hash_left_single/wire-9": "go-hash-join-ignores-the-join-type",
       "write/no_output/returns-nothing": "go-write-returns-names-without-types"
     },
     "DATAFUSION": {

@@ -96,22 +96,9 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-py
 | [physjoin_merge_left](../derived-schema/physjoin_merge_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
 | [physjoin_nested_left](../derived-schema/physjoin_nested_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
 
-## substrait-go — 4 cases
+## substrait-go — 2 cases
 
-`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d.
-
-### `go-physical-join-keeps-input-nullability`
-
-A left join widens the right side to nullable. substrait-go does that for JoinRel - join_left and joineq_left both match - and not for HashJoinRel or MergeJoinRel, where it returns the two inputs concatenated with their own nullability. Its nested-loop join is unimplemented and its physical mark joins fail on the output-name count instead, so these two cells are where the difference is visible as a schema.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-go/issues/330
-
-The contrast is inside this column: the same rule, the same two inputs and the same join type, right on the logical message and wrong on two physical ones. The report names the cause, HashJoinRel and MergeJoinRel concatenating their inputs without reading the join type. Whether the other nine join types behave the same way is not established here, because these cases carry only inner, left and left mark.
-
-| case | expected | substrait-go answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [physjoin_hash_left](../derived-schema/physjoin_hash_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
-| [physjoin_merge_left](../derived-schema/physjoin_merge_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
+`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92.
 
 ### `python-go-aggregate-all-required`
 

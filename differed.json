@@ -368,22 +368,6 @@
     }
    }
   },
-  "go-physical-join-keeps-input-nullability": {
-   "kind": "divergence",
-   "what": "A left join widens the right side to nullable. substrait-go does that for JoinRel - join_left and joineq_left both match - and not for HashJoinRel or MergeJoinRel, where it returns the two inputs concatenated with their own nullability. Its nested-loop join is unimplemented and its physical mark joins fail on the output-name count instead, so these two cells are where the difference is visible as a schema.",
-   "check": {
-    "inputs_concatenated": {}
-   },
-   "triage": {
-    "GO": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-go/issues/330"
-     ],
-     "note": "the contrast is inside this column: the same rule, the same two inputs and the same join type, right on the logical message and wrong on two physical ones. The report names the cause, HashJoinRel and MergeJoinRel concatenating their inputs without reading the join type. Whether the other nine join types behave the same way is not established here, because these cases carry only inner, left and left mark"
-    }
-   }
-  },
   "grouping-set-index-width": {
    "kind": "divergence",
    "what": "The i32 column an aggregate with more than one grouping set appends comes back as DataFusion UInt8. The Aggregate page states i32 twice and algebra.proto says nothing about this column, so there is one text to differ from. The specification's own i32-or-int64 disagreement is about Expand's index column, not this one. The two grouping columns are correct.",
@@ -475,9 +459,7 @@
   },
   "GO": {
    "aggregate_grouping_field_shared_by_sets": "python-go-aggregate-all-required",
-   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required",
-   "physjoin_hash_left": "go-physical-join-keeps-input-nullability",
-   "physjoin_merge_left": "go-physical-join-keeps-input-nullability"
+   "aggregate_grouping_sets_declared_order": "python-go-aggregate-all-required"
   },
   "ISTHMUS": {
    "setop_intersection_multiset": "isthmus-setop-nullable-if-any-input-is",
