@@ -34,7 +34,7 @@
 <rect x="332.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="518.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="518.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="580.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="642.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="704.0" y="137.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
@@ -140,7 +140,7 @@
 <rect x="332.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="394.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
-<rect x="518.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="518.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="580.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="642.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="704.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -799,7 +799,7 @@
 <rect x="332.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="#4a3aa7"/>
-<rect x="518.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="580.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="642.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="url(#hatch)"/>
 <rect x="642.0" y="1286.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#c2c2ba" stroke-width="0.6"/>
@@ -810,7 +810,7 @@
 <rect x="332.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#4a3aa7"/>
-<rect x="518.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
+<rect x="518.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="580.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="642.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="704.0" y="1299.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -1161,8 +1161,8 @@
 <rect x="642.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="704.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1952.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 461 matched, 96 divergences, 11 unresolved, 6 at a type-system boundary, 308 not accepted, 90 without an expectation.</text>
+<text x="14.0" y="1952.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 465 matched, 94 divergences, 11 unresolved, 6 at a type-system boundary, 306 not accepted, 90 without an expectation.</text>
 <text x="14.0" y="1966.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">9 of these cases each pin a rule no other case pins; 3 rules are pinned by none.</text>
-<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-09-30 · java fff63906 · python 0.34.0 · go df007ba63b7d · validator 2a10470 · Isthmus fff63906 · DataFusion cc29ea12a · DuckDB 1.5.5</text>
-<text x="14.0" y="1975.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Spark 3.5.4 · Acero 25.0.1</text>
+<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-09-30, 2026-10-02 · java bc050d37 · python 0.34.0 · go df007ba63b7d · validator 2a10470 · Isthmus bc050d37 · DataFusion cc29ea12a</text>
+<text x="14.0" y="1975.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB 1.5.5 · Spark 3.5.4 · Acero 25.0.1</text>
 </svg>

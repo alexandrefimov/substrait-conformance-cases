@@ -416,7 +416,7 @@ mutate "a reason saying the answer stops short of an answer that does not" "shou
   python3 -c "
 import io, json
 d = json.load(open('differed.json', encoding='utf-8'))
-d['rules']['read-projection-ignored']['check'] = {'first_input': {'leading': True}}
+d['rules']['datafusion-intersection-takes-the-first-input']['check'] = {'first_input': {'leading': True}}
 io.open('differed.json', 'w', encoding='utf-8').write(json.dumps(d, ensure_ascii=False, indent=1))"
 
 mutate "a reason claiming what the answer looks like" "whose answer should match" \

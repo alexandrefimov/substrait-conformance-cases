@@ -1,4 +1,4 @@
-SPARK: column from run 2026-09-18T18:40, spark 3.5.4
+SPARK: column from run 2026-10-02T16:03, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
 aggregate_grouping_field_shared_by_sets        ERROR: IllegalArgumentException: requirement failed
@@ -12,11 +12,11 @@ cross_preserves_nullability                    [l0:bigint, l1:bigint?, r0:bigint
 ctas_keeps_declared_schema                     []
 ddl_view_root_names_nothing                    ERROR: UnsupportedOperationException: Ddl operation (CREATE,VIEW) not supported
 ddl_view_root_names_the_view                   ERROR: UnsupportedOperationException: Ddl operation (CREATE,VIEW) not supported
-decimal_add_overflow                           [r:decimal(38,9)?]
 decimal_add                                    [r:decimal(11,2)?]
+decimal_add_overflow                           [r:decimal(38,9)?]
 decimal_divide                                 [r:decimal(17,8)?]
-decimal_multiply_overflow                      [r:decimal(38,6)?]
 decimal_multiply                               [r:decimal(16,3)?]
+decimal_multiply_overflow                      [r:decimal(38,6)?]
 emit_aggregate                                 [k0:boolean, k1:bigint]
 emit_fetch                                     [k0:boolean, k1:bigint]
 emit_filter                                    [k0:boolean, k1:bigint]
@@ -27,31 +27,31 @@ emit_sort                                      [k0:boolean, k1:bigint]
 expand_consistent_fields                       ERROR: UnsupportedOperationException: ConsistentField not currently supported
 expand_switching_nullability                   ERROR: UnsupportedOperationException: ConsistentField not currently supported
 join_inner                                     [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint]
+join_left                                      [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?]
 join_left_anti                                 [c0:bigint, c1:bigint?]
 join_left_mark                                 ERROR: UnsupportedOperationException: Unsupported join type LEFT_MARK
 join_left_semi                                 [c0:bigint, c1:bigint?]
 join_left_single                               ERROR: UnsupportedOperationException: Unsupported join type LEFT_SINGLE
-join_left                                      [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?]
 join_outer                                     [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint?]
+join_right                                     [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
 join_right_anti                                ERROR: UnsupportedOperationException: Unsupported join type RIGHT_ANTI
 join_right_mark                                ERROR: UnsupportedOperationException: Unsupported join type RIGHT_MARK
 join_right_semi                                ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SEMI
 join_right_single                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SINGLE
-join_right                                     [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
 joineq_inner                                   [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint]
+joineq_left                                    [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?]
 joineq_left_anti                               [c0:bigint, c1:bigint?]
 joineq_left_mark                               ERROR: UnsupportedOperationException: Unsupported join type LEFT_MARK
 joineq_left_semi                               [c0:bigint, c1:bigint?]
 joineq_left_single                             ERROR: UnsupportedOperationException: Unsupported join type LEFT_SINGLE
-joineq_left                                    [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?]
 joineq_outer                                   [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint?]
+joineq_right                                   [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
 joineq_right_anti                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_ANTI
 joineq_right_mark                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_MARK
 joineq_right_semi                              ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SEMI
 joineq_right_single                            ERROR: UnsupportedOperationException: Unsupported join type RIGHT_SINGLE
-joineq_right                                   [c0:bigint?, c1:bigint?, c2:bigint?, c3:bigint]
-lateral_join_uncorrelated_without_anchor       ERROR: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row v
 lateral_join_uncorrelated                      ERROR: UnsupportedOperationException: Type io.substrait.relation.ImmutableLateralJoin not handled by visitor type io.substrait.s
+lateral_join_uncorrelated_without_anchor       ERROR: IllegalArgumentException: Lateral join must set a rel anchor so its right input can reference the current left row v
 mirror_argument_nullability                    [c0:bigint, c1:bigint?, rr:bigint, rn:bigint?]
 narrowing_count                                ERROR: IllegalArgumentException: requirement failed
 narrowing_is_not_null                          [r:boolean]
@@ -59,16 +59,16 @@ narrowing_is_null                              [r:boolean]
 phase_final                                    ERROR: IllegalArgumentException: requirement failed
 phase_intermediate                             ERROR: IllegalArgumentException: requirement failed
 physjoin_hash_inner                            ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
-physjoin_hash_left_mark                        ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_left                             ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
+physjoin_hash_left_mark                        ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_hash_right_semi                       ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableHashJoin not handled by visitor type io.subst
 physjoin_merge_inner                           ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
-physjoin_merge_left_mark                       ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_left                            ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
+physjoin_merge_left_mark                       ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_merge_right_semi                      ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableMergeJoin not handled by visitor type io.subs
 physjoin_nested_inner                          ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
-physjoin_nested_left_mark                      ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_left                           ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
+physjoin_nested_left_mark                      ERROR: IllegalArgumentException: Unknown type: JOIN_TYPE_LEFT_MARK
 physjoin_nested_right_semi                     ERROR: UnsupportedOperationException: Type io.substrait.relation.physical.ImmutableNestedLoopJoin not handled by visitor type io
 precision_timestamp_p00                        ERROR: UnsupportedOperationException: Unsupported precision: 0. Spark stores time values as microseconds, so a type must declare
 precision_timestamp_p01                        ERROR: UnsupportedOperationException: Unsupported precision: 1. Spark stores time values as microseconds, so a type must declare
@@ -79,22 +79,22 @@ precision_timestamp_p06                        [c:timestamp_ntz]
 precision_timestamp_p07                        ERROR: UnsupportedOperationException: Unsupported precision: 7. Spark stores time values as microseconds, so the precision must
 precision_timestamp_p09                        ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so the precision must
 precision_timestamp_p12                        ERROR: UnsupportedOperationException: Unsupported precision: 12. Spark stores time values as microseconds, so the precision must
-read_projection_mask_reordered                 [k0:bigint, k1:string]
 read_projection_mask                           [k0:bigint, k1:string]
-setdata_intersection_multiset_all              ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET_ALL
+read_projection_mask_reordered                 [k0:bigint, k1:string]
 setdata_intersection_multiset                  ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET
+setdata_intersection_multiset_all              ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET_ALL
 setdata_intersection_primary                   ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_PRIMARY
 setdata_minus_multiset                         ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_MULTISET
-setdata_minus_primary_all                      ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY_ALL
 setdata_minus_primary                          ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY
+setdata_minus_primary_all                      ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY_ALL
 setdata_union_all                              [v:bigint]
 setdata_union_distinct                         ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
-setop_intersection_multiset_all                ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET_ALL
 setop_intersection_multiset                    ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET
+setop_intersection_multiset_all                ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_MULTISET_ALL
 setop_intersection_primary                     ERROR: UnsupportedOperationException: Operation not currently supported: INTERSECTION_PRIMARY
 setop_minus_multiset                           ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_MULTISET
-setop_minus_primary_all                        ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY_ALL
 setop_minus_primary                            ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY
+setop_minus_primary_all                        ERROR: UnsupportedOperationException: Operation not currently supported: MINUS_PRIMARY_ALL
 setop_union_all                                [c0:bigint, c1:bigint?, c2:bigint?, c3:bigint?, c4:bigint?, c5:bigint?, c6:bigint?, c7:bigint?]
 setop_union_distinct                           ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
 stringlen_declared                             ERROR: UnsupportedOperationException: Unknown expression type.
@@ -106,6 +106,6 @@ virtual_table_literal_type_differs_from_schema ERROR: IllegalArgumentException: 
 virtual_table_row_null_in_required_column      ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_nullable_in_required_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=true}) does not match schema field type (I32{nullable=false})
 virtual_table_row_required_in_nullable_column  ERROR: IllegalArgumentException: Row field type (I32{nullable=false}) does not match schema field type (I32{nullable=true})
-window_bound_offset_expr                       [v:bigint, s:bigint?]
 window_bound_offset                            [v:bigint, s:bigint?]
+window_bound_offset_expr                       [v:bigint, s:bigint?]
 window_output_order                            ERROR: IllegalArgumentException: requirement failed
