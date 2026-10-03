@@ -28,6 +28,9 @@ release through `probe/versions-latest.env`, in an environment of its own, and n
 moved without failing on them. `.github/workflows/drift.yml` runs that weekly for all four and
 writes what it finds into `results/DRIFT.txt` under `relations/<NAME>`.
 
+The separate [Gluten diagnostic](gluten/README.md) observes native schemas and
+executed rows. It is not a saved participant column and does not update this matrix.
+
 ## Reading a column
 
 ```
