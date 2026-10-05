@@ -1,51 +1,30 @@
 # Case generators: plan -> derived schema
 
-These generators build plans with substrait-java's builders and print that library's derived
-schemas as diagnostics. Those answers are not the corpus expectations: `probe/expected.py`
-writes expectations separately from the specification text, without reading the generators or
-their output. [METHOD.md](../METHOD.md#where-the-expectations-come-from) explains the distinction.
+Generators build plans with substrait-java and print its derived schemas as diagnostics.
+Corpus expectations come separately from `probe/expected.py`, authored from the spec without
+reading generators or their output. [METHOD.md](../METHOD.md#where-the-expectations-come-from)
+explains that boundary. The [relation corpus](../tests/relations/README.md) has a separate YAML
+authoring and protobuf compilation path.
 
-This directory generates the schema corpus. The separate [relation corpus](../tests/relations/README.md)
-is authored in YAML and compiled to protobuf bundles.
-
-Running them:
+Run from this directory:
 
     SUBSTRAIT_JAVA_DIR=<substrait-java checkout> bash make_classpath.sh
     javac -cp "$(cat classpath.txt)" -d out *.java
     java  -cp "out:$(cat classpath.txt)" GenCases ../derived-schema
 
-`classpath.txt` is generated, not checked in: every entry is an absolute path into one machine's
-checkout and Gradle cache. `make_classpath.sh` writes it and `cp.init.gradle` explains which extras
-it adds to `:core`'s runtime classpath and why.
+`make_classpath.sh` writes an untracked `classpath.txt` containing local checkout/cache paths;
+`cp.init.gradle` supplies extra runtime dependencies. Each written plan is read back and its
+schema derived again. `probe/reverify.sh` runs all generators; `GenCases` covers only its subset.
+`Repro186.java` is a separate set-nullability reproducer, not a corpus generator.
 
-Every case is read back from disk after it is written and its schema derived again: a case is a
-file, not an object in memory.
+`Tables.java` defines shared named-table schemas; engine probes register the same tables and
+rows. This keeps schema cases separate from virtual-table support. `GenSetData` and the two
+window-bound cases instead embed rows because those rows are what they test.
 
-The leaves are named tables with schemas shared by every case (`Tables.java`), and every engine probe
-creates the same tables with the same rows. A leaf has to be a control: put a virtual table there and
-the run is also measuring support for virtual tables, at which point a divergence in derivation can
-no longer be told apart from a lack of support. Two generators are exceptions, and both for the
-same reason: the case is about the rows, so the rows have to be in the plan. `GenSetData`
-carries the multisets the spec prints for each set operation, and `GenWindow`'s two bound cases
-carry the four rows a frame is taken over. Their divergences are therefore readable only
-against a participant that reads virtual tables at all.
-`../derived-schema-virtual-tables/` is a whole-corpus rewrite into virtual tables, built by
-`probe/to_virtual_tables.py`, and exists only because Gluten does not read `named_table` at all;
-`probe/vt_equivalence.sh` checks that it derives the same schemas as the canonical corpus.
+`probe/to_virtual_tables.py` writes `derived-schema-virtual-tables/` for Gluten, which does not
+read named tables. `probe/vt_equivalence.sh` checks its schemas against the canonical corpus.
 
-`probe/reverify.sh` runs all of the generators; `GenCases` alone covers only its own part of the
-corpus. `Repro186.java` is not one of them: it reproduces a known substrait-java issue about
-converting a `SetRel` whose inputs differ in nullability, and is kept here because it is built from
-the same tables.
-
-`make_manifest.sh` runs each generator into a directory of its own and turns the result into
-`../derived-schema/manifest.json`: per case, the generator that writes it, the line that generator
-prints for it, and its expectation. The pairing of a printed line to a case is spelled out in
-`make_manifest.py` rather than guessed, and the script fails if one case is left without a line. The
-only hand-written input is `sources.json`, the issue a case came from.
-
-A case earns an entry there only when it exercises what that change actually changed, checked against
-the change itself rather than against its title. Of eight merged substrait-java fixes read for this,
-one produced a new entry. One of the seven is worth naming: `stringlen_declared` looked like a match
-for the fix that stopped character lengths being capped, and is not one, because that cap sat at
-65536 and the case declares `varchar(10)`. A wrong attribution here is worse than a missing one.
+`make_manifest.sh` runs generators separately and builds `derived-schema/manifest.json`, joining
+generator identity, notes and expectations. `make_manifest.py` explicitly pairs printed labels
+with filenames and rejects an unpaired case. `sources.json` is the hand-written issue attribution;
+add an entry only when the case exercises the behaviour changed by that issue.

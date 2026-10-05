@@ -1,20 +1,10 @@
 # A second reading of the relation rules
 
-`probe/expected.py` writes what each case should answer, case by case, from the specification text.
-This program computes the same thing from the plan, from the same specification, by rules written
-separately. Nothing here reads `expected.py`, `expected.json` or any implementation's answer, and
-nothing here reads a declared `output_type` out of a plan.
-
-That is the whole design. [METHOD.md](../METHOD.md) explains why `expected.py` is deliberately not
-a deriver: one program applying one reading of a rule to every case that touches it produces cases
-that agree with each other, so a wrong reading comes back green. Written case by case, a wrong
-reading has its neighbours to disagree with. A deriver has the opposite shape and the opposite
-failure, which is exactly why it is worth having a second one beside the first — two codings of the
-same sentences, and a disagreement between them is either a mistake in one of them or a sentence
-that does not decide the question.
-
-It is worth having only as long as it stays independent. Written with the expectations open, it
-would agree by construction and nobody afterwards could tell that from agreement on the merits.
+The deriver computes output schemas from plans and the Substrait specification, separately
+from `probe/expected.py`. It reads neither expectations, participant answers nor declared
+`output_type` fields. [METHOD.md](../METHOD.md) explains the oracle and comparison boundaries.
+Agreement is a cross-check between two encodings of the rules, not proof that either is correct.
+The [authoring disclosure](#what-was-already-visible) records limits to that independence.
 
 ## Running it
 
@@ -25,209 +15,113 @@ python3 deriver/check.py                                            # the saved 
 python3 -m deriver.derive derived-schema/<case>.json                 # one plan
 ```
 
-The extension files are read out of that checkout at `v0.102.0` — the release the plans declare —
-with `git show`, not out of its working tree, so a checkout sitting on a branch cannot quietly
-change what a rule says. Their bytes are pinned in [spec.pins](spec.pins), and a file serving
-anything else stops the run instead of being derived from.
-
-`DERIVED.txt` is the saved answer for each case in the generated schema corpus. It lets the
-comparison run without a checkout: `deriver/check.py` compares it against `expected.json` and is what
-`probe/selfcheck.sh` calls. Regenerating it needs the checkout; comparing it does not.
+Extension files are read with `git show` at `v0.102.0`, not from the checkout's working tree.
+[spec.pins](spec.pins) pins their bytes; a mismatch stops derivation.
+[DERIVED.txt](DERIVED.txt) saves per-case answers, allowing `deriver/check.py` and the repository
+self-check to compare them with expectations without a Substrait checkout. Regeneration needs one.
 
 ## What came out
 
-All 98 cases that carry an expectation agree with it. None differs. Of the ten without one it
-answers seven. The CTAS whose input does not match its `table_schema` and the four virtual tables
-whose row literals differ from their declared schema get an answer because the rules below take a
-read's schema from `base_schema` and never look at a virtual table's rows. That is a position on
-where a read's schema comes from, not an answer to the question those cases hold open, which is
-whether a row may disagree with the schema above it at all. The DDL view whose root names columns
-and the lateral join without an anchor are answered by readings set out below. The three it
-declines are the two updates and the mask listed out of schema order.
+The saved schemas agree with every scored expectation. `python3 deriver/check.py` reports the
+current tally and any disagreement. This corroborates the oracle's reading, not a claim that
+every differing participant has a defect.
 
-On 63 of those 98 cases at least one participant is recorded in `differed.json` as diverging — not
-a limit of its type system and not an unresolved type, but an answer the spec rule says should have
-been something else. The deriver gives the expectation's schema on all 63. That says nothing new
-about the participants; what it says is that the expectation each of them is recorded against was
-read twice rather than once, which is the part a reader had no way to check before.
+Unscored plans may still derive. Reads use `base_schema` without checking virtual-table rows,
+and schema derivation does not validate CTAS input compatibility or root names. Updates and
+out-of-order projection masks are declined because their output is unsettled.
 
-Two experiments the corpus already runs against its nine participants were run against this program:
+Earlier declaration-swap and binding-rewrite experiments checked additional boundaries:
 
-*The declaration swap.* `probe/make_lied_corpus.py` replaces every declared `output_type` with a
-wrong one. It reaches 29 of the 101 plans, five of the nine participants follow it, and not one of
-the 101 answers here moves. That is what "never reads `output_type`" means as a fact rather than as
-an intention, and it is the check to run first on any change to this code.
+- Changing declared `output_type` fields did not move the derived answers.
+- Compatible binding controls derived; `sum:i8` over an i64 argument was rejected, although
+  the measured participants accepted it.
+- Unknown names or signatures were rejected when their result reached the output schema.
+  Rewritten join predicates could remain unbound because their types did not reach that output.
+- Virtual-table variants derived the same schemas without consulting rows.
 
-*The binding rewrite.* `probe/make_unbound_corpus.py` rewrites the name a call is declared under.
-On the control corpus, where the rewritten name is another function with the same signature and
-return, all 17 plans still derive — so a refusal below is about binding and not about the rewrite.
-On `mismatch`, where the compound key exists but names argument types the call does not pass, all
-six refuse: `sum:i8` over an `i64` argument binds nowhere here. No participant in the matrix refuses
-that. On `signature` and `unknown` — a key no impl declares, and a name no file declares — the 15
-plans whose call reaches the output schema refuse, and the other 24 derive: those are the `joineq_*`
-and `physjoin_*` cases, where the rewritten call is a join predicate. This program derives schemas
-and does not validate plans, so an expression whose type never reaches the output is never bound at
-all. It is not a validator, and that is the clearest place to see it.
-
-`derived-schema-virtual-tables/` carries the same 101 cases with their data embedded as virtual
-table literals instead of read from a named table. Every answer is identical to the one from the
-plain corpus, which is what "the rows are never consulted" means as a fact rather than as an
-intention.
+The scripts are `probe/make_lied_corpus.py` and `probe/make_unbound_corpus.py`. Those observations
+do not make this a plan validator or establish row correctness.
 
 ## What the agreement is worth, rule by rule
 
-Agreement says the two readings match. It does not say the corpus would have caught them if they had
-not: a rule no case reaches agrees with anything. `deriver/mutants.py` measures that directly. Each
-rule is replaced by another reading of the same sentence — not by a random error — and the scored
-cases are rederived. [COVERAGE.txt](COVERAGE.txt) is the saved run.
+`deriver/mutants.py` substitutes plausible alternative readings of spec sentences and rederives
+scored cases. [COVERAGE.txt](COVERAGE.txt) records which alternatives a case distinguishes;
+[PINNED.txt](PINNED.txt) identifies cases that are the sole check for a reading. Alternatives
+not authored in the battery are absent from its coverage claim.
 
-Of 39 alternative readings the corpus tells 36 apart. The first run of this probe, over a narrower
-battery, told only 25 apart, and the four it could not were rules no case reached:
+The first run exposed missing checks for grouping-before-measure output order, the grouping-set
+index and MIRROR nullability. Added cases cover them: `aggregate_grouping_then_measure`,
+`aggregate_grouping_set_index` and `mirror_argument_nullability`.
 
-| the rule | why nothing reached it | what closed it |
-| --- | --- | --- |
-| Aggregate emits grouping expressions, then measures | no case had both at once — four had only measures, three only groupings | `aggregate_grouping_then_measure` |
-| an aggregate with more than one grouping set gets an `i32` index | both multi-set cases cut column 2 with `emit: [0, 1]` | `aggregate_grouping_set_index` |
-| the same, read as unconditional | the same emit | the same case |
-| `MIRROR` makes the return nullable if any argument is | every `MIRROR` call whose type reaches the output read required decimal columns | `mirror_argument_nullability` |
+Three alternatives remain undistinguished:
 
-The three still not told apart are not gaps, and each for its own reason:
+- Set inputs must agree on field types, so valid plans cannot distinguish taking types from
+  the primary input from taking them from another input.
+- Write input must match `table_schema`, so those sources coincide in valid plans. The CTAS
+  case violating that condition is intentionally invalid and unscored.
+- The specification does not settle out-of-order projection masks. The case records observed
+  behaviour, and the deriver declines it rather than choosing an expectation.
 
-- **A set operation takes its field types from the primary input.** The spec requires every input to
-  agree on types, so no valid plan can distinguish the primary from any other input.
-- **Write outputs its input's schema rather than `table_schema`.** The spec requires the input to
-  match `table_schema`, so the two readings coincide in every valid plan. The one case where they
-  differ, `ctas_keeps_declared_schema`, is invalid on purpose and carries no expectation for exactly
-  that reason.
-- **A projection mask selects, keeping schema order, rather than listing an order.** Here the
-  specification itself does not decide, so a case asserting a reading would be asserting this
-  repository's choice. `read_projection_mask_reordered` measures what the participants do instead,
-  with no expectation, and the deriver declines such a mask; the question is one of the open ones
-  below.
-
-Two of those are the corpus reporting a property of the format rather than a hole in itself: a rule
-that no legal plan can exercise is unobservable, not unchecked. That distinction is the reason this
-probe reports readings rather than a coverage percentage.
+The first two are unobservable in valid plans, not uncovered valid behaviours.
 
 ## Where this shows up
 
-`probe/heatmap.py` reads [PINNED.txt](PINNED.txt) and [COVERAGE.txt](COVERAGE.txt) when it draws.
-The picture gains one line under its tallies — how many cases pin a rule nothing else pins, and how
-many rules nothing pins — and the page gains an *only check* column between the case names and the
-participants, marking those cases, and a section saying which three readings are pinned by nothing
-and why. Neither is a verdict about a participant, so neither carries a state colour, and the column
-is drawn unlike a participant's so that it does not read as a tenth one: a case can be load-bearing
-and still be one most implementations refuse.
-
-Both files are saved artifacts, because regenerating them needs a Substrait checkout and drawing
-does not. `deriver/check.py` keeps them honest against the corpus and against `mutants.py`, and
-`probe/selfcheck-negative.sh` breaks that check in two ways.
+`probe/heatmap.py` reads COVERAGE.txt and PINNED.txt for the matrix's rule-coverage summary and
+*only check* markers. These describe cases, not participant verdicts. Saved files allow drawing
+without a Substrait checkout; `deriver/check.py` checks their consistency with the corpus and
+mutation definitions. The negative gate verifies that those checks can fail.
 
 ## Where the specification did not decide
 
-These are the places where writing a rule meant choosing, and the choice is in the code at the
-point where it was made rather than only here.
+The implementation records the following interpretation choices:
 
-The **`i32` column** Aggregate appends for a second grouping set and Expand appends always: neither
-page gives its nullability. It is written required, on the grounds that the value is an index every
-output row has. Nothing contradicts it and nothing confirms it.
-
-The width of the two columns is a different matter, and they differ from each other in it. For
-Expand it is a known open question: `physical_relations.md` calls the column i32, and the comment
-above `message ExpandRel` in `algebra.proto` calls it int64, which
-[substrait#714](https://github.com/substrait-io/substrait/issues/714) is open on; the documentation
-table is followed here, as in `expected.py`. For Aggregate there is no such question —
-`logical_relations.md` says i32 twice and `algebra.proto` says nothing about the column at all — so
-an implementation returning another width is simply differing from the one text there is.
-
-The **phase of an aggregate call**. The spec names an intermediate output type for a decomposable
-function and lists the phases as "what portion of the operation is required". It nowhere says in one
-sentence that a call ending at the intermediate step outputs that type. Reading the two together is
-the only way the phases have a type at all, so that reading is applied; it is a reading, not a
-quotation.
-
-A **projection mask listing its fields out of order**. `field_references.md` says, among its
-discussion points, "Right now, you can only mask things out", and `algebra.proto` that a mask "does
-not fundamentally alter the structure of data beyond the elimination of unnecessary elements". That
-rules out a mask reordering columns, but not whether a mask listed out of schema order selects in
-schema order or is invalid. `read_projection_mask_reordered` puts the question to the participants
-without asserting an answer, and the deriver declines such a mask rather than pick one.
-
-**Right single and right mark joins**. The Join Types table describes each as its left counterpart
-"with the right and left inputs switched", while the direct output order in the signature table
-names semi, anti and mark as the exceptions and puts everything else in input order. The two have
-to be read together to get either a column order or a nullability; separately, each is short of an
-answer.
-
-**What an update outputs.** The page gives `UpdateRel` one output and describes it only as "Output
-is number of modified records". There is no Direct Output Order row, which every other relation
-with an output has, and neither the page nor `algebra.proto` gives that number a type, a
-nullability or a column count. The deriver declines the relation rather than answer `i64`, which
-would be the likeliest guess and still a guess. `update_root_names_a_count` and
-`update_root_names_the_table` are the same update written for each reading, and `METHOD.md` says
-what the participants make of them.
-
-**What a DDL outputs, and what its root may name.** The DDL signature table gives "Outputs | 0" and
-"Property Maintenance | N/A (no output)", and `basics.md` says that row answers "Does the operator
-produce an output". So a `DdlRel` derives no columns, and neither its `table_schema` nor its
-`view_definition` is read as its output. What had to be chosen is how to write that: an answer here
-is a column list, so no output is the empty list, and the text does not say whether a plan with no
-output yields an empty result or none at all. The root is the other half. `RelRoot` in
-`algebra.proto` says "The number of names must match the number of named fields in the output
-type", which over no output is zero, so `ddl_view_root_names_the_view`, whose root names the view's
-two columns, is invalid by that sentence. The deriver reads no root names, so it answers that plan
-`[]`, as it answers `ddl_view_root_names_nothing`, in the same way it answers the CTAS whose input
-does not match its `table_schema`.
-
-**When a lateral join must carry a `rel_anchor`.** The page makes it conditional: "When the right
-input references the current left row, `LateralJoinRel` must set `RelCommon.rel_anchor`". The
-comment on the message in `algebra.proto` makes it unconditional: "LateralJoinRel must set
-RelCommon.rel_anchor so the right input can reference fields of the current left row." The schema
-comes out the same either way, so this decides only whether a lateral join with no anchor and no
-outer reference is valid, which is what `lateral_join_uncorrelated_without_anchor` asks. The page's
-reading is taken, on the grounds that the proto's clause states
-the anchor's purpose rather than a second requirement.
-
-**Integer division** in a return type expression. The spec declares `divide(integer, integer) =>
-integer` and does not say how a remainder is handled. No derivation this corpus reaches divides, so
-the choice is unexercised; truncation toward zero is what is implemented.
+- **Index nullability.** Aggregate's grouping-set index and Expand's duplicate index are
+  required here because every output row has one; the text specifies no nullability.
+- **Index width.** Expand's documentation says i32 and `algebra.proto` says int64, tracked in
+  [Substrait issue 714](https://github.com/substrait-io/substrait/issues/714). The documentation
+  is followed. Aggregate's text specifies i32; its proto gives no competing width.
+- **Aggregate phases.** Calls ending at the intermediate step use the decomposable function's
+  intermediate type, combining the phase and return-type descriptions rather than quoting
+  one explicit rule connecting them.
+- **Projection masks.** The text permits removal, not structural reordering, but does not
+  decide whether an out-of-order mask is invalid or selects in schema order. Such masks decline.
+- **Right single and right mark joins.** Their "inputs switched" descriptions must be read
+  with the signature table's output-order exceptions to determine order and nullability.
+- **Updates.** "Number of modified records" defines no type, nullability or column count.
+  Both root-name variants decline; no likely count type is guessed.
+- **DDL.** "Outputs | 0" and "no output" are represented as `[]`. The deriver does not decide
+  whether that means an empty result or no result, and does not check root names. A root naming
+  view columns therefore still derives `[]`, though it violates the root-name count rule.
+- **Lateral anchors.** Documentation requires an anchor only for an outer reference; the proto
+  comment states it unconditionally. The documentation reading is taken, interpreting the
+  comment's clause as the anchor's purpose.
+- **Integer division.** Return-type expressions truncate towards zero. The spec declares an
+  integer result without specifying remainder handling, and no reached derivation uses division.
 
 ## What was already visible
 
-Independence is a claim about what was read, so here is what had been read before the rules were
-written. `probe/expected.py` and `expected.json` were not opened until every rule below existed —
-that is the part that matters, and it held. But `derived-schema/manifest.json` carries each case's
-expectation beside its note, and the case list was printed from it with the note truncated to 70
-characters. In 23 of those notes the truncated text still named the answer or part of it: the two
-aggregate cases (whose entries were read in full while working out the manifest's shape), four of
-the five decimal cases, the seven `emit_*` cases, the eight `setop_*` cases, `phase_final` and
-`topn_keeps_the_input_schema`.
+The initial rule-writing session opened neither `probe/expected.py` nor `expected.json` until
+its rules existed. It did print manifest notes truncated to 70 characters, and 23 notes still
+exposed all or part of an expected answer: two aggregate cases, four decimal cases, seven emits,
+eight set operations, `phase_final` and `topn_keeps_the_input_schema`. The aggregate entries
+were also read in full while examining the manifest layout.
 
-For the set operations and the decimals that is softer than it sounds: what the note names is the
-same table and the same YAML formula the rule reads anyway, and the rule computes rather than
-enumerates — `decimal_multiply_overflow`, whose note was cut before the answer, comes out of the
-same evaluator as the four whose notes were not. For `emit_*`, the aggregates and `topn` the note
-named the answer outright, and independence on those six is weaker than on the other 75. Somebody
-writing these rules again without the manifest in front of them is what would settle it.
+Decimal and set-operation rules compute from their source formula or table; those notes repeat
+that source. For emits, aggregates and top-n, the notes disclosed the answer directly, weakening
+the independence claim. Reauthoring those rules without the manifest would resolve this limit.
 
-The `DdlRel` rule came later and was written without that exposure. Its author opened `deriver/`,
-`AGENTS.md`, the two DDL plans and the spec at v0.102.0, and none of `probe/`, `expected.json`, the
-manifest, the generators, the columns or the pages, which is where the expectation and the answers
-are written down. The comparison with the expectation ran only after the rule, its test and its two
-alternative readings existed.
+The DDL rule was written later without that exposure, using the deriver, instructions, DDL
+plans and spec v0.102.0. Expectations, generators, manifest, columns and pages were not opened.
+Comparison ran only after the rule, its test and two alternative readings existed.
 
 ## What it does not do
 
-Schemas only: no rows, no column names, no validation beyond what deriving a schema happens to
-require. Of the relations `algebra.proto` defines it implements eighteen of the nineteen the corpus
-reaches, and declines `update` for the reason given above. Absent are `reference`, `exchange` and
-the three extension relations, which no case reaches. Of the expressions it reads field references —
-rooted in the input, or an outer reference by `rel_reference` to the row a lateral join binds —
-literals, casts and scalar, aggregate and window function calls; not `if_then`, `switch`,
-`singular_or_list`, `multi_or_list`, subqueries, lambdas, nested constructors, or enum and type
-arguments. Type variations are ignored. A variadic function binds only in its consistent form.
+This derives schemas, not rows, column names or general plan validity. It covers the relations
+reached by the corpus except `update`; absent are `reference`, `exchange` and the three
+extension relations. Supported expressions are field/outer references, literals, casts and
+scalar, aggregate and window calls. Unsupported are `if_then`, `switch`, list predicates,
+subqueries, lambdas, nested constructors, and enum/type arguments. Type variations are ignored;
+variadic functions bind only in their consistent form.
 
-Every one of those is a stop rather than a guess: the case is reported as not derived, with the
-reason, and counted apart from a case answered wrongly. An answer that might be a guess would be
-indistinguishable from a derivation in the comparison, which is the one thing this program exists
-to keep apart.
+Unsupported or unsettled derivations decline with a reason and are counted separately from
+wrong answers. A successful schema derivation is not a validity verdict.

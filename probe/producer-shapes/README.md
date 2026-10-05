@@ -1,8 +1,7 @@
 # What shape a producer writes
 
-A divergence found here is a fact about a plan this repository built. Whether anyone outside runs
-into it depends on what real producers write, and this asks them: four producers turn the same SQL
-(`queries.tsv`) into plans, and the plans are then handed to the consumers.
+Four producers compile the SQL in `queries.tsv`, and their plans are passed to consumers.
+This checks whether shapes exposing corpus divergences occur in plans produced from real SQL.
 
     DF_VENV=<venv> bash probe/producer-shapes/run_all.sh [out] [queries.tsv]
     PLANS=<out> DF_VENV=<venv> bash probe/producer-shapes/cross_consume.sh duckdb/mask_reorder ...
@@ -14,7 +13,7 @@ and declared output types, timestamp-literal precisions, scalar-function options
 extensions are declared by URN. Fields the spec has removed are read as unknown fields and named, so
 a producer still writing one is visible rather than absent. `cross_consume.sh` prints what
 substrait-go, substrait-python, the validator, substrait-java, DuckDB and DataFusion make of a
-chosen plan, each in one process, because a plan can end one of them with a signal.
+chosen plan, each in one process, to isolate crashes.
 
 The tables are the corpus's shared ones — `t_rn (c0 required, c1 nullable)`, `t_nr` the other way
 round, `t_mix (i64, string, bool)` — plus `t_ts` and `t_dec`; `consume_engines.py` fills them with

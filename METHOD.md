@@ -229,7 +229,7 @@ Three readings remain undistinguished. Two are unobservable in valid plans: set 
 agree on field types, and write input must match `table_schema`. The third is the unresolved
 projection-mask order; the deriver declines it rather than asserting a choice.
 
-The battery covers only its 37 authored alternatives. A rule without an alternative is absent,
+The battery covers only its authored alternatives. A rule without an alternative is absent,
 not proved covered. Per-case results identify readings that would lose their sole check if a
 particular case were removed.
 

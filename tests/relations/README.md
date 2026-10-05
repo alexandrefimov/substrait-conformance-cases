@@ -1,15 +1,10 @@
 # Relation test vectors
 
-Executable cases for the behaviour the relation documentation states: what schema a
-relation produces, and where the rules are explicit enough, what rows it produces. Each
-case names the sentence it pins, so a disagreement between two consumers is traceable to
-a line of the specification rather than to a difference of opinion.
-
-A case is authored once, in YAML, and compiled to one serialized
-`substrait.test.RelationTestCase` under `bundles/`. Reading the corpus needs protobuf
-bindings and nothing else: no YAML, no authoring parser, no text format. The contract is
-40 lines of `proto/substrait/test/relation_test.proto` and carries no version-specific
-content, so a consumer compiles it against whatever Substrait protos it already uses.
+Each case pins a specification sentence and asserts an output schema and, where the rules
+settle them, rows. YAML sources compile to committed `substrait.test.RelationTestCase` bundles.
+Consumers need protobuf bindings, not YAML or the authoring parser. The contract in
+`proto/substrait/test/relation_test.proto` contains no version-specific fields and can be
+compiled against the consumer's Substrait protos.
 
 ```
 cases/<area>/<name>.yaml      the case, hand written and reviewed
@@ -86,59 +81,34 @@ Three kinds of case:
   question the specification has not answered is recorded as a case rather than as an
   argument, and it must name where the question is tracked.
 
-One case family is about the wire and not about a relation's rules. `JoinRel` and the three
-physical join messages number their `JoinType` enum differently for four values: 6, 7, 8 and 9
-mean left anti, left single, right semi and right anti in the logical message and right semi,
-left anti, right anti and left single in the physical ones. The cases under `join_physical/`
-carry those four numbers on a `HashJoinRel` and assert what the physical numbering says they
-are, so a tool that rewrites a logical join into a physical one by copying the number, or that
-resolves a physical join with `JoinRel`'s enum, answers them differently. `hash_right_anti` is
-the one worth reading: right anti and right semi emit the same columns with the same
-nullability, so nothing but the rows tells them apart, and a harness comparing types alone
-reports whichever the consumer picked as a pass.
+The `join_physical/` cases also check wire enum numbering. Logical and physical join messages
+assign values 6 through 9 differently; copying the numeric logical enum changes the operation.
+Logical order is left anti, left single, right semi, right anti; physical order is right semi,
+left anti, right anti, left single.
+Right semi and right anti have identical schemas, so `hash_right_anti` needs row comparison to
+distinguish them. A schema-only harness cannot check that distinction.
 
 ## What the checks establish
 
-Twelve checks run over every case, in `lib/gate.py`, and `test_negative.py` breaks each one
-in turn and requires that check, by name, to catch it. A check that has never been shown
-to fail is a comment the interpreter happens to run.
+`lib/gate.py` checks every case; `test_negative.py` breaks each invariant and requires its
+named check to fail. The authored schema must agree with a separately encoded derivation from
+relation rules and extension files. That same derivation checks declared function output types,
+so those two checks share a possible rule error rather than providing two independent readings.
 
-The schema a case declares is reproduced by an independent derivation from the relation
-rules and the extension files, so an authored expectation and the tool have to agree.
-That redundancy has a limit worth stating: the same derivation backs the check that every
-declared `output_type` matches what the extension derives, so those two are one
-implementation, and a mistaken rule inside it would be reflected in both. What they cannot
-both be wrong about at once is a schema a person wrote by hand.
-
-Two checks guard the tooling rather than the cases. The round-trip check fails if the
-renderer returns a document that lowers to a different program, which is how a corpus
-starts testing something nobody wrote. The drift check fails if a committed bundle is not
-what its case compiles to today.
-
-`coverage.json` counts relations, join types, set operations and read kinds. It may grow
-and may not shrink, so removing the last case covering a relation is a deliberate diff on
-a committed file rather than a number nobody looks at.
+Round-trip checks require rendered YAML to lower to the same program. Drift checks require
+committed bundles to match their sources. `coverage.json` tracks relations, join kinds, set
+operations and read kinds; coverage may grow but not shrink.
 
 ## Limits
 
-The row expectations are the rows the specification's rules imply, computed by hand, not
-output captured from an engine. Most cases declare `ORDER_MULTISET`, because most
-relations fix no order and a harness must compare as a multiset there. The cases under
-`sort/` and `fetch/` declare `ORDER_SEQUENCE` instead: a sort sets the orderedness and a
-fetch maintains it, so the plan fixes which row comes first and a harness that compares
-those as a multiset is not running them. A sort that ignores where nulls go passes the
-multiset comparison and fails the sequence one, which is the whole difference between the
-two cases under `sort/`.
+Expected rows are authored from the rules, not captured from an engine. Most use
+`ORDER_MULTISET`: compare complete rows while preserving duplicates. Sort and fetch cases use
+`ORDER_SEQUENCE`; their fixed order is part of the expected result.
 
-`KIND_INVALID_PLAN` covers two classes of invalidity: a declared `output_type` that
-disagrees with the extension the function resolves to, and the structural rules in
-`lib/validity.py`, which need nothing but the plan. Those are set inputs that differ in
-arity, an emit mapping naming an output the relation does not have, and a project
-expression reading a field beyond its input. A case may not claim invalidity the corpus
-cannot demonstrate, so widening the class further means teaching the checker first.
-
-The same rules run over every positive case, which is the half that matters more: it is
-what stops a case from asserting a schema for a plan that should never have derived one.
+`KIND_INVALID_PLAN` covers mismatched declared function return types and structural violations
+in `lib/validity.py`: set-input arity, out-of-range emit mappings and project field references.
+A new invalidity claim needs a corresponding check. Positive cases undergo the same validity
+checks so an invalid plan cannot pass merely by deriving the asserted schema.
 
 ## Running this outside the specification repository
 

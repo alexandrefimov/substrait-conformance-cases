@@ -7,21 +7,14 @@ every operand type pair, and with five engines run on the cases of the pull requ
 
 ## The family
 
-The expressions arrived with the first version of the file,
-[d602e95](https://github.com/substrait-io/substrait/commit/d602e95732030b69e5985466cbca9e41453526a1),
-and the only change since is
-[substrait-io/substrait#151](https://github.com/substrait-io/substrait/pull/151), which names the
-reference it was fixed against: Gandiva's
-[`DecimalTypeUtil`](https://github.com/apache/arrow/blob/apache-arrow-7.0.0/java/gandiva/src/main/java/org/apache/arrow/gandiva/evaluator/DecimalTypeUtil.java#L38-L90).
-Hive's rules cite SQL Server in a comment above each one, and Spark's
-[`adjustPrecisionScale`](https://github.com/apache/spark/blob/v4.0.1/sql/api/src/main/scala/org/apache/spark/sql/types/DecimalType.scala#L166-L174)
-says it is based on Hive's. The shape is the same in all of them: compute a precision and scale as
-if unbounded, then, if the precision exceeds 38, cap it there and take the surplus out of the scale,
-keeping at least six fractional digits where the operands asked for that many.
-
-The 38 is not a taste. A decimal literal in `algebra.proto` is sixteen bytes, and 38 digits is what
-fits in 128 bits; Gandiva's adjustment ends in `new Decimal(precision, scale, 128)` for the same
-reason.
+The formulas trace to [the file's original commit](https://github.com/substrait-io/substrait/commit/d602e95732030b69e5985466cbca9e41453526a1).
+[Substrait change 151](https://github.com/substrait-io/substrait/pull/151) names Gandiva's
+[DecimalTypeUtil](https://github.com/apache/arrow/blob/apache-arrow-7.0.0/java/gandiva/src/main/java/org/apache/arrow/gandiva/evaluator/DecimalTypeUtil.java#L38-L90)
+as its reference. Hive cites SQL Server; Spark's
+[adjustPrecisionScale](https://github.com/apache/spark/blob/v4.0.1/sql/api/src/main/scala/org/apache/spark/sql/types/DecimalType.scala#L166-L174)
+follows Hive. They compute unbounded precision/scale, cap precision at 38 and reduce scale,
+preserving at least six fractional digits when requested. Substrait's sixteen-byte decimal
+literal and Gandiva's 128-bit decimal representation explain that precision boundary.
 
 ## What agrees with what
 
@@ -127,8 +120,8 @@ precision never exceeds 38, against 77 for the other three and 115 for `divide`.
 
 ## What the overflow option's three values are worth
 
-`overflow: [ SILENT, SATURATE, ERROR ]` is declared in five extension files, and the specification
-defines none of the three: the only prose that names them, on the options page, is an example
+At the specification revision recorded in RUN.txt, five extension files declare
+`overflow: [ SILENT, SATURATE, ERROR ]` without definitions for those values: the only prose that names them, on the options page, is an example
 spelling the option `OVERFLOW_BEHAVIOR` and its first value `OVERFLOW`, which has read that way
 since [substrait-io/substrait#49](https://github.com/substrait-io/substrait/pull/49) in October
 2021. `engines.py --overflow` asks the five engines what they do at a type boundary, on integers,
@@ -147,15 +140,10 @@ decimal cases above.
 
 ## Whether the consumers derive this or repeat it
 
-The corpus already carries the same pair: `decimal_add_overflow` is `dec<38,10>` plus `dec<38,10>`,
-and [results](../../results) give `dec(38,9)` from substrait-go, substrait-java, substrait-python,
-substrait-validator, Isthmus, Gluten and Spark, `Decimal128(38,10)` from DataFusion, and an error
-from Acero and DuckDB. That is not seven implementations of the borrow rule.
-[results/LIE.txt](../../results/LIE.txt) swaps each plan's declared output type for a false one, and
-on this case substrait-java, substrait-python and substrait-validator all `follows`: their answer
-goes with the declaration. So their `dec(38,9)` is the plan's own type read back, not a derivation,
-and the rest are untested here. Nothing in this repository shows an implementation deriving the
-rule above 38 for itself.
+The corpus's `decimal_add_overflow` uses the same `dec<38,10>` addition. Read its
+[saved answers](../../results) alongside [the declaration swap](../../results/LIE.txt):
+several participants follow the supplied return type rather than derive it. Agreement with
+`dec(38,9)` alone does not demonstrate an independent implementation of the borrow rule.
 
 ## Who writes these functions
 
@@ -190,8 +178,8 @@ DuckDB, and `dec(15,6)` on `a / b`.
 
 ## What this does not cover
 
-Gandiva and arrow-rs are read rather than executed. DataFusion publishes no CLI image, and a cargo
-build from a clone for a handful of types was not worth the half hour; its answer quoted above is
-the one in the review thread, not one taken here. Trino, MySQL and ClickHouse were not looked at in either form. Decimal32, Decimal64 and
-Decimal256 are outside it — the comparison is Decimal128, which is the only width Substrait has.
-`SATURATE` is declared by the function and exercised by nothing here.
+Gandiva and arrow-rs rules are read from source, not executed. The DataFusion type cited above
+comes from the review thread, not this engine run. Spark, Hive, Trino, MySQL and ClickHouse
+observations are recorded in RUN.txt at the stated versions. The rule comparison covers
+Decimal128, not Decimal32/64/256. No measured engine saturates at the tested boundaries;
+native overflow behaviour does not establish support for Substrait's SATURATE option.
