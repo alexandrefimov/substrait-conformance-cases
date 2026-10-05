@@ -14,7 +14,7 @@ implementation answers. Both corpora are authored against Substrait v0.102.0 and
 | [`derived-schema/`](derived-schema) | 108 generated plans testing schema derivation | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
 | [`tests/relations/`](tests/relations) | 71 hand-written cases testing relation schemas and rows | substrait-java, substrait-go, DuckDB, DataFusion |
 
-The [interactive matrices](https://alexandrefimov.github.io/substrait-conformance-cases/) show the
+The [results on GitHub Pages](https://alexandrefimov.github.io/substrait-conformance-cases/) show the
 expectation and saved answer for each cell. [Schema differences](results/DIFFS.md) groups the
 differing cases by participant; [FINDINGS.md](FINDINGS.md) links reproducers to upstream reports.
 
