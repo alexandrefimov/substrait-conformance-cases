@@ -1,8 +1,22 @@
 # Probes
 
-`<name>_one.py` / `<name>_all.sh` are one participant each; `probe/reverify.sh` runs them all.
-The shared environment, including the validator, is built by `setup.sh` (see the top-level README).
-The validator build prerequisites and manual alternative are described below.
+This directory measures the generated schema corpus under `derived-schema/`. For the
+separate relation corpus, use [relations/README.md](relations/README.md); for plans generated
+from SQL, use [producer-shapes/README.md](producer-shapes/README.md).
+
+Choose a command by what you need:
+
+| Task | Entry point |
+| --- | --- |
+| Check committed files without running an implementation | `bash probe/selfcheck.sh` |
+| Reproduce one pinned schema column | `bash probe/replay_column.sh <NAME>` |
+| Observe changes since the pin | `LATEST=1 bash probe/replay_column.sh <NAME>`; see the drift behaviour below |
+| Regenerate and measure the schema corpus | `bash probe/reverify.sh`; read the update flags and prerequisites before writing outputs |
+
+`<name>_one.py` / `<name>_all.sh` run one participant each. `reverify.sh` runs the local
+participants, with the separate [Gluten path](#glutenvelox) outside that sweep.
+The shared environment, including the validator, is built by `setup.sh`. The
+[prerequisites](#what-a-run-needs-and-what-fails-it) and validator alternative are described below.
 
 `selfcheck-negative.sh` checks that `selfcheck.sh` can fail: it breaks each invariant in a copy of
 the repository and requires the check to notice that one, not merely to go red. A check nobody

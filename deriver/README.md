@@ -30,8 +30,8 @@ with `git show`, not out of its working tree, so a checkout sitting on a branch 
 change what a rule says. Their bytes are pinned in [spec.pins](spec.pins), and a file serving
 anything else stops the run instead of being derived from.
 
-`DERIVED.txt` is the saved answer for each of the 106 cases. It exists so that the comparison can run
-without a checkout: `deriver/check.py` compares it against `expected.json` and is what
+`DERIVED.txt` is the saved answer for each case in the generated schema corpus. It lets the
+comparison run without a checkout: `deriver/check.py` compares it against `expected.json` and is what
 `probe/selfcheck.sh` calls. Regenerating it needs the checkout; comparing it does not.
 
 ## What came out

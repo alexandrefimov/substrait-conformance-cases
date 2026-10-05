@@ -18,6 +18,18 @@ coverage.json                 what the corpus covers, as a ratchet
 lib/                          the compiler, the renderer and the checks
 ```
 
+## Using the corpus in a consumer
+
+Read `bundles/*.pb` as `RelationTestCase` messages. Bind the fixtures in `tables`, pass the
+embedded plan to your consumer, and compare the returned schema and, if your consumer executes,
+the expected rows. Preserve duplicates; compare row order only when the case requires it.
+Score positive cases only. Record invalid and unresolved cases as observations.
+
+The [existing runners](../../probe/relations/README.md) show how schema-only libraries and
+executing engines use the same bundles. The [saved relation matrix](https://alexandrefimov.github.io/substrait-conformance-cases/#relations)
+shows their saved measurements. Authoring or rebuilding bundles needs the setup described
+[below](#running-this-outside-the-specification-repository).
+
 ## Running
 
 ```sh
@@ -98,7 +110,7 @@ declared `output_type` matches what the extension derives, so those two are one
 implementation, and a mistaken rule inside it would be reflected in both. What they cannot
 both be wrong about at once is a schema a person wrote by hand.
 
-Two of the ten guard the tooling rather than the cases. The round-trip check fails if the
+Two checks guard the tooling rather than the cases. The round-trip check fails if the
 renderer returns a document that lowers to a different program, which is how a corpus
 starts testing something nobody wrote. The drift check fails if a committed bundle is not
 what its case compiles to today.

@@ -1,8 +1,8 @@
 # Measuring the relation corpus
 
 The cases in `tests/relations/` are compiled to bundles. This directory puts them through
-implementations and saves one column per participant under `results/relations/`. The 98-plan
-corpus is measured separately, and its columns are `results/<NAME>.txt`, one directory up.
+implementations and saves one column per participant under `results/relations/`. The generated
+schema corpus is measured separately, and its columns are `results/<NAME>.txt`, one directory up.
 
 ## Running one participant
 
@@ -85,7 +85,7 @@ the same build with different answers is this harness having changed, and the ca
 where.
 
 Each reason carries a test of an output property, so a judgement that has stopped describing the
-answer fails rather than sitting there. Where the cause is one the 98-case corpus already records,
+answer fails rather than sitting there. Where the generated schema corpus already records the cause,
 the reason keeps that file's id under `same_as` instead of restating it: one engine should not get
 two stories. Five of the nine do, which is the relation cases reaching the same defects along
 different plans — the emit mapping on four relations that corpus does not reach, among them.

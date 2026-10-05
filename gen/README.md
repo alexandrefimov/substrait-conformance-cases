@@ -1,7 +1,12 @@
 # Case generators: plan -> derived schema
 
-The cases are built with the same builders as the tests of the merged substrait-java fixes they come
-from, so the expected schema is produced mechanically rather than retyped by hand.
+These generators build plans with substrait-java's builders and print that library's derived
+schemas as diagnostics. Those answers are not the corpus expectations: `probe/expected.py`
+writes expectations separately from the specification text, without reading the generators or
+their output. [METHOD.md](../METHOD.md#where-the-expectations-come-from) explains the distinction.
+
+This directory generates the schema corpus. The separate [relation corpus](../tests/relations/README.md)
+is authored in YAML and compiled to protobuf bundles.
 
 Running them:
 

@@ -1,8 +1,14 @@
 # Method: where an expectation comes from, and what a match proves
 
-The [README](README.md) is the result: the matrix, the tallies and what would help. This file is
-the part a reader checking the result needs — how a case and its expectation are made, what a
-matching answer does and does not establish, and what in here has already been corrected.
+This document explains how the generated schema corpus's plans and expectations are made,
+what a match establishes, and how earlier claims have been corrected. The [README](README.md)
+introduces both corpora and their saved results. The separate relation corpus's expectation,
+row-order and validity contracts are in [its authoring guide](tests/relations/README.md).
+
+For a specification review, start with [expectation sources](#where-the-expectations-come-from).
+For a consumer result, read [what a match establishes](#what-a-match-establishes) and
+[function binding](#whether-the-call-is-bound-at-all). For corpus adoption, read
+[the upstream considerations](#what-moving-these-upstream-would-take).
 
 ## Where the expectations come from
 
@@ -252,8 +258,8 @@ described the rest wrongly. That is why a reason there has to carry a test.
 The self-checks verify relationships between committed artifacts. They do not establish that every
 encoded rule matches the spec or that every interpretation of a result is correct. One of those
 readings has since been doubled: [`deriver/`](deriver/README.md) computes an output schema from the
-plan and the spec text, by rules written separately from `expected.py`, and the 96 cases carrying an
-expectation all agree with it. That is the same sentences read twice and agreeing, which is not the
+plan and the spec text, by rules written separately from `expected.py`, and all cases carrying an
+expectation agree with it. That is the same sentences read twice and agreeing, which is not the
 same as a reading by somebody else - still the first thing the README asks for. `differed.json`
 names the divergences still under investigation.
 
