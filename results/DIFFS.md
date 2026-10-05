@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-18, 2026-09-30, 2026-10-02. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-09-18, 2026-10-02, 2026-10-05. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -42,9 +42,9 @@ Both normative texts say a column follows the expand fields - physical_relations
 | [expand_consistent_fields](../derived-schema/expand_consistent_fields.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns |
 | [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
 
-## substrait-python — 17 cases
+## substrait-python — 1 cases
 
-`results/PYTHON.txt`, substrait 0.34.0.
+`results/PYTHON.txt`, substrait 0.35.0.
 
 ### `python-expand-switching-stays-required`
 
@@ -58,51 +58,13 @@ ExpandRel.SwitchingField in algebra.proto states the rule outright, and substrai
 | --- | --- | --- | --- |
 | [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `[?:i64, ?:i64, ?:i32]  !! names 0, types 3` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
 
-### `python-go-aggregate-all-required`
-
-substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index. aggregate_grouping_set_index is the same two disjoint sets with emit unset, so substrait-python returns the grouping-set index column as well and the two grouping keys still come back required.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-python/issues/268
-
-The report includes both grouping-set layouts used here: disjoint keys and one shared key. Both nullable-key observations are covered; these plans contain no measures.
-
-| case | expected | substrait-python answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:str, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
-| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[c:str, a:i64, g:i32]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
-| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:str, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
-
-### `python-join-concatenates-the-inputs`
-
-substrait-python drops a side for semi and anti, which match. Everywhere else it returns the two inputs concatenated with their own nullability - inner matches too, but only because the concatenation is the right answer there. It never widens a side to nullable for left, right, outer or single. The physical joins answer the same way: HashJoinRel, MergeJoinRel and NestedLoopJoinRel all reach one deriver, so left widens nothing there too, while their inner cases match for the reason inner always matches here. The mark joins match since 0.33.0, which returns one side and the mark column.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-python/issues/267
-
-267 is the ten left, right, outer and single joins, reproduced by probe/python_nullability.py. 263 was the four mark joins; its fix (substrait-python PR 265) shipped in 0.33.0, and those cells match at that pin. 267 is written about JoinRel, and the physjoin_* cells show the same answer arriving through HashJoinRel, MergeJoinRel and NestedLoopJoinRel, which it does not mention.
-
-| case | expected | substrait-python answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [join_left](../derived-schema/join_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [join_left_single](../derived-schema/join_left_single.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [join_outer](../derived-schema/join_outer.json) | `[i64?, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [join_right](../derived-schema/join_right.json) | `[i64?, i64?, i64?, i64]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [join_right_single](../derived-schema/join_right_single.json) | `[i64?, i64?, i64?, i64]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_left](../derived-schema/joineq_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_left_single](../derived-schema/joineq_left_single.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_outer](../derived-schema/joineq_outer.json) | `[i64?, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right](../derived-schema/joineq_right.json) | `[i64?, i64?, i64?, i64]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [joineq_right_single](../derived-schema/joineq_right_single.json) | `[i64?, i64?, i64?, i64]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | the spec rules for join types and Direct Output Order |
-| [physjoin_hash_left](../derived-schema/physjoin_hash_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
-| [physjoin_merge_left](../derived-schema/physjoin_merge_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
-| [physjoin_nested_left](../derived-schema/physjoin_nested_left.json) | `[i64, i64?, i64?, i64?]` | `[c0:i64, c1:i64?, c2:i64?, c3:i64]` | physical_relations.md: the same Direct Output Order as the Join operator |
-
 ## substrait-go — 2 cases
 
 `results/GO.txt`, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92.
 
 ### `python-go-aggregate-all-required`
 
-substrait-python and substrait-go return both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index. aggregate_grouping_set_index is the same two disjoint sets with emit unset, so substrait-python returns the grouping-set index column as well and the two grouping keys still come back required.
+substrait-go returns both emitted grouping keys required. In aggregate_grouping_sets_declared_order both keys are absent from one set and should be nullable. In aggregate_grouping_field_shared_by_sets the string key is shared and correctly stays required, but the i64 key is absent from the second set and should be nullable. Neither plan contains measures; emit hides the grouping-set index.
 
 Recorded as a divergence, reported. https://github.com/substrait-io/substrait-go/pull/324
 
