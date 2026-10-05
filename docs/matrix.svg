@@ -127,7 +127,7 @@
 <line x1="14" y1="302.0" x2="824" y2="302.0" stroke="#dcdcd6" stroke-width="0.6"/>
 <text x="14.0" y="314.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">aggregate_grouping_field_shared_by_sets</text>
 <rect x="270.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="456.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="518.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -137,7 +137,7 @@
 <rect x="766.0" y="305.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="327.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">aggregate_grouping_set_index</text>
 <rect x="270.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="518.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -147,7 +147,7 @@
 <rect x="766.0" y="318.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="340.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">aggregate_grouping_sets_declared_order</text>
 <rect x="270.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="456.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <rect x="518.0" y="331.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -189,7 +189,7 @@
 <rect x="766.0" y="387.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="409.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">join_left</text>
 <rect x="270.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="400.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -229,7 +229,7 @@
 <rect x="766.0" y="439.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="461.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">join_left_single</text>
 <rect x="270.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -239,7 +239,7 @@
 <rect x="766.0" y="452.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="474.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">join_outer</text>
 <rect x="270.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -249,7 +249,7 @@
 <rect x="766.0" y="465.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="487.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">join_right</text>
 <rect x="270.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="478.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -289,7 +289,7 @@
 <rect x="766.0" y="517.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="539.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">join_right_single</text>
 <rect x="270.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="530.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -311,7 +311,7 @@
 <rect x="766.0" y="560.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
 <text x="14.0" y="582.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">joineq_left</text>
 <rect x="270.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="573.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -351,7 +351,7 @@
 <rect x="766.0" y="612.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="634.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">joineq_left_single</text>
 <rect x="270.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -361,7 +361,7 @@
 <rect x="766.0" y="625.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="647.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">joineq_outer</text>
 <rect x="270.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -371,7 +371,7 @@
 <rect x="766.0" y="638.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <text x="14.0" y="660.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">joineq_right</text>
 <rect x="270.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="651.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
@@ -411,7 +411,7 @@
 <rect x="766.0" y="690.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="712.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">joineq_right_single</text>
 <rect x="270.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="518.0" y="703.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -987,7 +987,7 @@
 <rect x="766.0" y="1647.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="1669.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_hash_left</text>
 <rect x="270.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1660.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -1027,7 +1027,7 @@
 <rect x="766.0" y="1699.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="1721.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_merge_left</text>
 <rect x="270.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="456.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1712.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -1067,7 +1067,7 @@
 <rect x="766.0" y="1751.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="1773.5" fill="#55575c" font-size="8.2" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">physjoin_nested_left</text>
 <rect x="270.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
-<rect x="332.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d03b3b"/>
+<rect x="332.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="#d6d6d1"/>
 <rect x="394.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="456.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="518.0" y="1764.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
@@ -1161,8 +1161,8 @@
 <rect x="642.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="704.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <rect x="766.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
-<text x="14.0" y="1952.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 491 matched, 74 divergences, 10 unresolved, 6 at a type-system boundary, 301 not accepted, 90 without an expectation.</text>
+<text x="14.0" y="1952.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 507 matched, 58 divergences, 10 unresolved, 6 at a type-system boundary, 301 not accepted, 90 without an expectation.</text>
 <text x="14.0" y="1966.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">9 of these cases each pin a rule no other case pins; 3 rules are pinned by none.</text>
-<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-09-30, 2026-10-02 · java bc050d37 · python 0.34.0 · go 8c239c67dd92 · validator 0a5d3d6 · Isthmus bc050d37 · DataFusion c922f8811</text>
+<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-09-18, 2026-10-02, 2026-10-05 · java bc050d37 · python 0.35.0 · go 8c239c67dd92 · validator 0a5d3d6 · Isthmus bc050d37 · DataFusion c922f8811</text>
 <text x="14.0" y="1975.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB 1.5.5 · Spark 3.5.4 · Acero 25.0.1</text>
 </svg>
