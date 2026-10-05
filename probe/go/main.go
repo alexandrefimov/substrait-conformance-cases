@@ -6,10 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/substrait-io/substrait-go/v9/extensions"
-	"github.com/substrait-io/substrait-go/v9/plan"
-	spb "github.com/substrait-io/substrait-protobuf/go/substraitpb"
 	"github.com/substrait-io/substrait-go/v9/types"
+	spb "github.com/substrait-io/substrait-protobuf/go/substraitpb"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -39,7 +37,7 @@ func main() {
 		fmt.Printf("SUBSTRAITGO REJECTED  unmarshal: %v\n", err)
 		return
 	}
-	pl, err := plan.FromProto(&p, extensions.GetDefaultCollectionWithNoError())
+	pl, err := planFromProto(&p)
 	if err != nil {
 		msg := strings.ReplaceAll(err.Error(), "\n", " ")
 		if len(msg) > 150 {

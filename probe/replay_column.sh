@@ -182,7 +182,11 @@ fi
 # Calling a moved answer a change in the participant means knowing that nothing on this side moved.
 # One value over the corpus, the expectations and the normalization covers all three: two runs
 # reporting the same fingerprint were comparing the same things.
-INPUTS="$(python3 - "$ROOT/$CORPUS" "$ROOT/expected.json" "$PROBE/normalize.py" "$PROBE/column_diff.py" <<'FP'
+inputs=("$ROOT/$CORPUS" "$ROOT/expected.json" "$PROBE/normalize.py" "$PROBE/column_diff.py")
+if [ "$NAME" = GO ]; then
+  inputs+=("$PROBE/go")
+fi
+INPUTS="$(python3 - "${inputs[@]}" <<'FP'
 import hashlib, os, sys
 h = hashlib.sha256()
 for arg in sys.argv[1:]:

@@ -22,7 +22,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/substrait-io/substrait-go/v9/extensions"
 	"github.com/substrait-io/substrait-go/v9/plan"
 	spb "github.com/substrait-io/substrait-protobuf/go/substraitpb"
 	"google.golang.org/protobuf/proto"
@@ -225,7 +224,7 @@ func derive(tc *rtpb.RelationTestCase) (pl *plan.Plan, err error) {
 			err = fmt.Errorf("CRASH %v", r)
 		}
 	}()
-	return plan.FromProto(tc.GetPlan(), extensions.GetDefaultCollectionWithNoError())
+	return planFromProto(tc.GetPlan())
 }
 
 // oneLine folds a message onto the single line a column gives it. It is not shortened: the
@@ -253,7 +252,7 @@ func answer(tc *rtpb.RelationTestCase) string {
 	if len(roots) == 0 {
 		return "ERROR: the plan has no root relation"
 	}
-	return renderSchema(roots[0].RecordType().ToProto())
+	return renderSchema(namedStructToProto(roots[0].RecordType()))
 }
 
 func main() {

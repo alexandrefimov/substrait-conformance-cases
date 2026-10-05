@@ -96,6 +96,7 @@ G
     export GOFLAGS=-mod=mod GOTOOLCHAIN=local PATH="$HOME/.cargo/bin:$PATH"
     # @latest is go's own spelling for "no pin", so the drift run needs nothing extra here.
     go get "$SUBSTRAIT_GO_MODULE@$SUBSTRAIT_GO_COMMIT" &&
+    bash "$ROOT/probe/go/prepare_api.sh" "$SUBSTRAIT_GO_MODULE" &&
     go mod tidy &&
     go build -o probe_go9 . )
 }
