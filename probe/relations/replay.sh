@@ -127,9 +127,13 @@ fi
 # answers with the same code; the build itself is in the revision line of the column.
 CORPUS_REV="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo "not a checkout")"
 [ -z "$(git -C "$ROOT" status --porcelain 2>/dev/null)" ] || CORPUS_REV="$CORPUS_REV+dirty"
-INPUTS="$(python3 - "$ROOT/tests/relations/bundles" "$ROOT/results/relations/expected.json" \
-  "$ROOT/probe/relations/corpus.py" "$ROOT/probe/relations/column.py" \
-  "$ROOT/probe/relations/drive.sh" "$runner" "$one_case" <<'FP'
+inputs=("$ROOT/tests/relations/bundles" "$ROOT/results/relations/expected.json"
+        "$ROOT/probe/relations/corpus.py" "$ROOT/probe/relations/column.py"
+        "$ROOT/probe/relations/drive.sh" "$runner" "$one_case")
+if [ "$NAME" = GO ]; then
+  inputs+=("$ROOT/probe/go/api_legacy.go" "$ROOT/probe/go/api_wire.go" "$ROOT/probe/go/prepare_api.sh")
+fi
+INPUTS="$(python3 - "${inputs[@]}" <<'FP'
 import hashlib, os, sys
 h = hashlib.sha256()
 for arg in sys.argv[1:]:
