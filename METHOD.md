@@ -42,7 +42,7 @@ That is a difference of degree, not of kind, and two helpers here are where the 
 either is the same mistake across its group, exactly as it would be in a deriver. What holds for
 every case without exception is narrower: no expectation here reads a plan, and none reads an
 implementation's answer. Everything beyond that is worth what the reading behind it is worth, which
-is why the first thing the README asks for is somebody else's reading of it.
+is why an independent review of the expectations matters.
 
 Ten cases carry no expectation, for two different reasons that `expected.json` keeps apart. Seven of
 them wait on the spec, under `spec_silent`. Three have virtual-table row types or nullability
@@ -77,6 +77,24 @@ own schema rules out. substrait-java's core, Isthmus and the Spark module refuse
 The validator refuses every virtual table written with `expressions`, this one included, for a reason
 that has nothing to do with the null; the other participants that read a virtual table accept it.
 
+## Corpus files
+
+| | |
+| --- | --- |
+| `derived-schema/` | the 108 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
+| `derived-schema-virtual-tables/` | the same cases carrying their own rows |
+| `results/<NAME>.txt` | one column per implementation; `probe/matrix.py`, `probe/diffs.py` and `probe/heatmap.py` draw `results/MATRIX.txt`, `results/DIFFS.md` and the pictures out of them |
+| `expected.json` | the expectations, written by `probe/expected.py` |
+| `differed.json` | a reason per differing cell |
+| `deriver/` | the same rules read a second time: an output schema computed from the plan and the spec text, by rules written separately from `probe/expected.py` and compared with it. [`deriver/README.md`](deriver/README.md) says what that establishes |
+
+Everything keys on a case's file name, and nothing generated is edited by hand.
+
+The generated schema corpus needs a JDK and a substrait-java checkout to add a plan. The
+relation corpus is authored separately and compiles to protobuf test bundles; its
+[authoring guide](tests/relations/README.md) covers setup and checks. Neither corpus takes an
+implementation's answer as its expectation.
+
 ## What the corpus is made of
 
 The cases are plain `substrait.Plan` protobuf-JSON with no wrapper of any kind, and they declare spec
@@ -106,6 +124,18 @@ came from. Five cases have one so far — that is what is still thin here, and t
 entry is added only when the case exercises what the change it names actually changed. A case is added by adding a
 generator to `gen/`; `gen/README.md` says how the corpus is built.
 
+## Reviewing expectations
+
+- **A second reading of the expectations, by someone with no stake in them.** They have been read
+  once, from inside this repository: one contradicted the specification and was fixed, and
+  [sixteen rest on a step the specification never states](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8),
+  thirteen of them joins. An answer on those sixteen is worth more than a fresh pass over the rest,
+  and a wrong expectation is reported as a divergence against an implementation that was right.
+- **From the spec, one answer.** What does a projection mask listed out of schema order yield? The
+  spec says a mask can "only mask things out", yet DuckDB's substrait extension writes a mask of
+  `[2, 0]` for `SELECT c2, c0`, and every participant here that applies the mask puts the columns in
+  the listed order; one case waits on that.
+
 ## What moving these upstream would take
 
 Three things here bear on the question substrait#1164 asks, and none of them is an argument either
@@ -125,6 +155,22 @@ that checkout.
 
 The plans declare spec 0.102 rather than leaving `Plan.version` unset, so they are not the
 version-agnostic fixtures substrait#1164 proposes for a spec-repository corpus.
+
+## Calibration
+
+**The Java row in the [schema results](README.md#results) is calibration.** Most plans are built with substrait-java builders,
+by the person who also wrote the generators and the expectations, so its 92 matches say that two
+encodings of a spec rule agree. [The two `expand` cells](METHOD.md#the-two-expand-cases) are where
+even this row differs.
+
+Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
+`functions_arithmetic_decimal.yaml` gives `dec(21,8)`:
+
+    substrait-java, substrait-go, substrait-python, validator, Isthmus, Gluten   dec(21,8)
+    Spark        dec(17,8)
+    DataFusion   dec(15,6)
+    DuckDB       fp64
+    Acero        dec(16,7)
 
 ## The two expand cases
 
@@ -149,6 +195,13 @@ not ruled out. None does today. The day one does, the cell arrives needing a rea
 which is where that reading would be recorded rather than lost.
 
 ## What a match establishes
+
+The declaration swap puts a false `output_type` into every plan that declares one.
+Five rows move with it: 16 of substrait-java's matches, 15 of
+substrait-python's, 13 each of substrait-go's and Isthmus's and 12 of the validator's are the
+declared type read back rather than a derivation. Only 29 of the 108 cases declare an output type,
+and the swap reaches nothing else. Acero, DataFusion, DuckDB and Spark answer the swapped plan exactly as
+they answer the original.
 
 On some cases the consumer repeats the `output_type` the plan declares. The generator and
 expectation script encode the same spec rule in separate code. A match then checks the generator's
@@ -260,7 +313,7 @@ encoded rule matches the spec or that every interpretation of a result is correc
 readings has since been doubled: [`deriver/`](deriver/README.md) computes an output schema from the
 plan and the spec text, by rules written separately from `expected.py`, and all cases carrying an
 expectation agree with it. That is the same sentences read twice and agreeing, which is not the
-same as a reading by somebody else - still the first thing the README asks for. `differed.json`
+same as a reading by somebody else - the independent review requested above. `differed.json`
 names the divergences still under investigation.
 
 ## What a case is worth as a test
@@ -308,6 +361,19 @@ The previous provider ignored that schema and registered `t_str` with plain stri
 Retaking the whole Acero column — 78 cases then — with the same pinned PyArrow version changed only `stringlen_declared`; it now matches. The former `acero-drops-a-fixed-size-binary` explanation has been removed. A match on this bare read establishes preservation of the supplied input schema, not independent derivation of a function return type. Each column retains its own measurement date when only one participant is rerun.
 
 ## Reports and generator sources
+
+Sixteen of the twenty-one reasons behind a divergence link an issue or a PR in the project it is
+about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
+DuckDB's extension, Arrow. A linked fix does not change the saved answer; the column must be
+retaken to measure it.
+
+*Differed* means the answer disagrees
+with this repository's reading of the spec, which is not the same as a defect:
+`differed.json` carries a reason written by hand for all 74 of them, 16 marked as something other
+than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
+column is also compared only as far as its own type system reaches. DuckDB's logical types carry no
+nullability, nor do Gluten's. Each column states its comparison limits in the header of
+`results/<NAME>.txt`.
 
 [FINDINGS.md](FINDINGS.md) maps the reported findings to their reproducers and related implementation PRs. The explanations in `differed.json` remain judgments about the saved cells: sixteen of its twenty-one reasons link an issue or PR. Of the sixteen cells it marks as something other than a divergence, six are limits of a type system, ten a type the validator never resolved. The separate report map also covers rejected plans and producer diagnostics, which are outside those differing cells.
 

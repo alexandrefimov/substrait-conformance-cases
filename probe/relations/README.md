@@ -4,6 +4,18 @@ The cases in `tests/relations/` are compiled to bundles. This directory puts the
 implementations and saves one column per participant under `results/relations/`. The generated
 schema corpus is measured separately, and its columns are `results/<NAME>.txt`, one directory up.
 
+## Saved results
+
+substrait-java answers 58 of the 63 scored cases and refuses 5. substrait-go
+refuses 21, eight of them the set operations, whose inputs it requires to agree on a nullability
+these cases deliberately vary. DuckDB and DataFusion execute, so they are the two measured against
+the rows that 47 of the cases assert. DuckDB's 11 divergences all show in the schema, five of them
+in the rows as well, and so do DataFusion's 3, two of them in the rows: so far the rows have
+confirmed an answer rather than caught one. Both reach the rows of 31 cases and return the same rows
+on 26. The other five are the emit cases, where DataFusion returns the rows the case asserts and
+DuckDB does not. The hatched cells are substrait-java and substrait-go agreeing about a schema and
+never seeing the rows. Eight cases carry no expectation on purpose and are never scored.
+
 ## Running one participant
 
 ```sh
