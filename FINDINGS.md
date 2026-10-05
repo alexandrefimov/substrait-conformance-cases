@@ -1,8 +1,18 @@
 # Reported findings and their reproducers
 
-This map links findings from the [Substrait #1164 investigation](https://github.com/substrait-io/substrait/issues/1164) to their reproducers and upstream issues or PRs, including work that already covered a finding. It includes the focused diagnostics outside the saved 108-plan matrix.
+This map links the [Substrait issue 1164 investigation](https://github.com/substrait-io/substrait/issues/1164)
+to reproducers and upstream reports, including focused diagnostics outside the saved 108-plan matrix.
+PR links identify recorded work, not a merged fix or an updated measurement. Follow the linked
+threads for current status; missing links indicate only that no work is recorded here.
 
-An implementation PR link identifies work on the report; it does not mean that the change is merged or included in the pinned measurements. Follow the issue and PR for current status. A missing PR link means none is recorded here, not that nobody is working on it.
+## Finding a report
+
+Start with [specification questions](#specification-questions),
+[consumers and schema inference](#consumers-and-schema-inference), or [producers](#producers).
+For a saved answer rather than a report, use [schema differences](results/DIFFS.md) or the
+[relation matrix](https://alexandrefimov.github.io/substrait-conformance-cases/#relations).
+A focused diagnostic can expose behaviour that no scored corpus case measures; its presence
+here does not add a cell to either matrix.
 
 ## Specification questions
 

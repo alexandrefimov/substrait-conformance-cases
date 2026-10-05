@@ -3,7 +3,7 @@
 These 32 plans isolate relation metadata, nullability, virtual-table row typing,
 unsupported-operation errors, function-extension resolution, type text round-trips
 and decimal result types.
-They are separate from the 78-plan matrix. The Spark plans declare spec v0.103.0;
+They are separate from the generated schema matrix. The Spark plans declare spec v0.103.0;
 the Acero plans declare v0.102.0, except for the three legacy URI controls in
 `acero-functions`, which declare v0.44.0. The other plans declare v0.87.0.
 Each uses only the fields needed for its case.

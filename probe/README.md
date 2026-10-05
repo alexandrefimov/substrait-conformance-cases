@@ -1,140 +1,80 @@
 # Probes
 
-`<name>_one.py` / `<name>_all.sh` are one participant each; `probe/reverify.sh` runs them all.
-The shared environment, including the validator, is built by `setup.sh` (see the top-level README).
-The validator build prerequisites and manual alternative are described below.
+This directory measures the generated schema corpus. The [relation corpus](relations/README.md)
+has separate runners; [producer shapes](producer-shapes/README.md) passes SQL-generated plans
+between implementations. Commands below run from the repository root.
 
-`selfcheck-negative.sh` checks that `selfcheck.sh` can fail: it breaks each invariant in a copy of
-the repository and requires the check to notice that one, not merely to go red. A check nobody
-checks is a comment the interpreter happens to run, and three guards here were written, committed
-and could never fire.
+| Task | Command |
+| --- | --- |
+| Check committed artifacts without running a participant | `bash probe/selfcheck.sh` |
+| Verify that every self-check can fail | `bash probe/selfcheck-negative.sh` |
+| Reproduce one saved schema column | `bash probe/replay_column.sh <NAME>` |
+| Observe changes since the pin | `LATEST=1 bash probe/replay_column.sh <NAME>` |
+| Regenerate and measure the schema corpus | `bash probe/reverify.sh` |
 
-`replay_column.sh` is the probe CI can run. It builds one participant's environment from nothing
-through `setup.sh` (`SETUP_ONLY=<key>`, which builds one piece instead of all of them), puts the
-corpus through it and requires the answers to be identical to the saved column:
+`<NAME>` is `PYTHON`, `GO`, `DUCKDB`, `ACERO`, `VALIDATOR`, `JAVA`, `ISTHMUS`, `SPARK` or
+`DATAFUSION`. Gluten uses a [separate path](#glutenvelox).
 
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
+`replay_column.sh` builds one environment through `setup.sh` and compares every answer with
+the saved column. The installed version must match `versions.env`; DuckDB's extension version
+is read back because community `INSTALL` cannot request a specific revision.
 
-All nine columns, retaken on a machine that is not the author's. Four are a pip install or a go
-get; the validator and DataFusion are a clone and a cargo build, wanting protoc and its
-well-known types from `protobuf-compiler` and `libprotobuf-dev`; the three that come out of
-substrait-java are a clone at the pinned commit and a Gradle build, wanting the JDK
-`versions.env` names, and Spark additionally wants that JDK named in `JAVA17_HOME`, which it
-finds by itself only on a Mac. Each clones what it needs, so none of them requires a checkout
-to exist first, and DataFusion's is fetched without blobs — a quarter of a gigabyte of history
-for one commit is time spent on nothing. Gluten is outside this: it runs in a cluster.
+`LATEST=1` uses `versions-latest.env`. Changed answers are observations; a broken harness still
+fails. The weekly drift workflow collects proposed [DRIFT.txt](../results/DRIFT.txt) changes
+as artifacts for review and writes no Git refs. Pinned CI runs self-checks and replays columns.
 
-`LATEST=1` is the same run against today's release rather than the pinned one, through
-`versions-latest.env`. There a difference is the finding rather than the failure — the participant
-moved since the column was taken — and only a broken harness fails the run. That is what
-`.github/workflows/drift.yml` does weekly; `selfcheck.yml` does the pinned direction on every push.
-
-A drift run that finds something prepares a block for
-[`results/DRIFT.txt`](../results/DRIFT.txt): the day, the participant, the revision it was actually
-built from, the revision of this repository and the fingerprint of its inputs, and the cases that
-moved. A quiet week leaves nothing there. The jobs run in parallel in separate checkouts, so each
-leaves its block in its artifact and one later job collects them into a proposed file and patch.
-Those outputs are artifacts for a normal reviewed PR; the workflow does not write to a Git branch.
-`selfcheck.sh` checks the shape of the saved log.
-
-`OUT=<dir>` keeps the run: the normalized column, the runner's raw output, the report of what moved,
-and a record naming the versions actually installed, the revision this repository was at, and one
-fingerprint over the corpus, `expected.json` and `normalize.py`. Without that record a difference
-between two runs cannot be attributed — a moved answer, a regenerated corpus and an edited
-expectation all look the same in a column.
-
-Two things the pinned run checks besides the answers. The installed version has to be the one
-`versions.env` asked for, because a comparison against another version of the participant says
-nothing about either. And DuckDB's substrait support is a community extension, where `INSTALL` takes
-no version and whatever that repository serves is what arrives: the version is read back out of
-`duckdb_extensions()` and compared with `DUCKDB_SUBSTRAIT_EXTENSION`. That pin cannot be honoured,
-only noticed — but a run that got a different extension is not a reproduction, whatever the answers
-turn out to be.
-
-`selfcheck.sh` is the other direction: it runs no participant at all and checks this repository
-against itself — that `expected.json`, `results/MATRIX.txt` and `results/DIFFS.md` are what their
-generators produce, that the numbers the pages state in prose are the numbers the files hold, that every
-saved column is complete and agrees with the expectations, that the numbers in the README match what
-`check_expected.py` says, that the corpus is whole, and that no absolute path or untranslated text
-has come back. `check_differed.py`, which it calls, is the one part that reads judgements rather
-than generated files: every differing answer has a reason in `differed.json`, every reason
-carries a test of an output property, and every divergence carries a record of what came of
-it — per participant, since one reason can cover four of them. These checks do not prove the
-stated cause of a difference.
-Unknown or inactive checks are rejected. The self-check needs python3 and nothing else, takes
-seconds, and is what CI runs.
-
-Every script finds the corpus relative to the repository, and its environment through
-`SUBSTRAIT_PROBE_ENV` (default `<repo>/.probe-env`). The two external checkouts are named by
-`SUBSTRAIT_JAVA_DIR` and `DF_DIR`. `SUBSTRAIT_PYTHON_ENV`, `SUBSTRAIT_VALIDATOR_ENV` and
-`PROBE_CACHE` override individual pieces; each defaults to something under the probe environment.
-`JAVA17_HOME` is the one to set by hand outside macOS: the Spark probe needs JDK 17 (on 18+ Hadoop
-dies in `Subject.getSubject`), and it is found through `/usr/libexec/java_home` only on a Mac.
-Without it the Spark column is skipped with a line saying so.
+`OUT=<dir>` retains the normalized column, raw output, changes and a provenance record: actual
+versions, repository revision and an input fingerprint over the corpus, expectations and
+normalizer. `selfcheck.sh` checks saved-artifact consistency and tested reasons; it needs python3
+and no network. It proves neither the spec reading nor a difference's cause. The negative gate
+breaks invariants in a temporary copy and requires each failure to name the broken invariant.
 
 ## What a run needs, and what fails it
 
-python3, go 1.23 or newer, a JDK, and cargo with protoc — protoc and the well-known type definitions
-it imports, which some distributions package apart from it (`protobuf-compiler` and
-`libprotobuf-dev` on Debian and Ubuntu). Two of those are more particular than they look. The Spark
-probe wants JDK 17 specifically and finds it by itself only on macOS; anywhere else set
-`JAVA17_HOME`, or that probe is skipped and the run then fails, since a skipped participant needs
-`ALLOW_SKIPPED=1` to count as intended. And the DataFusion probe builds that checkout with the Rust
-toolchain it pins in its own `rust-toolchain.toml`, which rustup will fetch for you and an unmanaged
-cargo will not.
+The full local sweep needs python3, Go 1.23 or newer, JDK 17, Rust with cargo, and protoc.
+Protoc must find its well-known types (`protobuf-compiler` and `libprotobuf-dev` on Debian/Ubuntu).
+DataFusion uses its checkout's pinned `rust-toolchain.toml`; rustup can fetch it. Spark discovers
+JDK 17 automatically only on macOS; set `JAVA17_HOME` elsewhere.
 
-A column is written through `normalize.py`, which puts every participant's answer into one line per
-case and refuses a column it cannot make whole, so the comparison never runs on a half-read file.
-`results/MATRIX.txt` is case by implementation with one truncated answer per cell, and
-`results/<NAME>.txt` has the full values: a cell starting with `-` is a refusal and `·` means the
-case was not run through that implementation. A returned schema can still carry diagnostics — for
-the validator, `bash probe/validator_all.sh` prints them, and `results/VALIDATOR.txt` keeps the
-schema when there is one.
+`setup.sh` builds dependencies under `SUBSTRAIT_PROBE_ENV` (default `<repo>/.probe-env`). The
+external checkouts are `SUBSTRAIT_JAVA_DIR` and `DF_DIR`. `SUBSTRAIT_PYTHON_ENV`,
+`SUBSTRAIT_VALIDATOR_ENV` and `PROBE_CACHE` override individual environment/cache paths.
+`SETUP_ONLY=<key>` builds one component instead of all of them.
 
-`reverify.sh` regenerates the corpus, runs every participant, compares each column against
-`expected.json` and prints all sides next to each other. By default it only reports: the corpus, the
-manifest and `expected.json` are rebuilt into temporary files and it tells you what differs, and a
-participant whose environment is missing is skipped with a line saying so. `UPDATE_COLUMNS=1`
-replaces the saved columns, `results/MATRIX.txt` and `docs/`; `UPDATE_CORPUS=1` replaces the corpus,
-the manifest and `expected.json`; nothing else in the repository is written by a run.
+`reverify.sh` requires the Java and DataFusion commits in `versions.env`; empty `SJ_EXPECT=` or
+`DF_EXPECT=` deliberately disables the corresponding check. By default it regenerates the corpus,
+manifest and expectations into temporary files and reports differences without replacing them.
+`UPDATE_CORPUS=1` replaces those inputs; `UPDATE_COLUMNS=1` replaces saved columns, MATRIX.txt
+and the generated pages. Use these flags only for an intended update and inspect the full diff.
 
-`reverify.sh` requires both checkouts to be at the commits `versions.env` names and refuses to run
-otherwise; `SJ_EXPECT=` or `DF_EXPECT=` left empty says the mismatch is deliberate. The pin records
-what was measured rather than what is necessary: the same nine columns came out of substrait-java at
-`81120b91`, twelve commits earlier, with every number unchanged.
+`normalize.py` requires one answer per case before a column can be compared. Full answers are in
+`results/<NAME>.txt`; MATRIX.txt truncates them. `-` marks a refusal and `·` a case not run.
+A schema can coexist with diagnostics, particularly in the validator column.
 
-A single case failing inside an engine is not a harness failure; that is the finding. What does fail
-the run, each with a `FAILED` line and a non-zero exit: a checkout at the wrong commit, a missing
-environment, a generator that will not build, a corpus or manifest or expectation file that no
-longer matches its source, fewer answers coming back than there are cases, a participant that
-answered nothing at all, a column the normalization could not make whole, and a participant skipped
-without `ALLOW_SKIPPED=1`.
-
-That list is written out rather than summarised as "fail-closed", because the summary was false once
-and read as true: a validator environment with nothing installed produced 78 crashes and a clean
-run, the guard having compared the refusals against the number of cases while the check only ever
-counts the ones that carry an expectation.
+A refused plan is a measured result. Harness failures exit non-zero with a `FAILED` line:
+wrong checkout revision, missing environment, failed generation, source/artifact drift,
+incomplete or unnormalizable output, a participant answering nothing, or a skipped participant
+without `ALLOW_SKIPPED=1`. That flag permits an intentional partial run, not a complete sweep.
 
 ## The participants and their versions
 
-`versions.env` is the single place these are pinned, and `setup.sh` installs exactly them. The two
-commits are required by `reverify.sh` itself: a run against a different substrait-java or DataFusion
-fails at the preflight, and `SJ_EXPECT=` or `DF_EXPECT=` left empty is how you say you meant it.
+[versions.env](versions.env) is the authoritative pin set. Update a pin together with its
+column and provenance. Runner entry points are:
 
-| | version | taken by |
-| --- | --- | --- |
-| substrait-java, Isthmus/Calcite | `bc050d37` in the checkout `SUBSTRAIT_JAVA_DIR` points at | `SchemaOf.java`, `CalciteSchemaOf.java` |
-| substrait-python | 0.34.0 | `python_one.py` |
-| substrait-validator | built from `main` at `0a5d3d6` | `validator_one.py` |
-| substrait-go | v9 at `8c239c67dd92` | `go/main.go` |
-| DataFusion | `c922f8811` | `datafusion_corpus_probe.rs` |
-| DuckDB | 1.5.5, substrait community extension | `duckdb_one.py` |
-| Acero | pyarrow 25.0.1 | `acero_one.py` |
-| Spark | 3.5.4 | `SparkSchemaOf.java` |
-| Gluten/Velox | `f7f5f04` | `SubstraitCorpusProbeTest.cc`, in a cluster |
+| Participant | Runner |
+| --- | --- |
+| substrait-java, Isthmus/Calcite | `SchemaOf.java`, `CalciteSchemaOf.java` |
+| substrait-python | `python_one.py` |
+| substrait-validator | `validator_one.py` |
+| substrait-go | `go/main.go` |
+| DataFusion | `datafusion_corpus_probe.rs` |
+| DuckDB | `duckdb_one.py` |
+| Acero | `acero_one.py` |
+| Spark | `SparkSchemaOf.java` |
+| Gluten/Velox | `SubstraitCorpusProbeTest.cc`, separate cluster run |
 
-Spark and Isthmus need a built `:spark:spark-3.5_2.12` and `:isthmus` in that checkout; `cp.sh`
-resolves their classpaths from Gradle and caches them under the probe environment.
+Spark and Isthmus need `:spark:spark-3.5_2.12` and `:isthmus` built in the Java checkout.
+`cp.sh` resolves Gradle classpaths and caches them under the probe environment.
 
 A column is compared only as far as the participant's type system reaches. The head of each
 `results/<NAME>.txt` repeats its own limit:
@@ -142,12 +82,13 @@ A column is compared only as far as the participant's type system reaches. The h
 | | how far the column goes |
 | --- | --- |
 | DuckDB | carries no nullability in its logical types, so only types, arity and column order are compared. Comparing nullability would record the boundary of its type system as a divergence |
-| DataFusion, DuckDB | have no string type with a length. Neither can represent `varchar<10>` or `fixedchar<5>`, which is why `stringlen_declared` differs there — not a defect |
+| DataFusion, DuckDB | have no string type with a length. Neither can represent `varchar<10>` or `fixedchar<5>`, so `stringlen_declared` differs at a type-system boundary |
 | Acero, Spark | do carry nullability and are compared on it |
 | Gluten | carries no nullability either, and repeats a function's declared type instead of deriving it |
 | substrait-validator | the pinned revision retains declared function return types; schema output must be read alongside diagnostics. The mutation checks final output schemas, not every expression's type |
 
-These pins describe the saved measurements, not a promise to use every participant's newest release. Update a pin together with a reproduced column and its provenance. Package versions and Substrait spec versions are also distinct: a binding can depend on older packaged definitions even when the binding itself is the latest release.
+Package and specification versions are distinct: a binding may use older packaged definitions.
+Pins identify saved measurements; `versions-latest.env` identifies drift targets.
 
 The Spark runner selects `:spark:spark-3.5_2.12`; its Spark version comes from that module's Gradle build. `SPARK_35` records the expected version but does not override the dependency. `SPARK_34` and `SPARK_40` record the other library variants and do not add corpus runs for them. The saved Spark column and automated replay therefore cover Spark 3.5 only. Focused diagnostics use the same default classpath selection.
 
@@ -175,9 +116,8 @@ The [`Spark runtimes` workflow](../.github/workflows/spark-runtimes.yml) runs ev
 
 ## What else is in here
 
-`reverify.sh` runs the consumer side: it hands each implementation a plan and records the schema it
-derives. The diagnostics below are separate from that path. The Spark runtime workflow also runs
-the Spark decimal and overflow diagnostics; the other engine diagnostics remain manual.
+The following diagnostics are separate from the saved-column sweep. The Spark runtime workflow
+also runs its decimal and overflow checks; the other engine diagnostics are manual.
 
 ### Focused schema diagnostics
 
@@ -349,29 +289,13 @@ the plan through a consumer. `--check` fails if a declaration is missing. This
 mode was verified at `c922f8811`: all four calls carry `output_type`. This checks
 producer declarations only; aggregation phases and the declared AVG contract are separate checks.
 
-**Where each implementation differs.** `diffs.py` writes `results/DIFFS.md`, which is `differed.json`
-joined to the columns and the expectations: per participant, the cases that differ, the expectation,
-the answer, the reason and what came of it. It is built from the same model `heatmap.py` draws, so
-the page and the file cannot disagree, and `selfcheck.sh` compares it with its generator.
+**Reports and generated pages.** `diffs.py` joins expectations, columns and reasons into
+`results/DIFFS.md`. `heatmap.py` uses the same model for the matrix SVGs and `docs/index.html`.
+`coverage.py` writes the relation-coverage block in METHOD.md and rejects unknown relation kinds.
+`check_pages.py` checks registered prose counts and requires pattern updates when those sentences
+are reworded. `selfcheck.sh` checks generated output and cell verdicts against their sources.
 
-**What the corpus covers.** `coverage.py` counts which relations of `algebra.proto` the plans reach
-and writes the block the README carries; `selfcheck.sh` compares that block with this output, and a
-plan using a relation the script's transcribed list does not name fails rather than being counted as
-something else.
-
-**The numbers in the prose.** `check_pages.py` holds every number the pages state about the corpus
-next to the file it comes from. A number gone stale fails; so does a sentence reworded past the
-pattern that watches it, because a guard that quietly stops matching is the failure this repository
-has already had three times.
-
-**The matrix drawn.** `heatmap.py` turns the saved columns into `docs/matrix.svg` and
-`docs/matrix-dark.svg`, which the README shows, and `docs/index.html`, which the site serves with
-the expectation and the answer under the cursor. It does not decide anything of its own: the
-parsers and the expectations come out of `check_expected.py`, `reverify.sh` redraws all three under
-`UPDATE_COLUMNS=1`, and `selfcheck.sh` compares the files with the generator and the drawn cells
-with the check, participant by participant.
-
-**Producers — what an implementation declares.** A consumer's answer is only half the question; the
+**Producers: what an implementation declares.** A consumer's answer is only half the question; the
 other half is what a producer writes into `output_type` in the first place. `ProducerIsthmus.java`
 and `ProducerSpark.java` print what those two declare when they turn SQL into a plan,
 `duckdb_producer.py` does the same for DuckDB and additionally compares the type it reports directly
@@ -387,9 +311,9 @@ Go 1.24 or newer, separately from the consumer probe's Go 1.23 minimum:
 
     (cd probe/go-producer && GOTOOLCHAIN=local go run .)
 
-After setup and a successful `reverify.sh`, `bash probe/lie_matrix.sh` reruns the output-schema
-mutation experiment on Java, Python, validator and DuckDB. `reverify.sh` compiles the `SchemaOf`
-helper that the mutation script uses.
+After setup and a successful `reverify.sh`, `bash probe/lie_matrix.sh` reruns the declaration
+swap across the nine local participants. The sweep compiles its `SchemaOf` helper. Keep cargo
+on PATH for this script and `binding_matrix.sh`, or DataFusion is skipped.
 
 **The declared type against the derived one.** `ObserveOf.java` attaches substrait-java's
 `TypeObserver` to a conversion and reports, per case, how many types Isthmus saw declared, how many
@@ -414,30 +338,17 @@ against the right classpath; `cp.sh` is where those classpaths come from.
 
 ## Running this on another machine
 
-The nine-consumer sweep has also run in a clean Ubuntu 24.04 container with empty caches. A run on
-another machine is still useful for finding dependencies on the original workstation. The
-self-check in CI checks saved artifacts; it does not repeat the consumer measurements.
-
-For such a run to measure the harness rather than someone's paths, these have to start empty:
-
-| | why it matters cold |
-| --- | --- |
-| the Gradle cache and both build directories | `:core`, `:isthmus` and `:spark:spark-3.5_2.12` are built through `cp.sh`, and a warm tree hides whether the task graph asks for what the classpath names |
-| the cargo target directory | the DataFusion example takes tens of minutes cold and seconds warm, and the toolchain that checkout pins has to be fetched |
-| the pip cache | `setup.sh` installs duckdb, pyarrow, substrait-python and the validator, and their wheels are large |
-| `JAVA17_HOME` | the Spark probe needs JDK 17 and finds it through `/usr/libexec/java_home` only on macOS; elsewhere it is set by hand or the probe is skipped |
-| the Go module cache | `probe_go9` is built from a pinned commit |
-
-The two checkouts have to be at the commits `versions.env` names, which `reverify.sh` requires
-anyway. Everything else `setup.sh` builds.
+The full sweep has run in a clean Ubuntu 24.04 container. To test cold-build reproducibility,
+use isolated empty Gradle/build, cargo-target, pip and Go-module caches; do not clear shared
+caches. Set `JAVA17_HOME` explicitly outside macOS and use the checkouts pinned by `versions.env`.
+`setup.sh` builds the remaining environments. Pinned CI replays individual columns; a full
+`reverify.sh` run also checks regeneration across the complete local sweep.
 
 ## substrait-validator
 
-`setup.sh` builds this when cargo and protoc are on PATH and `google/protobuf/any.proto` is where
-protoc can find it - the build compiles .proto files that import it, and Debian and Ubuntu ship that
-file in `libprotobuf-dev`, apart from the compiler. Without it the failure lands deep inside maturin
-and names neither package, so `setup.sh` checks first and says so when it skips. By hand, the
-same thing - the release on PyPI is no use, being on spec 0.57.1 and unable to load these cases:
+`setup.sh` builds the pinned source revision with cargo and protoc. Protoc must find
+`google/protobuf/any.proto` (`libprotobuf-dev` on Debian/Ubuntu). The old PyPI release targets
+spec 0.57.1 and cannot load these cases. Manual setup:
 
     SP="${SUBSTRAIT_PROBE_ENV:-$PWD/.probe-env}"
     git clone https://github.com/substrait-io/substrait-validator "$SP/substrait-validator"
@@ -447,11 +358,9 @@ same thing - the release on PyPI is no use, being on spec 0.57.1 and unable to l
       "$SP/val/bin/pip" install "$SP/substrait-validator/py"
     "$SP/val/bin/pip" install -U 'protobuf==7.36.1'
 
-`$SUBSTRAIT_VALIDATOR_COMMIT` comes from `versions.env`, so read that file first (`. probe/versions.env`);
-a shallow clone of `main` gets whatever `main` is today, which is not what the saved column was taken
-against. The last `pip install` is required too: the generated code needs a 7.x runtime while the
-package pins `protobuf<7`. The path to the venv is
-overridden with `SUBSTRAIT_VALIDATOR_ENV`.
+Load the commit variable first with `. probe/versions.env`. The protobuf 7.x runtime override
+is required by generated bindings despite the package's `<7` constraint. Override the venv
+location with `SUBSTRAIT_VALIDATOR_ENV`.
 
 The default validator probe reports that YAML resolution was not attempted. At the pinned validator
 revision, `FunctionBinding::new` also leaves function matching and return-type checking unimplemented
@@ -460,25 +369,24 @@ returning a schema is not an assertion that the plan passed validation.
 
 ## Gluten/Velox
 
-Not run by `reverify.sh`: it needs a built Gluten, which takes hours, and the saved
-`results/GLUTEN.txt` column is taken in a cluster, by hand, whenever the other nine are retaken.
-`gluten_column.py` turns the probe's output into the column - it drops everything from
-` Retriable:` onwards, which is where a Velox exception stops being the message and becomes a
-forty-frame stack - so the one step that used to happen in someone's terminal is now in the
-repository. `results/MATRIX.txt` reads each column's date out of its own header, so a run that
-leaves Gluten behind says so rather than presenting one date for all ten. To reproduce it: build Gluten at the commit in `versions.env` with
-`dev/builddeps-veloxbe.sh --build_tests=ON` - the `JsonToProtoConverter` harness that reads
-protobuf-JSON is only built with the tests - then put `SubstraitCorpusProbeTest.cc` into
-`cpp/velox/tests`, register it in the `CMakeLists.txt` there, and point `SUBSTRAIT_CORPUS_DIR` at
-the virtual-table variant of the corpus (`derived-schema-virtual-tables`, built by `to_virtual_tables.py`).
-Gluten reads only `virtual_table` and `local_files` out of a `ReadRel`, so the canonical corpus
-with its named tables will not do.
+Gluten is outside `reverify.sh`; its column is taken separately in a cluster. Each column
+retains its own measurement date. `gluten_column.py` normalizes probe output, removing the
+stack after ` Retriable:` while preserving the message.
+
+Build the Gluten revision in `versions.env` with `dev/builddeps-veloxbe.sh --build_tests=ON`.
+Add `SubstraitCorpusProbeTest.cc` to `cpp/velox/tests` and its CMake target, then point
+`SUBSTRAIT_CORPUS_DIR` at `derived-schema-virtual-tables`, generated by `to_virtual_tables.py`.
+The test build supplies `JsonToProtoConverter`. This reader supports `virtual_table` and
+`local_files`, not the canonical corpus's named tables.
+
+The separate [relation diagnostic](relations/gluten/README.md) records native schemas and
+executed rows without scoring or updating the relation matrix.
 
 ## Decimal return types
 
 [decimal-rules/](decimal-rules/) is outside the corpus: it does not read a plan. It compares the
-`functions_arithmetic_decimal` return expressions against five other rule sets — the reference they
-came from, two engines that implement it and one that does not — over every decimal operand type
+`functions_arithmetic_decimal` return expressions against five other rule sets; the reference they
+came from, two engines that implement it and one that does not; over every decimal operand type
 pair, and runs the cases of
 [substrait-io/substrait#1213](https://github.com/substrait-io/substrait/pull/1213) on Spark and Hive
 in Docker. Its README says what agrees with what and what was not measured.
@@ -494,4 +402,5 @@ three columns against the original. [results/BINDING.txt](../results/BINDING.txt
 
 ## Finding index
 
-[FINDINGS.md](../FINDINGS.md) links each reported contract to the relevant matrix cases or focused probe, with controls and related implementation PRs. It keeps producer checks separate from static consumer plans.
+[FINDINGS.md](../FINDINGS.md) links reports to corpus cases and focused reproducers, separating
+producer checks from static consumer plans.

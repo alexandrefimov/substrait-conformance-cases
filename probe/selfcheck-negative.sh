@@ -270,7 +270,7 @@ mutate "a guarded sentence reworded past its pattern" "was reworded" \
   python3 -c "
 import io, re
 s = io.open('README.md', encoding='utf-8').read()
-new = re.sub(r'\| (\d+) generated plans, where the type', r'| \\1 generated plans in which the type', s)
+new = re.sub(r'\| (\d+) generated plans testing schema derivation', r'| \\1 generated plans for schema derivation', s)
 if new == s: raise SystemExit(1)
 io.open('README.md', 'w', encoding='utf-8').write(new)"
 

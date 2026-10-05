@@ -2,62 +2,27 @@
 
 [![selfcheck](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml/badge.svg)](https://github.com/alexandrefimov/substrait-conformance-cases/actions/workflows/selfcheck.yml)
 
-Two corpora of executable cases against the Substrait specification at v0.102.0. Every expectation
-here is written from the sentence of the specification it names, not captured from an
-implementation, and every answer beside it is retaken by one command.
+Executable cases comparing Substrait output schemas and relation semantics across libraries and
+engines. Expectations are written from the specification text they cite, independently of the
+implementation answers. Both corpora are authored against Substrait v0.102.0 and support the
+[relation conformance proposal](https://github.com/substrait-io/substrait/issues/1164).
 
-| | | |
+## Corpora
+
+| Corpus | Scope | Participants |
 | --- | --- | --- |
-| [`derived-schema/`](derived-schema) | 108 generated plans, where the type a plan declares and the type a consumer derives can disagree without either side raising it | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
-| [`tests/relations/`](tests/relations) | 71 hand-written cases pinning what the relation documentation says a relation outputs, schema and rows alike | substrait-java, substrait-go, DuckDB, DataFusion |
+| [`derived-schema/`](derived-schema) | 108 generated plans testing schema derivation | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
+| [`tests/relations/`](tests/relations) | 71 hand-written cases testing relation schemas and rows | substrait-java, substrait-go, DuckDB, DataFusion |
 
-[The matrix as a page](https://alexandrefimov.github.io/substrait-conformance-cases/) puts the
-answer and the expectation beside each cell.
+The [results on GitHub Pages](https://alexandrefimov.github.io/substrait-conformance-cases/) show the
+expectation and saved answer for each cell. [Schema differences](results/DIFFS.md) groups the
+differing cases by participant; [FINDINGS.md](FINDINGS.md) links reproducers to upstream reports.
 
-## If your project is here
+## Results
 
-Sixteen of the twenty-one reasons behind a divergence link an issue or a PR in the project it is
-about: substrait, substrait-java, substrait-go, substrait-python, substrait-validator, DataFusion,
-DuckDB's extension, Arrow. Yours may be among them already.
-
-- [`results/DIFFS.md`](results/DIFFS.md) — your cases out of the 108, each with the expectation, the
-  answer your build gave, and what came of it.
-- The relation corpus is [on the page](https://alexandrefimov.github.io/substrait-conformance-cases/#relations);
-  its reasons are [`results/relations/differed.json`](results/relations/differed.json).
-- `bash probe/replay_column.sh <NAME>` and `bash probe/relations/replay.sh <NAME>` rebuild one
-  implementation from nothing at the version it was measured at, and require the saved answers back.
-
-An expectation can be wrong, and a wrong one is reported as a divergence against an implementation
-that was right. If one does not follow from the sentence it names, that is worth an issue here.
-
-## What the corpus says
-
-Take `decimal_divide`, `dec(10,2)` over `dec(5,1)`, where
-`functions_arithmetic_decimal.yaml` gives `dec(21,8)`:
-
-    substrait-java, substrait-go, substrait-python, validator, Isthmus, Gluten   dec(21,8)
-    Spark        dec(17,8)
-    DataFusion   dec(15,6)
-    DuckDB       fp64
-    Acero        dec(16,7)
-
-The columns were taken 2026-09-18, 2026-10-02, 2026-10-05 against the versions in `probe/versions.env`; the weekly `drift`
-run reports what has moved since. When something moved, its artifact contains a proposed
-`results/DRIFT.txt` change for a normal reviewed PR. They answer the 98 cases that carry an
-expectation. The nine in the table are consumer paths rather than engines — the Java core, Isthmus
-and Spark all go through substrait-java, DuckDB through its substrait extension — and Gluten, the
-tenth, runs over the virtual-table variant in a cluster.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/matrix-dark.svg">
-  <img src="docs/matrix.svg" width="838"
-       alt="The corpus as a grid, cases down and implementations across: matched cells in a quiet
-            grey, divergences in red, plans an implementation does not accept left as empty
-            outlines, and limits of a type system hatched.">
-</picture>
-
-Matched in grey, differed in red, a plan the implementation does not accept as an outline, a limit
-of its type system hatched.
+The schema columns were taken 2026-09-18, 2026-10-02, 2026-10-05 against the versions in
+[`probe/versions.env`](probe/versions.env). They answer the 98 cases that carry an expectation.
+Gluten is measured separately over the virtual-table variant and is outside the table below.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
@@ -71,96 +36,39 @@ of its type system hatched.
 | Spark | 31 | 6 | 61 |
 | Acero | 4 | 16 | 78 |
 
-**The first row is calibration, not a result.** Most plans are built with substrait-java builders,
-by the person who also wrote the generators and the expectations, so its 92 matches say that two
-encodings of a spec rule agree. [The two `expand` cells](METHOD.md#the-two-expand-cases) are where
-even this row differs.
+A difference is a disagreement with this repository's reading of the specification, not proof
+of a defect. The columns measure different consumer APIs and type systems; totals do not rank
+engines. A schema match alone establishes neither correct rows nor independent type derivation.
+The Java row is [calibration](METHOD.md#calibration); the [expand cases](METHOD.md#the-two-expand-cases)
+illustrate its limits. [METHOD.md](METHOD.md) explains these boundaries and the declaration swap.
 
-Four more rows carry a narrower version of the same caveat.
-[The declaration swap](METHOD.md#what-a-match-establishes) puts a false `output_type` into every
-plan that declares one, and five of the rows move with it: 16 of substrait-java's matches, 15 of
-substrait-python's, 13 each of substrait-go's and Isthmus's and 12 of the validator's are the
-declared type read back rather than a derivation. Only 29 of the 108 cases declare an output type, and the
-swap reaches nothing else. Acero, DataFusion, DuckDB and Spark answer the swapped plan exactly as
-they answer the original.
+The [relation matrix](https://alexandrefimov.github.io/substrait-conformance-cases/#relations)
+compares schemas and, for executing participants, rows. Its [measurement notes](probe/relations/README.md#saved-results)
+describe the saved results and each participant's comparison limits.
 
-*Differed* means the answer disagrees
-with this repository's reading of the spec, which is not the same as a defect:
-`differed.json` carries a reason written by hand for all 74 of them, 16 marked as something other
-than a divergence, and `probe/check_differed.py` tests every reason against the saved column. A
-column is also compared only as far as its own type system reaches — DuckDB's logical types carry no
-nullability, nor do Gluten's — and one that stops short says so in the head of its
-`results/<NAME>.txt`.
+## Reproduction
 
-Which relations those 108 plans reach at all is counted in [METHOD.md](METHOD.md#what-the-corpus-covers), from the plans themselves.
+From the repository root:
 
-## What would help
+```sh
+bash probe/selfcheck.sh                    # committed-file checks; python3, no network
+bash probe/replay_column.sh DUCKDB          # pinned schema column
+bash probe/relations/replay.sh DUCKDB       # pinned relation column
+```
 
-- **A second reading of the expectations, by someone with no stake in them.** They have been read
-  once, from inside this repository: one contradicted the specification and was fixed, and
-  [sixteen rest on a step the specification never states](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8),
-  thirteen of them joins. An answer on those sixteen is worth more than a fresh pass over the rest,
-  and a wrong expectation is reported as a divergence against an implementation that was right.
-- **From the spec, one answer.** What does a projection mask listed out of schema order yield? The
-  spec says a mask can "only mask things out", yet DuckDB's substrait extension writes a mask of
-  `[2, 0]` for `SELECT c2, c0`, and every participant here that applies the mask puts the columns in
-  the listed order; one case waits on that.
+Each replay downloads and builds the named participant, then requires the saved answers back.
+The [schema probe guide](probe/README.md) and [relation probe guide](probe/relations/README.md)
+list participant names and prerequisites. Gluten has a separate run path. The self-check
+executes no participant and does not validate the specification reading.
 
-## Running it
+## Documentation
 
-    bash probe/selfcheck.sh
-    bash probe/replay_column.sh PYTHON|GO|DUCKDB|ACERO|VALIDATOR|JAVA|ISTHMUS|SPARK|DATAFUSION
-    bash probe/relations/replay.sh DUCKDB|GO|JAVA|DATAFUSION
-    bash probe/relations/retake.sh
+- [Method](METHOD.md): expectation sources, calibration, coverage and measurement limits.
+- [Findings](FINDINGS.md): specification questions, implementation reports and reproducers.
+- [Relation test vectors](tests/relations/README.md): protobuf bundle contract and case authoring.
+- [Generators](gen/README.md): building and extending the schema corpus.
+- [Independent deriver](deriver/README.md): a second encoding of the specification rules.
+- [Producer shapes](probe/producer-shapes/README.md): plans from SQL passed between implementations.
 
-The first recomputes every number on this page from the committed files; it needs python3 and
-nothing else. The rest rebuild one implementation at its pinned version and require its saved
-answers back. [`probe/README.md`](probe/README.md) has the prerequisites and what fails a run,
-[`probe/relations/README.md`](probe/relations/README.md) the same for the relation corpus.
-
-## What is here
-
-| | |
-| --- | --- |
-| `derived-schema/` | the 108 plans, protobuf-JSON and binary, beside a `manifest.json` saying per case what it pins, the schema expected of it and the spec rule that expectation comes from. Read that rather than the plan |
-| `derived-schema-virtual-tables/` | the same cases carrying their own rows |
-| `results/<NAME>.txt` | one column per implementation; `probe/matrix.py`, `probe/diffs.py` and `probe/heatmap.py` draw `results/MATRIX.txt`, `results/DIFFS.md` and the pictures out of them |
-| `expected.json` | the expectations, written by `probe/expected.py` |
-| `differed.json` | a reason per differing cell |
-| `deriver/` | the same rules read a second time: an output schema computed from the plan and the spec text, by rules written separately from `probe/expected.py` and compared with it. [`deriver/README.md`](deriver/README.md) says what that establishes |
-
-Everything keys on a case's file name, and nothing generated is edited by hand.
-
-Whether cases like these belong in the spec repository is under discussion in
-[substrait#1164](https://github.com/substrait-io/substrait/issues/1164); this repository is where
-they live meanwhile. The function test cases the spec ships check what a scalar function returns;
-these compare schemas across relations. Adding one costs a JDK and a substrait-java checkout — the
-generators build the plans with that library's builders, and [`gen/README.md`](gen/README.md) says
-how. [METHOD.md](METHOD.md) is the method and what a match proves; [FINDINGS.md](FINDINGS.md) the
-way from a report back to the cases that reproduce it.
-
-## The relation corpus
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/relations-dark.svg">
-  <img src="docs/relations.svg"
-       alt="The relation corpus as a grid, cases down and participants across: agreement in a quiet
-            grey, agreement on the schema of a case that also asserts rows hatched, divergence in
-            red, a plan the participant does not accept left as an outline, and a case that carries
-            no expectation dotted.">
-</picture>
-
-One story per column. substrait-java answers 58 of the 63 scored cases and refuses 5. substrait-go
-refuses 21, eight of them the set operations, whose inputs it requires to agree on a nullability
-these cases deliberately vary. DuckDB and DataFusion execute, so they are the two measured against
-the rows that 47 of the cases assert. DuckDB's 11 divergences all show in the schema, five of them
-in the rows as well, and so do DataFusion's 3, two of them in the rows: so far the rows have
-confirmed an answer rather than caught one. Both reach the rows of 31 cases and return the same rows
-on 26. The other five are the emit cases, where DataFusion returns the rows the case asserts and
-DuckDB does not. The hatched cells are substrait-java and substrait-go agreeing about a schema and
-never seeing the rows. Eight cases carry no expectation on purpose and are never scored.
-
-`results/relations/` holds one column per participant, and `bash probe/relations/replay.sh <NAME>`
-rebuilds one participant from nothing at its pinned version.
-[`probe/relations/README.md`](probe/relations/README.md) is how the measurement works and how to add
-a fifth.
+Expectation corrections should name the case and the specification rule. Outstanding review
+questions are listed in [METHOD.md](METHOD.md#reviewing-expectations).
