@@ -1,0 +1,156 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2,
+                  3
+                ]
+              }
+            },
+            "input": {
+              "aggregate": {
+                "common": {
+                  "emit": {
+                    "outputMapping": [
+                      0,
+                      1
+                    ]
+                  }
+                },
+                "input": {
+                  "project": {
+                    "common": {
+                      "emit": {
+                        "outputMapping": [
+                          2
+                        ]
+                      }
+                    },
+                    "input": {
+                      "read": {
+                        "common": {
+                          "direct": {}
+                        },
+                        "baseSchema": {
+                          "names": [
+                            "C0",
+                            "C1"
+                          ],
+                          "struct": {
+                            "types": [
+                              {
+                                "i64": {
+                                  "nullability": "NULLABILITY_REQUIRED"
+                                }
+                              },
+                              {
+                                "i64": {
+                                  "nullability": "NULLABILITY_NULLABLE"
+                                }
+                              }
+                            ],
+                            "nullability": "NULLABILITY_REQUIRED"
+                          }
+                        },
+                        "namedTable": {
+                          "names": [
+                            "T_RN"
+                          ]
+                        }
+                      }
+                    },
+                    "expressions": [
+                      {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    ]
+                  }
+                },
+                "groupings": [
+                  {
+                    "expressionReferences": [
+                      0
+                    ]
+                  },
+                  {}
+                ],
+                "groupingExpressions": [
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {}
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "switchExpression": {
+                  "ifs": [
+                    {
+                      "if": {
+                        "i32": 0
+                      },
+                      "then": {
+                        "literal": {
+                          "i64": "0"
+                        }
+                      }
+                    }
+                  ],
+                  "else": {
+                    "literal": {
+                      "i64": "1"
+                    }
+                  },
+                  "match": {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 1
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "C0",
+          "G"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

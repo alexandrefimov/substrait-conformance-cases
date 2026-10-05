@@ -11,8 +11,8 @@ datafusion__exists_or                          [c0:BIGINT]
 datafusion__filter_project                     [c1:BIGINT, c0:BIGINT]
 datafusion__fn_avg_dec                         [x:DOUBLE]
 datafusion__fn_case                            [x:BIGINT, y:BIGINT]
-datafusion__fn_cast_str_int                    ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column expr_0
 datafusion__fn_cast                            [s:VARCHAR, d:DOUBLE]
+datafusion__fn_cast_str_int                    ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column expr_0
 datafusion__fn_cmp_bool                        [e:BOOLEAN, l:BOOLEAN]
 datafusion__fn_count_star                      [n:BIGINT, m:BIGINT]
 datafusion__fn_dec_mul                         [x:DECIMAL(15,3)]
@@ -53,8 +53,8 @@ duckdb__exists_or                              [c0:BIGINT]
 duckdb__filter_project                         [c1:BIGINT, c0:BIGINT]
 duckdb__fn_avg_dec                             [x:DOUBLE]
 duckdb__fn_case                                [x:BIGINT, y:BIGINT]
-duckdb__fn_cast_str_int                        ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column expr_0
 duckdb__fn_cast                                [s:VARCHAR, d:DOUBLE]
+duckdb__fn_cast_str_int                        ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column expr_0
 duckdb__fn_cmp_bool                            [e:BOOLEAN, l:BOOLEAN]
 duckdb__fn_count_star                          [n:BIGINT, m:BIGINT]
 duckdb__fn_dec_mul                             [x:DECIMAL(18,3)]
@@ -95,8 +95,8 @@ isthmus__exists_or                             ERROR: NotImplementedException: N
 isthmus__filter_project                        [C1:BIGINT, C0:BIGINT]
 isthmus__fn_avg_dec                            [X:DOUBLE]
 isthmus__fn_case                               [X:BIGINT, Y:BIGINT]
-isthmus__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 isthmus__fn_cast                               [S:VARCHAR, D:DOUBLE]
+isthmus__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 isthmus__fn_cmp_bool                           [E:BOOLEAN, L:BOOLEAN]
 isthmus__fn_count_star                         [N:BIGINT, M:BIGINT]
 isthmus__fn_dec_mul                            [X:DECIMAL(15,3)]
@@ -104,6 +104,7 @@ isthmus__fn_minmax_i64                         [LO:BIGINT, HI:BIGINT]
 isthmus__fn_str                                [U:VARCHAR, C:VARCHAR, N:BIGINT]
 isthmus__fn_sum_dec                            [X:DECIMAL(38,2)]
 isthmus__full_join                             [C0:BIGINT, C1:BIGINT]
+isthmus__grouping_fn                           ERROR: NotImplementedException: Not implemented Error: Unsupported expression type switch_expression LINE 1: SELECT * FROM from_substrait_json(?) ^
 isthmus__grouping_sets                         [C0:BIGINT, C1:BIGINT, S:HUGEINT]
 isthmus__in_or                                 ERROR: NotImplementedException: Not implemented Error: Unsupported expression type subquery LINE 1: SELECT * FROM from_substrait_json(?) ^
 isthmus__in_subquery                           ERROR: NotImplementedException: Not implemented Error: Unsupported expression type subquery LINE 1: SELECT * FROM from_substrait_json(?) ^
@@ -134,8 +135,8 @@ spark35__except_mixed                          [c0:BIGINT]
 spark35__filter_project                        [c1:BIGINT, c0:BIGINT]
 spark35__fn_avg_dec                            [x:DOUBLE]
 spark35__fn_case                               [x:BIGINT, y:BIGINT]
-spark35__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 spark35__fn_cast                               [s:VARCHAR, d:DOUBLE]
+spark35__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 spark35__fn_cmp_bool                           [e:BOOLEAN, l:BOOLEAN]
 spark35__fn_count_star                         [n:BIGINT, m:BIGINT]
 spark35__fn_dec_mul                            [x:DECIMAL(15,3)]
@@ -174,8 +175,8 @@ spark40__except_mixed                          [c0:BIGINT]
 spark40__filter_project                        [c1:BIGINT, c0:BIGINT]
 spark40__fn_avg_dec                            [x:DOUBLE]
 spark40__fn_case                               [x:BIGINT, y:BIGINT]
-spark40__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 spark40__fn_cast                               [s:VARCHAR, d:DOUBLE]
+spark40__fn_cast_str_int                       ERROR: ConversionException: Conversion Error: Could not convert string 'x' to INT32 when casting from source column c1
 spark40__fn_cmp_bool                           [e:BOOLEAN, l:BOOLEAN]
 spark40__fn_count_star                         [n:BIGINT, m:BIGINT]
 spark40__fn_dec_mul                            [x:DECIMAL(15,3)]

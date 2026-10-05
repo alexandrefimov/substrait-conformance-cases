@@ -84,6 +84,13 @@
                 "measures": [
                   {
                     "measure": {
+                      "outputType": {
+                        "decimal": {
+                          "scale": 6,
+                          "precision": 14,
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {

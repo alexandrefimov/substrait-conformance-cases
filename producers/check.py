@@ -41,6 +41,37 @@ QUERIES = [l.split("\t")[0] for l in open(os.path.join(HERE, "queries.tsv"))
            if l.strip() and not l.startswith("#")]
 
 
+def pins():
+    """The literal version assignments used by the probe scripts."""
+    values = {}
+    for line in open(os.path.join(ROOT, "probe", "versions.env")):
+        line = line.split("#", 1)[0].strip()
+        key, sep, value = line.partition("=")
+        if sep:
+            values[key] = value.strip()
+    return values
+
+
+def check_pins():
+    v = pins()
+    expected = {
+        "duckdb": "duckdb %s %s" % (v["DUCKDB_VERSION"], v["DUCKDB_SUBSTRAIT_EXTENSION"]),
+        "datafusion": "datafusion <version> %s" % v["DATAFUSION_COMMIT"],
+        "isthmus": "isthmus, substrait-java %s" % v["SUBSTRAIT_JAVA_COMMIT"],
+        "spark35": "spark %s, substrait-java %s" % (v["SPARK_35"], v["SUBSTRAIT_JAVA_COMMIT"]),
+        "spark40": "spark %s, substrait-java %s" % (v["SPARK_40"], v["SUBSTRAIT_JAVA_COMMIT"]),
+    }
+    for producer, want in expected.items():
+        path = os.path.join(PLANS, producer, "PRODUCER.txt")
+        got = open(path).read().strip() if os.path.exists(path) else "missing"
+        # DataFusion's package version is descriptive; its revision is the pin.
+        matches = (re.fullmatch(r"datafusion \S+ " + re.escape(v["DATAFUSION_COMMIT"]), got)
+                   if producer == "datafusion" else got == want)
+        if not matches:
+            raise SystemExit("FAILED producer plans match their pins: %s was taken at %r, "
+                             "expected %r; retake its plans" % (producer, got, want))
+
+
 def at(doc, path):
     """The message a deriver path such as `relations[0].root.input.project.expressions[1]` names."""
     node = doc
@@ -210,6 +241,7 @@ def column(producer, derivations):
 
 
 def main(argv):
+    check_pins()
     if "--derive" in argv:
         open(DERIVED, "w").write(derive_all())
         print("wrote %s" % os.path.relpath(DERIVED, ROOT))

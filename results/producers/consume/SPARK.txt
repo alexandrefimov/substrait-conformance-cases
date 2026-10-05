@@ -1,7 +1,7 @@
 SPARK: the committed producer plans, spark 3.5.4
 Carries nullability (StructField.nullable). Its refusals are loud: a fact about support, not a divergence.
 
-datafusion__aggs                               ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__aggs                               ERROR: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
 datafusion__arith                              ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
 datafusion__count_distinct                     ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
 datafusion__dec_add                            ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
@@ -11,13 +11,13 @@ datafusion__exists_or                          ERROR: IllegalStateException: Fun
 datafusion__filter_project                     ERROR: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_avg_dec                         ERROR: IllegalStateException: Function 'avg' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_case                            ERROR: IllegalStateException: Function 'is_null' references URN anchor -1, but no URN is registered at that anchor
-datafusion__fn_cast_str_int                    [x:string]
 datafusion__fn_cast                            [s:string, d:double?]
+datafusion__fn_cast_str_int                    [x:string]
 datafusion__fn_cmp_bool                        ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_count_star                      ERROR: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_dec_mul                         ERROR: IllegalStateException: Function 'multiply' references URN anchor -1, but no URN is registered at that anchor
-datafusion__fn_minmax_i64                      ERROR: IllegalStateException: Function 'max' references URN anchor -1, but no URN is registered at that anchor
-datafusion__fn_str                             ERROR: IllegalStateException: Function 'upper' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_minmax_i64                      ERROR: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_str                             ERROR: IllegalStateException: Function 'character_length' references URN anchor -1, but no URN is registered at that anc
 datafusion__fn_sum_dec                         ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_try_cast                        [x:string]
 datafusion__full_join                          ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
@@ -53,8 +53,8 @@ duckdb__exists_or                              ERROR: IllegalStateException: Fun
 duckdb__filter_project                         [c1:bigint?, c0:bigint]
 duckdb__fn_avg_dec                             [x:decimal(14,6)?]
 duckdb__fn_case                                [x:bigint, y:bigint]
-duckdb__fn_cast_str_int                        [x:string]
 duckdb__fn_cast                                [s:string, d:double?]
+duckdb__fn_cast_str_int                        [x:string]
 duckdb__fn_cmp_bool                            ERROR: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anch
 duckdb__fn_count_star                          [n:bigint, m:bigint]
 duckdb__fn_dec_mul                             [x:decimal(38,10)]
@@ -95,8 +95,8 @@ isthmus__exists_or                             ERROR: UnsupportedOperationExcept
 isthmus__filter_project                        [C1:bigint?, C0:bigint]
 isthmus__fn_avg_dec                            [X:decimal(14,6)?]
 isthmus__fn_case                               [X:bigint?, Y:bigint?]
-isthmus__fn_cast_str_int                       [X:int?]
 isthmus__fn_cast                               [S:string, D:double?]
+isthmus__fn_cast_str_int                       [X:int?]
 isthmus__fn_cmp_bool                           [E:boolean?, L:boolean?]
 isthmus__fn_count_star                         [N:bigint, M:bigint]
 isthmus__fn_dec_mul                            [X:decimal(16,3)?]
@@ -104,6 +104,7 @@ isthmus__fn_minmax_i64                         [LO:bigint?, HI:bigint?]
 isthmus__fn_str                                ERROR: IllegalArgumentException: Unable to convert scalar function char_length(string).
 isthmus__fn_sum_dec                            [X:decimal(20,2)?]
 isthmus__full_join                             [C0:bigint?, C1:bigint?]
+isthmus__grouping_fn                           ERROR: IllegalArgumentException: requirement failed
 isthmus__grouping_sets                         ERROR: IllegalArgumentException: requirement failed
 isthmus__in_or                                 [C0:bigint]
 isthmus__in_subquery                           [C0:bigint]
@@ -118,8 +119,8 @@ isthmus__not_exists                            ERROR: UnsupportedOperationExcept
 isthmus__not_in                                [C0:bigint]
 isthmus__rollup                                ERROR: IllegalArgumentException: requirement failed
 isthmus__scalar_subquery                       ERROR: UnsupportedOperationException: Expression type io.substrait.expression.ImmutableFieldReference not handled by visitor typ
-isthmus__ts_ns_column                          [TS:timestamp_ntz]
-isthmus__ts_ns_literal                         [C0:bigint]
+isthmus__ts_ns_column                          ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so a type must declare
+isthmus__ts_ns_literal                         ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so the precision must
 isthmus__union_all_mixed                       [C0:bigint?]
 isthmus__union_distinct_mixed                  ERROR: UnsupportedOperationException: Operation not currently supported: UNION_DISTINCT
 isthmus__values_expr                           [A:int, B:int]
@@ -134,8 +135,8 @@ spark35__except_mixed                          [c0:bigint?]
 spark35__filter_project                        [c1:bigint?, c0:bigint?]
 spark35__fn_avg_dec                            [x:decimal(14,6)?]
 spark35__fn_case                               [x:bigint?, y:bigint?]
-spark35__fn_cast_str_int                       [x:int?]
 spark35__fn_cast                               [s:string?, d:double?]
+spark35__fn_cast_str_int                       [x:int?]
 spark35__fn_cmp_bool                           [e:boolean?, l:boolean?]
 spark35__fn_count_star                         [n:bigint, m:bigint]
 spark35__fn_dec_mul                            [x:decimal(16,3)?]
@@ -174,8 +175,8 @@ spark40__except_mixed                          [c0:bigint?]
 spark40__filter_project                        [c1:bigint?, c0:bigint?]
 spark40__fn_avg_dec                            [x:decimal(14,6)?]
 spark40__fn_case                               [x:bigint?, y:bigint?]
-spark40__fn_cast_str_int                       [x:int?]
 spark40__fn_cast                               [s:string?, d:double?]
+spark40__fn_cast_str_int                       [x:int?]
 spark40__fn_cmp_bool                           [e:boolean?, l:boolean?]
 spark40__fn_count_star                         [n:bigint, m:bigint]
 spark40__fn_dec_mul                            [x:decimal(16,3)?]

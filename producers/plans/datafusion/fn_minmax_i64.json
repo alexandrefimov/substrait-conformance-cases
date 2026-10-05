@@ -2,14 +2,14 @@
   "extensions": [
     {
       "extensionFunction": {
-        "functionAnchor": 1,
-        "name": "max",
+        "name": "min",
         "extensionUrnReference": 4294967295
       }
     },
     {
       "extensionFunction": {
-        "name": "min",
+        "functionAnchor": 1,
+        "name": "max",
         "extensionUrnReference": 4294967295
       }
     }
@@ -75,6 +75,11 @@
                 "measures": [
                   {
                     "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {
@@ -95,6 +100,11 @@
                   {
                     "measure": {
                       "functionReference": 1,
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {

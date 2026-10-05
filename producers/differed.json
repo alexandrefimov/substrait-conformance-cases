@@ -20,19 +20,16 @@
     }
    }
   },
-  "datafusion-aggregate-without-output-type": {
+  "datafusion-window-without-output-type": {
    "kind": "divergence",
-   "what": "DataFusion's aggregate calls carry no output_type, which algebra.proto says 'Must be set to the return type of the function'.",
+   "what": "DataFusion's window sum carries no output_type, which algebra.proto requires on WindowFunction. Ordinary aggregate calls now declare their types at DATAFUSION_COMMIT.",
    "match": {
     "DATAFUSION": "^\\S+ no output_type$"
    },
    "triage": {
     "DATAFUSION": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/apache/datafusion/issues/25049"
-     ],
-     "note": "closed 2026-09-23, after DATAFUSION_COMMIT; the pin still writes none"
+     "outcome": "open",
+     "note": "The pinned window producer sets output_type to None. Issue 25049 covered ordinary aggregates and is fixed at this pin; a tracker search for Substrait window output_type found no matching report (checked 2026-10-05)."
     }
    }
   },
@@ -120,9 +117,9 @@
   },
   "isthmus-calcite-output-type": {
    "kind": "divergence",
-   "what": "Isthmus declares the type Calcite gives the expression rather than the extension's return: Calcite's decimal rules for sum, avg, divide and multiply, and INTEGER for CHAR_LENGTH where char_length returns i64.",
+   "what": "Isthmus declares nullable avg:dec where the extension derives a required decimal, and INTEGER for CHAR_LENGTH where char_length returns i64. Decimal precision for sum, avg, divide and multiply now follows the extensions at SUBSTRAIT_JAVA_COMMIT.",
    "match": {
-    "ISTHMUS": "^(sum|avg|divide|multiply|char_length):\\S+ declared \\S+ derived \\S+$"
+    "ISTHMUS": "^(avg|char_length):\\S+ declared \\S+ derived \\S+$"
    },
    "triage": {
     "ISTHMUS": {
@@ -132,23 +129,7 @@
       "https://github.com/substrait-io/substrait-java/pull/1347",
       "https://github.com/substrait-io/substrait/issues/1252"
      ],
-     "note": "1347 derives the decimal types as the extensions declare; char_length has the same cause and no open fix; avg's nullability is 1252"
-    }
-   }
-  },
-  "isthmus-concat-binds-varchar-to-string": {
-   "kind": "divergence",
-   "what": "Isthmus writes concat:vchar for a string argument, which that signature does not accept.",
-   "match": {
-    "ISTHMUS": "^concat:vchar unbound: argument 0 of concat:vchar: declared varchar, called with string$"
-   },
-   "triage": {
-    "ISTHMUS": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-java/issues/1117",
-      "https://github.com/substrait-io/substrait-java/pull/1348"
-     ]
+     "note": "Decimal precision now matches after 1347; avg's nullability is 1252. CHAR_LENGTH still declares i32 rather than i64 at the pin."
     }
    }
   },

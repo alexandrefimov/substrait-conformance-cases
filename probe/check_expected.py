@@ -135,7 +135,7 @@ def parse_py(s):
 
 ARROW_TIME_UNIT = {"Second": 0, "Millisecond": 3, "Microsecond": 6, "Nanosecond": 9}
 
-ARROW = {"Int64": "i64", "Int32": "i32", "Int8": "i8", "Int16": "i16", "Utf8": "str",
+ARROW = {"Int64": "i64", "Int32": "i32", "Int8": "i8", "Int16": "i16", "Utf8": "str", "Utf8View": "str",
          "Boolean": "bool", "Float64": "fp64", "Float32": "fp32", "Binary": "bin"}
 
 def parse_df(s):
@@ -170,7 +170,8 @@ def parse_df(s):
 # count a difference in vocabulary as a divergence.
 DUCKDB_T = {"BIGINT": "i64", "INTEGER": "i32", "SMALLINT": "i16", "TINYINT": "i8",
             "VARCHAR": "str", "BOOLEAN": "bool", "DOUBLE": "fp64", "FLOAT": "fp32",
-            "BLOB": "bin", "TIMESTAMP": "precision_timestamp(6)"}
+            "BLOB": "bin", "TIMESTAMP": "precision_timestamp(6)",
+            "TIMESTAMP_NS": "precision_timestamp(9)"}
 ACERO_T = {"int64": "i64", "int32": "i32", "int16": "i16", "int8": "i8", "string": "str",
            "bool": "bool", "double": "fp64", "float": "fp32", "binary": "bin"}
 

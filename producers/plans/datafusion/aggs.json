@@ -2,6 +2,13 @@
   "extensions": [
     {
       "extensionFunction": {
+        "functionAnchor": 3,
+        "name": "min",
+        "extensionUrnReference": 4294967295
+      }
+    },
+    {
+      "extensionFunction": {
         "name": "sum",
         "extensionUrnReference": 4294967295
       }
@@ -17,13 +24,6 @@
       "extensionFunction": {
         "functionAnchor": 2,
         "name": "count",
-        "extensionUrnReference": 4294967295
-      }
-    },
-    {
-      "extensionFunction": {
-        "functionAnchor": 3,
-        "name": "min",
         "extensionUrnReference": 4294967295
       }
     }
@@ -91,6 +91,11 @@
                 "measures": [
                   {
                     "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {
@@ -109,6 +114,11 @@
                   {
                     "measure": {
                       "functionReference": 1,
+                      "outputType": {
+                        "fp64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {
@@ -137,6 +147,11 @@
                   {
                     "measure": {
                       "functionReference": 2,
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {
@@ -157,6 +172,11 @@
                   {
                     "measure": {
                       "functionReference": 3,
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {

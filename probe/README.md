@@ -2,7 +2,8 @@
 
 This directory measures the generated schema corpus. The [relation corpus](relations/README.md)
 has separate runners; [producer shapes](producer-shapes/README.md) passes SQL-generated plans
-between implementations. Commands below run from the repository root.
+between implementations. The [producer corpus](../producers/README.md) saves broader SQL-produced
+plan sets and their declaration and consumer checks. Commands below run from the repository root.
 
 | Task | Command |
 | --- | --- |

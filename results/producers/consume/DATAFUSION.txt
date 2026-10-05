@@ -1,4 +1,4 @@
-DATAFUSION: the committed producer plans, datafusion cc29ea12a
+DATAFUSION: the committed producer plans, datafusion c922f8811
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 datafusion__aggs                               [s:Int64?, a:Float64?, n:Int64, m:Int64?]
@@ -17,7 +17,7 @@ datafusion__fn_cmp_bool                        [e:Boolean?, l:Boolean?]
 datafusion__fn_count_star                      [n:Int64, m:Int64]
 datafusion__fn_dec_mul                         [x:Decimal128(16, 3)]
 datafusion__fn_minmax_i64                      [lo:Int64?, hi:Int64?]
-datafusion__fn_str                             [u:Utf8?, c:Utf8View, n:Int32?]
+datafusion__fn_str                             [u:Utf8, c:Utf8View, n:Int32?]
 datafusion__fn_sum_dec                         [x:Decimal128(20, 2)?]
 datafusion__fn_try_cast                        [x:Int32?]
 datafusion__full_join                          [c0:Int64?, c1:Int64?]
@@ -101,9 +101,10 @@ isthmus__fn_cmp_bool                           [E:Boolean?, L:Boolean?]
 isthmus__fn_count_star                         [N:Int64, M:Int64]
 isthmus__fn_dec_mul                            [X:Decimal128(16, 3)]
 isthmus__fn_minmax_i64                         [LO:Int64?, HI:Int64?]
-isthmus__fn_str                                [U:Utf8?, C:Utf8?, N:Int32?]
+isthmus__fn_str                                [U:Utf8, C:Utf8?, N:Int32?]
 isthmus__fn_sum_dec                            [X:Decimal128(20, 2)?]
 isthmus__full_join                             [C0:Int64?, C1:Int64?]
+isthmus__grouping_fn                           ERROR: This feature is not implemented: Switch expression not supported
 isthmus__grouping_sets                         [C0:Int64?, C1:Int64?, S:Int64?]
 isthmus__in_or                                 [C0:Int64]
 isthmus__in_subquery                           [C0:Int64]

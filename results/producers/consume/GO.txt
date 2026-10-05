@@ -1,4 +1,4 @@
-GO: the committed producer plans, substrait-go/v9 v9.0.0-alpha.0.0.20260917181931-df007ba63b7d
+GO: the committed producer plans, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92
 
 datafusion__aggs                               ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__arith                              ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
@@ -10,8 +10,8 @@ datafusion__exists_or                          ERROR: unable to resolve extensio
 datafusion__filter_project                     ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__fn_avg_dec                         ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__fn_case                            ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
-datafusion__fn_cast_str_int                    [x:string]
 datafusion__fn_cast                            [s:string?, d:fp64?]
+datafusion__fn_cast_str_int                    [x:string]
 datafusion__fn_cmp_bool                        ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__fn_count_star                      ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__fn_dec_mul                         ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
@@ -27,8 +27,8 @@ datafusion__in_subquery                        ERROR: unable to resolve extensio
 datafusion__intersect_mixed                    ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__join_reordered                     ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__left_join                          ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
-datafusion__limit_offset                       ERROR: error getting input to FetchRel: invalid relation: missing required Offset field for Fetch Relation
-datafusion__limit_only                         ERROR: invalid relation: missing required Offset field for Fetch Relation
+datafusion__limit_offset                       ERROR: invalid relation: root relation has 1 output name(s) but the output schema requires 2
+datafusion__limit_only                         ERROR: invalid relation: root relation has 1 output name(s) but the output schema requires 2
 datafusion__mask_filter                        [c1:boolean]
 datafusion__mask_reorder                       [c2:boolean, c0:string]
 datafusion__not_exists                         ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
@@ -52,8 +52,8 @@ duckdb__exists_or                              ERROR: unable to resolve extensio
 duckdb__filter_project                         [c1:i64?, c0:i64]
 duckdb__fn_avg_dec                             [x:fp64?]
 duckdb__fn_case                                [x:i64?, y:i64?]
-duckdb__fn_cast_str_int                        [x:string]
 duckdb__fn_cast                                [s:string?, d:fp64?]
+duckdb__fn_cast_str_int                        [x:string]
 duckdb__fn_cmp_bool                            ERROR: unable to resolve extension reference: URN reference 0 could not be resolved
 duckdb__fn_count_star                          [n:i64?, m:i64?]
 duckdb__fn_dec_mul                             [x:decimal<38,10>]
@@ -69,8 +69,8 @@ duckdb__in_subquery                            [c0:i64?]
 duckdb__intersect_mixed                        ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64, i64?>, got struct<i64?, i64>
 duckdb__join_reordered                         [c1:i64, c1:i64]
 duckdb__left_join                              [c0:i64?, c1:i64?]
-duckdb__limit_offset                           ERROR: invalid relation: missing required Offset field for Fetch Relation
-duckdb__limit_only                             ERROR: invalid relation: missing required Offset field for Fetch Relation
+duckdb__limit_offset                           ERROR: invalid relation: root relation has 1 output name(s) but the output schema requires 2
+duckdb__limit_only                             ERROR: invalid relation: root relation has 1 output name(s) but the output schema requires 2
 duckdb__mask_filter                            ERROR: invalid relation: root relation has 1 output name(s) but the output schema requires 3
 duckdb__mask_reorder                           ERROR: invalid relation: root relation has 2 output name(s) but the output schema requires 3
 duckdb__not_exists                             [c0:i64?]
@@ -88,36 +88,37 @@ isthmus__aggs                                  [S:i64?, A:i64?, N:i64, M:i64?]
 isthmus__arith                                 [X:i64, Y:i64]
 isthmus__count_distinct                        [D:i64, S:i64?]
 isthmus__dec_add                               [X:decimal<11,2>]
-isthmus__dec_div                               [X:decimal<17,8>]
+isthmus__dec_div                               [X:decimal<21,8>]
 isthmus__except_mixed                          ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64>, got struct<i64?>
 isthmus__exists_or                             [C0:i64]
 isthmus__filter_project                        [C1:i64?, C0:i64]
-isthmus__fn_avg_dec                            [X:decimal?<10,2>]
+isthmus__fn_avg_dec                            [X:decimal?<38,2>]
 isthmus__fn_case                               [X:i64?, Y:i64]
-isthmus__fn_cast_str_int                       [X:i32]
 isthmus__fn_cast                               [S:varchar<20>, D:fp64?]
+isthmus__fn_cast_str_int                       [X:i32]
 isthmus__fn_cmp_bool                           [E:boolean?, L:boolean?]
 isthmus__fn_count_star                         [N:i64, M:i64]
-isthmus__fn_dec_mul                            [X:decimal<15,3>]
+isthmus__fn_dec_mul                            [X:decimal<16,3>]
 isthmus__fn_minmax_i64                         [LO:i64?, HI:i64?]
 isthmus__fn_str                                [U:string, C:string, N:i32]
-isthmus__fn_sum_dec                            [X:decimal?<10,2>]
+isthmus__fn_sum_dec                            [X:decimal?<38,2>]
 isthmus__full_join                             [C0:i64?, C1:i64?]
+isthmus__grouping_fn                           ERROR: panic: runtime error: index out of range [1] with length 1
 isthmus__grouping_sets                         [C0:i64, C1:i64?, S:i64?]
 isthmus__in_or                                 [C0:i64]
 isthmus__in_subquery                           [C0:i64]
 isthmus__intersect_mixed                       ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64>, got struct<i64?>
 isthmus__join_reordered                        [C1:i64, C1:i64?]
 isthmus__left_join                             [C0:i64, C1:i64?]
-isthmus__limit_offset                          ERROR: invalid relation: missing required Offset field for Fetch Relation
-isthmus__limit_only                            ERROR: invalid relation: missing required Offset field for Fetch Relation
+isthmus__limit_offset                          [C0:i64]
+isthmus__limit_only                            [C0:i64]
 isthmus__mask_filter                           [C1:string]
 isthmus__mask_reorder                          [C2:boolean, C0:i64]
 isthmus__not_exists                            [C0:i64]
 isthmus__not_in                                [C0:i64]
 isthmus__rollup                                [C0:i64, C1:i64?, N:i64]
 isthmus__scalar_subquery                       [C0:i64, M:i64?]
-isthmus__ts_ns_column                          [TS:precision_timestamp<6>]
+isthmus__ts_ns_column                          [TS:precision_timestamp<9>]
 isthmus__ts_ns_literal                         [C0:i64]
 isthmus__union_all_mixed                       ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64>, got struct<i64?>
 isthmus__union_distinct_mixed                  ERROR: invalid relation: set operation field mismatch found in input #1, expected struct<i64>, got struct<i64?>
@@ -133,8 +134,8 @@ spark35__except_mixed                          [c0:i64?]
 spark35__filter_project                        [c1:i64?, c0:i64?]
 spark35__fn_avg_dec                            [x:decimal?<14,6>]
 spark35__fn_case                               [x:i64?, y:i64?]
-spark35__fn_cast_str_int                       [x:i32?]
 spark35__fn_cast                               [s:string?, d:fp64?]
+spark35__fn_cast_str_int                       [x:i32?]
 spark35__fn_cmp_bool                           [e:boolean?, l:boolean?]
 spark35__fn_count_star                         [n:i64, m:i64]
 spark35__fn_dec_mul                            [x:decimal?<16,3>]
@@ -149,8 +150,8 @@ spark35__in_subquery                           [c0:i64?]
 spark35__intersect_mixed                       [c0:i64?]
 spark35__join_reordered                        [c1:i64?, c1:i64?]
 spark35__left_join                             [c0:i64?, c1:i64?]
-spark35__limit_offset                          ERROR: invalid relation: missing required Offset field for Fetch Relation
-spark35__limit_only                            ERROR: invalid relation: missing required Offset field for Fetch Relation
+spark35__limit_offset                          [c0:i64?]
+spark35__limit_only                            [c0:i64?]
 spark35__mask_filter                           [c1:string?]
 spark35__mask_reorder                          [c2:boolean?, c0:i64?]
 spark35__not_exists                            [c0:i64?]
@@ -173,8 +174,8 @@ spark40__except_mixed                          [c0:i64?]
 spark40__filter_project                        [c1:i64?, c0:i64?]
 spark40__fn_avg_dec                            [x:decimal?<14,6>]
 spark40__fn_case                               [x:i64?, y:i64?]
-spark40__fn_cast_str_int                       [x:i32?]
 spark40__fn_cast                               [s:string?, d:fp64?]
+spark40__fn_cast_str_int                       [x:i32?]
 spark40__fn_cmp_bool                           [e:boolean?, l:boolean?]
 spark40__fn_count_star                         [n:i64, m:i64]
 spark40__fn_dec_mul                            [x:decimal?<16,3>]
@@ -189,8 +190,8 @@ spark40__in_subquery                           [c0:i64?]
 spark40__intersect_mixed                       [c0:i64?]
 spark40__join_reordered                        [c1:i64?, c1:i64?]
 spark40__left_join                             [c0:i64?, c1:i64?]
-spark40__limit_offset                          ERROR: invalid relation: missing required Offset field for Fetch Relation
-spark40__limit_only                            ERROR: invalid relation: missing required Offset field for Fetch Relation
+spark40__limit_offset                          [c0:i64?]
+spark40__limit_only                            [c0:i64?]
 spark40__mask_filter                           [c1:string?]
 spark40__mask_reorder                          [c2:boolean?, c0:i64?]
 spark40__not_exists                            [c0:i64?]

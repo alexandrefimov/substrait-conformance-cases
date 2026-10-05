@@ -173,6 +173,12 @@ day = '01' if m.group(3) != '01' else '02'
 io.open('README.md', 'w', encoding='utf-8').write(
     s[:m.start()] + 'taken %s-%s-%s' % (m.group(1), m.group(2), day) + s[m.end():])"
 
+mutate "DuckDB nanosecond timestamps read as microseconds" "DuckDB timestamp precision parser" \
+  replace probe/check_expected.py '"TIMESTAMP_NS": "precision_timestamp(9)"' '"TIMESTAMP_NS": "precision_timestamp(6)"'
+
+mutate "DataFusion string views read as binary" "DataFusion string-view parser" \
+  replace probe/check_expected.py '"Utf8View": "str"' '"Utf8View": "bin"'
+
 mutate "an Acero parameterized type normalized to a plain type" "Acero parameterized-type parser" \
   replace probe/check_expected.py '{"varchar": "vchar", "fixed_char": "fchar"}' '{"varchar": "str", "fixed_char": "str"}'
 
@@ -1019,7 +1025,19 @@ mutate "a producer reason that no longer matches its calls" "every differing pro
   replace producers/differed.json 'sum:i64 declared dec' 'sum:i32 declared dec'
 
 mutate "a consumer answer changed without redrawing the consumer matrix" "the consumer matrix matches the consumer columns" \
-  replace results/producers/consume/GO.txt "ERROR: invalid relation: missing required Offset field for Fetch Relation" "[c0:i64]"
+  python3 -c "
+import io
+p = 'results/producers/consume/GO.txt'
+lines = io.open(p, encoding='utf-8').readlines()
+lines = [('datafusion__fn_cast [c0:i32]\n' if l.startswith('datafusion__fn_cast ') else l)
+         for l in lines]
+io.open(p, 'w', encoding='utf-8').writelines(lines)"
+
+mutate "producer plans taken at another pin" "producer plans match their pins" \
+  replace producers/plans/isthmus/PRODUCER.txt "substrait-java " "substrait-java stale-"
+
+mutate "producer consumer column taken at another pin" "producer consumer columns match their pins" \
+  replace results/producers/consume/GO.txt "substrait-go/v9 " "substrait-go/v9 stale-"
 
 # Assembled rather than written out, for the same reason the patterns in selfcheck.sh are: a file
 # carrying the literal would be flagged by the check it is testing.

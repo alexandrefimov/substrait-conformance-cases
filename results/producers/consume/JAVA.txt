@@ -1,6 +1,6 @@
-JAVA: the committed producer plans, substrait-java fff63906
+JAVA: the committed producer plans, substrait-java bc050d37
 
-datafusion__aggs                               ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__aggs                               ERROR: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
 datafusion__arith                              ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
 datafusion__count_distinct                     ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
 datafusion__dec_add                            ERROR: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
@@ -10,13 +10,13 @@ datafusion__exists_or                          ERROR: IllegalStateException: Fun
 datafusion__filter_project                     ERROR: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_avg_dec                         ERROR: IllegalStateException: Function 'avg' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_case                            ERROR: IllegalStateException: Function 'is_null' references URN anchor -1, but no URN is registered at that an
-datafusion__fn_cast_str_int                    Struct{nullable=false, fields=[I32{nullable=true}]}
 datafusion__fn_cast                            Struct{nullable=false, fields=[Str{nullable=true}, FP64{nullable=true}]}
+datafusion__fn_cast_str_int                    Struct{nullable=false, fields=[I32{nullable=true}]}
 datafusion__fn_cmp_bool                        ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anch
 datafusion__fn_count_star                      ERROR: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anch
 datafusion__fn_dec_mul                         ERROR: IllegalStateException: Function 'multiply' references URN anchor -1, but no URN is registered at that a
-datafusion__fn_minmax_i64                      ERROR: IllegalStateException: Function 'max' references URN anchor -1, but no URN is registered at that anchor
-datafusion__fn_str                             ERROR: IllegalStateException: Function 'upper' references URN anchor -1, but no URN is registered at that anch
+datafusion__fn_minmax_i64                      ERROR: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_str                             ERROR: IllegalStateException: Function 'character_length' references URN anchor -1, but no URN is registered a
 datafusion__fn_sum_dec                         ERROR: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
 datafusion__fn_try_cast                        Struct{nullable=false, fields=[I32{nullable=true}]}
 datafusion__full_join                          ERROR: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anch
@@ -52,8 +52,8 @@ duckdb__exists_or                              ERROR: IllegalStateException: Fun
 duckdb__filter_project                         Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 duckdb__fn_avg_dec                             Struct{nullable=false, fields=[FP64{nullable=true}]}
 duckdb__fn_case                                Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
-duckdb__fn_cast_str_int                        Struct{nullable=false, fields=[I32{nullable=true}]}
 duckdb__fn_cast                                Struct{nullable=false, fields=[Str{nullable=true}, FP64{nullable=true}]}
+duckdb__fn_cast_str_int                        Struct{nullable=false, fields=[I32{nullable=true}]}
 duckdb__fn_cmp_bool                            ERROR: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at
 duckdb__fn_count_star                          Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
 duckdb__fn_dec_mul                             Struct{nullable=false, fields=[Decimal{nullable=true, scale=3, precision=15}]}
@@ -88,21 +88,22 @@ isthmus__aggs                                  Struct{nullable=false, fields=[I6
 isthmus__arith                                 Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}]}
 isthmus__count_distinct                        Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
 isthmus__dec_add                               Struct{nullable=false, fields=[Decimal{nullable=false, scale=2, precision=11}]}
-isthmus__dec_div                               Struct{nullable=false, fields=[Decimal{nullable=false, scale=8, precision=17}]}
+isthmus__dec_div                               Struct{nullable=false, fields=[Decimal{nullable=false, scale=8, precision=21}]}
 isthmus__except_mixed                          Struct{nullable=false, fields=[I64{nullable=false}]}
 isthmus__exists_or                             Struct{nullable=false, fields=[I64{nullable=false}]}
 isthmus__filter_project                        Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
-isthmus__fn_avg_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=2, precision=10}]}
+isthmus__fn_avg_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=2, precision=38}]}
 isthmus__fn_case                               Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
-isthmus__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=false}]}
 isthmus__fn_cast                               Struct{nullable=false, fields=[VarChar{nullable=false, length=20}, FP64{nullable=true}]}
+isthmus__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=false}]}
 isthmus__fn_cmp_bool                           Struct{nullable=false, fields=[Bool{nullable=true}, Bool{nullable=true}]}
 isthmus__fn_count_star                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}]}
-isthmus__fn_dec_mul                            Struct{nullable=false, fields=[Decimal{nullable=false, scale=3, precision=15}]}
+isthmus__fn_dec_mul                            Struct{nullable=false, fields=[Decimal{nullable=false, scale=3, precision=16}]}
 isthmus__fn_minmax_i64                         Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
 isthmus__fn_str                                Struct{nullable=false, fields=[Str{nullable=false}, Str{nullable=false}, I32{nullable=false}]}
-isthmus__fn_sum_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=2, precision=10}]}
+isthmus__fn_sum_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=2, precision=38}]}
 isthmus__full_join                             Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
+isthmus__grouping_fn                           Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=false}]}
 isthmus__grouping_sets                         Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=true}]}
 isthmus__in_or                                 Struct{nullable=false, fields=[I64{nullable=false}]}
 isthmus__in_subquery                           Struct{nullable=false, fields=[I64{nullable=false}]}
@@ -117,7 +118,7 @@ isthmus__not_exists                            Struct{nullable=false, fields=[I6
 isthmus__not_in                                Struct{nullable=false, fields=[I64{nullable=false}]}
 isthmus__rollup                                Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}, I64{nullable=false}]}
 isthmus__scalar_subquery                       Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}
-isthmus__ts_ns_column                          Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=6}]}
+isthmus__ts_ns_column                          Struct{nullable=false, fields=[PrecisionTimestamp{nullable=false, precision=9}]}
 isthmus__ts_ns_literal                         Struct{nullable=false, fields=[I64{nullable=false}]}
 isthmus__union_all_mixed                       Struct{nullable=false, fields=[I64{nullable=true}]}
 isthmus__union_distinct_mixed                  Struct{nullable=false, fields=[I64{nullable=true}]}
@@ -133,8 +134,8 @@ spark35__except_mixed                          Struct{nullable=false, fields=[I6
 spark35__filter_project                        Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
 spark35__fn_avg_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=6, precision=14}]}
 spark35__fn_case                               Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
-spark35__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=true}]}
 spark35__fn_cast                               Struct{nullable=false, fields=[Str{nullable=true}, FP64{nullable=true}]}
+spark35__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=true}]}
 spark35__fn_cmp_bool                           Struct{nullable=false, fields=[Bool{nullable=true}, Bool{nullable=true}]}
 spark35__fn_count_star                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}]}
 spark35__fn_dec_mul                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=3, precision=16}]}
@@ -173,8 +174,8 @@ spark40__except_mixed                          Struct{nullable=false, fields=[I6
 spark40__filter_project                        Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
 spark40__fn_avg_dec                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=6, precision=14}]}
 spark40__fn_case                               Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}
-spark40__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=true}]}
 spark40__fn_cast                               Struct{nullable=false, fields=[Str{nullable=true}, FP64{nullable=true}]}
+spark40__fn_cast_str_int                       Struct{nullable=false, fields=[I32{nullable=true}]}
 spark40__fn_cmp_bool                           Struct{nullable=false, fields=[Bool{nullable=true}, Bool{nullable=true}]}
 spark40__fn_count_star                         Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=false}]}
 spark40__fn_dec_mul                            Struct{nullable=false, fields=[Decimal{nullable=true, scale=3, precision=16}]}

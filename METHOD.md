@@ -2,8 +2,10 @@
 
 This document explains how the generated schema corpus's plans and expectations are made,
 what a match establishes, and how earlier claims have been corrected. The [README](README.md)
-introduces both corpora and their saved results. The separate relation corpus's expectation,
+introduces the corpora and their saved results. The separate relation corpus's expectation,
 row-order and validity contracts are in [its authoring guide](tests/relations/README.md).
+The [producer corpus](producers/README.md) checks SQL-produced plans with the deriver alone;
+it has no independently written expectations.
 
 For a specification review, start with [expectation sources](#where-the-expectations-come-from).
 For a consumer result, read [what a match establishes](#what-a-match-establishes) and

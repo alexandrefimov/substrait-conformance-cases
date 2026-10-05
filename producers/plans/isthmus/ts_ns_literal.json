@@ -71,8 +71,8 @@
                         "value": {
                           "literal": {
                             "precisionTimestamp": {
-                              "precision": 6,
-                              "value": "1577836800123456"
+                              "precision": 9,
+                              "value": "1577836800123456789"
                             }
                           }
                         }
@@ -81,8 +81,8 @@
                         "value": {
                           "literal": {
                             "precisionTimestamp": {
-                              "precision": 6,
-                              "value": "1546300800000000"
+                              "precision": 9,
+                              "value": "1546300800000000000"
                             }
                           }
                         }

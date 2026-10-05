@@ -29,7 +29,7 @@
                     "types": [
                       {
                         "precisionTimestamp": {
-                          "precision": 6,
+                          "precision": 9,
                           "nullability": "NULLABILITY_REQUIRED"
                         }
                       }
@@ -67,8 +67,8 @@
                     "value": {
                       "literal": {
                         "precisionTimestamp": {
-                          "precision": 6,
-                          "value": "1577836800123456"
+                          "precision": 9,
+                          "value": "1577836800123456789"
                         }
                       }
                     }

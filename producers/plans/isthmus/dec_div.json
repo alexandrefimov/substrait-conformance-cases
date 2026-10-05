@@ -80,7 +80,7 @@
                   "outputType": {
                     "decimal": {
                       "scale": 8,
-                      "precision": 17,
+                      "precision": 21,
                       "nullability": "NULLABILITY_REQUIRED"
                     }
                   },

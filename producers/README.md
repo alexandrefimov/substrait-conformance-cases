@@ -77,11 +77,14 @@ python3 producers/check_consume.py --write                                  # CO
 
 `run.sh` needs the probe environment (`probe/setup.sh`), the relations one
 (`probe/relations/setup.sh`) for protobuf, `protoc`, JDK 17 for Spark and cargo for DataFusion, and
-stops when a checkout is not at its pin. It replaces a committed plan only when the plan moved
-beyond anchor numbering, because DataFusion numbers function anchors in hash-map order; the bytes
-kept are still the producer's own. The deriver reads the extension files from a Substrait
+stops when a checkout is not at its pin. Use the protoc and protobuf runtime versions in
+`probe/versions.env`; newer gencode can require a newer runtime. It replaces a committed plan
+only when it changes beyond anchor numbering: DataFusion numbers function anchors in hash-map
+order. The bytes kept are still the producer's own. The deriver reads the extension files from a Substrait
 checkout, so what it derives for these plans is saved in [DERIVED.txt](DERIVED.txt), and
 `probe/selfcheck.sh` checks the columns against the plans and the saved derivations with python3
 alone.
 
 A change of a producer's pin in `probe/versions.env` means retaking its plans in the same change.
+The checks reject producer metadata and consumer column headers that do not match these pins.
+Changing a consumer pin requires retaking its producer-plan column, even when the plans stay the same.

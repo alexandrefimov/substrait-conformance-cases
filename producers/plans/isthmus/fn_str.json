@@ -10,7 +10,7 @@
     {
       "extensionFunction": {
         "functionAnchor": 2,
-        "name": "concat:vchar",
+        "name": "concat:str",
         "extensionUrnReference": 1
       }
     },
@@ -123,8 +123,18 @@
                     },
                     {
                       "value": {
-                        "literal": {
-                          "fixedChar": "z"
+                        "cast": {
+                          "type": {
+                            "string": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          "input": {
+                            "literal": {
+                              "fixedChar": "z"
+                            }
+                          },
+                          "failureBehavior": "FAILURE_BEHAVIOR_THROW_EXCEPTION"
                         }
                       }
                     }

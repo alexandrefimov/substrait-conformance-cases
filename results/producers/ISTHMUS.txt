@@ -1,4 +1,4 @@
-ISTHMUS: plans from isthmus, substrait-java fff6390, checked against the specification at v0.102.0
+ISTHMUS: plans from isthmus, substrait-java bc050d37, checked against the specification at v0.102.0
 
 union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
@@ -15,7 +15,7 @@ full_join              calls 1, differ 0, missing 0, unbound 0, declined 0; name
 join_reordered         calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 rollup                 calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 grouping_sets          calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
-grouping_fn            REFUSED: UnsupportedOperationException: Unable to find binding for call GROUPING($0)
+grouping_fn            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 mask_reorder           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 mask_filter            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 limit_offset           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
@@ -30,19 +30,15 @@ arith                  calls 2, differ 0, missing 0, unbound 0, declined 0; name
 filter_project         calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 window                 calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 dec_add                calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
-dec_div                calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
-  divide:dec_dec           declared dec(17,8)      derived dec(21,8)
+dec_div                calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_avg_dec             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
-  avg:dec                  declared dec(10,2)?     derived dec(38,2)
-fn_sum_dec             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
-  sum:dec                  declared dec(10,2)?     derived dec(38,2)?
+  avg:dec                  declared dec(38,2)?     derived dec(38,2)
+fn_sum_dec             calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_minmax_i64          calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_count_star          calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
-fn_dec_mul             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
-  multiply:dec_dec         declared dec(15,3)      derived dec(16,3)
+fn_dec_mul             calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_cmp_bool            calls 4, differ 0, missing 0, unbound 0, declined 0; names ok
-fn_str                 calls 3, differ 1, missing 0, unbound 1, declined 0; schema declined (argument 0 of concat:vchar: declared varchar, called with string)
-  concat:vchar             unbound: argument 0 of concat:vchar: declared varchar, called with string
+fn_str                 calls 3, differ 1, missing 0, unbound 0, declined 0; names ok
   char_length:str          declared i32            derived i64
 fn_cast                calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 fn_cast_str_int        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok

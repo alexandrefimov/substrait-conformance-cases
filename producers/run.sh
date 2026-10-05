@@ -36,8 +36,9 @@ for p in "${WANT[@]}"; do
       echo "$v" > "$out/PRODUCER.txt" ;;
     isthmus|spark35|spark40)
       SJ="${SUBSTRAIT_JAVA_DIR:-}"; [ -n "$SJ" ] || die "set SUBSTRAIT_JAVA_DIR"
-      head="$(git -C "$SJ" rev-parse --short=7 HEAD)"
-      [ "$head" = "$SUBSTRAIT_JAVA_COMMIT" ] || die "substrait-java is at $head, not $SUBSTRAIT_JAVA_COMMIT"
+      head="$(git -C "$SJ" rev-parse HEAD)"
+      want="$(git -C "$SJ" rev-parse "$SUBSTRAIT_JAVA_COMMIT^{commit}")"
+      [ "$head" = "$want" ] || die "substrait-java is at $head, not $SUBSTRAIT_JAVA_COMMIT"
       if [ "$p" = isthmus ]; then
         python3 "$D/tables.py" isthmus > "$RUN/isthmus.sql"
         bash "$ROOT/probe/isthmus_run.sh" "$D/IsthmusProducer.java" "$RUN/isthmus.sql" "$Q" "$out"
@@ -53,14 +54,17 @@ for p in "${WANT[@]}"; do
       fi ;;
     datafusion)
       DF="${DF_DIR:-}"; [ -n "$DF" ] || die "set DF_DIR"
-      head="$(git -C "$DF" rev-parse --short=9 HEAD)"
-      [ "$head" = "$DATAFUSION_COMMIT" ] || die "DataFusion is at $head, not $DATAFUSION_COMMIT"
+      head="$(git -C "$DF" rev-parse HEAD)"
+      want="$(git -C "$DF" rev-parse "$DATAFUSION_COMMIT^{commit}")"
+      [ "$head" = "$want" ] || die "DataFusion is at $head, not $DATAFUSION_COMMIT"
       command -v cargo >/dev/null || die "no cargo"
       python3 "$D/tables.py" datafusion > "$RUN/datafusion.sql"
       # The example is dropped into the checkout untracked, as probe/reverify.sh does with its own.
+      mkdir -p "$DF/datafusion/substrait/examples"
       cp "$D/datafusion_producer.rs" "$DF/datafusion/substrait/examples/"
       v="$(cd "$DF" && cargo run -q --locked -p datafusion-substrait --example datafusion_producer -- \
-        "$RUN/datafusion.sql" "$Q" "$out" 2>/dev/null | tail -1)"
+        "$RUN/datafusion.sql" "$Q" "$out" 2>"$RUN/datafusion.err" | tail -1)" \
+        || die "DataFusion producer failed: $(tail -3 "$RUN/datafusion.err")"
       echo "$v $DATAFUSION_COMMIT" > "$out/PRODUCER.txt" ;;
     *) die "unknown producer $p" ;;
   esac

@@ -67,6 +67,11 @@
                 "measures": [
                   {
                     "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {
@@ -81,6 +86,11 @@
                   },
                   {
                     "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
                       "invocation": "AGGREGATION_INVOCATION_ALL",
                       "arguments": [
                         {

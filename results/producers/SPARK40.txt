@@ -1,4 +1,4 @@
-SPARK40: plans from spark 4.0.2, substrait-java fff6390, checked against the specification at v0.102.0
+SPARK40: plans from spark 4.0.2, substrait-java bc050d37, checked against the specification at v0.102.0
 
 union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok

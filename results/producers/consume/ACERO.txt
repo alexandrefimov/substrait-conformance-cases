@@ -11,8 +11,8 @@ datafusion__exists_or                          ERROR: ArrowInvalid: Unsupported 
 datafusion__filter_project                     ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_avg_dec                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_case                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
-datafusion__fn_cast_str_int                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_cast                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+datafusion__fn_cast_str_int                    ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_cmp_bool                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_count_star                      ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 datafusion__fn_dec_mul                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
@@ -53,8 +53,8 @@ duckdb__exists_or                              ERROR: ArrowInvalid: Unsupported 
 duckdb__filter_project                         ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_avg_dec                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_case                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
-duckdb__fn_cast_str_int                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_cast                                ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
+duckdb__fn_cast_str_int                        ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_cmp_bool                            ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_count_star                          ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 duckdb__fn_dec_mul                             ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
@@ -95,8 +95,8 @@ isthmus__exists_or                             ERROR: ArrowNotImplementedError: 
 isthmus__filter_project                        [C1:int64?, C0:int64?]
 isthmus__fn_avg_dec                            [X:decimal128(10, 2)?]
 isthmus__fn_case                               [X:int64?, Y:int64?]
-isthmus__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 isthmus__fn_cast                               [S:extension<varchar{length:20}>?, D:double?]
+isthmus__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 isthmus__fn_cmp_bool                           [E:bool?, L:bool?]
 isthmus__fn_count_star                         [N:int64?, M:int64?]
 isthmus__fn_dec_mul                            [X:decimal128(16, 3)?]
@@ -104,6 +104,7 @@ isthmus__fn_minmax_i64                         [LO:int64?, HI:int64?]
 isthmus__fn_str                                ERROR: ArrowNotImplementedError: No conversion function exists to convert the Substrait function upper to an Arrow call expression
 isthmus__fn_sum_dec                            [X:decimal128(38, 2)?]
 isthmus__full_join                             [C0:int64?, C1:int64?]
+isthmus__grouping_fn                           ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
 isthmus__grouping_sets                         ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
 isthmus__in_or                                 ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
 isthmus__in_subquery                           ERROR: ArrowNotImplementedError: conversion to arrow::compute::Expression from Substrait expression goo.gle/debug subquery {   in_predicate {     needles {       selection {         d
@@ -134,8 +135,8 @@ spark35__except_mixed                          ERROR: ArrowNotImplementedError: 
 spark35__filter_project                        [c1:int64?, c0:int64?]
 spark35__fn_avg_dec                            [x:decimal128(10, 2)?]
 spark35__fn_case                               [x:int64?, y:int64?]
-spark35__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 spark35__fn_cast                               [s:string?, d:double?]
+spark35__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 spark35__fn_cmp_bool                           [e:bool?, l:bool?]
 spark35__fn_count_star                         ERROR: ArrowInvalid: Expected an aggregate call #count to have a direct reference
 spark35__fn_dec_mul                            [x:decimal128(16, 3)?]
@@ -174,8 +175,8 @@ spark40__except_mixed                          ERROR: ArrowNotImplementedError: 
 spark40__filter_project                        [c1:int64?, c0:int64?]
 spark40__fn_avg_dec                            [x:decimal128(10, 2)?]
 spark40__fn_case                               [x:int64?, y:int64?]
-spark40__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 spark40__fn_cast                               [s:string?, d:double?]
+spark40__fn_cast_str_int                       ERROR: ArrowInvalid: Failed to parse string: 'x' as a scalar of type int32
 spark40__fn_cmp_bool                           [e:bool?, l:bool?]
 spark40__fn_count_star                         ERROR: ArrowInvalid: Expected an aggregate call #count to have a direct reference
 spark40__fn_dec_mul                            [x:decimal128(16, 3)?]

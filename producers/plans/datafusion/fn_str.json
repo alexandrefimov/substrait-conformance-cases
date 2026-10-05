@@ -2,14 +2,14 @@
   "extensions": [
     {
       "extensionFunction": {
-        "name": "upper",
+        "functionAnchor": 2,
+        "name": "character_length",
         "extensionUrnReference": 4294967295
       }
     },
     {
       "extensionFunction": {
-        "functionAnchor": 2,
-        "name": "character_length",
+        "name": "upper",
         "extensionUrnReference": 4294967295
       }
     },
@@ -87,7 +87,7 @@
                   "outputType": {
                     "string": {
                       "typeVariationReference": 2,
-                      "nullability": "NULLABILITY_NULLABLE"
+                      "nullability": "NULLABILITY_REQUIRED"
                     }
                   },
                   "arguments": [

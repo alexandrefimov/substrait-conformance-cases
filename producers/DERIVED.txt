@@ -221,6 +221,7 @@ isthmus/rollup	root	3	[i64?, i64?, i64]
 isthmus/rollup	relations[0].root.input.aggregate.measures[0].measure	count:	derived	i64
 isthmus/grouping_sets	root	3	[i64?, i64?, i64?]
 isthmus/grouping_sets	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+isthmus/grouping_fn	root	2	[i64?, i64]
 isthmus/mask_reorder	root	2	[bool, i64]
 isthmus/mask_filter	root	1	[str]
 isthmus/limit_offset	root	1	[i64]
@@ -233,7 +234,7 @@ isthmus/values_expr	root	2	[i32, i32]
 isthmus/values_expr	relations[0].root.input.project.expressions[0].scalarFunction	add:i32_i32	derived	i32
 isthmus/ts_ns_literal	root	1	[i64]
 isthmus/ts_ns_literal	relations[0].root.input.project.input.filter.condition.scalarFunction	gt:pts_pts	derived	bool
-isthmus/ts_ns_column	root	1	[precision_timestamp(6)]
+isthmus/ts_ns_column	root	1	[precision_timestamp(9)]
 isthmus/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction	gt:pts_pts	derived	bool
 isthmus/aggs	root	4	[i64?, i64?, i64, i64?]
 isthmus/aggs	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
@@ -268,9 +269,9 @@ isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunctio
 isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and:bool	derived	bool?
 isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	lt:any_any	derived	bool?
 isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	is_not_null:any	derived	bool
-isthmus/fn_str	root	declined	argument 0 of concat:vchar: declared varchar, called with string
+isthmus/fn_str	root	3	[str, str, i64]
 isthmus/fn_str	relations[0].root.input.project.expressions[0].scalarFunction	upper:str	derived	str
-isthmus/fn_str	relations[0].root.input.project.expressions[1].scalarFunction	concat:vchar	unbound	argument 0 of concat:vchar: declared varchar, called with string
+isthmus/fn_str	relations[0].root.input.project.expressions[1].scalarFunction	concat:str	derived	str
 isthmus/fn_str	relations[0].root.input.project.expressions[2].scalarFunction	char_length:str	derived	i64
 isthmus/fn_cast	root	2	[vchar(20), fp64?]
 isthmus/fn_cast_str_int	root	1	[i32]

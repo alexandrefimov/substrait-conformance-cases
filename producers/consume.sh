@@ -23,7 +23,8 @@ export PATH="$HOME/.cargo/bin:$PATH"
 SJ="${SUBSTRAIT_JAVA_DIR:-$SP/substrait-java}"; export SUBSTRAIT_JAVA_DIR="$SJ"
 DF="${DF_DIR:-$SP/datafusion}"; export DF_DIR="$DF"
 FAILED=0
-fail() { echo "FAILED: $*" >&2; FAILED=1; }
+HARNESS_FAILED=0
+fail() { echo "FAILED: $*" >&2; FAILED=1; HARNESS_FAILED=1; }
 # shellcheck disable=SC1091
 . "$PROBE/columns.sh"
 
@@ -39,6 +40,7 @@ CASES=$(ls "$CORPUS"/*.json | wc -l | tr -d ' ')
 moved=0
 
 for NAME in "${WANT_ALL[@]}"; do
+  FAILED=0
   # The runner, what it globs, the normalization format and the one verdict a block must carry,
   # as probe/replay_column.sh has them.
   case "$NAME" in
@@ -61,6 +63,18 @@ for NAME in "${WANT_ALL[@]}"; do
   [ "$NAME" = SPARK ] && bash "$PROBE/cp.sh" spark >/dev/null
   GOT="$(rev_of "$NAME")"
   [ "$GOT" = "$WANT" ] || { fail "$NAME is '$GOT', not the pin '$WANT'"; continue; }
+  # Checkout pins compare full revisions; saved headers use the pin's spelling, independent
+  # of Git's default abbreviation length in a fresh clone.
+  case "$NAME" in
+    JAVA|ISTHMUS)
+      [ "$(git -C "$SJ" rev-parse HEAD)" = "$(git -C "$SJ" rev-parse "$SUBSTRAIT_JAVA_COMMIT^{commit}")" ] \
+        || { fail "$NAME: the checkout is not at $SUBSTRAIT_JAVA_COMMIT"; continue; }
+      GOT="substrait-java $SUBSTRAIT_JAVA_COMMIT" ;;
+    DATAFUSION)
+      [ "$(git -C "$DF" rev-parse HEAD)" = "$(git -C "$DF" rev-parse "$DATAFUSION_COMMIT^{commit}")" ] \
+        || { fail "$NAME: the checkout is not at $DATAFUSION_COMMIT"; continue; }
+      GOT="datafusion $DATAFUSION_COMMIT" ;;
+  esac
   echo "== $NAME ($GOT): $CASES plans"
   bash "$PROBE/$RUNNER" "$CORPUS" > "$WORK/$NAME.raw" 2>"$WORK/$NAME.err" \
     || { fail "$NAME: the runner failed: $(tail -1 "$WORK/$NAME.err")"; continue; }
@@ -83,5 +97,5 @@ for NAME in "${WANT_ALL[@]}"; do
     echo "   same"
   fi
 done
-[ "$FAILED" -eq 0 ] || exit 2
+[ "$HARNESS_FAILED" -eq 0 ] || exit 2
 exit "$moved"

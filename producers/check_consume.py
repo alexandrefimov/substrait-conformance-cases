@@ -26,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from deriver.check import parse_schema  # noqa: E402
+from producers.check import pins  # noqa: E402
 
 src = io.open(os.path.join(ROOT, "probe/check_expected.py"), encoding="utf-8").read()
 P = {"__file__": os.path.join(ROOT, "probe/check_expected.py")}
@@ -37,6 +38,30 @@ CONSUMERS = [("PYTHON", "parse_py"), ("GO", "parse_go"), ("VALIDATOR", "parse_py
 TYPES_ONLY = {"DUCKDB"}
 CONSUME = os.path.join(ROOT, "results", "producers", "consume")
 OUT = os.path.join(ROOT, "results", "producers", "CONSUME.txt")
+
+
+def check_pins():
+    v = pins()
+    expected = {
+        "PYTHON": "substrait " + v["SUBSTRAIT_PYTHON_VERSION"],
+        "GO": "substrait-go/v%s %s" % (v["SUBSTRAIT_GO_MODULE"].rsplit("/v", 1)[1],
+                                      v["SUBSTRAIT_GO_COMMIT"]),
+        "VALIDATOR": "substrait-validator %s at %s" % (v["SUBSTRAIT_VALIDATOR_VERSION"],
+                                                     v["SUBSTRAIT_VALIDATOR_COMMIT"]),
+        "JAVA": "substrait-java " + v["SUBSTRAIT_JAVA_COMMIT"],
+        "ISTHMUS": "substrait-java " + v["SUBSTRAIT_JAVA_COMMIT"],
+        "SPARK": "spark " + v["SPARK_35"],
+        "DUCKDB": "duckdb " + v["DUCKDB_VERSION"],
+        "DATAFUSION": "datafusion " + v["DATAFUSION_COMMIT"],
+        "ACERO": "pyarrow " + v["PYARROW_VERSION"],
+    }
+    for name, version in expected.items():
+        path = os.path.join(CONSUME, name + ".txt")
+        got = open(path).readline().strip() if os.path.exists(path) else "missing"
+        want = "%s: the committed producer plans, %s" % (name, version)
+        if got != want:
+            raise SystemExit("FAILED producer consumer columns match their pins: %s has %r, "
+                             "expected %r; retake its column" % (name, got, want))
 
 
 def roots():
@@ -110,6 +135,7 @@ def build():
 
 
 def main(argv):
+    check_pins()
     text = build()
     if "--write" in argv:
         open(OUT, "w").write(text)
