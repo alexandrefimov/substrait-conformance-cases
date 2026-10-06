@@ -20,23 +20,6 @@
     }
    }
   },
-  "datafusion-window-without-output-type": {
-   "kind": "divergence",
-   "what": "DataFusion's window sum carries no output_type, which algebra.proto requires on WindowFunction. Ordinary aggregate calls now declare their types at DATAFUSION_COMMIT.",
-   "match": {
-    "DATAFUSION": "^\\S+ no output_type$"
-   },
-   "triage": {
-    "DATAFUSION": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/apache/datafusion/issues/25366",
-      "https://github.com/apache/datafusion/pull/25367"
-     ],
-     "note": "The pinned window producer at c922f8811 sets output_type to None. PR 25367 fixes window and LIKE declarations at 62f29430, after this pin; ordinary aggregates were fixed by PR 25090."
-    }
-   }
-  },
   "duckdb-declares-every-type-nullable": {
    "kind": "boundary",
    "what": "DuckDB's logical types carry no nullability, so every type it declares is nullable, including calls over required columns whose return the extension makes required. The check: the declared type is the derived one with a ? added.",

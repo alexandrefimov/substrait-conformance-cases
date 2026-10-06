@@ -1,4 +1,4 @@
-ACERO: column from run 2026-09-18T18:39, pyarrow 25.0.1
+ACERO: column from run 2026-10-06T14:04, pyarrow 25.0.1
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 aggregate_grouping_field_shared_by_sets        ERROR: ArrowNotImplementedError: Grouping sets not supported.  AggregateRel::groupings may not have more than one item
@@ -12,11 +12,11 @@ cross_preserves_nullability                    ERROR: ArrowNotImplementedError: 
 ctas_keeps_declared_schema                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug write {   named_table {     names: "dst1"   }   table_schema {     names
 ddl_view_root_names_nothing                    ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug ddl {   named_object {     names: "v"   }   table_schema {     names: "c
 ddl_view_root_names_the_view                   ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug ddl {   named_object {     names: "v"   }   table_schema {     names: "c
-decimal_add_overflow                           ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 39
 decimal_add                                    [r:decimal128(11, 2)?]
+decimal_add_overflow                           ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 39
 decimal_divide                                 [r:decimal128(16, 7)?]
-decimal_multiply_overflow                      ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 77
 decimal_multiply                               [r:decimal128(16, 3)?]
+decimal_multiply_overflow                      ERROR: ArrowInvalid: Decimal precision out of range [1, 38]: 77
 emit_aggregate                                 ERROR: signal/exit 139
 emit_fetch                                     [k0:bool?, k1:int64?]
 emit_filter                                    [k0:bool?, k1:int64?]
@@ -27,31 +27,31 @@ emit_sort                                      [k0:bool?, k1:int64?]
 expand_consistent_fields                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }   }   input {     read {       co
 expand_switching_nullability                   ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug expand {   common {     direct {     }   }   input {     read {       co
 join_inner                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_left                                      ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_left_anti                                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_left_mark                                 ERROR: ArrowInvalid: Unsupported join type
 join_left_semi                                 ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_left_single                               ERROR: ArrowInvalid: Unsupported join type
-join_left                                      ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_outer                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
+join_right                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 join_right_anti                                ERROR: ArrowInvalid: Unsupported join type
 join_right_mark                                ERROR: ArrowInvalid: Unsupported join type
 join_right_semi                                ERROR: ArrowInvalid: Unsupported join type
 join_right_single                              ERROR: ArrowInvalid: Unsupported join type
-join_right                                     ERROR: ArrowInvalid: A join rel's expression must be a simple equality between keys but got true
 joineq_inner                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+joineq_left                                    [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
 joineq_left_anti                               ERROR: ArrowInvalid: attempted to rename schema with 4 fields but only 2 new names were given
 joineq_left_mark                               ERROR: ArrowInvalid: Unsupported join type
 joineq_left_semi                               ERROR: ArrowInvalid: attempted to rename schema with 4 fields but only 2 new names were given
 joineq_left_single                             ERROR: ArrowInvalid: Unsupported join type
-joineq_left                                    [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
 joineq_outer                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
+joineq_right                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
 joineq_right_anti                              ERROR: ArrowInvalid: Unsupported join type
 joineq_right_mark                              ERROR: ArrowInvalid: Unsupported join type
 joineq_right_semi                              ERROR: ArrowInvalid: Unsupported join type
 joineq_right_single                            ERROR: ArrowInvalid: Unsupported join type
-joineq_right                                   [c0:int64?, c1:int64?, c2:int64?, c3:int64?]
-lateral_join_uncorrelated_without_anchor       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 24: UNKNOWN_MESSAGE [REDACTED]
 lateral_join_uncorrelated                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 24: UNKNOWN_MESSAGE [REDACTED]
+lateral_join_uncorrelated_without_anchor       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug 24: UNKNOWN_MESSAGE [REDACTED]
 mirror_argument_nullability                    [c0:int64?, c1:int64?, rr:int64?, rn:int64?]
 narrowing_count                                [n:int64?]
 narrowing_is_not_null                          [r:bool?]
@@ -59,16 +59,16 @@ narrowing_is_null                              [r:bool?]
 phase_final                                    [r:double?]
 phase_intermediate                             ERROR: ArrowNotImplementedError: Unsupported aggregation phase 'AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE'.  Only INITIAL_TO_RESULT is supported
 physjoin_hash_inner                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
-physjoin_hash_left_mark                        ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
 physjoin_hash_left                             ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
+physjoin_hash_left_mark                        ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
 physjoin_hash_right_semi                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug hash_join {   common {     direct {     }   }   left {     read {
 physjoin_merge_inner                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
-physjoin_merge_left_mark                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
 physjoin_merge_left                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
+physjoin_merge_left_mark                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
 physjoin_merge_right_semi                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug merge_join {   common {     direct {     }   }   left {     read {
 physjoin_nested_inner                          ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
-physjoin_nested_left_mark                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
 physjoin_nested_left                           ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
+physjoin_nested_left_mark                      ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
 physjoin_nested_right_semi                     ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug nested_loop_join {   common {     direct {     }   }   left {     read {
 precision_timestamp_p00                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 precision_timestamp_p01                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (1)
@@ -79,22 +79,22 @@ precision_timestamp_p06                        ERROR: ArrowNotImplementedError: 
 precision_timestamp_p07                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (7)
 precision_timestamp_p09                        ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 precision_timestamp_p12                        ERROR: ArrowNotImplementedError: Unrecognized timestamp precision (12)
-read_projection_mask_reordered                 ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 read_projection_mask                           ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
-setdata_intersection_multiset_all              ERROR: ArrowInvalid: Unknown union type
+read_projection_mask_reordered                 ERROR: ArrowNotImplementedError: substrait::ReadRel::projection
 setdata_intersection_multiset                  ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
+setdata_intersection_multiset_all              ERROR: ArrowInvalid: Unknown union type
 setdata_intersection_primary                   ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_PRIMARY
 setdata_minus_multiset                         ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_MULTISET
-setdata_minus_primary_all                      ERROR: ArrowInvalid: Unknown union type
 setdata_minus_primary                          ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+setdata_minus_primary_all                      ERROR: ArrowInvalid: Unknown union type
 setdata_union_all                              ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 setdata_union_distinct                         ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
-setop_intersection_multiset_all                ERROR: ArrowInvalid: Unknown union type
 setop_intersection_multiset                    ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_MULTISET
+setop_intersection_multiset_all                ERROR: ArrowInvalid: Unknown union type
 setop_intersection_primary                     ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_INTERSECTION_PRIMARY
 setop_minus_multiset                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_MULTISET
-setop_minus_primary_all                        ERROR: ArrowInvalid: Unknown union type
 setop_minus_primary                            ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_MINUS_PRIMARY
+setop_minus_primary_all                        ERROR: ArrowInvalid: Unknown union type
 setop_union_all                                ERROR: ArrowInvalid: UnionNode input schemas must all match, first schema was: c0: int64 not null c1: int64 not null c2: int64 not null c3: int64 not null c4: int64 c5: in
 setop_union_distinct                           ERROR: ArrowNotImplementedError: NotImplemented union type : SET_OP_UNION_DISTINCT
 stringlen_declared                             [c0:extension<varchar{length:10}>, c1:extension<fixed_char{length:5}>, c2:fixed_size_binary[4], c3:string]
@@ -106,6 +106,6 @@ virtual_table_literal_type_differs_from_schema ERROR: ArrowNotImplementedError: 
 virtual_table_row_null_in_required_column      ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_row_nullable_in_required_column  ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
 virtual_table_row_required_in_nullable_column  ERROR: ArrowNotImplementedError: substrait::ReadRel with read_type other than LocalFiles
-window_bound_offset_expr                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co
 window_bound_offset                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co
+window_bound_offset_expr                       ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co
 window_output_order                            ERROR: ArrowNotImplementedError: conversion to arrow::acero::Declaration from Substrait relation goo.gle/debug window {   common {     direct {     }   }   input {     read {       co

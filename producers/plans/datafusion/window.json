@@ -113,6 +113,11 @@
                           "offset": "1"
                         }
                       },
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
                       "arguments": [
                         {
                           "value": {

@@ -1,4 +1,4 @@
-ISTHMUS: column from run 2026-10-02T16:02, substrait-java bc050d37
+ISTHMUS: column from run 2026-10-06T14:05, substrait-java bc050d37
 
 aggregate_grouping_field_shared_by_sets        [c:VARCHAR, a:BIGINT?]
 aggregate_grouping_set_index                   [c:VARCHAR?, a:BIGINT?, $f2:INTEGER]

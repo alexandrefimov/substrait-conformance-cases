@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-09-18, 2026-10-02, 2026-10-05. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-10-06. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -145,7 +145,7 @@ The updated reproducer in the issue covers these four intersection and minus ope
 
 ## DataFusion — 7 cases
 
-`results/DATAFUSION.txt`, datafusion c922f8811.
+`results/DATAFUSION.txt`, datafusion 264ee3dc6.
 
 How far this column goes. DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 

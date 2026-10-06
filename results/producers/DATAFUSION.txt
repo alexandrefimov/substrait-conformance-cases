@@ -1,4 +1,4 @@
-DATAFUSION: plans from datafusion 55.1.0 c922f8811, checked against the specification at v0.102.0
+DATAFUSION: plans from datafusion 55.1.0 264ee3dc6, checked against the specification at v0.102.0
 
 union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok; removed fields: Grouping.1
@@ -55,8 +55,7 @@ arith                  calls 2, differ 0, missing 0, unbound 2, declined 0; sche
   divide                   unbound: function 'divide' points at urn anchor 4294967295, which the plan does not declare
 filter_project         calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
   gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
-window                 calls 1, differ 0, missing 1, unbound 1, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare)
-  sum                      no output_type
+window                 calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare)
   sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
 dec_add                calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'add' points at urn anchor 4294967295, which the plan does not declare)
   add                      unbound: function 'add' points at urn anchor 4294967295, which the plan does not declare

@@ -41,7 +41,7 @@ datafusion__union_all_mixed                    [c0:i64?]
 datafusion__union_distinct_mixed               [c0:i64?]
 datafusion__values_expr                        [a:i64, b:i64]
 datafusion__values_literal                     [a:i64, b:i64]
-datafusion__window                             ERROR: TypeError: attribute name must be string, not 'NoneType'
+datafusion__window                             [c0:i64, w:i64?]
 duckdb__aggs                                   [s:dec(38,0)?, a:fp64?, n:i64?, m:i64?]
 duckdb__arith                                  [x:i64?, y:fp64?]
 duckdb__count_distinct                         [d:i64?, s:dec(38,0)?]

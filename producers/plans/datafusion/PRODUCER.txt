@@ -1,1 +1,1 @@
-datafusion 55.1.0 c922f8811
+datafusion 55.1.0 264ee3dc6
