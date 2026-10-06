@@ -80,6 +80,7 @@ These probes generate plans during the run. A static consumer fixture would not 
 | Finding | Reproducer | Report |
 | --- | --- | --- |
 | DataFusion aggregates omit required `output_type` | [datafusion_producer_probe.rs](probe/datafusion_producer_probe.rs) with `--aggregate-output-types`, inspecting count, sum, avg and min directly in the produced protobuf. All four declare `output_type` at `c922f8811`. | [DataFusion #25049](https://github.com/apache/datafusion/issues/25049) / [PR #25090](https://github.com/apache/datafusion/pull/25090) |
+| DataFusion windows omit required `output_type` | `producers/run.sh datafusion` produces the [window plan](producers/plans/datafusion/window.json); the [producer column](results/producers/DATAFUSION.txt) records the omission at `c922f8811`. PR 25367 sets the type at `62f29430`, after this pin. | [DataFusion #25366](https://github.com/apache/datafusion/issues/25366) / [PR #25367](https://github.com/apache/datafusion/pull/25367) |
 | DuckDB decimal addition changes type through its own export/import | [duckdb_producer.py](probe/duckdb_producer.py) with `--load-only --decimal-roundtrip`: three additions and a read control. | [duckdb-substrait-extension #278](https://github.com/substrait-io/duckdb-substrait-extension/issues/278) |
 
 ## Scope of this map

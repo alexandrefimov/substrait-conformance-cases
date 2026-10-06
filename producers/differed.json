@@ -28,8 +28,12 @@
    },
    "triage": {
     "DATAFUSION": {
-     "outcome": "open",
-     "note": "The pinned window producer sets output_type to None. Issue 25049 covered ordinary aggregates and is fixed at this pin; a tracker search for Substrait window output_type found no matching report (checked 2026-10-05)."
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/25366",
+      "https://github.com/apache/datafusion/pull/25367"
+     ],
+     "note": "The pinned window producer at c922f8811 sets output_type to None. PR 25367 fixes window and LIKE declarations at 62f29430, after this pin; ordinary aggregates were fixed by PR 25090."
     }
    }
   },
