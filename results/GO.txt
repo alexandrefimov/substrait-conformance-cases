@@ -1,4 +1,4 @@
-GO: column from run 2026-10-02T17:20, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92
+GO: column from run 2026-10-06T14:04, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92
 
 aggregate_grouping_field_shared_by_sets        [c:string, a:i64]
 aggregate_grouping_set_index                   ERROR: invalid relation: root relation has 3 output name(s) but the output schema requires 2

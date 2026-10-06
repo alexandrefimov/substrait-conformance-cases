@@ -42,7 +42,7 @@ datafusion__union_all_mixed        =  E  =  =  =  =  =  =  E
 datafusion__union_distinct_mixed   =  E  x  =  =  =  =  =  E
 datafusion__values_expr            =  =  =  =  =  =  =  =  E
 datafusion__values_literal         =  =  =  =  =  =  =  =  E
-datafusion__window                 E  E  a  E  E  E  E  a  E
+datafusion__window                 a  E  a  E  E  E  E  a  E
 duckdb__aggs                       a  a  a  a  a  a  a  a  E
 duckdb__arith                      x  x  x  x  x  x  =  x  E
 duckdb__count_distinct             x  x  x  x  x  =  x  =  E
@@ -208,7 +208,7 @@ spark40__values_literal            =  =  =  =  =  =  =  =  E
 spark40__window                    E  E  E  =  E  =  E  E  E
 
 per consumer: = derived schema, x another schema, E refused, a no schema to compare, ? unparsed
-  PYTHON     = 151  x 16  E 5  a 33  ? 0
+  PYTHON     = 151  x 16  E 4  a 34  ? 0
   GO         = 99  x 29  E 67  a 10  ? 0
   VALIDATOR  = 110  x 55  E 6  a 34  ? 0
   JAVA       = 139  x 15  E 40  a 11  ? 0

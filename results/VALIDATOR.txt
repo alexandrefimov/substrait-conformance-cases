@@ -1,4 +1,4 @@
-VALIDATOR: column from run 2026-10-02T15:27, substrait-validator 0.1.4 at 0a5d3d6
+VALIDATOR: column from run 2026-10-06T14:05, substrait-validator 0.1.4 at 0a5d3d6
 
 aggregate_grouping_field_shared_by_sets        [i32, unresolved]
 aggregate_grouping_set_index                   [i32]
