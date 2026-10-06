@@ -2,7 +2,10 @@ DERIVER: relation output schemas derived from the Substrait specification at v0.
 #  1fb11fc89fe1663543740c0f45ca47168fc779fc  extensions/functions_aggregate_generic.yaml
 #  d4b8db5dc1f0372e565635bfc1a9b75a1ea7d707  extensions/functions_arithmetic.yaml
 #  50eb32dca7f4eb45ab9c36d1dad4425a3f32da0a  extensions/functions_arithmetic_decimal.yaml
+#  dc8cd48900e09107ab5408f941c6341930b8e02a  extensions/functions_boolean.yaml
 #  a07fd29e61dd2ed4bb4d58fd3142785d20d589c9  extensions/functions_comparison.yaml
+#  97a18f932dd2710c4b8d60f294e834e5d7e73d3d  extensions/functions_datetime.yaml
+#  70eca662e2b24258cb7f62c0693e3f551d46c63b  extensions/functions_string.yaml
 
 aggregate_grouping_field_shared_by_sets        [str, i64?]
 aggregate_grouping_set_index                   [str?, i64?, i32]

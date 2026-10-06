@@ -16,7 +16,7 @@ names - because that is what the corpus compares.
 import json, os, sys
 
 from . import extensions, type_model as types
-from .type_model import Type, Unsupported
+from .type_model import Type, Unbound, Unsupported
 
 # The i32 column Aggregate and Expand append. Neither page states its nullability; the value is the
 # index of a grouping set or of a duplicate, which every row of the output has, so it is written
@@ -31,22 +31,29 @@ class Plan:
         self.doc = doc
         urns = {u.get("extensionUrnAnchor", 0): u["urn"] for u in doc.get("extensionUrns", [])}
         self.functions = {}
+        # A declaration whose URN anchor the plan does not declare binds nothing. It is kept with
+        # the reason rather than failing the plan here, so that only a call naming it stops.
+        self.broken = {}
         for e in doc.get("extensions", []):
             f = e.get("extensionFunction")
             if f is None:
                 continue
             anchor = f.get("extensionUrnReference", 0)
             if anchor not in urns:
-                raise Unsupported("function %r points at urn anchor %s, which the plan does not "
-                                  "declare" % (f.get("name"), anchor))
+                self.broken[f.get("functionAnchor", 0)] = (
+                    f.get("name"), "function %r points at urn anchor %s, which the plan does not "
+                    "declare" % (f.get("name"), anchor))
+                continue
             self.functions[f.get("functionAnchor", 0)] = (urns[anchor], f["name"])
         # rel_anchor -> the columns an OuterReference.rel_reference to it resolves against, for as
         # long as the relation that binds it is being derived. Only a lateral join binds one here.
         self.outer = {}
 
     def declaration(self, reference):
+        if reference in self.broken:
+            raise Unbound(self.broken[reference][1])
         if reference not in self.functions:
-            raise Unsupported("no extension declares function anchor %s" % reference)
+            raise Unbound("no extension declaration has function anchor %s" % reference)
         return self.functions[reference]
 
 
@@ -100,9 +107,76 @@ def expr_type(node, input_fields, plan):
         return _literal(body)
     if kind == "scalarFunction":
         return _call(body, input_fields, plan, "scalar")
+    if kind == "windowFunction":
+        return _call(body, input_fields, plan, "window")
     if kind == "cast":
         return types.from_plan(body["type"])
+    if kind in ("ifThen", "switchExpression"):
+        return _branches(kind, body, input_fields, plan)
+    if kind == "nested":
+        return _nested(body, input_fields, plan)
+    if kind == "dynamicParameter":
+        # The parameter's own declared type: DynamicParameter.type, "The type of the dynamic
+        # parameter", which its binding's literal "needs to match".
+        return types.from_plan(body["type"])
+    if kind == "executionContextVariable":
+        # specialized_record_expressions.md gives each its type, and algebra.proto its nullability
+        # ("nullability must be NULLABILITY_REQUIRED"); the Type message carries both.
+        (variable, t), = body.items()
+        written = {"currentDate": "date", "currentTimezone": "string",
+                   "currentTimestamp": "precisionTimestampTz"}.get(variable)
+        if written is None:
+            raise Unsupported("execution context variable %r" % variable)
+        return types.from_plan({written: t})
     raise Unsupported("expression %r" % kind)
+
+
+def _branches(kind, body, input_fields, plan):
+    """If and switch: specialized_record_expressions.md, "When an if expression is declared, all
+    return expressions must be the same identical type", and of a switch, "Return values for a
+    switch expression must all be of identical type". The type is that one type; return expressions
+    that differ are what those sentences forbid, and are reported rather than reconciled.
+    """
+    if "else" not in body:
+        raise Unsupported("an %s with no else clause, which the page requires" % kind)
+    results = [expr_type(c["then"], input_fields, plan) for c in body.get("ifs", [])]
+    results.append(expr_type(body["else"], input_fields, plan))
+    if any(r != results[0] for r in results):
+        raise Unsupported("an %s whose return expressions differ: %s" %
+                          (kind, ", ".join(types.render_field(r) for r in results)))
+    return results[0]
+
+
+def _nested(body, input_fields, plan):
+    """A nested constructor: its type class is the one set, its nullability `Nested.nullable`.
+
+    A list is "A homogeneously-typed list of one or more expressions", so its element type is the
+    one type every value has; a map is read the same way for its keys and for its values.
+    """
+    nullable = bool(body.get("nullable", False))
+    if "struct" in body:
+        return Type("struct", [expr_type(e, input_fields, plan)
+                               for e in body["struct"].get("fields", [])], nullable)
+    if "list" in body:
+        return Type("list", [_one_type([expr_type(e, input_fields, plan)
+                                        for e in body["list"].get("values", [])], "list")],
+                    nullable)
+    if "map" in body:
+        pairs = body["map"].get("keyValues", [])
+        return Type("map", [_one_type([expr_type(kv["key"], input_fields, plan) for kv in pairs],
+                                      "map key"),
+                            _one_type([expr_type(kv["value"], input_fields, plan) for kv in pairs],
+                                      "map value")], nullable)
+    raise Unsupported("a nested expression that is neither struct, list nor map")
+
+
+def _one_type(found, what):
+    if not found:
+        raise Unsupported("an empty %s constructor, which carries no element type" % what)
+    if any(t != found[0] for t in found):
+        raise Unsupported("a %s constructor over %s" %
+                          (what, ", ".join(types.render_field(t) for t in found)))
+    return found[0]
 
 
 def _selection(body, input_fields, plan):
@@ -166,31 +240,69 @@ def _literal(body):
         return Type(written, (length,), nullable)
     simple = {"boolean": "boolean", "i8": "i8", "i16": "i16", "i32": "i32", "i64": "i64",
               "fp32": "fp32", "fp64": "fp64", "string": "string", "binary": "binary",
-              "date": "date", "uuid": "uuid"}
+              "date": "date", "uuid": "uuid", "intervalYearToMonth": "interval_year"}
     if kind in simple:
         return Type(simple[kind], (), nullable)
+    # The sub-second precision each of these carries is part of its type: PRECISION_TIME<P>,
+    # PRECISION_TIMESTAMP<P>, INTERVAL_DAY<P>, INTERVAL_COMPOUND<P> in type_classes.md. An absent
+    # field is protobuf-JSON's zero, and 0 is a precision these literals define ("0 means the value
+    # given is in seconds").
+    precise = {"precisionTime": "precision_time", "precisionTimestamp": "precision_timestamp",
+               "precisionTimestampTz": "precision_timestamp_tz",
+               "intervalDayToSecond": "interval_day"}
+    if kind in precise:
+        return Type(precise[kind], (int(body[kind].get("precision", 0)),), nullable)
+    if kind == "intervalCompound":
+        day = body[kind].get("intervalDayToSecond", {})
+        return Type("interval_compound", (int(day.get("precision", 0)),), nullable)
+    if kind in ("emptyList", "emptyMap"):
+        # "use Type.List::nullability" / "use Type.Map::nullability" rather than `nullable`.
+        return types.from_plan({{"emptyList": "list", "emptyMap": "map"}[kind]: body[kind]})
+    if kind == "struct":
+        return Type("struct", [_literal(f) for f in body[kind].get("fields", [])], nullable)
+    if kind == "list":
+        return Type("list", [_one_type([_literal(v) for v in body[kind].get("values", [])],
+                                       "list literal")], nullable)
     raise Unsupported("literal of type %r" % kind)
 
 
 def _call(body, input_fields, plan, kind):
-    """A function call: bind the extension declaration and derive its return type from it.
+    """A function call: bind the extension declaration and derive its return type from it."""
+    return call_type(body, input_fields, plan, kind)[0]
+
+
+def call_type(body, input_fields, plan, kind):
+    """A function call's return type and how it was bound, as extensions.resolve() gives them.
 
     `output_type` is beside every one of these in the plan and is not read. algebra.proto says what
     that field is - "Must be set to the return type of the function, exactly as derived using the
     declaration in the extension" - so deriving it is the only way to have anything to check it
-    against.
+    against. `kind` is "scalar", "aggregate" or "window", which is the message the call is.
     """
     urn, name = plan.declaration(body.get("functionReference", 0))
-    args = []
-    for arg in body.get("arguments", []):
-        if "value" not in arg:
-            raise Unsupported("a %s argument that is not a value" % name)
-        args.append(expr_type(arg["value"], input_fields, plan))
-    impl = extensions.library().lookup(urn, name)
-    phase = body.get("phase", "AGGREGATION_PHASE_INITIAL_TO_RESULT")
-    if kind == "scalar":
-        return extensions.return_type(impl, args)
-    return extensions.return_type(impl, args, phase)
+    args = [_argument(arg, i, name, input_fields, plan)
+            for i, arg in enumerate(body.get("arguments", []))]
+    # An unset phase is left unset rather than read as INITIAL_TO_RESULT: algebra.proto gives
+    # AGGREGATION_PHASE_UNSPECIFIED a meaning of its own, and extensions.bind() applies it.
+    phase = None if kind == "scalar" else body.get("phase", "AGGREGATION_PHASE_UNSPECIFIED")
+    return extensions.resolve(urn, name, kind, args, phase)
+
+
+def _argument(arg, i, name, input_fields, plan):
+    """One FunctionArgument: a value's derived type, a type argument, or an enumeration."""
+    if "value" in arg:
+        try:
+            return expr_type(arg["value"], input_fields, plan)
+        except Unsupported as why:
+            # Whatever stopped the argument - a nested call the rules bind to nothing included -
+            # this call's type is then not known, which is a different thing from this call not
+            # binding. So the reason is carried up as Unsupported, never as Unbound.
+            raise Unsupported("argument %d of %s: %s" % (i, name, why))
+    if "type" in arg:
+        return extensions.TypeArg(types.from_plan(arg["type"]))
+    if "enum" in arg:
+        return extensions.EnumArg(arg["enum"])
+    raise Unsupported("argument %d of %s is neither a value, a type nor an enumeration" % (i, name))
 
 
 # ------------------------------------------------------------------ relations

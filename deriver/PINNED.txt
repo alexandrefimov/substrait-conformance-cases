@@ -1,6 +1,6 @@
 Which case pins which rule: probe by deriver/mutants.py --per-case.
 
-Per scored case: how many of the 39 alternative readings in deriver/mutants.py its
+Per scored case: how many of the 42 alternative readings in deriver/mutants.py its
 answer tells apart, and, after ->, the readings no other case tells apart. A case
 with none of the second kind can be removed without any rule going unchecked; one
 with some cannot. A count of 0 is not a hole - see per_case() in that file.
@@ -53,10 +53,10 @@ joineq_right_mark                              2
 joineq_right_semi                              1
 joineq_right_single                            1
 lateral_join_uncorrelated                      1
-mirror_argument_nullability                    1  -> functions: MIRROR does not propagate nullability
-narrowing_count                                1
-narrowing_is_not_null                          3
-narrowing_is_null                              3
+mirror_argument_nullability                    2  -> functions: MIRROR does not propagate nullability
+narrowing_count                                2
+narrowing_is_not_null                          4
+narrowing_is_null                              4
 phase_final                                    1
 phase_intermediate                             1  -> functions: the phase does not select the intermediate type
 physjoin_hash_inner                            1
@@ -102,4 +102,4 @@ topn_keeps_the_input_schema                    0
 virtual_table_emit_mapping                     1
 window_bound_offset                            2
 window_bound_offset_expr                       2
-window_output_order                            2
+window_output_order                            3  -> functions: an empty signature names no implementation

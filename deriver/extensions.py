@@ -13,6 +13,13 @@ What it implements, from the spec text at 0.102.0:
   site/docs/expressions/scalar_functions.md  MIRROR / DECLARED_OUTPUT / DISCRETE nullability, the
                                            return type expression language and its operators
   site/docs/expressions/aggregate_functions.md  decomposable functions and the intermediate type
+  proto/substrait/algebra.proto            which kind of function each call may name, how value,
+                                           type and enumeration arguments are passed, and what an
+                                           unset aggregation phase implies
+
+resolve() binds a call by the name its declaration holds, bind() matches the arguments to one
+implementation, return_type() derives what it returns. Binding fails in two ways that are kept
+apart: Unbound when the rules match nothing, Unsupported when this deriver has no rule to apply.
 
 The files themselves are read out of a Substrait checkout at the release the plans declare, not out
 of its working tree, so a checkout sitting on a branch cannot quietly change what a rule says. The
@@ -21,7 +28,7 @@ bytes are pinned by content in deriver/spec.pins.
 import os, subprocess, sys
 
 from . import type_model as types
-from .type_model import Type, Unsupported
+from .type_model import Type, Unbound, Unsupported
 
 SPEC_REF = os.environ.get("DERIVER_SPEC_REF", "v0.102.0")
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -118,11 +125,20 @@ def pinned():
 class Library:
     """Every function declared in the extension files, indexed by URN and compound signature."""
 
-    def __init__(self):
+    def __init__(self, docs=None):
+        """The files at SPEC_REF in a checkout, or `docs` ({urn: parsed file}) given directly.
+
+        The second form is for tests: a file written in the test, so that a binding rule can be
+        checked on a declaration small enough to read, without a checkout.
+        """
         self.by_urn = {}
         self.read = {}
         self._indexed = {}
-        self._load()
+        if docs is None:
+            self._load()
+        else:
+            for urn, doc in docs.items():
+                self.by_urn[urn] = ("given:%s" % urn, doc)
 
     def _load(self):
         # PyYAML is imported here rather than at the top of the file. Everything above this point -
@@ -166,7 +182,7 @@ class Library:
         which is a different and wrong answer to give about a file that declares it.
         """
         path, doc = self.by_urn[urn]
-        index, aside = {}, {}
+        index, aside, by_name = {}, {}, {}
         for key, kind in (("scalar_functions", "scalar"), ("aggregate_functions", "aggregate"),
                           ("window_functions", "window")):
             for fn in doc.get(key) or []:
@@ -180,14 +196,19 @@ class Library:
                     if sig in index:
                         raise Unsupported("%s declares %s twice" % (path, sig))
                     index[sig] = impl
-        return index, aside
+                    by_name.setdefault(fn["name"], []).append(impl)
+        return index, aside, by_name
+
+    def indexed(self, urn):
+        """(signature -> Impl, name -> why it is not read, name -> [Impl]) for one file."""
+        if urn not in self._indexed:
+            self._indexed[urn] = self._index(urn)
+        return self._indexed[urn]
 
     def lookup(self, urn, compound):
         if urn not in self.by_urn:
             raise Unsupported("no extension file declares urn %r at %s" % (urn, SPEC_REF))
-        if urn not in self._indexed:
-            self._indexed[urn] = self._index(urn)
-        index, aside = self._indexed[urn]
+        index, aside, _ = self.indexed(urn)
         if compound not in index:
             name = compound.split(":", 1)[0]
             if name in aside:
@@ -206,69 +227,340 @@ def library():
     return _LIBRARY[0]
 
 
-def bind(impl, args):
-    """Bind concrete argument types to a declaration and return the bound parameters.
+class EnumArg:
+    """A call's enumeration argument: FunctionArgument.enum, a string naming one option."""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return "enum(%s)" % self.value
+
+
+class TypeArg:
+    """A call's type argument: FunctionArgument.type, a type rather than a value of one."""
+
+    def __init__(self, type_):
+        self.type = type_
+
+    def __repr__(self):
+        return "type(%s)" % types.render_field(self.type)
+
+
+def _render_arg(a):
+    return types.render_field(a) if isinstance(a, Type) else repr(a)
+
+
+# What each kind of call may bind. algebra.proto on ScalarFunction.function_reference: "which must
+# refer to a scalar function in the associated YAML file"; on AggregateFunction: "which must refer
+# to an aggregate function"; on WindowFunction: "The function must be: a window function, an
+# aggregate function". The last is also window_functions.md: "Aggregate functions can be treated as
+# a window functions with Window Type set to STREAMING".
+CALLABLE = {"scalar": ("scalar",), "aggregate": ("aggregate",), "window": ("window", "aggregate")}
+
+PHASES = ("AGGREGATION_PHASE_UNSPECIFIED", "AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",
+          "AGGREGATION_PHASE_INTERMEDIATE_TO_INTERMEDIATE", "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+          "AGGREGATION_PHASE_INTERMEDIATE_TO_RESULT")
+# The phases whose inputs are intermediate values. UNSPECIFIED is one of them because the enum says
+# so in algebra.proto: "AGGREGATION_PHASE_UNSPECIFIED = 0; // Implies `INTERMEDIATE_TO_RESULT`."
+FROM_INTERMEDIATE = ("AGGREGATION_PHASE_UNSPECIFIED",
+                     "AGGREGATION_PHASE_INTERMEDIATE_TO_INTERMEDIATE",
+                     "AGGREGATION_PHASE_INTERMEDIATE_TO_RESULT")
+
+
+def resolve(urn, name, kind, args, phase=None):
+    """Bind one call and derive its return type: (type, how it was bound).
+
+    `name` is what the plan's extension declaration says, `args` the call's arguments (a Type for a
+    value, TypeArg, EnumArg), `phase` the call's AggregationPhase or None for a scalar call. How is
+    "signature" or "name". Raises Unbound when the rules bind the call to nothing, Unsupported when
+    this deriver cannot tell.
+
+    extensions.proto calls ExtensionFunction.name "A function signature", and extensions/index.md
+    says "Extension declarations in plans identify functions by signature only". So a name with a
+    colon is looked up as a signature and nothing else: its implementation either accepts the
+    arguments or the call is unbound, even when another implementation of the same function would
+    accept them.
+    """
+    lib = library()
+    if urn not in lib.by_urn:
+        raise Unbound("no extension file declares urn %r at %s" % (urn, SPEC_REF))
+    index, aside, by_name = lib.indexed(urn)
+    if ":" in name:
+        # A signature with nothing after the colon, `count:`, is what the prose gives a function
+        # with no arguments: "the short type names of each argument joined with underscores" over
+        # none is the empty string. The ABNF beside it requires at least one short-arg-type, so the
+        # two disagree here; the prose is followed, since the grammar leaves a niladic
+        # implementation, which the same page allows ("defaults to niladic"), with no signature.
+        how, impl = "signature", index.get(name)
+        if impl is None:
+            if name.split(":", 1)[0] in aside:
+                raise Unsupported("%s declares %s, and this deriver does not read its signature: "
+                                  "%s" % (urn, name.split(":", 1)[0],
+                                          aside[name.split(":", 1)[0]]))
+            raise Unbound("%s declares no function signature %s" % (urn, name))
+        candidates = [impl]
+    else:
+        # A name with no colon is not a function signature, which is what the declaration must
+        # hold, and the spec does not say what a consumer does with one. Chosen here: bind it by
+        # the argument types, among the implementations of the function with that name in that
+        # file - algebra.proto asks of a value argument that it "yield a value of a type that a
+        # function overload is defined for". The record says so (binding "name"), so a reader can
+        # keep these apart from calls bound by signature.
+        how, candidates = "name", list(by_name.get(name, []))
+        if not candidates and name not in aside:
+            raise Unbound("%s declares no function named %r" % (urn, name))
+    fitting = [c for c in candidates if c.kind in CALLABLE[kind]]
+    if candidates and not fitting:
+        raise Unbound("%s is %s %s function, called as %s %s function" %
+                      (name, _a(candidates[0].kind), candidates[0].kind, _a(kind), kind))
+    accepted, refused, unknown = [], [], []
+    if how == "name" and name in aside:
+        unknown.append("%s declares %s, and this deriver does not read every signature of it: %s"
+                       % (urn, name, aside[name]))
+    for impl in fitting:
+        try:
+            accepted.append((impl, bind(impl, args, phase)))
+        except Unbound as why:
+            refused.append(str(why))
+        except Unsupported as why:
+            unknown.append(str(why))
+    if unknown:
+        # One implementation this deriver cannot read may be the one that binds, or a second one
+        # that makes the call ambiguous, so no answer is given for the others either.
+        raise Unsupported(unknown[0])
+    if not accepted:
+        if len(refused) == 1:
+            raise Unbound(refused[0])
+        raise Unbound("no implementation of %s in %s accepts (%s)" %
+                      (name, urn, ", ".join(_render_arg(a) for a in args)))
+    derived = [return_type(impl, args, phase, bound) for impl, bound in accepted]
+    if any(d != derived[0] for d in derived):
+        # Only reachable by a bare name: a signature names one implementation. When several accept
+        # the arguments and agree on the return type, which one was meant does not change the
+        # answer; when they disagree, nothing in the plan says which.
+        raise Unsupported("%d implementations of %s accept (%s) and return different types" %
+                          (len(accepted), name, ", ".join(_render_arg(a) for a in args)))
+    return derived[0], how
+
+
+def _a(word):
+    return "an" if word[0] in "aeiou" else "a"
+
+
+def bind(impl, args, phase=None):
+    """Bind a call's arguments to one implementation and return the bound parameters.
+
+    Raises Unbound when the arguments do not fit the declaration, Unsupported when this deriver
+    cannot read what the declaration says.
+    """
+    if phase is not None and phase not in PHASES:
+        raise Unsupported("aggregation phase %r" % (phase,))
+    if phase not in (None, "AGGREGATION_PHASE_INITIAL_TO_RESULT") and impl.decomposable == "NONE":
+        # "For functions that are NOT decomposable, the only valid option will be
+        # INITIAL_TO_RESULT." - aggregate_functions.md, Aggregate Binding. An unset phase is no
+        # exception: it implies INTERMEDIATE_TO_RESULT.
+        raise Unbound("%s is not decomposable, and phase %s is valid only for one that is" %
+                      (impl.signature, phase))
+    if phase in FROM_INTERMEDIATE:
+        return _bind_intermediate(impl, args, phase)
+    return _bind_arguments(impl, args)
+
+
+def _bind_intermediate(impl, args, phase):
+    """A call whose inputs are intermediate values, matched against the intermediate type.
+
+    algebra.proto: INTERMEDIATE_TO_RESULT "Specifies that the inputs of the aggregate or window
+    function are the intermediate values of the function". An intermediate type is one type,
+    "a struct in many cases", so the one case read here is a call passing exactly one value. The
+    spec does not say how a call passes intermediate values otherwise - AggregateFunction.arguments
+    "must have exactly the number of arguments specified in the function definition", which for a
+    function of two arguments and one intermediate struct cannot both hold - and any other shape is
+    declined.
+    """
+    if impl.intermediate is None:
+        raise Unsupported("%s is %s decomposable and declares no intermediate type" %
+                          (impl.signature, impl.decomposable))
+    if len(args) != 1 or not isinstance(args[0], Type):
+        raise Unsupported("phase %s takes intermediate values as input, and the spec does not say "
+                          "how a call with %d argument(s) passes them" % (phase, len(args)))
+    bound = {}
+    _match_one(impl, {"value": impl.intermediate}, args[0], bound, "the intermediate input")
+    return bound
+
+
+# Stands for a parameter an INCONSISTENT variadic argument bound to different values in one call.
+VARYING = object()
+
+
+def _bind_arguments(impl, args):
+    positions, fixed = _positions(impl, len(args))
+    consistency = (impl.variadic or {}).get("parameterConsistency")
+    try:
+        return _match_all(impl, positions, args, fixed, consistency != "INCONSISTENT")
+    except Unbound as refused:
+        if impl.variadic is None or consistency is not None:
+            raise
+        first = refused
+    # scalar_functions.md: a variadic argument "can be marked as either consistent or
+    # inconsistent", and it gives no default; none of the files read here marks one. Where the two
+    # readings agree, which is always unless the variadic argument carries a parameter, the answer
+    # above stands. Where only INCONSISTENT would bind, the call is declined: under one reading it
+    # is unbound, under the other it binds.
+    try:
+        _match_all(impl, positions, args, fixed, False)
+    except Unbound:
+        raise first
+    raise Unsupported("%s binds these arguments only if its variadic argument is INCONSISTENT, "
+                      "which the file does not say and the spec gives no default for"
+                      % impl.signature)
+
+
+def _positions(impl, count):
+    """The declared argument at each position of a call with `count` arguments."""
+    declared = impl.args
+    if impl.variadic is None:
+        # "Every defined argument must be specified in every invocation of the function."
+        if count != len(declared):
+            raise Unbound("%s takes %d arguments, called with %d" %
+                          (impl.signature, len(declared), count))
+        return list(declared), len(declared)
+    if not declared:
+        raise Unsupported("variadic %s with no declared argument" % impl.name)
+    fixed = len(declared) - 1
+    repeats = count - fixed
+    low, high = impl.variadic.get("min"), impl.variadic.get("max")
+    if repeats < 0 or (low is not None and repeats < low) or (high is not None and repeats > high):
+        raise Unbound("%s takes %d fixed arguments and %s to %s variadic ones, called with %d"
+                      % (impl.signature, fixed, low, "any number" if high is None else high,
+                         count))
+    if low is None and repeats < 1:
+        # "the argument can optionally have a lower bound": without one the file does not say
+        # whether no instance at all is allowed, and the spec gives no default.
+        raise Unsupported("%s gives its variadic argument no lower bound, called with none of it"
+                          % impl.signature)
+    return list(declared[:fixed]) + [declared[-1]] * repeats, fixed
+
+
+def _match_all(impl, positions, args, fixed, consistent):
+    """Match every argument. With `consistent` false, each repeat of the variadic argument binds its
+    own parameters: "each unique C can be bound to a different type". `any1`..`any9` stay one type
+    per call either way - extensions/index.md says so of every invocation, without exception."""
+    bound = {}
+    for i in range(fixed):
+        _match_one(impl, positions[i], args[i], bound, "argument %d" % i)
+    base, seen = dict(bound), {}
+    for i in range(fixed, len(args)):
+        scope = bound if consistent else dict(base)
+        _match_one(impl, positions[i], args[i], scope, "argument %d" % i)
+        if consistent:
+            continue
+        for k, v in scope.items():
+            if k in base:
+                continue
+            if k.startswith("any"):
+                if bound.get(k, v) != v:
+                    raise Unbound("%s is both %s and %s in one call" %
+                                  (k, types.render_field(bound[k]), types.render_field(v)))
+                bound[k] = v
+            else:
+                seen.setdefault(k, []).append(v)
+    for k, values in seen.items():
+        bound[k] = values[0] if all(v == values[0] for v in values) else VARYING
+    return bound
+
+
+def _match_one(impl, declared, actual, bound, where):
+    """One argument against its declared position.
 
     The three nullability modes differ here exactly as scalar_functions.md describes: MIRROR and
-    DECLARED_OUTPUT strip the outermost nullability of each argument before matching, DISCRETE
-    requires it to match what the signature declares. Nested nullability is never stripped.
+    DECLARED_OUTPUT strip "the outermost nullability of each argument ... before binding", DISCRETE
+    requires it to "match the nullability declared at the corresponding position". Nested
+    nullability is never stripped.
     """
-    declared = [a for a in impl.args if "value" in a or "type" in a]
-    if impl.variadic is not None:
-        # The variadic argument is written once in the signature and may repeat in the call. Only
-        # the "consistent" form is implemented: each repeat must bind the same way as the first.
-        if not declared:
-            raise Unsupported("variadic %s with no declared argument" % impl.name)
-        declared = declared + [declared[-1]] * max(0, len(args) - len(declared))
-    if len(declared) != len(args):
-        raise Unsupported("%s takes %d arguments, called with %d" %
-                          (impl.signature, len(declared), len(args)))
-    bound = {}
-    for arg, actual in zip(declared, args):
-        want = types.parse(arg.get("value") or arg.get("type"))
-        if impl.nullability == "DISCRETE":
-            if want.nullable != actual.nullable:
-                raise Unsupported("%s wants %s at this position, called with %s" %
-                                  (impl.signature, types.render_field(want),
-                                   types.render_field(actual)))
-            _match(want, actual, bound, outermost=False)
-        else:
-            _match(want, actual.with_nullable(False), bound, outermost=True)
-    return bound
+    if "value" not in declared and "type" not in declared:
+        if "options" not in declared:
+            raise Unsupported("%s of %s declares neither a value, a type nor options" %
+                              (where, impl.signature))
+        # "Enum arguments must be bound using FunctionArgument.enum ... with a string that
+        # case-insensitively matches one of the allowed options." - algebra.proto
+        if not isinstance(actual, EnumArg):
+            raise Unbound("%s of %s is an enumeration, called with %s" %
+                          (where, impl.signature, _render_arg(actual)))
+        if str(actual.value).lower() not in [str(o).lower() for o in declared["options"]]:
+            raise Unbound("%s of %s takes one of %s, called with %r" %
+                          (where, impl.signature, declared["options"], actual.value))
+        return
+    if isinstance(actual, EnumArg):
+        raise Unbound("%s of %s takes a %s, called with an enumeration" %
+                      (where, impl.signature, "value" if "value" in declared else "type"))
+    if "value" in declared:
+        # "Value arguments must be bound using FunctionArgument.value"
+        if isinstance(actual, TypeArg):
+            raise Unbound("%s of %s is a value argument, called with a type" %
+                          (where, impl.signature))
+        written = declared["value"]
+    else:
+        # "Type arguments must be bound using FunctionArgument.type"
+        if not isinstance(actual, TypeArg):
+            raise Unbound("%s of %s is a type argument, called with a value" %
+                          (where, impl.signature))
+        written, actual = declared["type"], actual.type
+    if not isinstance(written, str):
+        raise Unsupported("%s of %s is declared as %r, not in the type syntax" %
+                          (where, impl.signature, written))
+    want = types.parse(written)
+    if impl.nullability == "DISCRETE" and want.nullable != actual.nullable:
+        raise Unbound("%s of %s is declared %s, called with %s" %
+                      (where, impl.signature, types.render_field(want),
+                       types.render_field(actual)))
+    try:
+        _match(want.with_nullable(False), actual.with_nullable(False), bound, outermost=True)
+    except Unbound as why:
+        raise Unbound("%s of %s: %s" % (where, impl.signature, why))
 
 
 def _match(want, actual, bound, outermost):
     """Structural match of a declared type against a concrete one, filling `bound` as it goes."""
     if want.name.startswith("any"):
-        # `any` accepts anything; `any1`..`any9` must bind to one type per invocation.
+        # `any` accepts anything; `any1`..`any9` must bind to one type per invocation. Inside a
+        # compound type `any1?` accepts only a nullable type and binds `any1` to it without the
+        # marker: the table in scalar_functions.md, "second arg element type `i32?` matches
+        # `any1?`" with `any1` bound to `i32`, and `list<i32>` not matching `list<any1?>`.
+        if not outermost and want.nullable and not actual.nullable:
+            raise Unbound("declared %s, called with %s" %
+                          (types.render_field(want), types.render_field(actual)))
+        value = actual.with_nullable(False) if want.nullable else actual
         if want.name != "any":
             previous = bound.get(want.name)
-            if previous is not None and previous != actual:
-                raise Unsupported("%s is both %s and %s in one call" %
-                                  (want.name, types.render_field(previous),
-                                   types.render_field(actual)))
-            bound[want.name] = actual
+            if previous is not None and previous != value:
+                raise Unbound("%s is both %s and %s in one call" %
+                              (want.name, types.render_field(previous),
+                               types.render_field(value)))
+            bound[want.name] = value
         return
     if want.name != actual.name:
-        raise Unsupported("declared %s, called with %s" % (want.name, actual.name))
+        raise Unbound("declared %s, called with %s" % (want.name, actual.name))
     if not outermost and want.nullable != actual.nullable:
-        raise Unsupported("declared %s, called with %s" %
-                          (types.render_field(want), types.render_field(actual)))
+        raise Unbound("declared %s, called with %s" %
+                      (types.render_field(want), types.render_field(actual)))
     if len(want.params) != len(actual.params):
-        raise Unsupported("%s takes %d parameters, got %d" %
-                          (want.name, len(want.params), len(actual.params)))
+        raise Unbound("%s takes %d parameters, got %d" %
+                      (want.name, len(want.params), len(actual.params)))
     for w, a in zip(want.params, actual.params):
         if isinstance(w, Type):
             _match(w, a, bound, outermost=False)
         elif isinstance(w, str):
+            # "the function can only bind if the exact same value is used for all parameters of
+            # that name" - scalar_functions.md, Parameterized Types.
             if bound.get(w, a) != a:
-                raise Unsupported("%s is both %s and %s in one call" % (w, bound[w], a))
+                raise Unbound("%s is both %s and %s in one call" % (w, bound[w], a))
             bound[w] = a
         elif w != a:
-            raise Unsupported("declared %s=%s, called with %s" % (want.name, w, a))
+            raise Unbound("declared %s=%s, called with %s" % (want.name, w, a))
 
 
-def return_type(impl, args, phase="AGGREGATION_PHASE_INITIAL_TO_RESULT"):
+def return_type(impl, args, phase="AGGREGATION_PHASE_INITIAL_TO_RESULT", bound=None):
     """The type a call of this implementation returns, over these concrete argument types.
 
     For an aggregate or window function the phase selects which declaration is read. The spec names
@@ -277,14 +569,17 @@ def return_type(impl, args, phase="AGGREGATION_PHASE_INITIAL_TO_RESULT"):
     in one sentence that a call ending at the intermediate step outputs that type. Reading the two
     together is the only way the phases have a type at all, so that reading is applied here and
     recorded in deriver/README.md as a reading rather than as a quotation.
+
+    `bound` is what bind() returned for these arguments, when the caller has it already.
     """
-    bound = bind(impl, args)
+    if bound is None:
+        bound = bind(impl, args, phase)
+    # MIRROR reads the nullability of the values a call passes. An enumeration argument has none,
+    # and a type argument names a type rather than passing a value of it.
+    args = [a for a in args if isinstance(a, Type)]
     written = impl.ret
     if phase in ("AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",
                  "AGGREGATION_PHASE_INTERMEDIATE_TO_INTERMEDIATE"):
-        if impl.decomposable == "NONE":
-            raise Unsupported("%s is not decomposable, called with phase %s" %
-                              (impl.signature, phase))
         written = impl.intermediate
         if written is None:
             raise Unsupported("%s is %s decomposable and declares no intermediate type" %
@@ -292,10 +587,20 @@ def return_type(impl, args, phase="AGGREGATION_PHASE_INITIAL_TO_RESULT"):
     if written is None:
         raise Unsupported("%s declares no return type" % impl.signature)
     derived = _resolve(written, bound)
+    _concrete(derived, impl)
     if impl.nullability == "MIRROR":
         # "if at least one of the input arguments are nullable, the return type is also nullable."
         return derived.with_nullable(any(a.nullable for a in args))
     return derived
+
+
+def _concrete(t, impl):
+    """A derived type must name no wildcard: `LIST?<any>` has no `any` for a call to fill in."""
+    if t.name.startswith("any"):
+        raise Unsupported("%s returns %s, which no argument binds" % (impl.signature, t.name))
+    for p in t.params:
+        if isinstance(p, Type):
+            _concrete(p, impl)
 
 
 def _resolve(written, bound):
@@ -319,6 +624,9 @@ def _substitute(t, bound):
         elif isinstance(p, str):
             if p not in bound:
                 raise Unsupported("parameter %s is not bound by any argument" % p)
+            if bound[p] is VARYING:
+                raise Unsupported("parameter %s takes different values across an inconsistent "
+                                  "variadic argument" % p)
             params.append(bound[p])
         else:
             params.append(p)
@@ -342,14 +650,18 @@ def _expression(text, bound):
                               % line)
         env[name.strip()] = _Eval(rhs, env).value()
     final = types.parse(lines[-1])
-    return _substitute_env(final, env)
+    return _substitute_env(final, env, bound)
 
 
-def _substitute_env(t, env):
+def _substitute_env(t, env, bound):
+    """The last line of a return expression: integer names from the lines above, and `any1`..`any9`
+    from binding, as _substitute() fills them in a plain return type."""
+    if t.name.startswith("any") and t.name != "any":
+        return _substitute(t, bound)
     params = []
     for p in t.params:
         if isinstance(p, Type):
-            params.append(_substitute_env(p, env))
+            params.append(_substitute_env(p, env, bound))
         elif isinstance(p, str):
             if p not in env:
                 raise Unsupported("%s is not computed by the return expression" % p)

@@ -949,6 +949,11 @@ p.write_text(json.dumps(d))"
 mutate "integer division in a return expression rounded the other way" "deriver's own rules" \
   replace deriver/extensions.py "v = int(v / r)" "v = v // r"
 
+# The call binding rules are reached by no saved file at all: DERIVED.txt is compared, not rederived,
+# so only deriver/test_calls.py can notice a variadic argument called fewer times than its `min`.
+mutate "a variadic argument bound below its lower bound" "call typing" \
+  replace deriver/extensions.py "(low is not None and repeats < low)" "(False and repeats < low)"
+
 # The virtual-table cases counted apart from every case pending a spec answer. The two were one
 # number until a second open question joined the first, and a page counting the virtual tables by
 # the total would have said "seven have virtual-table row types" of three.

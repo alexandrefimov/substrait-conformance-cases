@@ -1107,6 +1107,9 @@ python3 probe/structural_cases.py --verify-fixtures \
   || fail "focused structural fixtures are incomplete"
 # Prints its own ok line, in the same shape as the ones above.
 python3 -m deriver.test_derive || fail "the deriver's own rules failed their checks"
+# The call binding rules, on plans and an extension file written in the test: no checkout needed.
+# With SUBSTRAIT_DIR set it also runs the declaration swap over both corpora.
+python3 -m deriver.test_calls || fail "the deriver's call typing failed its own checks"
 SYNTAX=0
 for f in probe/*.py deriver/*.py; do python3 -m py_compile "$f" || { fail "python syntax: $f"; SYNTAX=1; }; done
 for f in probe/*.sh gen/*.sh; do bash -n "$f" || { fail "bash syntax: $f"; SYNTAX=1; }; done

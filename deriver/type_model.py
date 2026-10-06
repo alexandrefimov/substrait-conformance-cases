@@ -41,6 +41,9 @@ INT_PARAMS = {
     "varchar": ("length",), "fixedchar": ("length",), "fixedbinary": ("length",),
     "precision_time": ("precision",), "precision_timestamp": ("precision",),
     "precision_timestamp_tz": ("precision",),
+    # `INTERVAL_DAY<P>` and `INTERVAL_COMPOUND<P>` in type_classes.md: the precision is part of the
+    # type, and functions_datetime.yaml declares `interval_day<P>` arguments that bind it.
+    "interval_day": ("precision",), "interval_compound": ("precision",),
 }
 
 # How a type class is written in the corpus notation when it differs from its own name.
@@ -55,6 +58,15 @@ class Unsupported(Exception):
 
     Raised rather than answered: a guess here would be indistinguishable from a derivation in the
     comparison, which is the one thing this program exists to keep apart.
+    """
+
+
+class Unbound(Unsupported):
+    """A call that the specification's rules bind to no implementation.
+
+    Kept apart from Unsupported because the two say opposite things: Unsupported is this deriver
+    having no rule, Unbound is the rules having been applied and matching nothing. It subclasses
+    Unsupported so that a relation deriving through such a call still stops rather than guessing.
     """
 
 
@@ -108,6 +120,10 @@ def from_plan(node):
         return Type(name, [from_plan(body["type"])], nullable)
     if name == "map":
         return Type(name, [from_plan(body["key"]), from_plan(body["value"])], nullable)
+    if name == "interval_day" and "precision" not in body:
+        # `optional int32 precision` in type.proto: "Implementations should reject an unset
+        # precision." Reading it as 0 would put a precision into the type that the plan never gave.
+        raise Unsupported("interval_day with unset precision, which type.proto says to reject")
     return Type(name, [int(body.get(f, 0)) for f in INT_PARAMS.get(name, ())], nullable)
 
 

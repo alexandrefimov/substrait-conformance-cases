@@ -156,6 +156,18 @@ MUTATIONS = [
      "the phases as execution detail with no effect on the type",
      '    if phase in ("AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",',
      '    if False and phase in ("AGGREGATION_PHASE_INITIAL_TO_INTERMEDIATE",'),
+    ("extensions.py", "functions: an empty signature names no implementation",
+     "the ABNF's `short-arg-type *(\"_\" short-arg-type)`, which needs one, over the prose's join",
+     '        how, impl = "signature", index.get(name)',
+     '        how, impl = "signature", (None if name.endswith(":") else index.get(name))'),
+    ("extensions.py", "functions: a signature binds any impl of its function",
+     "the signature choosing a function and the arguments choosing among its implementations",
+     "        candidates = [impl]",
+     "        candidates = list(by_name.get(impl.name, []))"),
+    ("extensions.py", "functions: every mode binds nullability as DISCRETE does",
+     "a declared `i64` read as requiring a required value, as DISCRETE does, in every mode",
+     '    if impl.nullability == "DISCRETE" and want.nullable != actual.nullable:',
+     "    if want.nullable != actual.nullable:"),
 ]
 
 # The mutation above that needs a rule the deriver does not otherwise have: a join emitting its
