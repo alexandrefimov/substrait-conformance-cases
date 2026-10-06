@@ -1,0 +1,107 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2,
+                  3
+                ]
+              }
+            },
+            "input": {
+              "read": {
+                "baseSchema": {
+                  "names": [
+                    "c0",
+                    "c1"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "projection": {
+                  "select": {
+                    "structItems": [
+                      {},
+                      {
+                        "field": 1
+                      }
+                    ]
+                  },
+                  "maintainSingularStruct": true
+                },
+                "namedTable": {
+                  "names": [
+                    "t_rn"
+                  ]
+                }
+              }
+            },
+            "expressions": [
+              {
+                "cast": {
+                  "type": {
+                    "string": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "input": {
+                    "selection": {
+                      "directReference": {
+                        "structField": {}
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                }
+              },
+              {
+                "cast": {
+                  "type": {
+                    "fp64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "input": {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 1
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "s",
+          "d"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  }
+}

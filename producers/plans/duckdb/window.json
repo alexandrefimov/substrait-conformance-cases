@@ -1,0 +1,145 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "sum:i64",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  0,
+                  2
+                ]
+              }
+            },
+            "input": {
+              "window": {
+                "input": {
+                  "read": {
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "projection": {
+                      "select": {
+                        "structItems": [
+                          {},
+                          {
+                            "field": 1
+                          }
+                        ]
+                      },
+                      "maintainSingularStruct": true
+                    },
+                    "namedTable": {
+                      "names": [
+                        "t_rn"
+                      ]
+                    }
+                  }
+                },
+                "windowFunctions": [
+                  {
+                    "functionReference": 1,
+                    "upperBound": {
+                      "currentRow": {}
+                    },
+                    "lowerBound": {
+                      "preceding": {
+                        "offset": "1"
+                      }
+                    },
+                    "outputType": {
+                      "decimal": {
+                        "precision": 38,
+                        "nullability": "NULLABILITY_NULLABLE"
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "value": {
+                          "selection": {
+                            "directReference": {
+                              "structField": {
+                                "field": 1
+                              }
+                            },
+                            "rootReference": {}
+                          }
+                        }
+                      }
+                    ],
+                    "boundsType": "BOUNDS_TYPE_ROWS"
+                  }
+                ],
+                "sorts": [
+                  {
+                    "expr": {
+                      "selection": {
+                        "directReference": {
+                          "structField": {}
+                        },
+                        "rootReference": {}
+                      }
+                    },
+                    "direction": "SORT_DIRECTION_ASC_NULLS_LAST"
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c0",
+          "w"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_arithmetic"
+    }
+  ]
+}

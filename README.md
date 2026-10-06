@@ -4,7 +4,7 @@
 
 Executable cases comparing Substrait output schemas and relation semantics across libraries and
 engines. Expectations are written from the specification text they cite, independently of the
-implementation answers. Both corpora are authored against Substrait v0.102.0 and support the
+implementation answers. The authored corpora target Substrait v0.102.0 and support the
 [relation conformance proposal](https://github.com/substrait-io/substrait/issues/1164).
 
 ## Corpora
@@ -13,10 +13,15 @@ implementation answers. Both corpora are authored against Substrait v0.102.0 and
 | --- | --- | --- |
 | [`derived-schema/`](derived-schema) | 108 generated plans testing schema derivation | substrait-java, substrait-python, substrait-go, substrait-validator, Isthmus/Calcite, DataFusion, DuckDB, Spark, Acero, Gluten |
 | [`tests/relations/`](tests/relations) | 71 hand-written cases testing relation schemas and rows | substrait-java, substrait-go, DuckDB, DataFusion |
+| [`producers/`](producers) | SQL-produced plans: declared types, bindings and consumer schemas | DuckDB, Isthmus, Spark and DataFusion producers; schema consumers |
 
 The [results on GitHub Pages](https://alexandrefimov.github.io/substrait-conformance-cases/) show the
-expectation and saved answer for each cell. [Schema differences](results/DIFFS.md) groups the
-differing cases by participant; [FINDINGS.md](FINDINGS.md) links reproducers to upstream reports.
+expectation and saved answer for each cell in the authored corpora.
+[Schema differences](results/DIFFS.md) groups differing cases by participant; [FINDINGS.md](FINDINGS.md) links reproducers to upstream reports.
+
+Producer plans are checked against the deriver's reading of v0.102.0, without a second oracle.
+Their [results](results/producers) include a [consumer matrix](results/producers/CONSUME.txt);
+schema comparisons establish neither row correctness nor general plan validity.
 
 ## Results
 
@@ -68,6 +73,7 @@ executes no participant and does not validate the specification reading.
 - [Relation test vectors](tests/relations/README.md): protobuf bundle contract and case authoring.
 - [Generators](gen/README.md): building and extending the schema corpus.
 - [Independent deriver](deriver/README.md): a second encoding of the specification rules.
+- [Producer corpus](producers/README.md): saved SQL-produced plans, declaration checks and consumer results.
 - [Producer shapes](probe/producer-shapes/README.md): plans from SQL passed between implementations.
 
 Expectation corrections should name the case and the specification rule. Outstanding review

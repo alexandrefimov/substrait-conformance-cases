@@ -1,0 +1,237 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "equal:any_any",
+        "extensionUrnReference": 1
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 2,
+        "name": "not:bool",
+        "extensionUrnReference": 2
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2
+                ]
+              }
+            },
+            "input": {
+              "filter": {
+                "input": {
+                  "project": {
+                    "common": {
+                      "emit": {
+                        "outputMapping": [
+                          2,
+                          3
+                        ]
+                      }
+                    },
+                    "input": {
+                      "join": {
+                        "left": {
+                          "read": {
+                            "baseSchema": {
+                              "names": [
+                                "c0",
+                                "c1"
+                              ],
+                              "struct": {
+                                "types": [
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_REQUIRED"
+                                    }
+                                  },
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_NULLABLE"
+                                    }
+                                  }
+                                ],
+                                "nullability": "NULLABILITY_REQUIRED"
+                              }
+                            },
+                            "projection": {
+                              "select": {
+                                "structItems": [
+                                  {}
+                                ]
+                              },
+                              "maintainSingularStruct": true
+                            },
+                            "namedTable": {
+                              "names": [
+                                "t_rn"
+                              ]
+                            }
+                          }
+                        },
+                        "right": {
+                          "read": {
+                            "baseSchema": {
+                              "names": [
+                                "c0",
+                                "c1"
+                              ],
+                              "struct": {
+                                "types": [
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_NULLABLE"
+                                    }
+                                  },
+                                  {
+                                    "i64": {
+                                      "nullability": "NULLABILITY_REQUIRED"
+                                    }
+                                  }
+                                ],
+                                "nullability": "NULLABILITY_REQUIRED"
+                              }
+                            },
+                            "projection": {
+                              "select": {
+                                "structItems": [
+                                  {}
+                                ]
+                              },
+                              "maintainSingularStruct": true
+                            },
+                            "namedTable": {
+                              "names": [
+                                "t_nr"
+                              ]
+                            }
+                          }
+                        },
+                        "expression": {
+                          "scalarFunction": {
+                            "functionReference": 1,
+                            "outputType": {
+                              "bool": {
+                                "nullability": "NULLABILITY_NULLABLE"
+                              }
+                            },
+                            "arguments": [
+                              {
+                                "value": {
+                                  "selection": {
+                                    "directReference": {
+                                      "structField": {}
+                                    },
+                                    "rootReference": {}
+                                  }
+                                }
+                              },
+                              {
+                                "value": {
+                                  "selection": {
+                                    "directReference": {
+                                      "structField": {
+                                        "field": 1
+                                      }
+                                    },
+                                    "rootReference": {}
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "type": "JOIN_TYPE_LEFT_MARK"
+                      }
+                    },
+                    "expressions": [
+                      {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      },
+                      {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 1
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    ]
+                  }
+                },
+                "condition": {
+                  "scalarFunction": {
+                    "functionReference": 2,
+                    "outputType": {
+                      "bool": {
+                        "nullability": "NULLABILITY_NULLABLE"
+                      }
+                    },
+                    "arguments": [
+                      {
+                        "value": {
+                          "selection": {
+                            "directReference": {
+                              "structField": {
+                                "field": 1
+                              }
+                            },
+                            "rootReference": {}
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c0"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_comparison"
+    },
+    {
+      "extensionUrnAnchor": 2,
+      "urn": "extension:io.substrait:functions_boolean"
+    }
+  ]
+}

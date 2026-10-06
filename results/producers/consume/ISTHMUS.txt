@@ -1,0 +1,207 @@
+ISTHMUS: the committed producer plans, substrait-java bc050d37
+
+datafusion__aggs                               ERROR: PARSE FAILED: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
+datafusion__arith                              ERROR: PARSE FAILED: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
+datafusion__count_distinct                     ERROR: PARSE FAILED: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__dec_add                            ERROR: PARSE FAILED: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor
+datafusion__dec_div                            ERROR: PARSE FAILED: IllegalStateException: Function 'divide' references URN anchor -1, but no URN is registered at that anchor
+datafusion__except_mixed                       ERROR: PARSE FAILED: IllegalStateException: Function 'is_not_distinct_from' references URN anchor -1, but no URN is registered at that anchor
+datafusion__exists_or                          ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__filter_project                     ERROR: PARSE FAILED: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_avg_dec                         ERROR: PARSE FAILED: IllegalStateException: Function 'avg' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_case                            ERROR: PARSE FAILED: IllegalStateException: Function 'is_null' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_cast                            [c00:VARCHAR?, c10:DOUBLE?]
+datafusion__fn_cast_str_int                    [c10:INTEGER?]
+datafusion__fn_cmp_bool                        ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_count_star                      ERROR: PARSE FAILED: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_dec_mul                         ERROR: PARSE FAILED: IllegalStateException: Function 'multiply' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_minmax_i64                      ERROR: PARSE FAILED: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_str                             ERROR: PARSE FAILED: IllegalStateException: Function 'character_length' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_sum_dec                         ERROR: PARSE FAILED: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__fn_try_cast                        [$f1:INTEGER?]
+datafusion__full_join                          ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__grouping_fn                        ERROR: PARSE FAILED: IllegalStateException: Function 'bitwise_and' references URN anchor -1, but no URN is registered at that anchor
+datafusion__grouping_sets                      ERROR: PARSE FAILED: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+datafusion__in_or                              ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__in_subquery                        ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__intersect_mixed                    ERROR: PARSE FAILED: IllegalStateException: Function 'is_not_distinct_from' references URN anchor -1, but no URN is registered at that anchor
+datafusion__join_reordered                     ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__left_join                          ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__limit_offset                       [c0:BIGINT]
+datafusion__limit_only                         [c0:BIGINT]
+datafusion__mask_filter                        [c10:VARCHAR]
+datafusion__mask_reorder                       [c20:BOOLEAN, c00:BIGINT]
+datafusion__not_exists                         ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__not_in                             ERROR: PARSE FAILED: IllegalStateException: Function 'equal' references URN anchor -1, but no URN is registered at that anchor
+datafusion__rollup                             ERROR: PARSE FAILED: IllegalStateException: Function 'count' references URN anchor -1, but no URN is registered at that anchor
+datafusion__scalar_subquery                    ERROR: PARSE FAILED: IllegalStateException: Function 'max' references URN anchor -1, but no URN is registered at that anchor
+datafusion__ts_ns_column                       ERROR: PARSE FAILED: IllegalStateException: Function 'gt' references URN anchor -1, but no URN is registered at that anchor
+datafusion__ts_ns_literal                      [c0:BIGINT]
+datafusion__union_all_mixed                    [c0:BIGINT?]
+datafusion__union_distinct_mixed               [c0:BIGINT?]
+datafusion__values_expr                        [column1:BIGINT, column2:BIGINT]
+datafusion__values_literal                     [column1:BIGINT, column2:BIGINT]
+datafusion__window                             ERROR: PARSE FAILED: IllegalStateException: Function 'sum' references URN anchor -1, but no URN is registered at that anchor
+duckdb__aggs                                   [$f0:DECIMAL(38,0)?, $f1:DOUBLE?, $f2:BIGINT?, $f3:BIGINT?]
+duckdb__arith                                  [$f1:BIGINT?, $f2:DOUBLE?]
+duckdb__count_distinct                         [$f0:BIGINT?, $f1:DECIMAL(38,0)?]
+duckdb__dec_add                                [$f2:DECIMAL(11,2)?]
+duckdb__dec_div                                [$f2:DOUBLE?]
+duckdb__except_mixed                           [c0:BIGINT?]
+duckdb__exists_or                              ERROR: PARSE FAILED: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anchor
+duckdb__filter_project                         [c1:BIGINT?, c0:BIGINT]
+duckdb__fn_avg_dec                             [$f0:DOUBLE?]
+duckdb__fn_case                                [$f2:BIGINT?, $f3:BIGINT?]
+duckdb__fn_cast                                [c00:VARCHAR?, c10:DOUBLE?]
+duckdb__fn_cast_str_int                        [c10:INTEGER?]
+duckdb__fn_cmp_bool                            ERROR: PARSE FAILED: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anchor
+duckdb__fn_count_star                          [$f0:BIGINT?, $f1:BIGINT?]
+duckdb__fn_dec_mul                             [$f2:DECIMAL(15,3)?]
+duckdb__fn_minmax_i64                          [$f0:BIGINT?, $f1:BIGINT?]
+duckdb__fn_str                                 ERROR: PARSE FAILED: IllegalStateException: Function '||' references URN anchor 0, but no URN is registered at that anchor
+duckdb__fn_sum_dec                             [$f0:DECIMAL(38,2)?]
+duckdb__fn_try_cast                            [c10:INTEGER?]
+duckdb__full_join                              [c0:BIGINT?, c1:BIGINT?]
+duckdb__grouping_fn                            ERROR: PARSE FAILED: IllegalStateException: Function 'grouping' references URN anchor 0, but no URN is registered at that anchor
+duckdb__grouping_sets                          ERROR: PARSE FAILED: IllegalArgumentException: Plan.Root names count (3) must match input record type depth-first named-field count (4)
+duckdb__in_or                                  ERROR: PARSE FAILED: IllegalStateException: Function 'constant_or_null' references URN anchor 0, but no URN is registered at that anchor
+duckdb__in_subquery                            [c0:BIGINT]
+duckdb__intersect_mixed                        ERROR: UnsupportedOperationException: Unsupported set operation: INTERSECTION_PRIMARY
+duckdb__join_reordered                         [c0:BIGINT, c1:BIGINT?]
+duckdb__left_join                              [c0:BIGINT, c1:BIGINT?]
+duckdb__limit_offset                           [c0:BIGINT]
+duckdb__limit_only                             [c0:BIGINT]
+duckdb__mask_filter                            [c1:VARCHAR]
+duckdb__mask_reorder                           [c2:BOOLEAN, c0:BIGINT]
+duckdb__not_exists                             [c0:BIGINT]
+duckdb__not_in                                 ERROR: UnsupportedOperationException: Unsupported join type: LEFT_MARK
+duckdb__rollup                                 ERROR: PARSE FAILED: IllegalArgumentException: Plan.Root names count (3) must match input record type depth-first named-field count (4)
+duckdb__scalar_subquery                        [c01:BIGINT, $f10:BIGINT?]
+duckdb__ts_ns_column                           [ts:TIMESTAMP(9)]
+duckdb__ts_ns_literal                          [c0:BIGINT]
+duckdb__union_all_mixed                        [c0:BIGINT?]
+duckdb__union_distinct_mixed                   ERROR: PARSE FAILED: IllegalArgumentException: Unhandled type: ROOTTYPE_NOT_SET
+duckdb__values_expr                            ERROR: PARSE FAILED: IllegalArgumentException: Row named-field count (2) does not match schema names count (0)
+duckdb__values_literal                         ERROR: PARSE FAILED: IllegalArgumentException: Row named-field count (2) does not match schema names count (0)
+duckdb__window                                 ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}, names=[c0, c1]}, projection=MaskExpression{select=StructSelect{structItems=[StructItem{field=0}, StructItem{field=1}]}, maintainSingularStruct=true}, names=[t_rn]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=1}], type=I64{nullable=true}}], options=[], outputType=Decimal{nullable=true, scale=0, precision=38}, aggregationPhase=UNSPECIFIED, invocation=UNSPECIFIED, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=false}}, direction=ASC_NULLS_LAST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+isthmus__aggs                                  [$f0:BIGINT?, $f1:BIGINT?, $f2:BIGINT, $f3:BIGINT?]
+isthmus__arith                                 [$f2:BIGINT, $f3:BIGINT]
+isthmus__count_distinct                        [$f0:BIGINT, $f1:BIGINT?]
+isthmus__dec_add                               [$f4:DECIMAL(11,2)]
+isthmus__dec_div                               [$f4:DECIMAL(21,8)]
+isthmus__except_mixed                          [c00:BIGINT?]
+isthmus__exists_or                             [c00:BIGINT]
+isthmus__filter_project                        [c10:BIGINT?, c00:BIGINT]
+isthmus__fn_avg_dec                            [$f0:DECIMAL(38,2)?]
+isthmus__fn_case                               [$f2:BIGINT?, $f3:BIGINT]
+isthmus__fn_cast                               [c00:VARCHAR(20), c10:DOUBLE?]
+isthmus__fn_cast_str_int                       [c10:INTEGER]
+isthmus__fn_cmp_bool                           [$f2:BOOLEAN?, $f3:BOOLEAN?]
+isthmus__fn_count_star                         [$f0:BIGINT, $f1:BIGINT]
+isthmus__fn_dec_mul                            [$f4:DECIMAL(16,3)]
+isthmus__fn_minmax_i64                         [$f0:BIGINT?, $f1:BIGINT?]
+isthmus__fn_str                                [$f3:VARCHAR, $f4:VARCHAR, $f5:INTEGER]
+isthmus__fn_sum_dec                            [$f0:DECIMAL(38,2)?]
+isthmus__full_join                             [c01:BIGINT?, c100:BIGINT?]
+isthmus__grouping_fn                           [c000:BIGINT?, $f3:BIGINT]
+isthmus__grouping_sets                         [c0:BIGINT?, c1:BIGINT?, $f2:BIGINT?]
+isthmus__in_or                                 [c00:BIGINT]
+isthmus__in_subquery                           [c00:BIGINT]
+isthmus__intersect_mixed                       [c00:BIGINT?]
+isthmus__join_reordered                        [c100:BIGINT, c11:BIGINT?]
+isthmus__left_join                             [c01:BIGINT, c100:BIGINT?]
+isthmus__limit_offset                          [c00:BIGINT]
+isthmus__limit_only                            [c00:BIGINT]
+isthmus__mask_filter                           [c10:VARCHAR]
+isthmus__mask_reorder                          [c20:BOOLEAN, c00:BIGINT]
+isthmus__not_exists                            [c00:BIGINT]
+isthmus__not_in                                [c00:BIGINT]
+isthmus__rollup                                [c0:BIGINT?, c1:BIGINT?, $f2:BIGINT]
+isthmus__scalar_subquery                       [c00:BIGINT, $f3:BIGINT?]
+isthmus__ts_ns_column                          [ts:TIMESTAMP(9)]
+isthmus__ts_ns_literal                         [c00:BIGINT]
+isthmus__union_all_mixed                       [c00:BIGINT?]
+isthmus__union_distinct_mixed                  [c00:BIGINT?]
+isthmus__values_expr                           [$f1:INTEGER, $f2:INTEGER]
+isthmus__values_literal                        [A:INTEGER, B:INTEGER]
+isthmus__window                                [c00:BIGINT, $f3:BIGINT?]
+spark35__aggs                                  [$f0:BIGINT?, $f1:DOUBLE?, $f2:BIGINT, $f3:BIGINT?]
+spark35__arith                                 [x:BIGINT?, y:DOUBLE?]
+spark35__count_distinct                        [$f0:BIGINT, $f1:BIGINT?]
+spark35__dec_add                               [x:DECIMAL(11,2)?]
+spark35__dec_div                               [x:DECIMAL(17,8)?]
+spark35__except_mixed                          [c0:BIGINT?]
+spark35__filter_project                        [c1:BIGINT?, c0:BIGINT?]
+spark35__fn_avg_dec                            [$f0:DECIMAL(14,6)?]
+spark35__fn_case                               [x:BIGINT?, y:BIGINT?]
+spark35__fn_cast                               [s:VARCHAR?, d:DOUBLE?]
+spark35__fn_cast_str_int                       [x:INTEGER?]
+spark35__fn_cmp_bool                           [e:BOOLEAN?, l:BOOLEAN?]
+spark35__fn_count_star                         [$f0:BIGINT, $f1:BIGINT]
+spark35__fn_dec_mul                            [x:DECIMAL(16,3)?]
+spark35__fn_minmax_i64                         [$f0:BIGINT?, $f1:BIGINT?]
+spark35__fn_sum_dec                            [$f0:DECIMAL(20,2)?]
+spark35__fn_try_cast                           [x:INTEGER?]
+spark35__full_join                             [c0:BIGINT?, c1:BIGINT?]
+spark35__grouping_fn                           ERROR: UnsupportedOperationException: null
+spark35__grouping_sets                         ERROR: UnsupportedOperationException: null
+spark35__in_or                                 [c0:BIGINT?]
+spark35__in_subquery                           [c0:BIGINT?]
+spark35__intersect_mixed                       [c0:BIGINT?]
+spark35__join_reordered                        [c100:BIGINT?, c11:BIGINT?]
+spark35__left_join                             [c0:BIGINT?, c1:BIGINT?]
+spark35__limit_offset                          [c0:BIGINT?]
+spark35__limit_only                            [c0:BIGINT?]
+spark35__mask_filter                           [c1:VARCHAR?]
+spark35__mask_reorder                          [c2:BOOLEAN?, c0:BIGINT?]
+spark35__not_exists                            [c0:BIGINT?]
+spark35__not_in                                [c0:BIGINT?]
+spark35__rollup                                ERROR: UnsupportedOperationException: null
+spark35__scalar_subquery                       [c0:BIGINT?, m:BIGINT?]
+spark35__ts_ns_column                          [ts:TIMESTAMP(6)?]
+spark35__ts_ns_literal                         [c0:BIGINT?]
+spark35__union_all_mixed                       [c0:BIGINT?]
+spark35__union_distinct_mixed                  [c0:BIGINT?]
+spark35__values_expr                           [a:INTEGER, b:INTEGER]
+spark35__values_literal                        [a:INTEGER, b:INTEGER]
+spark35__window                                ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=1}], type=I64{nullable=true}}], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, direction=ASC_NULLS_FIRST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.
+spark40__aggs                                  [$f0:BIGINT?, $f1:DOUBLE?, $f2:BIGINT, $f3:BIGINT?]
+spark40__arith                                 [x:BIGINT?, y:DOUBLE?]
+spark40__count_distinct                        [$f0:BIGINT, $f1:BIGINT?]
+spark40__dec_add                               [x:DECIMAL(11,2)?]
+spark40__dec_div                               [x:DECIMAL(17,8)?]
+spark40__except_mixed                          [c0:BIGINT?]
+spark40__filter_project                        [c1:BIGINT?, c0:BIGINT?]
+spark40__fn_avg_dec                            [$f0:DECIMAL(14,6)?]
+spark40__fn_case                               [x:BIGINT?, y:BIGINT?]
+spark40__fn_cast                               [s:VARCHAR?, d:DOUBLE?]
+spark40__fn_cast_str_int                       [x:INTEGER?]
+spark40__fn_cmp_bool                           [e:BOOLEAN?, l:BOOLEAN?]
+spark40__fn_count_star                         [$f0:BIGINT, $f1:BIGINT]
+spark40__fn_dec_mul                            [x:DECIMAL(16,3)?]
+spark40__fn_minmax_i64                         [$f0:BIGINT?, $f1:BIGINT?]
+spark40__fn_sum_dec                            [$f0:DECIMAL(20,2)?]
+spark40__fn_try_cast                           [x:INTEGER?]
+spark40__full_join                             [c0:BIGINT?, c1:BIGINT?]
+spark40__grouping_fn                           ERROR: UnsupportedOperationException: null
+spark40__grouping_sets                         ERROR: UnsupportedOperationException: null
+spark40__in_or                                 [c0:BIGINT?]
+spark40__in_subquery                           [c0:BIGINT?]
+spark40__intersect_mixed                       [c0:BIGINT?]
+spark40__join_reordered                        [c100:BIGINT?, c11:BIGINT?]
+spark40__left_join                             [c0:BIGINT?, c1:BIGINT?]
+spark40__limit_offset                          [c0:BIGINT?]
+spark40__limit_only                            [c0:BIGINT?]
+spark40__mask_filter                           [c1:VARCHAR?]
+spark40__mask_reorder                          [c2:BOOLEAN?, c0:BIGINT?]
+spark40__not_exists                            [c0:BIGINT?]
+spark40__not_in                                [c0:BIGINT?]
+spark40__rollup                                ERROR: UnsupportedOperationException: null
+spark40__scalar_subquery                       [c0:BIGINT?, m:BIGINT?]
+spark40__ts_ns_column                          [ts:TIMESTAMP(6)?]
+spark40__ts_ns_literal                         [c0:BIGINT?]
+spark40__union_all_mixed                       [c0:BIGINT?]
+spark40__union_distinct_mixed                  [c0:BIGINT?]
+spark40__values_expr                           [a:INTEGER, b:INTEGER]
+spark40__values_literal                        [a:INTEGER, b:INTEGER]
+spark40__window                                ERROR: UnsupportedOperationException: Rel ConsistentPartitionWindow{input=NamedScan{initialSchema=NamedStruct{struct=Struct{nullable=false, fields=[I64{nullable=true}, I64{nullable=true}]}, names=[c0, c1]}, names=[t_rn]}, windowFunctions=[WindowRelFunctionInvocation{declaration=sum:i64, arguments=[FieldReference{segments=[StructField{offset=1}], type=I64{nullable=true}}], options=[], outputType=I64{nullable=true}, aggregationPhase=INITIAL_TO_RESULT, invocation=ALL, lowerBound=Preceding{offset=I64Literal{nullable=false, value=1}}, upperBound=CurrentRow{}, boundsType=ROWS}], partitionExpressions=[], sorts=[SortField{expr=FieldReference{segments=[StructField{offset=0}], type=I64{nullable=true}}, direction=ASC_NULLS_FIRST}]} of type io.substrait.relation.ImmutableConsistentPartitionWindow not handled by visitor type io.substrait.isthmus.SubstraitRelNodeConverter.

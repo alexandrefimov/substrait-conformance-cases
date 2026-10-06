@@ -1,0 +1,114 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "add:i32_i32",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  1,
+                  2
+                ]
+              }
+            },
+            "input": {
+              "read": {
+                "common": {
+                  "direct": {}
+                },
+                "baseSchema": {
+                  "names": [
+                    "ZERO"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i32": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "virtualTable": {
+                  "expressions": [
+                    {
+                      "fields": [
+                        {
+                          "literal": {
+                            "i32": 0
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "expressions": [
+              {
+                "scalarFunction": {
+                  "functionReference": 1,
+                  "outputType": {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "arguments": [
+                    {
+                      "value": {
+                        "literal": {
+                          "i32": 1
+                        }
+                      }
+                    },
+                    {
+                      "value": {
+                        "literal": {
+                          "i32": 1
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "literal": {
+                  "i32": 2
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "A",
+          "B"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_arithmetic"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

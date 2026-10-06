@@ -1,0 +1,91 @@
+DATAFUSION: plans from datafusion 55.1.0 c922f8811, checked against the specification at v0.102.0
+
+union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok; removed fields: Grouping.1
+intersect_mixed        calls 1, differ 0, missing 0, unbound 1, declined 0; names ok; removed fields: Grouping.1
+  is_not_distinct_from     unbound: function 'is_not_distinct_from' points at urn anchor 4294967295, which the plan does not declare
+except_mixed           calls 1, differ 0, missing 0, unbound 1, declined 0; names ok; removed fields: Grouping.1
+  is_not_distinct_from     unbound: function 'is_not_distinct_from' points at urn anchor 4294967295, which the plan does not declare
+exists_or              calls 3, differ 0, missing 0, unbound 3, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+  or                       unbound: function 'or' points at urn anchor 4294967295, which the plan does not declare
+  gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
+in_or                  calls 3, differ 0, missing 0, unbound 3, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+  or                       unbound: function 'or' points at urn anchor 4294967295, which the plan does not declare
+  gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
+in_subquery            calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+not_in                 calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+not_exists             calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+scalar_subquery        calls 2, differ 0, missing 0, unbound 1, declined 1; schema declined (function 'max' points at urn anchor 4294967295, which the plan does not declare); removed fields: Grouping.1
+  max                      unbound: function 'max' points at urn anchor 4294967295, which the plan does not declare
+left_join              calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+full_join              calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+join_reordered         calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+rollup                 calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'count' points at urn anchor 4294967295, which the plan does not declare); removed fields: Grouping.1
+  count                    unbound: function 'count' points at urn anchor 4294967295, which the plan does not declare
+grouping_sets          calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare); removed fields: Grouping.1
+  sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+grouping_fn            calls 1, differ 0, missing 0, unbound 1, declined 0; names ok; removed fields: Grouping.1
+  bitwise_and              unbound: function 'bitwise_and' points at urn anchor 4294967295, which the plan does not declare
+mask_reorder           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+mask_filter            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_offset           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_only             calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+count_distinct         calls 3, differ 0, missing 0, unbound 1, declined 2; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare); removed fields: Grouping.1
+  sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+values_literal         calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+values_expr            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+ts_ns_literal          calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+ts_ns_column           calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
+aggs                   calls 4, differ 0, missing 0, unbound 4, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare)
+  sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+  avg                      unbound: function 'avg' points at urn anchor 4294967295, which the plan does not declare
+  count                    unbound: function 'count' points at urn anchor 4294967295, which the plan does not declare
+  min                      unbound: function 'min' points at urn anchor 4294967295, which the plan does not declare
+arith                  calls 2, differ 0, missing 0, unbound 2, declined 0; schema declined (function 'add' points at urn anchor 4294967295, which the plan does not declare)
+  add                      unbound: function 'add' points at urn anchor 4294967295, which the plan does not declare
+  divide                   unbound: function 'divide' points at urn anchor 4294967295, which the plan does not declare
+filter_project         calls 1, differ 0, missing 0, unbound 1, declined 0; names ok
+  gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
+window                 calls 1, differ 0, missing 1, unbound 1, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare)
+  sum                      no output_type
+  sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+dec_add                calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'add' points at urn anchor 4294967295, which the plan does not declare)
+  add                      unbound: function 'add' points at urn anchor 4294967295, which the plan does not declare
+dec_div                calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'divide' points at urn anchor 4294967295, which the plan does not declare)
+  divide                   unbound: function 'divide' points at urn anchor 4294967295, which the plan does not declare
+fn_avg_dec             calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'avg' points at urn anchor 4294967295, which the plan does not declare)
+  avg                      unbound: function 'avg' points at urn anchor 4294967295, which the plan does not declare
+fn_sum_dec             calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'sum' points at urn anchor 4294967295, which the plan does not declare)
+  sum                      unbound: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+fn_minmax_i64          calls 2, differ 0, missing 0, unbound 2, declined 0; schema declined (function 'min' points at urn anchor 4294967295, which the plan does not declare)
+  min                      unbound: function 'min' points at urn anchor 4294967295, which the plan does not declare
+  max                      unbound: function 'max' points at urn anchor 4294967295, which the plan does not declare
+fn_count_star          calls 2, differ 0, missing 0, unbound 2, declined 0; schema declined (function 'count' points at urn anchor 4294967295, which the plan does not declare)
+  count                    unbound: function 'count' points at urn anchor 4294967295, which the plan does not declare
+  count                    unbound: function 'count' points at urn anchor 4294967295, which the plan does not declare
+fn_dec_mul             calls 1, differ 0, missing 0, unbound 1, declined 0; schema declined (function 'multiply' points at urn anchor 4294967295, which the plan does not declare)
+  multiply                 unbound: function 'multiply' points at urn anchor 4294967295, which the plan does not declare
+fn_cmp_bool            calls 4, differ 0, missing 0, unbound 4, declined 0; schema declined (function 'equal' points at urn anchor 4294967295, which the plan does not declare)
+  equal                    unbound: function 'equal' points at urn anchor 4294967295, which the plan does not declare
+  and                      unbound: function 'and' points at urn anchor 4294967295, which the plan does not declare
+  gt                       unbound: function 'gt' points at urn anchor 4294967295, which the plan does not declare
+  is_not_null              unbound: function 'is_not_null' points at urn anchor 4294967295, which the plan does not declare
+fn_str                 calls 3, differ 0, missing 0, unbound 3, declined 0; schema declined (function 'upper' points at urn anchor 4294967295, which the plan does not declare)
+  upper                    unbound: function 'upper' points at urn anchor 4294967295, which the plan does not declare
+  str_concat               unbound: function 'str_concat' points at urn anchor 4294967295, which the plan does not declare
+  character_length         unbound: function 'character_length' points at urn anchor 4294967295, which the plan does not declare
+fn_cast                calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_cast_str_int        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_try_cast            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_case                calls 2, differ 0, missing 0, unbound 2, declined 0; schema declined (an ifThen whose return expressions differ: i64, i64?)
+  is_null                  unbound: function 'is_null' points at urn anchor 4294967295, which the plan does not declare
+  is_not_null              unbound: function 'is_not_null' points at urn anchor 4294967295, which the plan does not declare

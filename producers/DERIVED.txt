@@ -1,0 +1,470 @@
+# What deriver/ derives for each committed producer plan: the root schema, then one line
+# per function call. Written by `SUBSTRAIT_DIR=<checkout> python3 producers/check.py --derive`;
+# read by producers/check.py. Tab-separated: plan, root or call path, then the answer.
+#
+#  1fb11fc89fe1663543740c0f45ca47168fc779fc  extensions/functions_aggregate_generic.yaml
+#  d4b8db5dc1f0372e565635bfc1a9b75a1ea7d707  extensions/functions_arithmetic.yaml
+#  50eb32dca7f4eb45ab9c36d1dad4425a3f32da0a  extensions/functions_arithmetic_decimal.yaml
+#  dc8cd48900e09107ab5408f941c6341930b8e02a  extensions/functions_boolean.yaml
+#  a07fd29e61dd2ed4bb4d58fd3142785d20d589c9  extensions/functions_comparison.yaml
+#  97a18f932dd2710c4b8d60f294e834e5d7e73d3d  extensions/functions_datetime.yaml
+#  70eca662e2b24258cb7f62c0693e3f551d46c63b  extensions/functions_string.yaml
+datafusion/union_all_mixed	root	1	[i64?]
+datafusion/union_distinct_mixed	root	1	[i64?]
+datafusion/intersect_mixed	root	1	[i64]
+datafusion/intersect_mixed	relations[0].root.input.join.expression.scalarFunction	is_not_distinct_from	unbound	function 'is_not_distinct_from' points at urn anchor 4294967295, which the plan does not declare
+datafusion/except_mixed	root	1	[i64]
+datafusion/except_mixed	relations[0].root.input.join.expression.scalarFunction	is_not_distinct_from	unbound	function 'is_not_distinct_from' points at urn anchor 4294967295, which the plan does not declare
+datafusion/exists_or	root	1	[i64]
+datafusion/exists_or	relations[0].root.input.project.input.filter.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or	unbound	function 'or' points at urn anchor 4294967295, which the plan does not declare
+datafusion/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt	unbound	function 'gt' points at urn anchor 4294967295, which the plan does not declare
+datafusion/in_or	root	1	[i64]
+datafusion/in_or	relations[0].root.input.project.input.filter.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or	unbound	function 'or' points at urn anchor 4294967295, which the plan does not declare
+datafusion/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt	unbound	function 'gt' points at urn anchor 4294967295, which the plan does not declare
+datafusion/in_subquery	root	1	[i64]
+datafusion/in_subquery	relations[0].root.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/not_in	root	1	[i64]
+datafusion/not_in	relations[0].root.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/not_exists	root	1	[i64]
+datafusion/not_exists	relations[0].root.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/scalar_subquery	root	declined	function 'max' points at urn anchor 4294967295, which the plan does not declare
+datafusion/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.measures[0].measure	max	unbound	function 'max' points at urn anchor 4294967295, which the plan does not declare
+datafusion/scalar_subquery	relations[0].root.input.project.input.join.expression.scalarFunction	equal	declined	the columns this call reads are not derived: function 'max' points at urn anchor 4294967295, which the plan does not declare
+datafusion/left_join	root	2	[i64, i64?]
+datafusion/left_join	relations[0].root.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/full_join	root	2	[i64?, i64?]
+datafusion/full_join	relations[0].root.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/join_reordered	root	2	[i64, i64?]
+datafusion/join_reordered	relations[0].root.input.project.input.join.expression.scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/rollup	root	declined	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/rollup	relations[0].root.input.project.input.aggregate.measures[0].measure	count	unbound	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/grouping_sets	root	declined	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/grouping_sets	relations[0].root.input.project.input.aggregate.measures[0].measure	sum	unbound	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/grouping_fn	root	2	[i64?, i32?]
+datafusion/grouping_fn	relations[0].root.input.project.expressions[1].cast.input.scalarFunction	bitwise_and	unbound	function 'bitwise_and' points at urn anchor 4294967295, which the plan does not declare
+datafusion/mask_reorder	root	2	[bool, i64]
+datafusion/mask_filter	root	1	[str]
+datafusion/limit_offset	root	1	[i64]
+datafusion/limit_only	root	1	[i64]
+datafusion/count_distinct	root	declined	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/count_distinct	relations[0].root.input.project.input.aggregate.input.aggregate.measures[0].measure	sum	unbound	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/count_distinct	relations[0].root.input.project.input.aggregate.measures[0].measure	count	declined	the columns this call reads are not derived: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/count_distinct	relations[0].root.input.project.input.aggregate.measures[1].measure	sum	declined	the columns this call reads are not derived: function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/values_literal	root	2	[i64, i64]
+datafusion/values_expr	root	2	[i64, i64]
+datafusion/ts_ns_literal	root	1	[i64]
+datafusion/ts_ns_column	root	1	[precision_timestamp(9)]
+datafusion/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction	gt	unbound	function 'gt' points at urn anchor 4294967295, which the plan does not declare
+datafusion/aggs	root	declined	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/aggs	relations[0].root.input.project.input.aggregate.measures[0].measure	sum	unbound	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/aggs	relations[0].root.input.project.input.aggregate.measures[1].measure	avg	unbound	function 'avg' points at urn anchor 4294967295, which the plan does not declare
+datafusion/aggs	relations[0].root.input.project.input.aggregate.measures[2].measure	count	unbound	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/aggs	relations[0].root.input.project.input.aggregate.measures[3].measure	min	unbound	function 'min' points at urn anchor 4294967295, which the plan does not declare
+datafusion/arith	root	declined	function 'add' points at urn anchor 4294967295, which the plan does not declare
+datafusion/arith	relations[0].root.input.project.expressions[0].scalarFunction	add	unbound	function 'add' points at urn anchor 4294967295, which the plan does not declare
+datafusion/arith	relations[0].root.input.project.expressions[1].scalarFunction	divide	unbound	function 'divide' points at urn anchor 4294967295, which the plan does not declare
+datafusion/filter_project	root	2	[i64?, i64]
+datafusion/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction	gt	unbound	function 'gt' points at urn anchor 4294967295, which the plan does not declare
+datafusion/window	root	declined	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/window	relations[0].root.input.project.input.project.expressions[2].windowFunction	sum	unbound	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/dec_add	root	declined	function 'add' points at urn anchor 4294967295, which the plan does not declare
+datafusion/dec_add	relations[0].root.input.project.expressions[0].scalarFunction	add	unbound	function 'add' points at urn anchor 4294967295, which the plan does not declare
+datafusion/dec_div	root	declined	function 'divide' points at urn anchor 4294967295, which the plan does not declare
+datafusion/dec_div	relations[0].root.input.project.expressions[0].scalarFunction	divide	unbound	function 'divide' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_avg_dec	root	declined	function 'avg' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_avg_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	avg	unbound	function 'avg' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_sum_dec	root	declined	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_sum_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	sum	unbound	function 'sum' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_minmax_i64	root	declined	function 'min' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[0].measure	min	unbound	function 'min' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[1].measure	max	unbound	function 'max' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_count_star	root	declined	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_count_star	relations[0].root.input.project.input.aggregate.measures[0].measure	count	unbound	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_count_star	relations[0].root.input.project.input.aggregate.measures[1].measure	count	unbound	function 'count' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_dec_mul	root	declined	function 'multiply' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_dec_mul	relations[0].root.input.project.expressions[0].scalarFunction	multiply	unbound	function 'multiply' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cmp_bool	root	declined	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunction	equal	unbound	function 'equal' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and	unbound	function 'and' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	gt	unbound	function 'gt' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	is_not_null	unbound	function 'is_not_null' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_str	root	declined	function 'upper' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_str	relations[0].root.input.project.expressions[0].scalarFunction	upper	unbound	function 'upper' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_str	relations[0].root.input.project.expressions[1].scalarFunction	str_concat	unbound	function 'str_concat' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_str	relations[0].root.input.project.expressions[2].scalarFunction	character_length	unbound	function 'character_length' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_cast	root	2	[str?, fp64?]
+datafusion/fn_cast_str_int	root	1	[i32?]
+datafusion/fn_try_cast	root	1	[i32?]
+datafusion/fn_case	root	declined	an ifThen whose return expressions differ: i64, i64?
+datafusion/fn_case	relations[0].root.input.project.expressions[0].ifThen.ifs[0].if.scalarFunction	is_null	unbound	function 'is_null' points at urn anchor 4294967295, which the plan does not declare
+datafusion/fn_case	relations[0].root.input.project.expressions[1].ifThen.ifs[0].if.scalarFunction	is_not_null	unbound	function 'is_not_null' points at urn anchor 4294967295, which the plan does not declare
+duckdb/union_all_mixed	root	1	[i64?]
+duckdb/union_distinct_mixed	root	declined	a field reference that is neither rooted in the input nor outer
+duckdb/intersect_mixed	root	1	[i64]
+duckdb/except_mixed	root	1	[i64]
+duckdb/exists_or	root	1	[i64]
+duckdb/exists_or	relations[0].root.input.project.input.filter.input.project.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+duckdb/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 1 of or:bool: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	constant_or_null	unbound	function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/in_or	root	1	[i64]
+duckdb/in_or	relations[0].root.input.project.input.filter.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+duckdb/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 1 of or:bool: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	constant_or_null	unbound	function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/in_subquery	root	1	[i64]
+duckdb/in_subquery	relations[0].root.input.project.input.join.right.read.filter.scalarFunction	lte:any_any	derived	bool
+duckdb/in_subquery	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+duckdb/not_in	root	1	[i64]
+duckdb/not_in	relations[0].root.input.project.input.filter.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+duckdb/not_in	relations[0].root.input.project.input.filter.condition.scalarFunction	not:bool	derived	bool?
+duckdb/not_exists	root	1	[i64]
+duckdb/not_exists	relations[0].root.input.project.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+duckdb/scalar_subquery	root	2	[i64, i64?]
+duckdb/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+duckdb/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.measures[0].measure	max:i64	derived	i64?
+duckdb/scalar_subquery	relations[0].root.input.project.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+duckdb/left_join	root	2	[i64, i64?]
+duckdb/left_join	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+duckdb/full_join	root	2	[i64?, i64?]
+duckdb/full_join	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+duckdb/join_reordered	root	2	[i64, i64?]
+duckdb/join_reordered	relations[0].root.input.project.input.project.input.join.right.read.filter.scalarFunction	lte:any_any	derived	bool
+duckdb/join_reordered	relations[0].root.input.project.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+duckdb/rollup	root	declined	phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them
+duckdb/rollup	relations[0].root.input.aggregate.measures[0].measure	count:	declined	phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them
+duckdb/grouping_sets	root	4	[i64?, i64?, i64?, i32]
+duckdb/grouping_sets	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+duckdb/grouping_fn	root	declined	function 'grouping' points at urn anchor 0, which the plan does not declare
+duckdb/grouping_fn	relations[0].root.input.aggregate.measures[0].measure	grouping	unbound	function 'grouping' points at urn anchor 0, which the plan does not declare
+duckdb/mask_reorder	root	declined	a projection mask listing fields out of order: [2, 0]
+duckdb/mask_filter	root	1	[str]
+duckdb/limit_offset	root	1	[i64]
+duckdb/limit_only	root	1	[i64]
+duckdb/count_distinct	root	2	[i64, i64?]
+duckdb/count_distinct	relations[0].root.input.aggregate.measures[0].measure	count:any	derived	i64
+duckdb/count_distinct	relations[0].root.input.aggregate.measures[1].measure	sum:i64	derived	i64?
+duckdb/values_literal	root	declined	a read with no base schema
+duckdb/values_expr	root	declined	a read with no base schema
+duckdb/ts_ns_literal	root	1	[i64]
+duckdb/ts_ns_column	root	1	[precision_timestamp(9)]
+duckdb/aggs	root	declined	the intermediate input of avg:i64: declared struct, called with i64
+duckdb/aggs	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+duckdb/aggs	relations[0].root.input.aggregate.measures[1].measure	avg:i64	unbound	the intermediate input of avg:i64: declared struct, called with i64
+duckdb/aggs	relations[0].root.input.aggregate.measures[2].measure	count:any	derived	i64
+duckdb/aggs	relations[0].root.input.aggregate.measures[3].measure	min:i64	derived	i64?
+duckdb/arith	root	2	[i64, fp64?]
+duckdb/arith	relations[0].root.input.project.expressions[0].scalarFunction	add:i64_i64	derived	i64
+duckdb/arith	relations[0].root.input.project.expressions[1].scalarFunction	divide:fp64_fp64	derived	fp64?
+duckdb/filter_project	root	2	[i64?, i64]
+duckdb/filter_project	relations[0].root.input.project.input.read.filter.scalarFunction	gt:any_any	derived	bool
+duckdb/window	root	2	[i64, i64?]
+duckdb/window	relations[0].root.input.project.input.window.windowFunctions[0]	sum:i64	derived	i64?
+duckdb/dec_add	root	1	[dec(12,2)?]
+duckdb/dec_add	relations[0].root.input.project.expressions[0].scalarFunction	add:dec_dec	derived	dec(12,2)?
+duckdb/dec_div	root	1	[fp64?]
+duckdb/dec_div	relations[0].root.input.project.expressions[0].scalarFunction	divide:fp64_fp64	derived	fp64?
+duckdb/fn_avg_dec	root	declined	the intermediate input of avg:dec: declared struct, called with decimal
+duckdb/fn_avg_dec	relations[0].root.input.aggregate.measures[0].measure	avg:dec	unbound	the intermediate input of avg:dec: declared struct, called with decimal
+duckdb/fn_sum_dec	root	declined	the intermediate input of sum:dec: declared decimal=38, called with 10
+duckdb/fn_sum_dec	relations[0].root.input.aggregate.measures[0].measure	sum:dec	unbound	the intermediate input of sum:dec: declared decimal=38, called with 10
+duckdb/fn_minmax_i64	root	declined	a projection mask listing fields out of order: [1, 0]
+duckdb/fn_minmax_i64	relations[0].root.input.aggregate.measures[0].measure	min:i64	declined	the columns this call reads are not derived: a projection mask listing fields out of order: [1, 0]
+duckdb/fn_minmax_i64	relations[0].root.input.aggregate.measures[1].measure	max:i64	declined	the columns this call reads are not derived: a projection mask listing fields out of order: [1, 0]
+duckdb/fn_count_star	root	declined	phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them
+duckdb/fn_count_star	relations[0].root.input.aggregate.measures[0].measure	count:	declined	phase AGGREGATION_PHASE_UNSPECIFIED takes intermediate values as input, and the spec does not say how a call with 0 argument(s) passes them
+duckdb/fn_count_star	relations[0].root.input.aggregate.measures[1].measure	count:any	derived	i64
+duckdb/fn_dec_mul	root	1	[dec(26,3)?]
+duckdb/fn_dec_mul	relations[0].root.input.project.expressions[0].scalarFunction	multiply:dec_dec	derived	dec(26,3)?
+duckdb/fn_cmp_bool	root	declined	function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunction	constant_or_null	unbound	function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and:bool	declined	argument 1 of and:bool: function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+duckdb/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	constant_or_null	unbound	function 'constant_or_null' points at urn anchor 0, which the plan does not declare
+duckdb/fn_str	root	declined	function '||' points at urn anchor 0, which the plan does not declare
+duckdb/fn_str	relations[0].root.input.project.expressions[0].scalarFunction	upper:str	derived	str
+duckdb/fn_str	relations[0].root.input.project.expressions[1].scalarFunction	||	unbound	function '||' points at urn anchor 0, which the plan does not declare
+duckdb/fn_str	relations[0].root.input.project.expressions[2].scalarFunction	char_length:str	derived	i64
+duckdb/fn_cast	root	2	[str?, fp64?]
+duckdb/fn_cast_str_int	root	1	[i32?]
+duckdb/fn_try_cast	root	1	[i32?]
+duckdb/fn_case	root	declined	a projection mask listing fields out of order: [1, 0]
+duckdb/fn_case	relations[0].root.input.project.expressions[0].ifThen.ifs[0].if.scalarFunction	is_null:any	declined	the columns this call reads are not derived: a projection mask listing fields out of order: [1, 0]
+duckdb/fn_case	relations[0].root.input.project.expressions[1].scalarFunction	coalesce:any	declined	the columns this call reads are not derived: a projection mask listing fields out of order: [1, 0]
+isthmus/union_all_mixed	root	1	[i64?]
+isthmus/union_distinct_mixed	root	1	[i64?]
+isthmus/intersect_mixed	root	1	[i64]
+isthmus/except_mixed	root	1	[i64]
+isthmus/exists_or	root	1	[i64]
+isthmus/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 0 of or:bool: expression 'subquery'
+isthmus/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.subquery.setPredicate.tuples.filter.condition.scalarFunction	equal:any_any	declined	argument 1 of equal:any_any: an outer reference to rel_anchor 1, which no enclosing lateral join binds
+isthmus/exists_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+isthmus/in_or	root	1	[i64]
+isthmus/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 0 of or:bool: expression 'subquery'
+isthmus/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+isthmus/in_subquery	root	1	[i64]
+isthmus/not_in	root	1	[i64]
+isthmus/not_in	relations[0].root.input.project.input.filter.condition.scalarFunction	not:bool	declined	argument 0 of not:bool: expression 'subquery'
+isthmus/not_exists	root	1	[i64]
+isthmus/not_exists	relations[0].root.input.project.input.filter.condition.scalarFunction	not:bool	declined	argument 0 of not:bool: expression 'subquery'
+isthmus/not_exists	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.subquery.setPredicate.tuples.filter.condition.scalarFunction	equal:any_any	declined	argument 1 of equal:any_any: an outer reference to rel_anchor 1, which no enclosing lateral join binds
+isthmus/scalar_subquery	root	declined	expression 'subquery'
+isthmus/scalar_subquery	relations[0].root.input.project.expressions[1].subquery.scalar.input.aggregate.input.project.input.filter.condition.scalarFunction	equal:any_any	declined	argument 1 of equal:any_any: an outer reference to rel_anchor 1, which no enclosing lateral join binds
+isthmus/scalar_subquery	relations[0].root.input.project.expressions[1].subquery.scalar.input.aggregate.measures[0].measure	max:i64	derived	i64?
+isthmus/left_join	root	2	[i64, i64?]
+isthmus/left_join	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+isthmus/full_join	root	2	[i64?, i64?]
+isthmus/full_join	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+isthmus/join_reordered	root	2	[i64, i64?]
+isthmus/join_reordered	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool
+isthmus/rollup	root	3	[i64?, i64?, i64]
+isthmus/rollup	relations[0].root.input.aggregate.measures[0].measure	count:	derived	i64
+isthmus/grouping_sets	root	3	[i64?, i64?, i64?]
+isthmus/grouping_sets	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+isthmus/grouping_fn	root	2	[i64?, i64]
+isthmus/mask_reorder	root	2	[bool, i64]
+isthmus/mask_filter	root	1	[str]
+isthmus/limit_offset	root	1	[i64]
+isthmus/limit_only	root	1	[i64]
+isthmus/count_distinct	root	2	[i64, i64?]
+isthmus/count_distinct	relations[0].root.input.aggregate.measures[0].measure	count:any	derived	i64
+isthmus/count_distinct	relations[0].root.input.aggregate.measures[1].measure	sum:i64	derived	i64?
+isthmus/values_literal	root	2	[i32, i32]
+isthmus/values_expr	root	2	[i32, i32]
+isthmus/values_expr	relations[0].root.input.project.expressions[0].scalarFunction	add:i32_i32	derived	i32
+isthmus/ts_ns_literal	root	1	[i64]
+isthmus/ts_ns_literal	relations[0].root.input.project.input.filter.condition.scalarFunction	gt:pts_pts	derived	bool
+isthmus/ts_ns_column	root	1	[precision_timestamp(9)]
+isthmus/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction	gt:pts_pts	derived	bool
+isthmus/aggs	root	4	[i64?, i64?, i64, i64?]
+isthmus/aggs	relations[0].root.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+isthmus/aggs	relations[0].root.input.aggregate.measures[1].measure	avg:i64	derived	i64?
+isthmus/aggs	relations[0].root.input.aggregate.measures[2].measure	count:any	derived	i64
+isthmus/aggs	relations[0].root.input.aggregate.measures[3].measure	min:i64	derived	i64?
+isthmus/arith	root	2	[i64, i64]
+isthmus/arith	relations[0].root.input.project.expressions[0].scalarFunction	add:i64_i64	derived	i64
+isthmus/arith	relations[0].root.input.project.expressions[1].scalarFunction	divide:i64_i64	derived	i64
+isthmus/filter_project	root	2	[i64?, i64]
+isthmus/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction	gt:any_any	derived	bool
+isthmus/window	root	2	[i64, i64?]
+isthmus/window	relations[0].root.input.project.expressions[1].windowFunction	sum:i64	derived	i64?
+isthmus/dec_add	root	1	[dec(11,2)]
+isthmus/dec_add	relations[0].root.input.project.expressions[0].scalarFunction	add:dec_dec	derived	dec(11,2)
+isthmus/dec_div	root	1	[dec(21,8)]
+isthmus/dec_div	relations[0].root.input.project.expressions[0].scalarFunction	divide:dec_dec	derived	dec(21,8)
+isthmus/fn_avg_dec	root	1	[dec(38,2)]
+isthmus/fn_avg_dec	relations[0].root.input.aggregate.measures[0].measure	avg:dec	derived	dec(38,2)
+isthmus/fn_sum_dec	root	1	[dec(38,2)?]
+isthmus/fn_sum_dec	relations[0].root.input.aggregate.measures[0].measure	sum:dec	derived	dec(38,2)?
+isthmus/fn_minmax_i64	root	2	[i64?, i64?]
+isthmus/fn_minmax_i64	relations[0].root.input.aggregate.measures[0].measure	min:i64	derived	i64?
+isthmus/fn_minmax_i64	relations[0].root.input.aggregate.measures[1].measure	max:i64	derived	i64?
+isthmus/fn_count_star	root	2	[i64, i64]
+isthmus/fn_count_star	relations[0].root.input.aggregate.measures[0].measure	count:	derived	i64
+isthmus/fn_count_star	relations[0].root.input.aggregate.measures[1].measure	count:any	derived	i64
+isthmus/fn_dec_mul	root	1	[dec(16,3)]
+isthmus/fn_dec_mul	relations[0].root.input.project.expressions[0].scalarFunction	multiply:dec_dec	derived	dec(16,3)
+isthmus/fn_cmp_bool	root	2	[bool?, bool?]
+isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunction	equal:any_any	derived	bool?
+isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and:bool	derived	bool?
+isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	lt:any_any	derived	bool?
+isthmus/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	is_not_null:any	derived	bool
+isthmus/fn_str	root	3	[str, str, i64]
+isthmus/fn_str	relations[0].root.input.project.expressions[0].scalarFunction	upper:str	derived	str
+isthmus/fn_str	relations[0].root.input.project.expressions[1].scalarFunction	concat:str	derived	str
+isthmus/fn_str	relations[0].root.input.project.expressions[2].scalarFunction	char_length:str	derived	i64
+isthmus/fn_cast	root	2	[vchar(20), fp64?]
+isthmus/fn_cast_str_int	root	1	[i32]
+isthmus/fn_case	root	declined	an ifThen whose return expressions differ: i64, i64?
+isthmus/fn_case	relations[0].root.input.project.expressions[0].ifThen.ifs[0].if.scalarFunction	is_null:any	derived	bool
+isthmus/fn_case	relations[0].root.input.project.expressions[1].ifThen.ifs[0].if.scalarFunction	is_not_null:any	derived	bool
+spark35/union_all_mixed	root	1	[i64?]
+spark35/union_distinct_mixed	root	1	[i64?]
+spark35/intersect_mixed	root	1	[i64?]
+spark35/intersect_mixed	relations[0].root.input.project.input.aggregate.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+spark35/except_mixed	root	1	[i64?]
+spark35/except_mixed	relations[0].root.input.project.input.aggregate.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+spark35/in_or	root	1	[i64?]
+spark35/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 0 of or:bool: expression 'subquery'
+spark35/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+spark35/in_subquery	root	1	[i64?]
+spark35/in_subquery	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/not_in	root	1	[i64?]
+spark35/not_in	relations[0].root.input.join.expression.scalarFunction	or:bool	derived	bool?
+spark35/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[0].value.scalarFunction	equal:any_any	derived	bool?
+spark35/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[1].value.scalarFunction	is_null:any	derived	bool
+spark35/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[1].value.scalarFunction.arguments[0].value.scalarFunction	equal:any_any	derived	bool?
+spark35/not_exists	root	1	[i64?]
+spark35/not_exists	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/scalar_subquery	root	2	[i64?, i64?]
+spark35/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark35/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.measures[0].measure	max:i64	derived	i64?
+spark35/scalar_subquery	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/left_join	root	2	[i64?, i64?]
+spark35/left_join	relations[0].root.input.join.right.project.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark35/left_join	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/full_join	root	2	[i64?, i64?]
+spark35/full_join	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/join_reordered	root	2	[i64?, i64?]
+spark35/join_reordered	relations[0].root.input.project.input.join.left.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark35/join_reordered	relations[0].root.input.project.input.join.right.project.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark35/join_reordered	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark35/rollup	root	3	[i64?, i64?, i64]
+spark35/rollup	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark35/grouping_sets	root	3	[i64?, i64?, i64?]
+spark35/grouping_sets	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+spark35/grouping_fn	root	2	[i64?, i8]
+spark35/grouping_fn	relations[0].root.input.project.expressions[1].cast.input.scalarFunction	bitwise_and:i64_i64	derived	i64
+spark35/grouping_fn	relations[0].root.input.project.expressions[1].cast.input.scalarFunction.arguments[0].value.scalarFunction	shift_right:i64_i32	derived	i64
+spark35/mask_reorder	root	2	[bool?, i64?]
+spark35/mask_filter	root	1	[str?]
+spark35/mask_filter	relations[0].root.input.project.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark35/mask_filter	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark35/limit_offset	root	1	[i64?]
+spark35/limit_only	root	1	[i64?]
+spark35/count_distinct	root	2	[i64, i64?]
+spark35/count_distinct	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark35/count_distinct	relations[0].root.input.project.input.aggregate.measures[1].measure	sum:i64	derived	i64?
+spark35/values_literal	root	2	[i32, i32]
+spark35/values_expr	root	2	[i32, i32]
+spark35/ts_ns_literal	root	1	[i64?]
+spark35/ts_ns_column	root	1	[precision_timestamp(6)?]
+spark35/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark35/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark35/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:ptstz_ptstz	derived	bool?
+spark35/aggs	root	4	[i64?, i64?, i64, i64?]
+spark35/aggs	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+spark35/aggs	relations[0].root.input.project.input.aggregate.measures[1].measure	avg:i64	derived	i64?
+spark35/aggs	relations[0].root.input.project.input.aggregate.measures[2].measure	count:any	derived	i64
+spark35/aggs	relations[0].root.input.project.input.aggregate.measures[3].measure	min:i64	derived	i64?
+spark35/arith	root	2	[i64?, fp64?]
+spark35/arith	relations[0].root.input.project.expressions[0].scalarFunction	add:i64_i64	derived	i64?
+spark35/arith	relations[0].root.input.project.expressions[1].scalarFunction	divide:fp64_fp64	derived	fp64?
+spark35/filter_project	root	2	[i64?, i64?]
+spark35/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark35/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark35/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+spark35/window	root	2	[i64?, i64?]
+spark35/window	relations[0].root.input.project.input.window.windowFunctions[0]	sum:i64	derived	i64?
+spark35/dec_add	root	1	[dec(11,2)?]
+spark35/dec_add	relations[0].root.input.project.expressions[0].scalarFunction	add:dec_dec	derived	dec(11,2)?
+spark35/dec_div	root	1	[dec(21,8)?]
+spark35/dec_div	relations[0].root.input.project.expressions[0].scalarFunction	divide:dec_dec	derived	dec(21,8)?
+spark35/fn_avg_dec	root	1	[dec(38,2)]
+spark35/fn_avg_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	avg:dec	derived	dec(38,2)
+spark35/fn_sum_dec	root	1	[dec(38,2)?]
+spark35/fn_sum_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:dec	derived	dec(38,2)?
+spark35/fn_minmax_i64	root	2	[i64?, i64?]
+spark35/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[0].measure	min:i64	derived	i64?
+spark35/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[1].measure	max:i64	derived	i64?
+spark35/fn_count_star	root	2	[i64, i64]
+spark35/fn_count_star	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark35/fn_count_star	relations[0].root.input.project.input.aggregate.measures[1].measure	count:any	derived	i64
+spark35/fn_dec_mul	root	1	[dec(16,3)?]
+spark35/fn_dec_mul	relations[0].root.input.project.expressions[0].scalarFunction	multiply:dec_dec	derived	dec(16,3)?
+spark35/fn_cmp_bool	root	2	[bool?, bool?]
+spark35/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunction	equal:any_any	derived	bool?
+spark35/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and:bool	derived	bool?
+spark35/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	lt:any_any	derived	bool?
+spark35/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	is_not_null:any	derived	bool
+spark35/fn_cast	root	2	[str?, fp64?]
+spark35/fn_cast_str_int	root	1	[i32?]
+spark35/fn_try_cast	root	1	[i32?]
+spark35/fn_case	root	declined	an ifThen whose return expressions differ: i64, i64?
+spark35/fn_case	relations[0].root.input.project.expressions[0].ifThen.ifs[0].if.scalarFunction	is_null:any	derived	bool
+spark35/fn_case	relations[0].root.input.project.expressions[1].scalarFunction	coalesce:any	derived	i64?
+spark40/union_all_mixed	root	1	[i64?]
+spark40/union_distinct_mixed	root	1	[i64?]
+spark40/intersect_mixed	root	1	[i64?]
+spark40/intersect_mixed	relations[0].root.input.project.input.aggregate.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+spark40/except_mixed	root	1	[i64?]
+spark40/except_mixed	relations[0].root.input.project.input.aggregate.input.join.expression.scalarFunction	is_not_distinct_from:any_any	derived	bool
+spark40/in_or	root	1	[i64?]
+spark40/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction	or:bool	declined	argument 0 of or:bool: expression 'subquery'
+spark40/in_or	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+spark40/in_subquery	root	1	[i64?]
+spark40/in_subquery	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/not_in	root	1	[i64?]
+spark40/not_in	relations[0].root.input.join.expression.scalarFunction	or:bool	derived	bool?
+spark40/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[0].value.scalarFunction	equal:any_any	derived	bool?
+spark40/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[1].value.scalarFunction	is_null:any	derived	bool
+spark40/not_in	relations[0].root.input.join.expression.scalarFunction.arguments[1].value.scalarFunction.arguments[0].value.scalarFunction	equal:any_any	derived	bool?
+spark40/not_exists	root	1	[i64?]
+spark40/not_exists	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/scalar_subquery	root	2	[i64?, i64?]
+spark40/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark40/scalar_subquery	relations[0].root.input.project.input.join.right.project.input.aggregate.measures[0].measure	max:i64	derived	i64?
+spark40/scalar_subquery	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/left_join	root	2	[i64?, i64?]
+spark40/left_join	relations[0].root.input.join.right.project.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark40/left_join	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/full_join	root	2	[i64?, i64?]
+spark40/full_join	relations[0].root.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/join_reordered	root	2	[i64?, i64?]
+spark40/join_reordered	relations[0].root.input.project.input.join.left.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark40/join_reordered	relations[0].root.input.project.input.join.right.project.input.filter.condition.scalarFunction	is_not_null:any	derived	bool
+spark40/join_reordered	relations[0].root.input.project.input.join.expression.scalarFunction	equal:any_any	derived	bool?
+spark40/rollup	root	3	[i64?, i64?, i64]
+spark40/rollup	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark40/grouping_sets	root	3	[i64?, i64?, i64?]
+spark40/grouping_sets	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+spark40/grouping_fn	root	2	[i64?, i8]
+spark40/grouping_fn	relations[0].root.input.project.expressions[1].cast.input.scalarFunction	bitwise_and:i64_i64	derived	i64
+spark40/grouping_fn	relations[0].root.input.project.expressions[1].cast.input.scalarFunction.arguments[0].value.scalarFunction	shift_right:i64_i32	derived	i64
+spark40/mask_reorder	root	2	[bool?, i64?]
+spark40/mask_filter	root	1	[str?]
+spark40/mask_filter	relations[0].root.input.project.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark40/mask_filter	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark40/limit_offset	root	1	[i64?]
+spark40/limit_only	root	1	[i64?]
+spark40/count_distinct	root	2	[i64, i64?]
+spark40/count_distinct	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark40/count_distinct	relations[0].root.input.project.input.aggregate.measures[1].measure	sum:i64	derived	i64?
+spark40/values_literal	root	2	[i32, i32]
+spark40/values_expr	root	2	[i32, i32]
+spark40/ts_ns_literal	root	1	[i64?]
+spark40/ts_ns_column	root	1	[precision_timestamp(6)?]
+spark40/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark40/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark40/ts_ns_column	relations[0].root.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:pts_pts	derived	bool?
+spark40/aggs	root	4	[i64?, i64?, i64, i64?]
+spark40/aggs	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:i64	derived	i64?
+spark40/aggs	relations[0].root.input.project.input.aggregate.measures[1].measure	avg:i64	derived	i64?
+spark40/aggs	relations[0].root.input.project.input.aggregate.measures[2].measure	count:any	derived	i64
+spark40/aggs	relations[0].root.input.project.input.aggregate.measures[3].measure	min:i64	derived	i64?
+spark40/arith	root	2	[i64?, fp64?]
+spark40/arith	relations[0].root.input.project.expressions[0].scalarFunction	add:i64_i64	derived	i64?
+spark40/arith	relations[0].root.input.project.expressions[1].scalarFunction	divide:fp64_fp64	derived	fp64?
+spark40/filter_project	root	2	[i64?, i64?]
+spark40/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction	and:bool	derived	bool?
+spark40/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[0].value.scalarFunction	is_not_null:any	derived	bool
+spark40/filter_project	relations[0].root.input.project.input.filter.condition.scalarFunction.arguments[1].value.scalarFunction	gt:any_any	derived	bool?
+spark40/window	root	2	[i64?, i64?]
+spark40/window	relations[0].root.input.project.input.window.windowFunctions[0]	sum:i64	derived	i64?
+spark40/dec_add	root	1	[dec(11,2)?]
+spark40/dec_add	relations[0].root.input.project.expressions[0].scalarFunction	add:dec_dec	derived	dec(11,2)?
+spark40/dec_div	root	1	[dec(21,8)?]
+spark40/dec_div	relations[0].root.input.project.expressions[0].scalarFunction	divide:dec_dec	derived	dec(21,8)?
+spark40/fn_avg_dec	root	1	[dec(38,2)]
+spark40/fn_avg_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	avg:dec	derived	dec(38,2)
+spark40/fn_sum_dec	root	1	[dec(38,2)?]
+spark40/fn_sum_dec	relations[0].root.input.project.input.aggregate.measures[0].measure	sum:dec	derived	dec(38,2)?
+spark40/fn_minmax_i64	root	2	[i64?, i64?]
+spark40/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[0].measure	min:i64	derived	i64?
+spark40/fn_minmax_i64	relations[0].root.input.project.input.aggregate.measures[1].measure	max:i64	derived	i64?
+spark40/fn_count_star	root	2	[i64, i64]
+spark40/fn_count_star	relations[0].root.input.project.input.aggregate.measures[0].measure	count:any	derived	i64
+spark40/fn_count_star	relations[0].root.input.project.input.aggregate.measures[1].measure	count:any	derived	i64
+spark40/fn_dec_mul	root	1	[dec(16,3)?]
+spark40/fn_dec_mul	relations[0].root.input.project.expressions[0].scalarFunction	multiply:dec_dec	derived	dec(16,3)?
+spark40/fn_cmp_bool	root	2	[bool?, bool?]
+spark40/fn_cmp_bool	relations[0].root.input.project.expressions[0].scalarFunction	equal:any_any	derived	bool?
+spark40/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction	and:bool	derived	bool?
+spark40/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[0].value.scalarFunction	lt:any_any	derived	bool?
+spark40/fn_cmp_bool	relations[0].root.input.project.expressions[1].scalarFunction.arguments[1].value.scalarFunction	is_not_null:any	derived	bool
+spark40/fn_cast	root	2	[str?, fp64?]
+spark40/fn_cast_str_int	root	1	[i32?]
+spark40/fn_try_cast	root	1	[i32?]
+spark40/fn_case	root	declined	an ifThen whose return expressions differ: i64, i64?
+spark40/fn_case	relations[0].root.input.project.expressions[0].ifThen.ifs[0].if.scalarFunction	is_null:any	derived	bool
+spark40/fn_case	relations[0].root.input.project.expressions[1].scalarFunction	coalesce:any	derived	i64?

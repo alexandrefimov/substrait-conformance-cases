@@ -1,0 +1,48 @@
+SPARK35: plans from spark 3.5.4, substrait-java bc050d37, checked against the specification at v0.102.0
+
+union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+intersect_mixed        calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+except_mixed           calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+exists_or              REFUSED: IllegalStateException: Couldn't find c1#39L in [c0#36L,c1#37L]
+in_or                  calls 2, differ 0, missing 0, unbound 0, declined 1; names ok
+in_subquery            calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+not_in                 calls 4, differ 0, missing 0, unbound 0, declined 0; names ok
+not_exists             calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+scalar_subquery        calls 3, differ 0, missing 0, unbound 0, declined 0; names ok
+left_join              calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+full_join              calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+join_reordered         calls 3, differ 0, missing 0, unbound 0, declined 0; names ok
+rollup                 calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+grouping_sets          calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+grouping_fn            calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+mask_reorder           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+mask_filter            calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_offset           calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+limit_only             calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+count_distinct         calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+values_literal         calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+values_expr            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+ts_ns_literal          calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+ts_ns_column           calls 3, differ 0, missing 0, unbound 0, declined 0; names ok
+aggs                   calls 4, differ 1, missing 0, unbound 0, declined 0; names ok
+  avg:i64                  declared fp64?          derived i64?
+arith                  calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+filter_project         calls 3, differ 0, missing 0, unbound 0, declined 0; names ok
+window                 calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+dec_add                calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+dec_div                calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  divide:dec_dec           declared dec(17,8)?     derived dec(21,8)?
+fn_avg_dec             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  avg:dec                  declared dec(14,6)?     derived dec(38,2)
+fn_sum_dec             calls 1, differ 1, missing 0, unbound 0, declined 0; names ok
+  sum:dec                  declared dec(20,2)?     derived dec(38,2)?
+fn_minmax_i64          calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_count_star          calls 2, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_dec_mul             calls 1, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_cmp_bool            calls 4, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_str                 REFUSED: UnsupportedOperationException: Unable to convert the expression length(c1#119) AS n#230
+fn_cast                calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_cast_str_int        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_try_cast            calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
+fn_case                calls 2, differ 0, missing 0, unbound 0, declined 0; schema declined (an ifThen whose return expressions differ: i64, i64?)

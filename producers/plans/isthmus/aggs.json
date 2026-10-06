@@ -1,0 +1,206 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "sum:i64",
+        "extensionUrnReference": 1
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 2,
+        "name": "avg:i64",
+        "extensionUrnReference": 1
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 3,
+        "name": "count:any",
+        "extensionUrnReference": 2
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 4,
+        "name": "min:i64",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "aggregate": {
+            "common": {
+              "direct": {}
+            },
+            "input": {
+              "read": {
+                "common": {
+                  "direct": {}
+                },
+                "baseSchema": {
+                  "names": [
+                    "C0",
+                    "C1"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "T_RN"
+                  ]
+                }
+              }
+            },
+            "groupings": [
+              {}
+            ],
+            "measures": [
+              {
+                "measure": {
+                  "functionReference": 1,
+                  "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "invocation": "AGGREGATION_INVOCATION_ALL",
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "measure": {
+                  "functionReference": 2,
+                  "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "invocation": "AGGREGATION_INVOCATION_ALL",
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "measure": {
+                  "functionReference": 3,
+                  "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "invocation": "AGGREGATION_INVOCATION_ALL",
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 1
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "measure": {
+                  "functionReference": 4,
+                  "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                  "outputType": {
+                    "i64": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "invocation": "AGGREGATION_INVOCATION_ALL",
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {
+                              "field": 1
+                            }
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "S",
+          "A",
+          "N",
+          "M"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 2,
+      "urn": "extension:io.substrait:functions_aggregate_generic"
+    },
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_arithmetic"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

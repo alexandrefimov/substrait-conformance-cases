@@ -1,0 +1,498 @@
+CONSUME: each committed producer plan through each consumer, against the deriver's schema
+
+plan                               PY GO VA JA IS SP DU DA AC
+datafusion__aggs                   a  E  a  E  E  E  a  a  E
+datafusion__arith                  a  E  a  E  E  E  a  a  E
+datafusion__count_distinct         a  E  a  E  E  E  a  a  E
+datafusion__dec_add                a  E  a  E  E  E  a  a  E
+datafusion__dec_div                a  E  a  E  E  E  a  a  E
+datafusion__except_mixed           =  E  x  E  E  E  =  =  E
+datafusion__exists_or              =  E  =  E  E  E  =  =  E
+datafusion__filter_project         =  E  =  E  E  E  =  =  E
+datafusion__fn_avg_dec             a  E  a  E  E  E  a  a  E
+datafusion__fn_case                a  E  a  E  E  E  a  a  E
+datafusion__fn_cast                =  =  x  =  =  x  =  x  E
+datafusion__fn_cast_str_int        =  x  x  =  =  x  E  x  E
+datafusion__fn_cmp_bool            a  E  a  E  E  E  a  a  E
+datafusion__fn_count_star          a  E  a  E  E  E  a  a  E
+datafusion__fn_dec_mul             a  E  a  E  E  E  a  a  E
+datafusion__fn_minmax_i64          a  E  a  E  E  E  a  a  E
+datafusion__fn_str                 a  E  a  E  E  E  E  a  E
+datafusion__fn_sum_dec             a  E  a  E  E  E  a  a  E
+datafusion__fn_try_cast            =  x  x  =  =  x  E  =  E
+datafusion__full_join              =  E  =  E  E  E  =  =  E
+datafusion__grouping_fn            =  E  x  E  E  E  E  x  E
+datafusion__grouping_sets          a  E  a  E  E  E  E  a  E
+datafusion__in_or                  =  E  =  E  E  E  =  =  E
+datafusion__in_subquery            =  E  =  E  E  E  =  =  E
+datafusion__intersect_mixed        =  E  x  E  E  E  =  =  E
+datafusion__join_reordered         =  E  =  E  E  E  =  =  E
+datafusion__left_join              =  E  =  E  E  E  =  =  E
+datafusion__limit_offset           =  E  =  =  =  =  =  =  E
+datafusion__limit_only             =  E  =  =  =  =  =  =  E
+datafusion__mask_filter            =  x  x  =  =  x  =  =  E
+datafusion__mask_reorder           =  x  =  =  =  x  =  =  E
+datafusion__not_exists             =  E  =  E  E  E  =  =  E
+datafusion__not_in                 =  E  =  E  E  E  =  =  E
+datafusion__rollup                 a  E  a  E  E  E  E  a  E
+datafusion__scalar_subquery        a  E  a  E  E  E  a  a  E
+datafusion__ts_ns_column           =  E  x  E  E  E  =  =  E
+datafusion__ts_ns_literal          =  E  =  =  =  =  =  =  E
+datafusion__union_all_mixed        =  E  =  =  =  =  =  =  E
+datafusion__union_distinct_mixed   =  E  x  =  =  =  =  =  E
+datafusion__values_expr            =  =  =  =  =  =  =  =  E
+datafusion__values_literal         =  =  =  =  =  =  =  =  E
+datafusion__window                 E  E  a  E  E  E  E  a  E
+duckdb__aggs                       a  a  a  a  a  a  a  a  E
+duckdb__arith                      x  x  x  x  x  x  =  x  E
+duckdb__count_distinct             x  x  x  x  x  =  x  =  E
+duckdb__dec_add                    x  x  x  x  x  x  =  x  E
+duckdb__dec_div                    =  x  =  =  =  x  =  x  E
+duckdb__except_mixed               =  E  =  =  x  E  =  =  E
+duckdb__exists_or                  =  E  =  E  E  E  =  E  E
+duckdb__filter_project             =  =  =  =  =  =  =  =  E
+duckdb__fn_avg_dec                 a  a  a  a  a  a  a  a  E
+duckdb__fn_case                    a  a  a  a  a  a  a  a  E
+duckdb__fn_cast                    =  =  x  =  =  x  =  x  E
+duckdb__fn_cast_str_int            =  x  x  =  =  x  E  x  E
+duckdb__fn_cmp_bool                a  E  a  E  E  E  a  E  E
+duckdb__fn_count_star              a  a  a  a  a  a  a  a  E
+duckdb__fn_dec_mul                 x  x  x  x  x  x  x  x  E
+duckdb__fn_minmax_i64              a  a  a  a  a  a  a  a  E
+duckdb__fn_str                     a  E  a  E  E  E  a  E  E
+duckdb__fn_sum_dec                 a  a  a  a  a  a  a  a  E
+duckdb__fn_try_cast                =  x  x  =  =  x  E  x  E
+duckdb__full_join                  =  =  =  =  =  =  =  =  E
+duckdb__grouping_fn                a  E  a  E  E  E  a  E  E
+duckdb__grouping_sets              x  x  x  E  E  E  x  E  E
+duckdb__in_or                      =  E  =  E  E  E  =  E  E
+duckdb__in_subquery                =  x  =  =  =  x  =  =  E
+duckdb__intersect_mixed            =  E  =  =  E  E  =  =  E
+duckdb__join_reordered             =  x  =  =  =  x  =  E  E
+duckdb__left_join                  =  x  =  =  =  x  =  =  E
+duckdb__limit_offset               =  E  =  =  =  =  =  =  E
+duckdb__limit_only                 =  E  =  =  =  =  =  =  E
+duckdb__mask_filter                =  E  =  =  =  x  =  =  E
+duckdb__mask_reorder               a  E  a  a  a  a  a  a  E
+duckdb__not_exists                 =  x  =  =  =  x  =  =  E
+duckdb__not_in                     =  E  =  =  E  E  =  =  E
+duckdb__rollup                     a  E  a  E  E  E  a  E  E
+duckdb__scalar_subquery            =  x  =  =  =  =  =  =  E
+duckdb__ts_ns_column               =  =  x  =  =  E  =  =  E
+duckdb__ts_ns_literal              =  E  =  =  =  =  =  =  E
+duckdb__union_all_mixed            =  E  =  =  =  =  =  =  E
+duckdb__union_distinct_mixed       E  E  a  E  E  E  a  a  E
+duckdb__values_expr                a  E  a  E  E  E  a  E  E
+duckdb__values_literal             a  E  a  E  E  E  a  E  E
+duckdb__window                     x  E  x  x  E  =  x  E  E
+isthmus__aggs                      =  =  =  =  =  x  x  x  x
+isthmus__arith                     =  =  =  =  =  E  =  =  x
+isthmus__count_distinct            =  =  =  =  =  =  x  =  E
+isthmus__dec_add                   =  =  =  =  =  x  =  =  x
+isthmus__dec_div                   =  =  =  =  =  x  x  x  x
+isthmus__except_mixed              =  E  =  =  x  E  =  =  E
+isthmus__exists_or                 =  =  E  =  =  E  E  E  E
+isthmus__filter_project            =  =  =  =  =  =  =  =  x
+isthmus__fn_avg_dec                x  x  x  x  x  x  x  x  x
+isthmus__fn_case                   a  a  a  a  a  a  a  a  a
+isthmus__fn_cast                   =  =  x  =  =  x  x  x  x
+isthmus__fn_cast_str_int           =  =  x  =  =  x  E  =  E
+isthmus__fn_cmp_bool               =  =  =  =  =  =  =  =  =
+isthmus__fn_count_star             =  =  =  =  =  =  =  =  x
+isthmus__fn_dec_mul                =  =  =  =  =  x  x  =  x
+isthmus__fn_minmax_i64             =  =  =  =  =  =  =  =  =
+isthmus__fn_str                    x  x  x  x  x  E  =  x  E
+isthmus__fn_sum_dec                =  =  =  =  =  x  =  x  =
+isthmus__full_join                 =  =  =  =  =  =  =  =  =
+isthmus__grouping_fn               =  E  x  =  =  E  E  E  E
+isthmus__grouping_sets             =  x  x  =  =  E  x  =  E
+isthmus__in_or                     =  =  =  =  =  =  E  =  E
+isthmus__in_subquery               =  =  =  =  =  =  E  =  E
+isthmus__intersect_mixed           =  E  =  =  x  E  E  =  E
+isthmus__join_reordered            =  =  =  =  =  =  =  E  x
+isthmus__left_join                 =  =  =  =  =  =  =  =  x
+isthmus__limit_offset              =  =  =  =  =  =  =  =  x
+isthmus__limit_only                =  =  =  =  =  =  =  =  x
+isthmus__mask_filter               =  =  =  =  =  =  =  =  x
+isthmus__mask_reorder              =  =  =  =  =  =  =  =  x
+isthmus__not_exists                =  =  E  =  =  E  E  E  E
+isthmus__not_in                    =  =  =  =  =  =  E  =  E
+isthmus__rollup                    =  x  x  =  =  E  =  =  E
+isthmus__scalar_subquery           a  a  E  a  a  E  E  E  E
+isthmus__ts_ns_column              =  =  x  =  =  E  =  =  E
+isthmus__ts_ns_literal             =  =  =  =  =  E  =  =  E
+isthmus__union_all_mixed           =  E  =  =  =  =  =  =  =
+isthmus__union_distinct_mixed      =  E  =  =  =  E  E  =  E
+isthmus__values_expr               =  =  =  =  =  =  =  =  E
+isthmus__values_literal            =  =  =  =  =  =  =  =  E
+isthmus__window                    E  =  E  =  =  E  E  =  E
+spark35__aggs                      x  x  x  x  x  x  x  x  x
+spark35__arith                     =  =  =  =  =  =  =  x  =
+spark35__count_distinct            =  =  =  =  =  =  x  =  E
+spark35__dec_add                   =  =  =  =  =  =  =  x  =
+spark35__dec_div                   x  x  x  x  x  x  x  x  x
+spark35__except_mixed              =  =  x  =  =  =  =  x  E
+spark35__filter_project            =  =  =  =  =  =  =  x  =
+spark35__fn_avg_dec                x  x  x  x  x  x  x  x  x
+spark35__fn_case                   a  a  a  a  a  a  a  a  a
+spark35__fn_cast                   =  =  x  =  =  =  =  x  =
+spark35__fn_cast_str_int           =  =  x  =  =  =  E  x  E
+spark35__fn_cmp_bool               =  =  =  =  =  =  =  =  =
+spark35__fn_count_star             =  =  =  =  =  =  =  =  E
+spark35__fn_dec_mul                =  =  =  =  =  =  x  x  =
+spark35__fn_minmax_i64             =  =  =  =  =  =  =  =  =
+spark35__fn_sum_dec                x  x  x  x  x  x  =  x  =
+spark35__fn_try_cast               =  =  x  =  =  =  E  x  E
+spark35__full_join                 =  =  =  =  =  =  =  =  =
+spark35__grouping_fn               =  E  x  =  E  =  E  E  E
+spark35__grouping_sets             =  E  x  =  E  =  E  E  E
+spark35__in_or                     =  =  =  =  =  =  E  x  E
+spark35__in_subquery               =  =  =  =  =  =  =  x  E
+spark35__intersect_mixed           =  =  x  =  =  =  =  x  E
+spark35__join_reordered            =  =  =  =  =  =  =  x  =
+spark35__left_join                 =  =  =  =  =  =  =  x  =
+spark35__limit_offset              =  =  =  =  =  =  =  x  =
+spark35__limit_only                =  =  =  =  =  =  =  x  =
+spark35__mask_filter               =  =  =  =  =  =  =  x  =
+spark35__mask_reorder              =  =  =  =  =  =  =  x  =
+spark35__not_exists                =  =  =  =  =  =  =  x  E
+spark35__not_in                    =  =  =  =  =  =  =  x  E
+spark35__rollup                    =  E  x  =  E  =  E  E  E
+spark35__scalar_subquery           =  =  =  =  =  =  =  x  E
+spark35__ts_ns_column              =  =  x  =  =  =  x  x  E
+spark35__ts_ns_literal             =  =  =  =  =  =  =  x  =
+spark35__union_all_mixed           =  =  =  =  =  =  =  =  =
+spark35__union_distinct_mixed      =  =  x  =  =  =  =  =  E
+spark35__values_expr               =  =  =  =  =  =  =  =  E
+spark35__values_literal            =  =  =  =  =  =  =  =  E
+spark35__window                    E  E  E  =  E  =  E  E  E
+spark40__aggs                      x  x  x  x  x  x  x  x  x
+spark40__arith                     =  =  =  =  =  =  =  x  =
+spark40__count_distinct            =  =  =  =  =  =  x  =  E
+spark40__dec_add                   =  =  =  =  =  =  =  x  =
+spark40__dec_div                   x  x  x  x  x  x  x  x  x
+spark40__except_mixed              =  =  x  =  =  =  =  x  E
+spark40__filter_project            =  =  =  =  =  =  =  x  =
+spark40__fn_avg_dec                x  x  x  x  x  x  x  x  x
+spark40__fn_case                   a  a  a  a  a  a  a  a  a
+spark40__fn_cast                   =  =  x  =  =  =  =  x  =
+spark40__fn_cast_str_int           =  =  x  =  =  =  E  x  E
+spark40__fn_cmp_bool               =  =  =  =  =  =  =  =  =
+spark40__fn_count_star             =  =  =  =  =  =  =  =  E
+spark40__fn_dec_mul                =  =  =  =  =  =  x  x  =
+spark40__fn_minmax_i64             =  =  =  =  =  =  =  =  =
+spark40__fn_sum_dec                x  x  x  x  x  x  =  x  =
+spark40__fn_try_cast               =  =  x  =  =  =  E  x  E
+spark40__full_join                 =  =  =  =  =  =  =  =  =
+spark40__grouping_fn               =  E  x  =  E  =  E  E  E
+spark40__grouping_sets             =  E  x  =  E  =  E  E  E
+spark40__in_or                     =  =  =  =  =  =  E  x  E
+spark40__in_subquery               =  =  =  =  =  =  =  x  E
+spark40__intersect_mixed           =  =  x  =  =  =  =  x  E
+spark40__join_reordered            =  =  =  =  =  =  =  x  =
+spark40__left_join                 =  =  =  =  =  =  =  x  =
+spark40__limit_offset              =  =  =  =  =  =  =  x  =
+spark40__limit_only                =  =  =  =  =  =  =  x  =
+spark40__mask_filter               =  =  =  =  =  =  =  x  =
+spark40__mask_reorder              =  =  =  =  =  =  =  x  =
+spark40__not_exists                =  =  =  =  =  =  =  x  E
+spark40__not_in                    =  =  =  =  =  =  =  x  E
+spark40__rollup                    =  E  x  =  E  =  E  E  E
+spark40__scalar_subquery           =  =  =  =  =  =  =  x  E
+spark40__ts_ns_column              =  =  x  =  =  =  x  x  E
+spark40__ts_ns_literal             =  =  =  =  =  =  =  x  =
+spark40__union_all_mixed           =  =  =  =  =  =  =  =  =
+spark40__union_distinct_mixed      =  =  x  =  =  =  =  =  E
+spark40__values_expr               =  =  =  =  =  =  =  =  E
+spark40__values_literal            =  =  =  =  =  =  =  =  E
+spark40__window                    E  E  E  =  E  =  E  E  E
+
+per consumer: = derived schema, x another schema, E refused, a no schema to compare, ? unparsed
+  PYTHON     = 151  x 16  E 5  a 33  ? 0
+  GO         = 99  x 29  E 67  a 10  ? 0
+  VALIDATOR  = 110  x 55  E 6  a 34  ? 0
+  JAVA       = 139  x 15  E 40  a 11  ? 0
+  ISTHMUS    = 126  x 17  E 51  a 11  ? 0
+  SPARK      = 104  x 33  E 58  a 10  ? 0
+  DUCKDB     = 118  x 23  E 34  a 30  ? 0
+  DATAFUSION = 85  x 68  E 24  a 28  ? 0
+  ACERO      = 39  x 21  E 142  a 3  ? 0
+
+where a consumer derived another schema:
+  datafusion__except_mixed       VALIDATOR  derived [i64], got []
+  datafusion__fn_cast            VALIDATOR  derived [str?, fp64?], got [unresolved, unresolved]
+  datafusion__fn_cast            SPARK      derived [str?, fp64?], got [str, fp64?]
+  datafusion__fn_cast            DATAFUSION derived [str?, fp64?], got [str, fp64?]
+  datafusion__fn_cast_str_int    GO         derived [i32?], got [str]
+  datafusion__fn_cast_str_int    VALIDATOR  derived [i32?], got [unresolved]
+  datafusion__fn_cast_str_int    SPARK      derived [i32?], got [str]
+  datafusion__fn_cast_str_int    DATAFUSION derived [i32?], got [i32]
+  datafusion__fn_try_cast        GO         derived [i32?], got [str]
+  datafusion__fn_try_cast        VALIDATOR  derived [i32?], got [unresolved]
+  datafusion__fn_try_cast        SPARK      derived [i32?], got [str]
+  datafusion__grouping_fn        VALIDATOR  derived [i64?, i32?], got [i32, unresolved]
+  datafusion__grouping_fn        DATAFUSION derived [i64?, i32?], got [i64?, i32]
+  datafusion__intersect_mixed    VALIDATOR  derived [i64], got []
+  datafusion__mask_filter        GO         derived [str], got [bool]
+  datafusion__mask_filter        VALIDATOR  derived [str], got [unresolved]
+  datafusion__mask_filter        SPARK      derived [str], got [bool]
+  datafusion__mask_reorder       GO         derived [bool, i64], got [bool, str]
+  datafusion__mask_reorder       SPARK      derived [bool, i64], got [bool, str]
+  datafusion__ts_ns_column       VALIDATOR  derived [precision_timestamp(9)], got [unresolved]
+  datafusion__union_distinct_mixed VALIDATOR  derived [i64?], got []
+  duckdb__arith                  PYTHON     derived [i64, fp64?], got [i64?, fp64?]
+  duckdb__arith                  GO         derived [i64, fp64?], got [i64?, i64?]
+  duckdb__arith                  VALIDATOR  derived [i64, fp64?], got [i64?, fp64?]
+  duckdb__arith                  JAVA       derived [i64, fp64?], got [i64?, fp64?]
+  duckdb__arith                  ISTHMUS    derived [i64, fp64?], got [i64?, fp64?]
+  duckdb__arith                  SPARK      derived [i64, fp64?], got [i64?, i64]
+  duckdb__arith                  DATAFUSION derived [i64, fp64?], got [i64, fp64]
+  duckdb__count_distinct         PYTHON     derived [i64, i64?], got [i64?, dec(38,0)?]
+  duckdb__count_distinct         GO         derived [i64, i64?], got [i64?, dec(38,0)?]
+  duckdb__count_distinct         VALIDATOR  derived [i64, i64?], got [i64?, dec(38,0)?]
+  duckdb__count_distinct         JAVA       derived [i64, i64?], got [i64?, dec(38,0)?]
+  duckdb__count_distinct         ISTHMUS    derived [i64, i64?], got [i64?, dec(38,0)?]
+  duckdb__count_distinct         DUCKDB     derived [i64, i64], got [i64, HUGEINT]
+  duckdb__dec_add                PYTHON     derived [dec(12,2)?], got [dec(11,2)?]
+  duckdb__dec_add                GO         derived [dec(12,2)?], got [dec(38,10)]
+  duckdb__dec_add                VALIDATOR  derived [dec(12,2)?], got [dec(11,2)?]
+  duckdb__dec_add                JAVA       derived [dec(12,2)?], got [dec(11,2)?]
+  duckdb__dec_add                ISTHMUS    derived [dec(12,2)?], got [dec(11,2)?]
+  duckdb__dec_add                SPARK      derived [dec(12,2)?], got [dec(38,10)]
+  duckdb__dec_add                DATAFUSION derived [dec(12,2)?], got [dec(12,2)]
+  duckdb__dec_div                GO         derived [fp64?], got [dec(38,10)]
+  duckdb__dec_div                SPARK      derived [fp64?], got [dec(38,10)]
+  duckdb__dec_div                DATAFUSION derived [fp64?], got [fp64]
+  duckdb__except_mixed           ISTHMUS    derived [i64], got [i64?]
+  duckdb__fn_cast                VALIDATOR  derived [str?, fp64?], got [unresolved, unresolved]
+  duckdb__fn_cast                SPARK      derived [str?, fp64?], got [str, fp64?]
+  duckdb__fn_cast                DATAFUSION derived [str?, fp64?], got [str, fp64?]
+  duckdb__fn_cast_str_int        GO         derived [i32?], got [str]
+  duckdb__fn_cast_str_int        VALIDATOR  derived [i32?], got [unresolved]
+  duckdb__fn_cast_str_int        SPARK      derived [i32?], got [str]
+  duckdb__fn_cast_str_int        DATAFUSION derived [i32?], got [i32]
+  duckdb__fn_dec_mul             PYTHON     derived [dec(26,3)?], got [dec(15,3)?]
+  duckdb__fn_dec_mul             GO         derived [dec(26,3)?], got [dec(38,10)]
+  duckdb__fn_dec_mul             VALIDATOR  derived [dec(26,3)?], got [dec(15,3)?]
+  duckdb__fn_dec_mul             JAVA       derived [dec(26,3)?], got [dec(15,3)?]
+  duckdb__fn_dec_mul             ISTHMUS    derived [dec(26,3)?], got [dec(15,3)?]
+  duckdb__fn_dec_mul             SPARK      derived [dec(26,3)?], got [dec(38,10)]
+  duckdb__fn_dec_mul             DUCKDB     derived [dec(26,3)], got [dec(18,3)]
+  duckdb__fn_dec_mul             DATAFUSION derived [dec(26,3)?], got [dec(26,3)]
+  duckdb__fn_try_cast            GO         derived [i32?], got [str]
+  duckdb__fn_try_cast            VALIDATOR  derived [i32?], got [unresolved]
+  duckdb__fn_try_cast            SPARK      derived [i32?], got [str]
+  duckdb__fn_try_cast            DATAFUSION derived [i32?], got [i32]
+  duckdb__grouping_sets          PYTHON     derived [i64?, i64?, i64?, i32], got [i64?, i64?, dec(38,0)?, i32]
+  duckdb__grouping_sets          GO         derived [i64?, i64?, i64?, i32], got [i64, i64?, dec(38,0)?]
+  duckdb__grouping_sets          VALIDATOR  derived [i64?, i64?, i64?, i32], got [dec(38,0)?, i32]
+  duckdb__grouping_sets          DUCKDB     derived [i64, i64, i64, i32], got [i64, i64, HUGEINT]
+  duckdb__in_subquery            GO         derived [i64], got [i64?]
+  duckdb__in_subquery            SPARK      derived [i64], got [i64?]
+  duckdb__join_reordered         GO         derived [i64, i64?], got [i64, i64]
+  duckdb__join_reordered         SPARK      derived [i64, i64?], got [i64, i64]
+  duckdb__left_join              GO         derived [i64, i64?], got [i64?, i64?]
+  duckdb__left_join              SPARK      derived [i64, i64?], got [i64?, i64?]
+  duckdb__mask_filter            SPARK      derived [str], got [i64]
+  duckdb__not_exists             GO         derived [i64], got [i64?]
+  duckdb__not_exists             SPARK      derived [i64], got [i64?]
+  duckdb__scalar_subquery        GO         derived [i64, i64?], got [i64?, i64]
+  duckdb__ts_ns_column           VALIDATOR  derived [precision_timestamp(9)], got [unresolved]
+  duckdb__window                 PYTHON     derived [i64, i64?], got [i64, dec(38,0)?]
+  duckdb__window                 VALIDATOR  derived [i64, i64?], got [unresolved, unresolved]
+  duckdb__window                 JAVA       derived [i64, i64?], got [i64, dec(38,0)?]
+  duckdb__window                 DUCKDB     derived [i64, i64], got [i64, HUGEINT]
+  isthmus__aggs                  SPARK      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  isthmus__aggs                  DUCKDB     derived [i64, i64, i64, i64], got [HUGEINT, fp64, i64, i64]
+  isthmus__aggs                  DATAFUSION derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  isthmus__aggs                  ACERO      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64?, i64?]
+  isthmus__arith                 ACERO      derived [i64, i64], got [i64?, i64?]
+  isthmus__count_distinct        DUCKDB     derived [i64, i64], got [i64, HUGEINT]
+  isthmus__dec_add               SPARK      derived [dec(11,2)], got [dec(11,2)?]
+  isthmus__dec_add               ACERO      derived [dec(11,2)], got [dec(11,2)?]
+  isthmus__dec_div               SPARK      derived [dec(21,8)], got [dec(17,8)?]
+  isthmus__dec_div               DUCKDB     derived [dec(21,8)], got [fp64]
+  isthmus__dec_div               DATAFUSION derived [dec(21,8)], got [dec(15,6)]
+  isthmus__dec_div               ACERO      derived [dec(21,8)], got [dec(16,7)?]
+  isthmus__except_mixed          ISTHMUS    derived [i64], got [i64?]
+  isthmus__filter_project        ACERO      derived [i64?, i64], got [i64?, i64?]
+  isthmus__fn_avg_dec            PYTHON     derived [dec(38,2)], got [dec(38,2)?]
+  isthmus__fn_avg_dec            GO         derived [dec(38,2)], got [dec(38,2)?]
+  isthmus__fn_avg_dec            VALIDATOR  derived [dec(38,2)], got [dec(38,2)?]
+  isthmus__fn_avg_dec            JAVA       derived [dec(38,2)], got [dec(38,2)?]
+  isthmus__fn_avg_dec            ISTHMUS    derived [dec(38,2)], got [dec(38,2)?]
+  isthmus__fn_avg_dec            SPARK      derived [dec(38,2)], got [dec(14,6)?]
+  isthmus__fn_avg_dec            DUCKDB     derived [dec(38,2)], got [fp64]
+  isthmus__fn_avg_dec            DATAFUSION derived [dec(38,2)], got [dec(14,6)?]
+  isthmus__fn_avg_dec            ACERO      derived [dec(38,2)], got [dec(10,2)?]
+  isthmus__fn_cast               VALIDATOR  derived [vchar(20), fp64?], got [unresolved, unresolved]
+  isthmus__fn_cast               SPARK      derived [vchar(20), fp64?], got [str, fp64?]
+  isthmus__fn_cast               DUCKDB     derived [vchar(20), fp64], got [str, fp64]
+  isthmus__fn_cast               DATAFUSION derived [vchar(20), fp64?], got [str, fp64?]
+  isthmus__fn_cast               ACERO      derived [vchar(20), fp64?], got [vchar(20)?, fp64?]
+  isthmus__fn_cast_str_int       VALIDATOR  derived [i32], got [unresolved]
+  isthmus__fn_cast_str_int       SPARK      derived [i32], got [i32?]
+  isthmus__fn_count_star         ACERO      derived [i64, i64], got [i64?, i64?]
+  isthmus__fn_dec_mul            SPARK      derived [dec(16,3)], got [dec(16,3)?]
+  isthmus__fn_dec_mul            DUCKDB     derived [dec(16,3)], got [dec(15,3)]
+  isthmus__fn_dec_mul            ACERO      derived [dec(16,3)], got [dec(16,3)?]
+  isthmus__fn_str                PYTHON     derived [str, str, i64], got [str, str, i32]
+  isthmus__fn_str                GO         derived [str, str, i64], got [str, str, i32]
+  isthmus__fn_str                VALIDATOR  derived [str, str, i64], got [str, str, i32]
+  isthmus__fn_str                JAVA       derived [str, str, i64], got [str, str, i32]
+  isthmus__fn_str                ISTHMUS    derived [str, str, i64], got [str, str, i32]
+  isthmus__fn_str                DATAFUSION derived [str, str, i64], got [str, str?, i32?]
+  isthmus__fn_sum_dec            SPARK      derived [dec(38,2)?], got [dec(20,2)?]
+  isthmus__fn_sum_dec            DATAFUSION derived [dec(38,2)?], got [dec(20,2)?]
+  isthmus__grouping_fn           VALIDATOR  derived [i64?, i64], got [i32, i64]
+  isthmus__grouping_sets         GO         derived [i64?, i64?, i64?], got [i64, i64?, i64?]
+  isthmus__grouping_sets         VALIDATOR  derived [i64?, i64?, i64?], got [i64?, i32, unresolved]
+  isthmus__grouping_sets         DUCKDB     derived [i64, i64, i64], got [i64, i64, HUGEINT]
+  isthmus__intersect_mixed       ISTHMUS    derived [i64], got [i64?]
+  isthmus__join_reordered        ACERO      derived [i64, i64?], got [i64?, i64?]
+  isthmus__left_join             ACERO      derived [i64, i64?], got [i64?, i64?]
+  isthmus__limit_offset          ACERO      derived [i64], got [i64?]
+  isthmus__limit_only            ACERO      derived [i64], got [i64?]
+  isthmus__mask_filter           ACERO      derived [str], got [str?]
+  isthmus__mask_reorder          ACERO      derived [bool, i64], got [bool?, i64?]
+  isthmus__rollup                GO         derived [i64?, i64?, i64], got [i64, i64?, i64]
+  isthmus__rollup                VALIDATOR  derived [i64?, i64?, i64], got [i64, i32, unresolved]
+  isthmus__ts_ns_column          VALIDATOR  derived [precision_timestamp(9)], got [unresolved]
+  spark35__aggs                  PYTHON     derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  GO         derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  VALIDATOR  derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  JAVA       derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  ISTHMUS    derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  SPARK      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  DUCKDB     derived [i64, i64, i64, i64], got [HUGEINT, fp64, i64, i64]
+  spark35__aggs                  DATAFUSION derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark35__aggs                  ACERO      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64?, i64?]
+  spark35__arith                 DATAFUSION derived [i64?, fp64?], got [i64, fp64]
+  spark35__count_distinct        DUCKDB     derived [i64, i64], got [i64, HUGEINT]
+  spark35__dec_add               DATAFUSION derived [dec(11,2)?], got [dec(11,2)]
+  spark35__dec_div               PYTHON     derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               GO         derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               VALIDATOR  derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               JAVA       derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               ISTHMUS    derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               SPARK      derived [dec(21,8)?], got [dec(17,8)?]
+  spark35__dec_div               DUCKDB     derived [dec(21,8)], got [fp64]
+  spark35__dec_div               DATAFUSION derived [dec(21,8)?], got [dec(15,6)]
+  spark35__dec_div               ACERO      derived [dec(21,8)?], got [dec(16,7)?]
+  spark35__except_mixed          VALIDATOR  derived [i64?], got [unresolved]
+  spark35__except_mixed          DATAFUSION derived [i64?], got [i64]
+  spark35__filter_project        DATAFUSION derived [i64?, i64?], got [i64?, i64]
+  spark35__fn_avg_dec            PYTHON     derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            GO         derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            VALIDATOR  derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            JAVA       derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            ISTHMUS    derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            SPARK      derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            DUCKDB     derived [dec(38,2)], got [fp64]
+  spark35__fn_avg_dec            DATAFUSION derived [dec(38,2)], got [dec(14,6)?]
+  spark35__fn_avg_dec            ACERO      derived [dec(38,2)], got [dec(10,2)?]
+  spark35__fn_cast               VALIDATOR  derived [str?, fp64?], got [unresolved, unresolved]
+  spark35__fn_cast               DATAFUSION derived [str?, fp64?], got [str, fp64?]
+  spark35__fn_cast_str_int       VALIDATOR  derived [i32?], got [unresolved]
+  spark35__fn_cast_str_int       DATAFUSION derived [i32?], got [i32]
+  spark35__fn_dec_mul            DUCKDB     derived [dec(16,3)], got [dec(15,3)]
+  spark35__fn_dec_mul            DATAFUSION derived [dec(16,3)?], got [dec(16,3)]
+  spark35__fn_sum_dec            PYTHON     derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            GO         derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            VALIDATOR  derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            JAVA       derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            ISTHMUS    derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            SPARK      derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_sum_dec            DATAFUSION derived [dec(38,2)?], got [dec(20,2)?]
+  spark35__fn_try_cast           VALIDATOR  derived [i32?], got [unresolved]
+  spark35__fn_try_cast           DATAFUSION derived [i32?], got [i32]
+  spark35__grouping_fn           VALIDATOR  derived [i64?, i8], got [unresolved, unresolved]
+  spark35__grouping_sets         VALIDATOR  derived [i64?, i64?, i64?], got [unresolved, unresolved, unresolved]
+  spark35__in_or                 DATAFUSION derived [i64?], got [i64]
+  spark35__in_subquery           DATAFUSION derived [i64?], got [i64]
+  spark35__intersect_mixed       VALIDATOR  derived [i64?], got [unresolved]
+  spark35__intersect_mixed       DATAFUSION derived [i64?], got [i64]
+  spark35__join_reordered        DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark35__left_join             DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark35__limit_offset          DATAFUSION derived [i64?], got [i64]
+  spark35__limit_only            DATAFUSION derived [i64?], got [i64]
+  spark35__mask_filter           DATAFUSION derived [str?], got [str]
+  spark35__mask_reorder          DATAFUSION derived [bool?, i64?], got [bool, i64]
+  spark35__not_exists            DATAFUSION derived [i64?], got [i64]
+  spark35__not_in                DATAFUSION derived [i64?], got [i64]
+  spark35__rollup                VALIDATOR  derived [i64?, i64?, i64], got [unresolved, unresolved, unresolved]
+  spark35__scalar_subquery       DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark35__ts_ns_column          VALIDATOR  derived [precision_timestamp(6)?], got [unresolved]
+  spark35__ts_ns_column          DUCKDB     derived [precision_timestamp(6)], got [precision_timestamp(9)]
+  spark35__ts_ns_column          DATAFUSION derived [precision_timestamp(6)?], got [precision_timestamp(9)]
+  spark35__ts_ns_literal         DATAFUSION derived [i64?], got [i64]
+  spark35__union_distinct_mixed  VALIDATOR  derived [i64?], got [unresolved]
+  spark40__aggs                  PYTHON     derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  GO         derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  VALIDATOR  derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  JAVA       derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  ISTHMUS    derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  SPARK      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  DUCKDB     derived [i64, i64, i64, i64], got [HUGEINT, fp64, i64, i64]
+  spark40__aggs                  DATAFUSION derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64, i64?]
+  spark40__aggs                  ACERO      derived [i64?, i64?, i64, i64?], got [i64?, fp64?, i64?, i64?]
+  spark40__arith                 DATAFUSION derived [i64?, fp64?], got [i64, fp64]
+  spark40__count_distinct        DUCKDB     derived [i64, i64], got [i64, HUGEINT]
+  spark40__dec_add               DATAFUSION derived [dec(11,2)?], got [dec(11,2)]
+  spark40__dec_div               PYTHON     derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               GO         derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               VALIDATOR  derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               JAVA       derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               ISTHMUS    derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               SPARK      derived [dec(21,8)?], got [dec(17,8)?]
+  spark40__dec_div               DUCKDB     derived [dec(21,8)], got [fp64]
+  spark40__dec_div               DATAFUSION derived [dec(21,8)?], got [dec(15,6)]
+  spark40__dec_div               ACERO      derived [dec(21,8)?], got [dec(16,7)?]
+  spark40__except_mixed          VALIDATOR  derived [i64?], got [unresolved]
+  spark40__except_mixed          DATAFUSION derived [i64?], got [i64]
+  spark40__filter_project        DATAFUSION derived [i64?, i64?], got [i64?, i64]
+  spark40__fn_avg_dec            PYTHON     derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            GO         derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            VALIDATOR  derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            JAVA       derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            ISTHMUS    derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            SPARK      derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            DUCKDB     derived [dec(38,2)], got [fp64]
+  spark40__fn_avg_dec            DATAFUSION derived [dec(38,2)], got [dec(14,6)?]
+  spark40__fn_avg_dec            ACERO      derived [dec(38,2)], got [dec(10,2)?]
+  spark40__fn_cast               VALIDATOR  derived [str?, fp64?], got [unresolved, unresolved]
+  spark40__fn_cast               DATAFUSION derived [str?, fp64?], got [str, fp64?]
+  spark40__fn_cast_str_int       VALIDATOR  derived [i32?], got [unresolved]
+  spark40__fn_cast_str_int       DATAFUSION derived [i32?], got [i32]
+  spark40__fn_dec_mul            DUCKDB     derived [dec(16,3)], got [dec(15,3)]
+  spark40__fn_dec_mul            DATAFUSION derived [dec(16,3)?], got [dec(16,3)]
+  spark40__fn_sum_dec            PYTHON     derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            GO         derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            VALIDATOR  derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            JAVA       derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            ISTHMUS    derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            SPARK      derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_sum_dec            DATAFUSION derived [dec(38,2)?], got [dec(20,2)?]
+  spark40__fn_try_cast           VALIDATOR  derived [i32?], got [unresolved]
+  spark40__fn_try_cast           DATAFUSION derived [i32?], got [i32]
+  spark40__grouping_fn           VALIDATOR  derived [i64?, i8], got [unresolved, unresolved]
+  spark40__grouping_sets         VALIDATOR  derived [i64?, i64?, i64?], got [unresolved, unresolved, unresolved]
+  spark40__in_or                 DATAFUSION derived [i64?], got [i64]
+  spark40__in_subquery           DATAFUSION derived [i64?], got [i64]
+  spark40__intersect_mixed       VALIDATOR  derived [i64?], got [unresolved]
+  spark40__intersect_mixed       DATAFUSION derived [i64?], got [i64]
+  spark40__join_reordered        DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark40__left_join             DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark40__limit_offset          DATAFUSION derived [i64?], got [i64]
+  spark40__limit_only            DATAFUSION derived [i64?], got [i64]
+  spark40__mask_filter           DATAFUSION derived [str?], got [str]
+  spark40__mask_reorder          DATAFUSION derived [bool?, i64?], got [bool, i64]
+  spark40__not_exists            DATAFUSION derived [i64?], got [i64]
+  spark40__not_in                DATAFUSION derived [i64?], got [i64]
+  spark40__rollup                VALIDATOR  derived [i64?, i64?, i64], got [unresolved, unresolved, unresolved]
+  spark40__scalar_subquery       DATAFUSION derived [i64?, i64?], got [i64, i64?]
+  spark40__ts_ns_column          VALIDATOR  derived [precision_timestamp(6)?], got [unresolved]
+  spark40__ts_ns_column          DUCKDB     derived [precision_timestamp(6)], got [precision_timestamp(9)]
+  spark40__ts_ns_column          DATAFUSION derived [precision_timestamp(6)?], got [precision_timestamp(9)]
+  spark40__ts_ns_literal         DATAFUSION derived [i64?], got [i64]
+  spark40__union_distinct_mixed  VALIDATOR  derived [i64?], got [unresolved]

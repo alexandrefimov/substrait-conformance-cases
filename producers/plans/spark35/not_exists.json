@@ -1,0 +1,199 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "equal:any_any",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "join": {
+            "common": {
+              "direct": {}
+            },
+            "left": {
+              "project": {
+                "common": {
+                  "emit": {
+                    "outputMapping": [
+                      2
+                    ]
+                  },
+                  "hint": {
+                    "outputNames": [
+                      "c0"
+                    ]
+                  }
+                },
+                "input": {
+                  "read": {
+                    "common": {
+                      "direct": {}
+                    },
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "spark_catalog",
+                        "default",
+                        "t_rn"
+                      ]
+                    }
+                  }
+                },
+                "expressions": [
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {}
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                ]
+              }
+            },
+            "right": {
+              "project": {
+                "common": {
+                  "emit": {
+                    "outputMapping": [
+                      2
+                    ]
+                  },
+                  "hint": {
+                    "outputNames": [
+                      "c1"
+                    ]
+                  }
+                },
+                "input": {
+                  "read": {
+                    "common": {
+                      "direct": {}
+                    },
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "spark_catalog",
+                        "default",
+                        "t_nr"
+                      ]
+                    }
+                  }
+                },
+                "expressions": [
+                  {
+                    "selection": {
+                      "directReference": {
+                        "structField": {
+                          "field": 1
+                        }
+                      },
+                      "rootReference": {}
+                    }
+                  }
+                ]
+              }
+            },
+            "expression": {
+              "scalarFunction": {
+                "functionReference": 1,
+                "outputType": {
+                  "bool": {
+                    "nullability": "NULLABILITY_NULLABLE"
+                  }
+                },
+                "arguments": [
+                  {
+                    "value": {
+                      "selection": {
+                        "directReference": {
+                          "structField": {
+                            "field": 1
+                          }
+                        },
+                        "rootReference": {}
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "selection": {
+                        "directReference": {
+                          "structField": {}
+                        },
+                        "rootReference": {}
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "type": "JOIN_TYPE_LEFT_ANTI"
+          }
+        },
+        "names": [
+          "c0"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "substrait-spark"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_comparison"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "common": {
+              "direct": {}
+            },
+            "baseSchema": {
+              "names": [
+                "a",
+                "b"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  {
+                    "i32": {
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "virtualTable": {
+              "expressions": [
+                {
+                  "fields": [
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    },
+                    {
+                      "literal": {
+                        "i32": 2
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "names": [
+          "a",
+          "b"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "substrait-spark"
+  },
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 2,
+        "name": "character_length",
+        "extensionUrnReference": 4294967295
+      }
+    },
+    {
+      "extensionFunction": {
+        "name": "upper",
+        "extensionUrnReference": 4294967295
+      }
+    },
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "str_concat",
+        "extensionUrnReference": 4294967295
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  1,
+                  2,
+                  3
+                ]
+              }
+            },
+            "input": {
+              "read": {
+                "baseSchema": {
+                  "names": [
+                    "c0",
+                    "c1",
+                    "c2"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "string": {
+                          "typeVariationReference": 2,
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      {
+                        "bool": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "projection": {
+                  "select": {
+                    "structItems": [
+                      {
+                        "field": 1
+                      }
+                    ]
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "t_mix"
+                  ]
+                }
+              }
+            },
+            "expressions": [
+              {
+                "scalarFunction": {
+                  "outputType": {
+                    "string": {
+                      "typeVariationReference": 2,
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "scalarFunction": {
+                  "functionReference": 1,
+                  "outputType": {
+                    "string": {
+                      "typeVariationReference": 2,
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  },
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    },
+                    {
+                      "value": {
+                        "literal": {
+                          "string": "z",
+                          "typeVariationReference": 2
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "scalarFunction": {
+                  "functionReference": 2,
+                  "outputType": {
+                    "i32": {
+                      "nullability": "NULLABILITY_NULLABLE"
+                    }
+                  },
+                  "arguments": [
+                    {
+                      "value": {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "u",
+          "c",
+          "n"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

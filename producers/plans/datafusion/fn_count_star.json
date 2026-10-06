@@ -1,0 +1,145 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "name": "count",
+        "extensionUrnReference": 4294967295
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2,
+                  3
+                ]
+              }
+            },
+            "input": {
+              "aggregate": {
+                "input": {
+                  "read": {
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_NULLABLE"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "projection": {
+                      "select": {
+                        "structItems": [
+                          {
+                            "field": 1
+                          }
+                        ]
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "t_rn"
+                      ]
+                    }
+                  }
+                },
+                "groupings": [
+                  {}
+                ],
+                "measures": [
+                  {
+                    "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      "invocation": "AGGREGATION_INVOCATION_ALL",
+                      "arguments": [
+                        {
+                          "value": {
+                            "literal": {
+                              "i64": "1"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "measure": {
+                      "outputType": {
+                        "i64": {
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      },
+                      "invocation": "AGGREGATION_INVOCATION_ALL",
+                      "arguments": [
+                        {
+                          "value": {
+                            "selection": {
+                              "directReference": {
+                                "structField": {}
+                              },
+                              "rootReference": {}
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              },
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {
+                      "field": 1
+                    }
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "n",
+          "m"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

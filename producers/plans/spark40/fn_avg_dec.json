@@ -1,0 +1,178 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "avg:dec",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  1
+                ]
+              },
+              "hint": {
+                "outputNames": [
+                  "x"
+                ]
+              }
+            },
+            "input": {
+              "aggregate": {
+                "common": {
+                  "direct": {}
+                },
+                "input": {
+                  "project": {
+                    "common": {
+                      "emit": {
+                        "outputMapping": [
+                          4
+                        ]
+                      },
+                      "hint": {
+                        "outputNames": [
+                          "c0"
+                        ]
+                      }
+                    },
+                    "input": {
+                      "read": {
+                        "common": {
+                          "direct": {}
+                        },
+                        "baseSchema": {
+                          "names": [
+                            "c0",
+                            "c1",
+                            "c2",
+                            "c3"
+                          ],
+                          "struct": {
+                            "types": [
+                              {
+                                "decimal": {
+                                  "scale": 2,
+                                  "precision": 10,
+                                  "nullability": "NULLABILITY_NULLABLE"
+                                }
+                              },
+                              {
+                                "decimal": {
+                                  "scale": 1,
+                                  "precision": 5,
+                                  "nullability": "NULLABILITY_NULLABLE"
+                                }
+                              },
+                              {
+                                "decimal": {
+                                  "scale": 10,
+                                  "precision": 38,
+                                  "nullability": "NULLABILITY_NULLABLE"
+                                }
+                              },
+                              {
+                                "decimal": {
+                                  "scale": 10,
+                                  "precision": 38,
+                                  "nullability": "NULLABILITY_NULLABLE"
+                                }
+                              }
+                            ],
+                            "nullability": "NULLABILITY_REQUIRED"
+                          }
+                        },
+                        "namedTable": {
+                          "names": [
+                            "spark_catalog",
+                            "default",
+                            "t_dec"
+                          ]
+                        }
+                      }
+                    },
+                    "expressions": [
+                      {
+                        "selection": {
+                          "directReference": {
+                            "structField": {}
+                          },
+                          "rootReference": {}
+                        }
+                      }
+                    ]
+                  }
+                },
+                "groupings": [
+                  {}
+                ],
+                "measures": [
+                  {
+                    "measure": {
+                      "functionReference": 1,
+                      "phase": "AGGREGATION_PHASE_INITIAL_TO_RESULT",
+                      "outputType": {
+                        "decimal": {
+                          "scale": 6,
+                          "precision": 14,
+                          "nullability": "NULLABILITY_NULLABLE"
+                        }
+                      },
+                      "invocation": "AGGREGATION_INVOCATION_ALL",
+                      "arguments": [
+                        {
+                          "value": {
+                            "selection": {
+                              "directReference": {
+                                "structField": {}
+                              },
+                              "rootReference": {}
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "x"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "substrait-spark"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_arithmetic_decimal"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

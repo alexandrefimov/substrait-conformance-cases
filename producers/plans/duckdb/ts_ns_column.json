@@ -1,0 +1,48 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "read": {
+            "baseSchema": {
+              "names": [
+                "ts"
+              ],
+              "struct": {
+                "types": [
+                  {
+                    "precisionTimestamp": {
+                      "precision": 9,
+                      "nullability": "NULLABILITY_REQUIRED"
+                    }
+                  }
+                ],
+                "nullability": "NULLABILITY_REQUIRED"
+              }
+            },
+            "projection": {
+              "select": {
+                "structItems": [
+                  {}
+                ]
+              },
+              "maintainSingularStruct": true
+            },
+            "namedTable": {
+              "names": [
+                "t_ts"
+              ]
+            }
+          }
+        },
+        "names": [
+          "ts"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 78,
+    "producer": "DuckDB"
+  }
+}

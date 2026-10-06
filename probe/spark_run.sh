@@ -1,5 +1,5 @@
 #!/bin/bash
-# Compiles and runs a Spark probe (needs JDK 17): bash probe/spark_run.sh <Class> [args]
+# Compiles and runs a Spark probe (needs JDK 17): bash probe/spark_run.sh <Class>|<path/Class.java> [args]
 set -e
 D="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$D/.." && pwd)"
@@ -11,10 +11,12 @@ ROOT="$(cd "$D/.." && pwd)"
 # a path that does exist is not thereby a 17.
 J17_HOME="${JAVA17_HOME:-$(/usr/libexec/java_home -v 17 2>/dev/null || true)}"
 J17="${J17_HOME:-/nonexistent}/bin"
-OUT="${PROBE_CACHE:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}/sparkprobe"; mkdir -p "$OUT"
+OUT="${PROBE_CACHE:-${SUBSTRAIT_PROBE_ENV:-$ROOT/.probe-env}}/sparkprobe${SPARK_VARIANT:+-$SPARK_VARIANT}"; mkdir -p "$OUT"
 CP="$OUT:$(bash "$D/cp.sh" spark):$(bash "$D/cp.sh" core)"
-CLASS="$1"; shift
-"$J17/javac" -nowarn -cp "$CP" -d "$OUT" "$D/$CLASS.java"
+# A probe here is named by its class; one elsewhere (producers/) by the path of its source.
+SRC="$D/$1.java"; case "$1" in *.java) SRC="$1" ;; esac
+CLASS="$(basename "$1" .java)"; shift
+"$J17/javac" -nowarn -cp "$CP" -d "$OUT" "$SRC"
 "$J17/java" --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED \
   --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED \
   -cp "$CP" "$CLASS" "$@" 2>/dev/null | grep -vE "^WARNING|SLF4J|log4j|^[0-9]{2}/"

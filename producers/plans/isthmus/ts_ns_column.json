@@ -1,0 +1,100 @@
+{
+  "extensions": [
+    {
+      "extensionFunction": {
+        "functionAnchor": 1,
+        "name": "gt:pts_pts",
+        "extensionUrnReference": 1
+      }
+    }
+  ],
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "filter": {
+            "common": {
+              "direct": {}
+            },
+            "input": {
+              "read": {
+                "common": {
+                  "direct": {}
+                },
+                "baseSchema": {
+                  "names": [
+                    "TS"
+                  ],
+                  "struct": {
+                    "types": [
+                      {
+                        "precisionTimestamp": {
+                          "precision": 9,
+                          "nullability": "NULLABILITY_REQUIRED"
+                        }
+                      }
+                    ],
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "namedTable": {
+                  "names": [
+                    "T_TS"
+                  ]
+                }
+              }
+            },
+            "condition": {
+              "scalarFunction": {
+                "functionReference": 1,
+                "outputType": {
+                  "bool": {
+                    "nullability": "NULLABILITY_REQUIRED"
+                  }
+                },
+                "arguments": [
+                  {
+                    "value": {
+                      "selection": {
+                        "directReference": {
+                          "structField": {}
+                        },
+                        "rootReference": {}
+                      }
+                    }
+                  },
+                  {
+                    "value": {
+                      "literal": {
+                        "precisionTimestamp": {
+                          "precision": 9,
+                          "value": "1577836800123456789"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "names": [
+          "TS"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 102,
+    "producer": "isthmus"
+  },
+  "extensionUrns": [
+    {
+      "extensionUrnAnchor": 1,
+      "urn": "extension:io.substrait:functions_datetime"
+    }
+  ],
+  "executionBehavior": {
+    "variableEvalMode": "VARIABLE_EVALUATION_MODE_PER_PLAN"
+  }
+}

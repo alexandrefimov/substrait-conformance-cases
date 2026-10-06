@@ -148,6 +148,19 @@ if parsers["parse_go"](sample) != [["dec(11,2)", True], ["vchar(17)", False], ["
     raise SystemExit(1)
 print("ok      Go parameterized types retain widths, kinds and nullability")
 
+# These carrier names appear in the producer corpus. A view is still a logical string,
+# while DuckDB's nanosecond timestamp must stay distinct from its microsecond TIMESTAMP.
+sample = "[ns:TIMESTAMP_NS?, us:TIMESTAMP]"
+if parsers["parse_duckdb"](sample) != [["precision_timestamp(9)", True], ["precision_timestamp(6)", False]]:
+    print("FAILED: DuckDB timestamp precision parser lost precision or nullability")
+    raise SystemExit(1)
+print("ok      DuckDB timestamp precision parser retains precision and nullability")
+sample = "[view:Utf8View?, utf8:Utf8]"
+if parsers["parse_df"](sample) != [["str", True], ["str", False]]:
+    print("FAILED: DataFusion string-view parser lost logical type or nullability")
+    raise SystemExit(1)
+print("ok      DataFusion string-view parser retains logical type and nullability")
+
 # The one struct expectation, phase_intermediate, holds two required i64, and so does every answer to
 # it that the check reads, so the saved columns cannot show a reader that loses a field's type or a
 # nullability flag inside or outside. These are the answers substrait-java, substrait-python, the
@@ -683,6 +696,15 @@ echo "### the derived schemas agree with the expectations"
 python3 deriver/check.py --quiet \
   && ok "the saved derived schemas agree with expected.json" \
   || fail "derived schemas differ from the expectations"
+
+echo
+echo "### the producer columns are what their committed plans check to"
+# producers/plans holds what each producer wrote at its pin; results/producers/<P>.txt is what
+# producers/check.py makes of those plans with the deriver's rules. Retaking the plans needs the
+# producers and is producers/run.sh; checking them needs python3 alone.
+python3 producers/check.py || FAILED=1
+python3 producers/check_differed.py || FAILED=1
+python3 producers/check_consume.py || FAILED=1
 
 echo "### the pages state the numbers the files hold"
 # The table above is checked against check_expected.py; the sentences around it were not checked at

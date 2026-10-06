@@ -1,0 +1,99 @@
+{
+  "relations": [
+    {
+      "root": {
+        "input": {
+          "project": {
+            "common": {
+              "emit": {
+                "outputMapping": [
+                  2
+                ]
+              }
+            },
+            "input": {
+              "filter": {
+                "input": {
+                  "read": {
+                    "baseSchema": {
+                      "names": [
+                        "c0",
+                        "c1",
+                        "c2"
+                      ],
+                      "struct": {
+                        "types": [
+                          {
+                            "i64": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "string": {
+                              "typeVariationReference": 2,
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          },
+                          {
+                            "bool": {
+                              "nullability": "NULLABILITY_REQUIRED"
+                            }
+                          }
+                        ],
+                        "nullability": "NULLABILITY_REQUIRED"
+                      }
+                    },
+                    "projection": {
+                      "select": {
+                        "structItems": [
+                          {
+                            "field": 1
+                          },
+                          {
+                            "field": 2
+                          }
+                        ]
+                      }
+                    },
+                    "namedTable": {
+                      "names": [
+                        "t_mix"
+                      ]
+                    }
+                  }
+                },
+                "condition": {
+                  "selection": {
+                    "directReference": {
+                      "structField": {
+                        "field": 1
+                      }
+                    },
+                    "rootReference": {}
+                  }
+                }
+              }
+            },
+            "expressions": [
+              {
+                "selection": {
+                  "directReference": {
+                    "structField": {}
+                  },
+                  "rootReference": {}
+                }
+              }
+            ]
+          }
+        },
+        "names": [
+          "c1"
+        ]
+      }
+    }
+  ],
+  "version": {
+    "minorNumber": 85,
+    "producer": "datafusion"
+  }
+}

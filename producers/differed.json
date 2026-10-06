@@ -1,0 +1,177 @@
+{
+ "kinds": {
+  "divergence": "the producer can write the type or binding the specification gives and writes another",
+  "boundary": "the producer's own type system cannot state what the specification asks for, so no plan of its could have matched; a statement about the producer's reach, not a finding"
+ },
+ "rules": {
+  "datafusion-declares-no-extension-urn": {
+   "kind": "divergence",
+   "what": "DataFusion declares every function by its bare name with extension_urn_reference set to u32::MAX and no extension URN in the plan, so no call names the extension it comes from and none binds. extensions.proto: the reference 'references the extension_urn_anchor defined for a specific extension URN'.",
+   "match": {
+    "DATAFUSION": "^\\S+ unbound: function '\\S+' points at urn anchor 4294967295, which the plan does not declare$"
+   },
+   "triage": {
+    "DATAFUSION": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/apache/datafusion/issues/11545"
+     ],
+     "note": "open since 2024; the producer's source cites it where it writes u32::MAX"
+    }
+   }
+  },
+  "datafusion-window-without-output-type": {
+   "kind": "divergence",
+   "what": "DataFusion's window sum carries no output_type, which algebra.proto requires on WindowFunction. Ordinary aggregate calls now declare their types at DATAFUSION_COMMIT.",
+   "match": {
+    "DATAFUSION": "^\\S+ no output_type$"
+   },
+   "triage": {
+    "DATAFUSION": {
+     "outcome": "open",
+     "note": "The pinned window producer sets output_type to None. Issue 25049 covered ordinary aggregates and is fixed at this pin; a tracker search for Substrait window output_type found no matching report (checked 2026-10-05)."
+    }
+   }
+  },
+  "duckdb-declares-every-type-nullable": {
+   "kind": "boundary",
+   "what": "DuckDB's logical types carry no nullability, so every type it declares is nullable, including calls over required columns whose return the extension makes required. The check: the declared type is the derived one with a ? added.",
+   "match": {
+    "DUCKDB": "^\\S+ declared (\\S+)\\? derived \\1$"
+   }
+  },
+  "duckdb-sum-of-bigint-is-hugeint": {
+   "kind": "divergence",
+   "what": "DuckDB sums a BIGINT into a HUGEINT and declares that as decimal<38,0> on sum:i64, whose return the extension gives as i64?.",
+   "match": {
+    "DUCKDB": "^sum:i64 declared dec\\(38,0\\)\\? derived i64\\?$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "open",
+     "note": "no issue in the extension's tracker on the declared sum type (checked 2026-10-01); 276 is the reading direction"
+    }
+   }
+  },
+  "duckdb-cast-changes-decimal-arguments": {
+   "kind": "divergence",
+   "what": "DuckDB casts a decimal argument to its own common type and keeps the return type it computed before the cast, so the declaration no longer follows from the arguments the call receives: dec(10,2) + dec(5,1) goes out as add(dec(10,2), b cast to dec(11,2)) declared dec(11,2), and dec(10,2) * dec(5,1) as multiply(dec(10,2), b cast to dec(15,1)) declared dec(15,3).",
+   "match": {
+    "DUCKDB": "^(add|multiply):dec_dec declared dec\\(\\d+,\\d+\\)\\? derived dec\\(\\d+,\\d+\\)\\?$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/278"
+     ],
+     "note": "278 shows the addition; the multiplication is the same cast"
+    }
+   }
+  },
+  "duckdb-unspecified-phase-with-raw-input": {
+   "kind": "divergence",
+   "what": "DuckDB leaves aggregate calls at AGGREGATION_PHASE_UNSPECIFIED, which algebra.proto says 'Implies INTERMEDIATE_TO_RESULT', and passes them raw input; avg and sum over a decimal take a different intermediate type, so the call binds to nothing.",
+   "match": {
+    "DUCKDB": "^(avg|sum):\\S+ unbound: the intermediate input of \\S+: declared .*, called with .*$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1069"
+     ],
+     "note": "1069 is about moving the meaning off the zero value; DataFusion has the same shape as its issue 25100"
+    }
+   }
+  },
+  "duckdb-function-without-extension": {
+   "kind": "divergence",
+   "what": "DuckDB writes functions the extensions do not define (||, constant_or_null, grouping) with no extension URN at all.",
+   "match": {
+    "DUCKDB": "^(\\|\\||constant_or_null|grouping) unbound: function '\\S+' points at urn anchor 0, which the plan does not declare$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "open",
+     "note": "on the extension's main a strict option refuses such plans and the default writes them on purpose; GROUPING() has a standard encoding that is not filed yet"
+    }
+   }
+  },
+  "duckdb-grouping-set-index-unnamed": {
+   "kind": "divergence",
+   "what": "An aggregate with more than one grouping set 'receives an extra i32 column' (logical_relations.md); DuckDB's root names the grouping keys and measures only, one name short.",
+   "match": {
+    "DUCKDB": "^names 3 for 4 named fields$"
+   },
+   "triage": {
+    "DUCKDB": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/duckdb-substrait-extension/issues/287",
+      "https://github.com/substrait-io/duckdb-substrait-extension/pull/291"
+     ],
+     "note": "fixed by 291 after DUCKDB_SUBSTRAIT_EXTENSION"
+    }
+   }
+  },
+  "isthmus-calcite-output-type": {
+   "kind": "divergence",
+   "what": "Isthmus declares nullable avg:dec where the extension derives a required decimal, and INTEGER for CHAR_LENGTH where char_length returns i64. Decimal precision for sum, avg, divide and multiply now follows the extensions at SUBSTRAIT_JAVA_COMMIT.",
+   "match": {
+    "ISTHMUS": "^(avg|char_length):\\S+ declared \\S+ derived \\S+$"
+   },
+   "triage": {
+    "ISTHMUS": {
+     "outcome": "reported",
+     "at": [
+      "https://github.com/substrait-io/substrait-java/issues/1117",
+      "https://github.com/substrait-io/substrait-java/pull/1347",
+      "https://github.com/substrait-io/substrait/issues/1252"
+     ],
+     "note": "Decimal precision now matches after 1347; avg's nullability is 1252. CHAR_LENGTH still declares i32 rather than i64 at the pin."
+    }
+   }
+  },
+  "avg-over-integers-returns-float": {
+   "kind": "divergence",
+   "what": "avg:i64 returns i64? in functions_arithmetic.yaml; Spark declares fp64?, which is what the engines return.",
+   "match": {
+    "SPARK35": "^avg:i64 declared fp64\\? derived i64\\?$",
+    "SPARK40": "^avg:i64 declared fp64\\? derived i64\\?$"
+   },
+   "triage": {
+    "SPARK35": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1210"
+     ]
+    },
+    "SPARK40": {
+     "outcome": "spec-question",
+     "at": [
+      "https://github.com/substrait-io/substrait/issues/1210"
+     ]
+    }
+   }
+  },
+  "spark-declares-its-own-decimal-types": {
+   "kind": "divergence",
+   "what": "The Spark module declares Spark's decimal result types for sum, avg and divide (sum over dec(10,2) as dec(20,2)?) where the decimal extension gives precision 38 for the aggregates and its own rule for division.",
+   "match": {
+    "SPARK35": "^(sum|avg|divide):dec(_dec)? declared dec\\(\\d+,\\d+\\)\\? derived dec\\(\\d+,\\d+\\)\\??$",
+    "SPARK40": "^(sum|avg|divide):dec(_dec)? declared dec\\(\\d+,\\d+\\)\\? derived dec\\(\\d+,\\d+\\)\\??$"
+   },
+   "triage": {
+    "SPARK35": {
+     "outcome": "open",
+     "note": "no issue in substrait-java on the Spark module's declared decimal types (checked 2026-10-01); 1292 and 1293 are the reading direction"
+    },
+    "SPARK40": {
+     "outcome": "open",
+     "note": "as for Spark 3.5: the plans are identical"
+    }
+   }
+  }
+ }
+}

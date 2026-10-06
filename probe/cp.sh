@@ -28,7 +28,10 @@ case "$1" in
     [ -s "$CP_FILE" ] || bash "$ROOT/gen/make_classpath.sh" "$CP_FILE" >&2
     cat "$CP_FILE"; exit 0 ;;
   isthmus) f="$CACHE/isthmus_cp.txt"; p=":isthmus"; t=printIsthmusCp ;;
-  spark)   f="$CACHE/spark_cp.txt";  p=":spark:spark-3.5_2.12"; t=printSparkCp ;;
+  # SPARK_VARIANT picks another of the module's Spark builds; the default is the one the SPARK
+  # column is measured on, and keeps its cache file name.
+  spark)   v="${SPARK_VARIANT:-spark-3.5_2.12}"; p=":spark:$v"; t=printSparkCp
+           f="$CACHE/spark_cp.txt"; [ "$v" = spark-3.5_2.12 ] || f="$CACHE/${v}_cp.txt" ;;
   *) echo "expected an argument: core|isthmus|spark" >&2; exit 2 ;;
 esac
 if [ ! -s "$f" ]; then

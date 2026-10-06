@@ -1,0 +1,1 @@
+spark 4.0.2, substrait-java bc050d37
