@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-10-06T14:04, substrait 0.35.0
+PYTHON: column from run 2026-10-16T13:20, substrait 0.36.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64?]
 aggregate_grouping_set_index                   [c:str?, a:i64?, g:i32]
@@ -24,7 +24,7 @@ emit_project                                   [k0:bool, k1:i64]
 emit_read                                      [k0:bool, k1:i64]
 emit_sort                                      [k0:bool, k1:i64]
 expand_consistent_fields                       [?:i64, ?:i64?, ?:i32]  !! names 0, types 3
-expand_switching_nullability                   [?:i64, ?:i64, ?:i32]  !! names 0, types 3
+expand_switching_nullability                   [?:i64, ?:i64?, ?:i32]  !! names 0, types 3
 join_inner                                     [c0:i64, c1:i64?, c2:i64?, c3:i64]
 join_left                                      [c0:i64, c1:i64?, c2:i64?, c3:i64?]
 join_left_anti                                 [c0:i64, c1:i64?]
@@ -98,13 +98,13 @@ setop_union_all                                [c0:i64, c1:i64?, c2:i64?, c3:i64
 setop_union_distinct                           [c0:i64, c1:i64?, c2:i64?, c3:i64?, c4:i64?, c5:i64?, c6:i64?, c7:i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
 topn_keeps_the_input_schema                    [c0:i64, c1:i64?]
-update_root_names_a_count                      ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Message type "subs
-update_root_names_the_table                    ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Message type "subs
+update_root_names_a_count                      ERROR: Exception: Unhandled rel_type update
+update_root_names_the_table                    ERROR: Exception: Unhandled rel_type update
 virtual_table_emit_mapping                     [col2:str]
 virtual_table_literal_type_differs_from_schema [c:i32]
 virtual_table_row_null_in_required_column      [c:i32]
 virtual_table_row_nullable_in_required_column  [c:i32]
 virtual_table_row_required_in_nullable_column  [c:i32?]
 window_bound_offset                            [v:i64, s:i64?]
-window_bound_offset_expr                       ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Failed to parse wi
+window_bound_offset_expr                       [v:i64, s:i64?]
 window_output_order                            [c0:i64, c1:str, c2:bool, rn:i64?, cd:fp64?]

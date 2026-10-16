@@ -25,14 +25,14 @@ schema comparisons establish neither row correctness nor general plan validity.
 
 ## Results
 
-The schema columns were taken 2026-10-06 against the versions in
+The schema columns were taken 2026-10-06, 2026-10-16 against the versions in
 [`probe/versions.env`](probe/versions.env). They answer the 98 cases that carry an expectation.
 Gluten is measured separately over the virtual-table variant and is outside the table below.
 
 | | matched | differed | unsupported |
 | --- | ---: | ---: | ---: |
 | substrait-java | 92 | 3 | 3 |
-| substrait-python | 95 | 1 | 2 |
+| substrait-python | 97 | 0 | 1 |
 | substrait-go | 69 | 2 | 27 |
 | substrait-validator | 64 | 14 | 20 |
 | Isthmus/Calcite | 57 | 4 | 37 |

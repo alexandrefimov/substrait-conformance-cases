@@ -1051,6 +1051,9 @@ mutate "an absolute path" "absolute path in" \
 mutate "untranslated text" "untranslated text in" \
   python3 -c "import io; f=io.open('probe/setup.sh','a',encoding='utf-8'); f.write(u'\n# \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430\n'); f.close()"
 
+mutate "a partial replay accepted without provenance" "single-column retakes require complete measurements" \
+  python3 -c 'from pathlib import Path; p=Path("probe/reverify.sh"); s=p.read_text(); p.write_text(s.replace("[ -s \"$RUN/$NAME.json\" ]", "true"))'
+
 echo
 echo "invariants that could be broken and were caught: $PASS"
 [ "$MISS" -eq 0 ] || { echo "RESULT: $MISS check(s) did not fire on their own invariant"; exit 1; }

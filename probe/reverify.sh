@@ -18,6 +18,8 @@
 #   UPDATE_CORPUS=1             replace the saved corpus, manifest and expected.json with what this
 #                               run generates, instead of reporting the difference
 #   UPDATE_COLUMNS=1            replace the saved columns with this run's
+#   [COLUMN]                    retake only this column in a fresh pinned environment;
+#                               requires UPDATE_COLUMNS=1 and updates the summaries
 #   ALLOW_SKIPPED=1             accept a run in which some participant's environment was absent
 set -uo pipefail
 
@@ -50,6 +52,56 @@ die()  { echo "FAILED: $*" >&2; exit 1; }
 # the two scripts ask the same questions about the same participants, and two copies of "which
 # command reports substrait-python's version" is how they come to answer them differently.
 . "$PROBE/columns.sh"
+
+# Both full and single-column retakes redraw the same saved measurements.
+refresh_summaries() {
+  python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || return 1
+  python3 "$PROBE/diffs.py" > "$ROOT/results/DIFFS.md" || return 1
+  python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || return 1
+  python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || return 1
+  python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || return 1
+}
+
+# A version update need not rebuild unrelated participants. replay_column.sh builds
+# a fresh pinned environment and writes provenance only after a complete measurement.
+if [ "$#" -gt 0 ]; then
+  [ "$#" -eq 1 ] || die "usage: UPDATE_COLUMNS=1 bash probe/reverify.sh [COLUMN]"
+  NAME="$1"
+  case "$NAME" in
+    PYTHON|VALIDATOR) PARSER=py ;;
+    JAVA) PARSER=java ;;
+    ISTHMUS) PARSER=calcite ;;
+    DATAFUSION) PARSER=df ;;
+    DUCKDB) PARSER=duckdb ;;
+    ACERO) PARSER=acero ;;
+    GO) PARSER=go ;;
+    SPARK) PARSER=spark ;;
+    *) die "unknown column: $NAME" ;;
+  esac
+  [ "${UPDATE_COLUMNS:-0}" = 1 ] || die "single-column retake requires UPDATE_COLUMNS=1"
+  [ "${LATEST:-0}" = 0 ] || die "single-column retake requires pinned versions"
+  RUN="$(mktemp -d)" || die "no temporary directory for the retake"
+  trap 'rm -rf "$RUN"' EXIT
+  OUT="$RUN" bash "$PROBE/replay_column.sh" "$NAME"
+  RC=$?
+  [ "$RC" -le 1 ] && [ -s "$RUN/$NAME.json" ] && [ -s "$RUN/$NAME.txt" ] \
+    || die "$NAME: replay did not produce a complete pinned measurement"
+  # As in the full sweep, a whole column of failures is a broken probe, not
+  # evidence that the participant supports nothing.
+  python3 "$PROBE/check_expected.py" "$RUN/$NAME.txt" "$PARSER" > "$RUN/expected"
+  ANSWERED=$(sed -n 's/^matched: \([0-9]*\), differed: \([0-9]*\).*/\1 \2/p' "$RUN/expected" | tail -1)
+  [ -n "$ANSWERED" ] || die "$NAME: the expectation check did not reach its summary"
+  [ "$(( ${ANSWERED% *} + ${ANSWERED#* } ))" -gt 0 ] || die "$NAME: not one case was answered"
+  ! grep -Eq '^INCOMPLETE|unparsed answer' "$RUN/expected" \
+    || die "$NAME: the expectation check could not read the whole column"
+  grep -q "^$NAME: replayed " "$RUN/$NAME.txt" || die "$NAME: missing replay header"
+  sed "1s/^$NAME: replayed /$NAME: column from run /" "$RUN/$NAME.txt" > "$RUN/$NAME.saved" \
+    || die "$NAME: could not prepare the column header"
+  cp "$RUN/$NAME.saved" "$ROOT/results/$NAME.txt" || die "$NAME: could not save the column"
+  refresh_summaries || die "could not rebuild the column summaries"
+  echo "RESULT: $NAME retaken at its pin; other participant columns are untouched"
+  exit 0
+fi
 
 echo "### 0. preflight"
 [ -n "$SJ" ] || die "set SUBSTRAIT_JAVA_DIR to a substrait-java checkout"
@@ -458,13 +510,7 @@ if [ "${UPDATE_COLUMNS:-0}" = "1" ]; then
     for c in "$RUN"/*.txt; do cp "$c" "$ROOT/results/$(basename "$c")"; done
     # results/MATRIX.txt is those columns as one table, so it is rebuilt with them. Left out, it stayed at the
     # previous run and probe/selfcheck.sh reported the repository as contradicting itself.
-    python3 "$PROBE/matrix.py" > "$ROOT/results/MATRIX.txt" || fail "could not rebuild MATRIX.txt"
-    python3 "$PROBE/diffs.py" > "$ROOT/results/DIFFS.md" || fail "could not rebuild results/DIFFS.md"
-    # docs/ is the same columns drawn - the picture the README shows and the page the site serves.
-    # Left behind, it keeps showing the previous run to everyone who never opens a column.
-    python3 "$PROBE/heatmap.py" svg-light > "$ROOT/docs/matrix.svg" || fail "could not redraw docs/matrix.svg"
-    python3 "$PROBE/heatmap.py" svg-dark > "$ROOT/docs/matrix-dark.svg" || fail "could not redraw docs/matrix-dark.svg"
-    python3 "$PROBE/heatmap.py" page > "$ROOT/docs/index.html" || fail "could not rebuild docs/index.html"
+    refresh_summaries || fail "could not rebuild the column summaries"
     echo "saved columns, results/MATRIX.txt, results/DIFFS.md and docs/ updated from this run (UPDATE_COLUMNS=1)"
   fi
 fi

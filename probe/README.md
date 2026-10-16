@@ -46,7 +46,11 @@ external checkouts are `SUBSTRAIT_JAVA_DIR` and `DF_DIR`. `SUBSTRAIT_PYTHON_ENV`
 `DF_EXPECT=` deliberately disables the corresponding check. By default it regenerates the corpus,
 manifest and expectations into temporary files and reports differences without replacing them.
 `UPDATE_CORPUS=1` replaces those inputs; `UPDATE_COLUMNS=1` replaces saved columns, MATRIX.txt
-and the generated pages. Use these flags only for an intended update and inspect the full diff.
+and the generated pages. To retake one participant after updating its pin, use
+`UPDATE_COLUMNS=1 bash probe/reverify.sh <NAME>`. This builds a fresh pinned environment through
+`replay_column.sh` and updates only that column and the summaries. Use update flags only for an
+intended update and inspect the full diff. Producer-consumer columns are retaken separately;
+see [the producer guide](../producers/README.md).
 
 `normalize.py` requires one answer per case before a column can be compared. Full answers are in
 `results/<NAME>.txt`; MATRIX.txt truncates them. `-` marks a refusal and `·` a case not run.

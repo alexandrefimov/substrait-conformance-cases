@@ -1180,6 +1180,12 @@ if not bad:
 raise SystemExit(bad)
 PY
 
+if python3 -m unittest discover -s "$ROOT/probe" -p test_reverify.py; then
+  ok "single-column retakes require complete measurements"
+else
+  fail "single-column retakes require complete measurements"
+fi
+
 echo
 if [ "$FAILED" -ne 0 ]; then echo "RESULT: the repository contradicts itself"; exit 1; fi
 echo "RESULT: the repository agrees with itself"
