@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-10-06. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-10-06, 2026-10-16. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -41,22 +41,6 @@ Both normative texts say a column follows the expand fields - physical_relations
 | --- | --- | --- | --- |
 | [expand_consistent_fields](../derived-schema/expand_consistent_fields.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | physical_relations.md, Expand Operation: the expand fields followed by an i32 column for the duplicate index; the two fields are direct references to t_rn's columns |
 | [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `Struct{nullable=false, fields=[I64{nullable=false}, I64{nullable=true}]}` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
-
-## substrait-python — 1 cases
-
-`results/PYTHON.txt`, substrait 0.35.0.
-
-### `python-expand-switching-stays-required`
-
-A switching field takes the type class its duplicates share and is nullable if any of them is, which algebra.proto states on SwitchingField itself. The field here switches between t_rn's required column and its nullable one, and substrait-python returns it required. It returns the duplicate index the same case asks for, which substrait-java does not - each of the two carries one rule and misses the other.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-python/issues/269
-
-ExpandRel.SwitchingField in algebra.proto states the rule outright, and substrait-python 0.31.0 takes the first duplicate's type instead. The report shows the answer following the order the duplicates are written in, which this case alone does not: it carries one order only. substrait-io/substrait-python#267 and substrait-io/substrait-python#268 are the join and grouping-key sides of the same shape and neither reaches this relation.
-
-| case | expected | substrait-python answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [expand_switching_nullability](../derived-schema/expand_switching_nullability.json) | `[i64, i64?, i32]` | `[?:i64, ?:i64, ?:i32]  !! names 0, types 3` | ExpandRel.SwitchingField in algebra.proto: nullable if any duplicate is, over the expand fields followed by the i32 duplicate index |
 
 ## substrait-go — 2 cases
 

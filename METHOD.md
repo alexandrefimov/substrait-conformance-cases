@@ -253,9 +253,9 @@ inference. A partial retake changes only the measured column's date.
 
 ## Reports and generator sources
 
-`differed.json` carries a reason written by hand for all 74 of them, 16 marked as something other
+`differed.json` carries a reason written by hand for all 73 of them, 16 marked as something other
 than a divergence. Of those, six are limits of a type system, ten a type the validator never resolved.
-The explanations record judgments about saved cells: sixteen of its twenty-one reasons link an issue or PR.
+The explanations record judgments about saved cells: fifteen of its twenty reasons link an issue or PR.
 A linked fix does not change a saved answer; the column must be retaken to measure it.
 `probe/check_differed.py` tests each reason's output property, not its causal explanation.
 Each column's header states its comparison limits; DuckDB and Gluten carry no nullability.
@@ -270,8 +270,8 @@ Acero. Each has a tested reason and triage. Comparing unsupported responses with
 capabilities is limited by the spec: at v0.102.0, `dialects/` contains a schema and fixtures but
 no engine capability files.
 
-Triage is per reason and participant, and there are twenty-three of them;
-two of those twenty-three still need investigation. Entries are `reported`, `spec-question`, `ours` or `open`. `open` may
+Triage is per reason and participant, and there are twenty-two of them;
+two of those twenty-two still need investigation. Entries are `reported`, `spec-question`, `ours` or `open`. `open` may
 mean a narrower reproducer or ownership decision is still needed; `ours` identifies an expectation
 or harness error. A reported entry may link an existing PR without a separate issue, with its
 coverage limits recorded. It establishes neither a merged fix nor a retaken measurement.

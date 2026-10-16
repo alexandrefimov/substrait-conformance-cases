@@ -125,7 +125,7 @@ isthmus__union_all_mixed           =  E  =  =  =  =  =  =  =
 isthmus__union_distinct_mixed      =  E  =  =  =  E  E  =  E
 isthmus__values_expr               =  =  =  =  =  =  =  =  E
 isthmus__values_literal            =  =  =  =  =  =  =  =  E
-isthmus__window                    E  =  E  =  =  E  E  =  E
+isthmus__window                    =  =  E  =  =  E  E  =  E
 spark35__aggs                      x  x  x  x  x  x  x  x  x
 spark35__arith                     =  =  =  =  =  =  =  x  =
 spark35__count_distinct            =  =  =  =  =  =  x  =  E
@@ -165,7 +165,7 @@ spark35__union_all_mixed           =  =  =  =  =  =  =  =  =
 spark35__union_distinct_mixed      =  =  x  =  =  =  =  =  E
 spark35__values_expr               =  =  =  =  =  =  =  =  E
 spark35__values_literal            =  =  =  =  =  =  =  =  E
-spark35__window                    E  E  E  =  E  =  E  E  E
+spark35__window                    =  E  E  =  E  =  E  E  E
 spark40__aggs                      x  x  x  x  x  x  x  x  x
 spark40__arith                     =  =  =  =  =  =  =  x  =
 spark40__count_distinct            =  =  =  =  =  =  x  =  E
@@ -205,10 +205,10 @@ spark40__union_all_mixed           =  =  =  =  =  =  =  =  =
 spark40__union_distinct_mixed      =  =  x  =  =  =  =  =  E
 spark40__values_expr               =  =  =  =  =  =  =  =  E
 spark40__values_literal            =  =  =  =  =  =  =  =  E
-spark40__window                    E  E  E  =  E  =  E  E  E
+spark40__window                    =  E  E  =  E  =  E  E  E
 
 per consumer: = derived schema, x another schema, E refused, a no schema to compare, ? unparsed
-  PYTHON     = 151  x 16  E 4  a 34  ? 0
+  PYTHON     = 154  x 16  E 1  a 34  ? 0
   GO         = 99  x 29  E 67  a 10  ? 0
   VALIDATOR  = 110  x 55  E 6  a 34  ? 0
   JAVA       = 139  x 15  E 40  a 11  ? 0

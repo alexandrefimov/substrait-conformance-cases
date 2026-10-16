@@ -1,4 +1,4 @@
-PYTHON: the committed producer plans, substrait 0.35.0
+PYTHON: the committed producer plans, substrait 0.36.0
 
 datafusion__aggs                               [s:i64?, a:fp64?, n:i64, m:i64?]
 datafusion__arith                              [x:i64, y:i64]
@@ -124,7 +124,7 @@ isthmus__union_all_mixed                       [C0:i64?]
 isthmus__union_distinct_mixed                  [C0:i64?]
 isthmus__values_expr                           [A:i32, B:i32]
 isthmus__values_literal                        [A:i32, B:i32]
-isthmus__window                                ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Failed to parse ex
+isthmus__window                                [C0:i64, W:i64?]
 spark35__aggs                                  [s:i64?, a:fp64?, n:i64, m:i64?]
 spark35__arith                                 [x:i64?, y:fp64?]
 spark35__count_distinct                        [d:i64, s:i64?]
@@ -164,7 +164,7 @@ spark35__union_all_mixed                       [c0:i64?]
 spark35__union_distinct_mixed                  [c0:i64?]
 spark35__values_expr                           [a:i32, b:i32]
 spark35__values_literal                        [a:i32, b:i32]
-spark35__window                                ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Failed to parse in
+spark35__window                                [c0:i64?, w:i64?]
 spark40__aggs                                  [s:i64?, a:fp64?, n:i64, m:i64?]
 spark40__arith                                 [x:i64?, y:fp64?]
 spark40__count_distinct                        [d:i64, s:i64?]
@@ -204,4 +204,4 @@ spark40__union_all_mixed                       [c0:i64?]
 spark40__union_distinct_mixed                  [c0:i64?]
 spark40__values_expr                           [a:i32, b:i32]
 spark40__values_literal                        [a:i32, b:i32]
-spark40__window                                ERROR: LOAD: Failed to parse relations field: Failed to parse input field: Failed to parse in
+spark40__window                                [c0:i64?, w:i64?]
