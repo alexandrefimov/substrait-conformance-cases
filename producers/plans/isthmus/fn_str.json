@@ -97,6 +97,14 @@
                         }
                       }
                     }
+                  ],
+                  "options": [
+                    {
+                      "name": "char_set",
+                      "preference": [
+                        "UTF8"
+                      ]
+                    }
                   ]
                 }
               },
@@ -138,6 +146,14 @@
                         }
                       }
                     }
+                  ],
+                  "options": [
+                    {
+                      "name": "null_handling",
+                      "preference": [
+                        "ACCEPT_NULLS"
+                      ]
+                    }
                   ]
                 }
               },
@@ -177,7 +193,8 @@
     }
   ],
   "version": {
-    "minorNumber": 102,
+    "minorNumber": 103,
+    "patchNumber": 1,
     "producer": "isthmus"
   },
   "extensionUrns": [

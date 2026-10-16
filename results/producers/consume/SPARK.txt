@@ -77,7 +77,7 @@ duckdb__mask_reorder                           [c2:bigint, c0:string]
 duckdb__not_exists                             [c0:bigint?]
 duckdb__not_in                                 ERROR: UnsupportedOperationException: Unsupported join type LEFT_MARK
 duckdb__rollup                                 ERROR: IllegalArgumentException: Plan.Root names count (3) must match input record type depth-first named-field count (4)
-duckdb__scalar_subquery                        [c0:bigint, m:bigint?]
+duckdb__scalar_subquery                        [c0:bigint?, m:bigint]
 duckdb__ts_ns_column                           ERROR: UnsupportedOperationException: Unsupported precision: 9. Spark stores time values as microseconds, so a type must declare
 duckdb__ts_ns_literal                          [c0:bigint]
 duckdb__union_all_mixed                        [c0:bigint?]
