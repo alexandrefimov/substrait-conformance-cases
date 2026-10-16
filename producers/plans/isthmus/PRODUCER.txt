@@ -1,1 +1,1 @@
-isthmus, substrait-java bc050d37
+isthmus, substrait-java 2bc2e688

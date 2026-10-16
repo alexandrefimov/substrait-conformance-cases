@@ -15,7 +15,7 @@ finding to its reproducers.
 
 ## substrait-java — 3 cases
 
-`results/JAVA.txt`, substrait-java bc050d37.
+`results/JAVA.txt`, substrait-java 2bc2e688.
 
 ### `java-ddl-derives-the-table-schema`
 
@@ -110,7 +110,7 @@ Recorded as a type this participant never resolved.
 
 ## Isthmus/Calcite — 4 cases
 
-`results/ISTHMUS.txt`, substrait-java bc050d37.
+`results/ISTHMUS.txt`, substrait-java 2bc2e688.
 
 ### `isthmus-setop-nullable-if-any-input-is`
 

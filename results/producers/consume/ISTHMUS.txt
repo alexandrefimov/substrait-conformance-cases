@@ -1,4 +1,4 @@
-ISTHMUS: the committed producer plans, substrait-java bc050d37
+ISTHMUS: the committed producer plans, substrait-java 2bc2e688
 
 datafusion__aggs                               ERROR: PARSE FAILED: IllegalStateException: Function 'min' references URN anchor -1, but no URN is registered at that anchor
 datafusion__arith                              ERROR: PARSE FAILED: IllegalStateException: Function 'add' references URN anchor -1, but no URN is registered at that anchor

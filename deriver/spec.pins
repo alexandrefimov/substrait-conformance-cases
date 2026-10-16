@@ -1,7 +1,8 @@
 # The extension files this deriver reads a rule out of, pinned by content rather than by version.
 #
-# The plans declare spec 0.102, and the rules behind the expectations were read at v0.102.0, so a
-# run against a checkout serving other bytes is measuring a different text. Four files here are the
+# The authored corpora and their expectations use v0.102.0; producer plans may declare later
+# releases. These checks still use the same reference rules; reading other bytes would measure a
+# different text. Four files here are the
 # ones the corpus reaches, and deriver/calls.py takes rules from three more - boolean, string
 # and datetime - which plans from producers name. The rest of extensions/ is indexed by URN but no
 # rule is taken from it, so pinning it would only make an unrelated edit upstream stop this run.

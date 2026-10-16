@@ -98,6 +98,14 @@
                         }
                       }
                     }
+                  ],
+                  "options": [
+                    {
+                      "name": "overflow",
+                      "preference": [
+                        "SILENT"
+                      ]
+                    }
                   ]
                 }
               },
@@ -137,6 +145,26 @@
                         }
                       }
                     }
+                  ],
+                  "options": [
+                    {
+                      "name": "overflow",
+                      "preference": [
+                        "SILENT"
+                      ]
+                    },
+                    {
+                      "name": "on_domain_error",
+                      "preference": [
+                        "ERROR"
+                      ]
+                    },
+                    {
+                      "name": "on_division_by_zero",
+                      "preference": [
+                        "ERROR"
+                      ]
+                    }
                   ]
                 }
               }
@@ -151,7 +179,8 @@
     }
   ],
   "version": {
-    "minorNumber": 102,
+    "minorNumber": 103,
+    "patchNumber": 1,
     "producer": "isthmus"
   },
   "extensionUrns": [
