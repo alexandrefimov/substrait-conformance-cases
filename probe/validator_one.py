@@ -1,4 +1,4 @@
-"""One case through substrait-validator (built from main, spec 0.87): the root schema plus
+"""One case through the pinned substrait-validator revision: the root schema plus
 diagnostics.
 
 IMPORTANT, on boundaries. The validator does NOT derive the type a function call returns: it

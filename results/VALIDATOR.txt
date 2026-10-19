@@ -1,9 +1,9 @@
-VALIDATOR: column from run 2026-10-06T14:05, substrait-validator 0.1.4 at 0a5d3d6
+VALIDATOR: column from run 2026-10-19T22:57, substrait-validator 0.1.4 at 157c139
 
-aggregate_grouping_field_shared_by_sets        [i32, unresolved]
-aggregate_grouping_set_index                   [i32]
-aggregate_grouping_sets_declared_order         [i32, unresolved]
-aggregate_grouping_then_measure                [i64?]
+aggregate_grouping_field_shared_by_sets        [str, i64?]
+aggregate_grouping_set_index                   [str?, i64?, i32]
+aggregate_grouping_sets_declared_order         [str?, i64?]
+aggregate_grouping_then_measure                [str, i64?]
 aggregate_sum_i64                              [i64?]
 control_join_without_relcommon                 [i64, i64?, i64?, i64]
 control_passthrough_rn                         [c0:i64, c1:i64?]
@@ -16,7 +16,7 @@ decimal_add_overflow                           [dec(38,9)]
 decimal_divide                                 [dec(21,8)]
 decimal_multiply                               [dec(16,3)]
 decimal_multiply_overflow                      [dec(38,6)]
-emit_aggregate                                 [unresolved, unresolved]
+emit_aggregate                                 [bool, i64]
 emit_fetch                                     [bool, i64]
 emit_filter                                    [bool, i64]
 emit_join                                      [bool, i64]
@@ -97,7 +97,7 @@ setop_minus_primary_all                        [i64, i64, i64, i64, i64?, i64?, 
 setop_union_all                                [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
 setop_union_distinct                           [i64, i64?, i64?, i64?, i64?, i64?, i64?, i64?]
 stringlen_declared                             [c0:vchar(10), c1:fchar(5), c2:fbin(4), c3:str]
-topn_keeps_the_input_schema                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.Rel" has no field named "topN" at "Plan.relations[0].root.input".  Availab
+topn_keeps_the_input_schema                    —
 update_root_names_a_count                      ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
 update_root_names_the_table                    ERROR: Failed to parse relations field: Failed to parse input field: Message type "substrait.UpdateRel" has no field named "common" at "Plan.relations[0].root.input.up
 virtual_table_emit_mapping                     [str]

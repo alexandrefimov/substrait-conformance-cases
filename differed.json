@@ -169,22 +169,6 @@
     }
    }
   },
-  "validator-aggregate-gives-i32-and-unresolved": {
-   "kind": "divergence",
-   "check": {
-    "got_matches": "^\\[i32, unresolved\\]$"
-   },
-   "what": "These plans contain two grouping expressions and no measures. The validator does not parse the relation-level grouping expressions, so its direct output contains only the grouping-set index, i32. The emit mapping [0, 1] exposes that index and an out-of-range reference, which remains unresolved.",
-   "triage": {
-    "VALIDATOR": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-validator/pull/567"
-     ],
-     "note": "the PR parses relation-level grouping expressions and their references, covering both emitted fields in these plans; this links the proposed fix, not a rerun of its head"
-    }
-   }
-  },
   "python-go-aggregate-all-required": {
    "kind": "divergence",
    "check": {
@@ -329,22 +313,6 @@
      "note": "the width is a consequence: the consumer passes DataFusion's internal grouping id through as this column, and that id is a bitmask of the grouping expressions a set leaves out, typed as the smallest unsigned integer that holds it. Run with rows at the pinned commit, the two sets here yield 1 and 2 where the set index is 0 and 1. The issue reports the value, the width and the producer doing the same"
     }
    }
-  },
-  "validator-aggregate-returns-one-column": {
-   "kind": "divergence",
-   "what": "The validator returns a single column for these two aggregates, and for the same reason as the two aggregate cases before them: it does not parse the relation-level grouping expressions or their references, and says so - 'not yet implemented: ... grouping_expressions' and '... expression_references'. What is left of the direct output is the measure on aggregate_grouping_then_measure and the appended i32 index on aggregate_grouping_set_index, where it also reports the aggregate invalid for having neither a grouping expression nor a measure.",
-   "check": {
-    "got_matches": "^\\[(i64\\?|i32)\\]$"
-   },
-   "triage": {
-    "VALIDATOR": {
-     "outcome": "reported",
-     "at": [
-      "https://github.com/substrait-io/substrait-validator/pull/567"
-     ],
-     "note": "the PR parses relation-level grouping expressions and their references, which is what both cases need; as for the two earlier cases, this links the proposed fix, not a rerun of its head"
-    }
-   }
   }
  },
  "cells": {
@@ -417,11 +385,6 @@
    "read_projection_mask": "spark-projection-not-applied"
   },
   "VALIDATOR": {
-   "aggregate_grouping_field_shared_by_sets": "validator-aggregate-gives-i32-and-unresolved",
-   "aggregate_grouping_set_index": "validator-aggregate-returns-one-column",
-   "aggregate_grouping_sets_declared_order": "validator-aggregate-gives-i32-and-unresolved",
-   "aggregate_grouping_then_measure": "validator-aggregate-returns-one-column",
-   "emit_aggregate": "validator-does-not-resolve",
    "precision_timestamp_p00": "validator-does-not-resolve",
    "precision_timestamp_p01": "validator-does-not-resolve",
    "precision_timestamp_p02": "validator-does-not-resolve",

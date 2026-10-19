@@ -144,7 +144,7 @@ against the expectation, not independent return-type inference. `probe/lie_matri
 only declared output types and records schema sensitivity in [results/LIE.txt](results/LIE.txt).
 
 Five rows follow the changed declaration: 16 of substrait-java's matches, 15 of
-substrait-python's, 13 each of substrait-go's and Isthmus's and 12 of the validator's are read
+substrait-python's, 13 each of substrait-go's and Isthmus's and 13 of the validator's are read
 back. Only 29 of the 108 cases declare an output type, so the swap reaches no other case.
 
 | | answers that move | of them with an expectation |
@@ -253,9 +253,9 @@ inference. A partial retake changes only the measured column's date.
 
 ## Reports and generator sources
 
-`differed.json` carries a reason written by hand for all 73 of them, 16 marked as something other
-than a divergence. Of those, six are limits of a type system, ten a type the validator never resolved.
-The explanations record judgments about saved cells: fifteen of its twenty reasons link an issue or PR.
+`differed.json` carries a reason written by hand for all 68 of them, 15 marked as something other
+than a divergence. Of those, six are limits of a type system, nine a type the validator never resolved.
+The explanations record judgments about saved cells: thirteen of its eighteen reasons link an issue or PR.
 A linked fix does not change a saved answer; the column must be retaken to measure it.
 `probe/check_differed.py` tests each reason's output property, not its causal explanation.
 Each column's header states its comparison limits; DuckDB and Gluten carry no nullability.
@@ -270,8 +270,8 @@ Acero. Each has a tested reason and triage. Comparing unsupported responses with
 capabilities is limited by the spec: at v0.102.0, `dialects/` contains a schema and fixtures but
 no engine capability files.
 
-Triage is per reason and participant, and there are twenty-two of them;
-two of those twenty-two still need investigation. Entries are `reported`, `spec-question`, `ours` or `open`. `open` may
+Triage is per reason and participant, and there are twenty of them;
+two of those twenty still need investigation. Entries are `reported`, `spec-question`, `ours` or `open`. `open` may
 mean a narrower reproducer or ownership decision is still needed; `ours` identifies an expectation
 or harness error. A reported entry may link an existing PR without a separate issue, with its
 coverage limits recorded. It establishes neither a merged fix nor a retaken measurement.
