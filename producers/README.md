@@ -6,8 +6,9 @@ producers: the queries in [queries.tsv](queries.tsv) go to DuckDB, Isthmus, Spar
 DataFusion, at the versions [probe/versions.env](../probe/versions.env) pins, and the plans they
 write are kept in [plans/](plans), one directory per producer.
 
-Each plan is then checked against the specification at v0.102.0, the release the other corpora
-use. The columns are [results/producers/](../results/producers).
+Each plan is checked against the specification at v0.102.0, the release the authored corpora
+use. Isthmus and Spark now declare v0.103.1; this does not change the reference rules used here.
+The columns are [results/producers/](../results/producers).
 
 ## What is checked
 

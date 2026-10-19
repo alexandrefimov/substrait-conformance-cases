@@ -77,7 +77,7 @@ duckdb__mask_reorder               a  E  a  a  a  a  a  a  E
 duckdb__not_exists                 =  x  =  =  =  x  =  =  E
 duckdb__not_in                     =  E  =  =  E  E  =  =  E
 duckdb__rollup                     a  E  a  E  E  E  a  E  E
-duckdb__scalar_subquery            =  x  =  =  =  =  =  =  E
+duckdb__scalar_subquery            =  x  =  =  =  x  =  =  E
 duckdb__ts_ns_column               =  =  x  =  =  E  =  =  E
 duckdb__ts_ns_literal              =  E  =  =  =  =  =  =  E
 duckdb__union_all_mixed            =  E  =  =  =  =  =  =  E
@@ -213,7 +213,7 @@ per consumer: = derived schema, x another schema, E refused, a no schema to comp
   VALIDATOR  = 110  x 55  E 6  a 34  ? 0
   JAVA       = 139  x 15  E 40  a 11  ? 0
   ISTHMUS    = 126  x 17  E 51  a 11  ? 0
-  SPARK      = 104  x 33  E 58  a 10  ? 0
+  SPARK      = 103  x 34  E 58  a 10  ? 0
   DUCKDB     = 118  x 23  E 34  a 30  ? 0
   DATAFUSION = 85  x 68  E 24  a 28  ? 0
   ACERO      = 39  x 21  E 142  a 3  ? 0
@@ -297,6 +297,7 @@ where a consumer derived another schema:
   duckdb__not_exists             GO         derived [i64], got [i64?]
   duckdb__not_exists             SPARK      derived [i64], got [i64?]
   duckdb__scalar_subquery        GO         derived [i64, i64?], got [i64?, i64]
+  duckdb__scalar_subquery        SPARK      derived [i64, i64?], got [i64?, i64]
   duckdb__ts_ns_column           VALIDATOR  derived [precision_timestamp(9)], got [unresolved]
   duckdb__window                 PYTHON     derived [i64, i64?], got [i64, dec(38,0)?]
   duckdb__window                 VALIDATOR  derived [i64, i64?], got [unresolved, unresolved]

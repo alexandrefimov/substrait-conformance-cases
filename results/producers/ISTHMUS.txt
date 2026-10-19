@@ -1,4 +1,4 @@
-ISTHMUS: plans from isthmus, substrait-java bc050d37, checked against the specification at v0.102.0
+ISTHMUS: plans from isthmus, substrait-java 2bc2e688, checked against the specification at v0.102.0
 
 union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; names ok

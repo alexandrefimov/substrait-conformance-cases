@@ -100,7 +100,8 @@
     }
   ],
   "version": {
-    "minorNumber": 102,
+    "minorNumber": 103,
+    "patchNumber": 1,
     "producer": "isthmus"
   },
   "executionBehavior": {
