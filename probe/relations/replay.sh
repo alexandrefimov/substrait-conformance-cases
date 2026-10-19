@@ -131,7 +131,8 @@ inputs=("$ROOT/tests/relations/bundles" "$ROOT/results/relations/expected.json"
         "$ROOT/probe/relations/corpus.py" "$ROOT/probe/relations/column.py"
         "$ROOT/probe/relations/drive.sh" "$runner" "$one_case")
 if [ "$NAME" = GO ]; then
-  inputs+=("$ROOT/probe/go/api_legacy.go" "$ROOT/probe/go/api_wire.go" "$ROOT/probe/go/prepare_api.sh")
+  inputs+=("$ROOT/probe/go/api_legacy.go" "$ROOT/probe/go/api_wire.go" "$ROOT/probe/go/api_codec.go"
+           "$ROOT/probe/go/prepare_api.sh" "$ROOT/probe/columns.sh")
 fi
 INPUTS="$(python3 - "${inputs[@]}" <<'FP'
 import hashlib, os, sys

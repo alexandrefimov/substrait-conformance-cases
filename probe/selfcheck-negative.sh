@@ -125,6 +125,9 @@ unsafe_script_data() {
 mutate "hostile JSON ending an HTML script element" "HTML script data escaping failed" \
   unsafe_script_data
 
+mutate "Go codec API selected as legacy" "Go probe API selection failed" \
+  replace probe/go/prepare_api.sh 'adapter=api_codec.go' 'adapter=api_legacy.go'
+
 mutate "an action moved back to a mutable release tag" "not pinned to a full commit SHA" \
   replace .github/workflows/selfcheck.yml \
   'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' 'actions/checkout@v4'
