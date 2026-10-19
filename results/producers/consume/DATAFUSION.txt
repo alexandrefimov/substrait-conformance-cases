@@ -1,4 +1,4 @@
-DATAFUSION: the committed producer plans, datafusion 264ee3dc6
+DATAFUSION: the committed producer plans, datafusion fbf77371a
 BOUNDARY: DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
 datafusion__aggs                               [s:Int64?, a:Float64?, n:Int64, m:Int64?]

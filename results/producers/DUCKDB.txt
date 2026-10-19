@@ -1,4 +1,4 @@
-DUCKDB: plans from duckdb 1.5.5 4ea63dd, checked against the specification at v0.102.0
+DUCKDB: plans from duckdb 1.5.6 4ea63dd, checked against the specification at v0.102.0
 
 union_all_mixed        calls 0, differ 0, missing 0, unbound 0, declined 0; names ok
 union_distinct_mixed   calls 0, differ 0, missing 0, unbound 0, declined 0; schema declined (a field reference that is neither rooted in the input nor outer)
