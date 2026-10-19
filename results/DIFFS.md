@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-10-06, 2026-10-16. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-10-06, 2026-10-16, 2026-10-19. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -59,35 +59,9 @@ The PR makes each grouping key nullable when absent from any set; the shared key
 | [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[c:string, a:i64]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
 | [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[c:string, a:i64]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
 
-## substrait-validator — 14 cases
+## substrait-validator — 9 cases
 
-`results/VALIDATOR.txt`, substrait-validator 0.1.4 at 0a5d3d6.
-
-### `validator-aggregate-gives-i32-and-unresolved`
-
-These plans contain two grouping expressions and no measures. The validator does not parse the relation-level grouping expressions, so its direct output contains only the grouping-set index, i32. The emit mapping [0, 1] exposes that index and an out-of-range reference, which remains unresolved.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-validator/pull/567
-
-The PR parses relation-level grouping expressions and their references, covering both emitted fields in these plans; this links the proposed fix, not a rerun of its head.
-
-| case | expected | substrait-validator answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [aggregate_grouping_field_shared_by_sets](../derived-schema/aggregate_grouping_field_shared_by_sets.json) | `[str, i64?]` | `[i32, unresolved]` | Aggregate: only fields absent from some grouping set become nullable, over the two grouping expressions emit [0, 1] keeps |
-| [aggregate_grouping_sets_declared_order](../derived-schema/aggregate_grouping_sets_declared_order.json) | `[str?, i64?]` | `[i32, unresolved]` | Aggregate: sets ((c),(a)) do not intersect, so both are nullable, over the two grouping expressions emit [0, 1] keeps |
-
-### `validator-aggregate-returns-one-column`
-
-The validator returns a single column for these two aggregates, and for the same reason as the two aggregate cases before them: it does not parse the relation-level grouping expressions or their references, and says so - 'not yet implemented: ... grouping_expressions' and '... expression_references'. What is left of the direct output is the measure on aggregate_grouping_then_measure and the appended i32 index on aggregate_grouping_set_index, where it also reports the aggregate invalid for having neither a grouping expression nor a measure.
-
-Recorded as a divergence, reported. https://github.com/substrait-io/substrait-validator/pull/567
-
-The PR parses relation-level grouping expressions and their references, which is what both cases need; as for the two earlier cases, this links the proposed fix, not a rerun of its head.
-
-| case | expected | substrait-validator answered | the expectation comes from |
-| --- | --- | --- | --- |
-| [aggregate_grouping_set_index](../derived-schema/aggregate_grouping_set_index.json) | `[str?, i64?, i32]` | `[i32]` | Aggregate: two grouping sets that do not intersect, then the i32 grouping-set index the spec appends when there is more than one set |
-| [aggregate_grouping_then_measure](../derived-schema/aggregate_grouping_then_measure.json) | `[str, i64?]` | `[i64?]` | Aggregate: grouping expressions in declaration order, then measures; the one grouping set contains c, and sum:i64 declares return i64? |
+`results/VALIDATOR.txt`, substrait-validator 0.1.4 at 157c139.
 
 ### `validator-does-not-resolve`
 
@@ -97,7 +71,6 @@ Recorded as a type this participant never resolved.
 
 | case | expected | substrait-validator answered | the expectation comes from |
 | --- | --- | --- | --- |
-| [emit_aggregate](../derived-schema/emit_aggregate.json) | `[bool, i64]` | `[unresolved, unresolved]` | RelCommon.emit: the listed order of direct outputs |
 | [precision_timestamp_p00](../derived-schema/precision_timestamp_p00.json) | `[precision_timestamp(0)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 | [precision_timestamp_p01](../derived-schema/precision_timestamp_p01.json) | `[precision_timestamp(1)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
 | [precision_timestamp_p02](../derived-schema/precision_timestamp_p02.json) | `[precision_timestamp(2)]` | `[c:unresolved]` | a read with no operations: the schema is base_schema |
