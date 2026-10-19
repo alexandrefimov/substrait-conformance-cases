@@ -9,6 +9,17 @@
 # of its own. rev_of also reads SJ and DF for the participants that live in a checkout, and says so
 # rather than guessing when they are not set.
 
+# Effective module versions from the compiled probe, including versioned replacements.
+# A codec development build can require core v9.0.0 while replacing it with a
+# pseudo-version. Reading go.mod would name the requirement rather than the code used.
+go_modules_of() { # <compiled Go probe>
+  go version -m "$1" | awk '
+    $1 == "dep" { module = $2; versions[module] = $3 }
+    $1 == "=>" { versions[module] = $3 }
+    END { for (module in versions) print module, versions[module] }
+  '
+}
+
 # The revision a column was taken against, written into the column itself. Without it a column taken
 # elsewhere cannot be read: apt and pip give whatever is current there, so a difference from the
 # saved column could be a defect, a platform, or simply another version of the participant, and the
@@ -28,7 +39,10 @@ rev_of() { # <COLUMN NAME>
     VALIDATOR)     local at
                    at="$(git -C "$SP/substrait-validator" rev-parse --short=7 HEAD 2>/dev/null)"
                    v="substrait-validator $("${SUBSTRAIT_VALIDATOR_ENV:-$SP/val}/bin/python" -c 'import importlib.metadata as m;print(m.version("substrait-validator"))' 2>/dev/null) at ${at:-${SUBSTRAIT_VALIDATOR_COMMIT:-}}" ;;
-    GO)            v="$(grep -m1 -o 'substrait-go/v[0-9]* v[0-9a-z.+-]*' "$SP/gosub9/go.mod" 2>/dev/null)" ;;
+    GO)            v="$(go_modules_of "$SP/gosub9/probe_go9" 2>/dev/null | awk '
+                     $1 ~ /^github.com\/substrait-io\/substrait-go\/v[0-9]+$/ {
+                       sub(/^github.com\/substrait-io\//, "", $1); print $1, $2
+                     }')" ;;
     # Spark's classpath is resolved when its probe runs, so before that there is nothing to read it
     # from and the pinned value is reported instead, said to be pinned. Reading the jar unconditionally
     # printed a version here only because a previous run had left the cache behind.

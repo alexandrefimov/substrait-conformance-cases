@@ -1124,6 +1124,9 @@ python3 probe/test_script_data.py \
 python3 probe/test_spark_runtime.py \
   && ok "Spark runtime checks reject incomplete results and incorrect runtimes" \
   || fail "Spark runtime result checks failed"
+python3 probe/test_go_api.py \
+  && ok "Go probe API selection preserves the resolved core revision" \
+  || fail "Go probe API selection failed"
 python3 probe/structural_cases.py --verify-fixtures \
   && ok "focused structural fixtures and their controls are complete" \
   || fail "focused structural fixtures are incomplete"
