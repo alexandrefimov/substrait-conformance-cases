@@ -1,4 +1,4 @@
-PYTHON: the committed producer plans, substrait 0.36.0
+PYTHON: the committed producer plans, substrait 0.37.0
 
 datafusion__aggs                               [s:i64?, a:fp64?, n:i64, m:i64?]
 datafusion__arith                              [x:i64, y:i64]

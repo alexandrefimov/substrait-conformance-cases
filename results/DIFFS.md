@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-10-06, 2026-10-16, 2026-10-19. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-10-06, 2026-10-19. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -44,7 +44,7 @@ Both normative texts say a column follows the expand fields - physical_relations
 
 ## substrait-go — 2 cases
 
-`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.1.0.20260930173725-8c239c67dd92.
+`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.1.0.20261016221056-c1c73027eea8.
 
 ### `python-go-aggregate-all-required`
 
@@ -102,7 +102,7 @@ The updated reproducer in the issue covers these four intersection and minus ope
 
 ## DataFusion — 7 cases
 
-`results/DATAFUSION.txt`, datafusion 264ee3dc6.
+`results/DATAFUSION.txt`, datafusion fbf77371a.
 
 How far this column goes. DataFusion maps varchar/fixedchar to Utf8, which carries no length.
 
@@ -162,7 +162,7 @@ Recorded as a limit of this type system.
 
 ## DuckDB — 21 cases
 
-`results/DUCKDB.txt`, duckdb 1.5.5.
+`results/DUCKDB.txt`, duckdb 1.5.6.
 
 How far this column goes. carries no nullability in its logical types - types, arity and order are compared.
 
@@ -304,7 +304,7 @@ Recorded as a divergence, reported. https://github.com/substrait-io/substrait-ja
 
 ## Acero — 16 cases
 
-`results/ACERO.txt`, pyarrow 25.0.1.
+`results/ACERO.txt`, pyarrow 26.0.0.
 
 ### `acero-required-kept-only-on-a-bare-read`
 

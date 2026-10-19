@@ -1,4 +1,4 @@
-ACERO: the committed producer plans, pyarrow 25.0.1
+ACERO: the committed producer plans, pyarrow 26.0.0
 Carries nullability (the probe prints f.nullable); it is compared alongside the types.
 
 datafusion__aggs                               ERROR: ArrowNotImplementedError: substrait::ReadRel::projection

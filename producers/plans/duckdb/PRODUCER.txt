@@ -1,1 +1,1 @@
-duckdb 1.5.5 4ea63dd
+duckdb 1.5.6 4ea63dd

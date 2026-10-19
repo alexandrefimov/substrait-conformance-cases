@@ -1,4 +1,4 @@
-PYTHON: column from run 2026-10-16T13:20, substrait 0.36.0
+PYTHON: column from run 2026-10-19T23:42, substrait 0.37.0
 
 aggregate_grouping_field_shared_by_sets        [c:str, a:i64?]
 aggregate_grouping_set_index                   [c:str?, a:i64?, g:i32]
