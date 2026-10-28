@@ -1,4 +1,4 @@
-GO: the committed producer plans, substrait-go/v9 v9.0.0-alpha.1.0.20261016221056-c1c73027eea8
+GO: the committed producer plans, substrait-go/v9 v9.0.0-alpha.2.0.20261027182159-e61f754a4973
 
 datafusion__aggs                               ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved
 datafusion__arith                              ERROR: unable to resolve extension reference: URN reference 4294967295 could not be resolved

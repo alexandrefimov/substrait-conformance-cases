@@ -64,7 +64,7 @@ GOMOD
     substrait/test/relation_test.proto
   ( cd "$SP/relgo"
     go get "$SUBSTRAIT_GO_MODULE@$SUBSTRAIT_GO_COMMIT" &&
-    bash "$ROOT/probe/go/prepare_api.sh" "$SUBSTRAIT_GO_MODULE" &&
+    bash "$ROOT/probe/go/prepare_api.sh" "$SUBSTRAIT_GO_MODULE" "${SUBSTRAIT_GO_CODEC_MODULE:-github.com/substrait-io/substrait-go/codec/v9}" &&
     go mod tidy &&
     go build -o relgo . ) || { echo "the substrait-go runner did not build" >&2; exit 1; }
   echo "substrait-go runner: $SP/relgo/relgo"

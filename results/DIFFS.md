@@ -10,7 +10,7 @@ table registered and no part of this harness. A difference is measured against t
 repository's reading of the spec, not against your own tests: some of these are questions
 for the spec and some are ours, and each says which.
 
-Columns taken 2026-10-06, 2026-10-19. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
+Columns taken 2026-10-06, 2026-10-19, 2026-10-28. [FINDINGS.md](../FINDINGS.md) maps the reports the other way, from a
 finding to its reproducers.
 
 ## substrait-java — 3 cases
@@ -44,7 +44,7 @@ Both normative texts say a column follows the expand fields - physical_relations
 
 ## substrait-go — 2 cases
 
-`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.1.0.20261016221056-c1c73027eea8.
+`results/GO.txt`, substrait-go/v9 v9.0.0-alpha.2.0.20261027182159-e61f754a4973.
 
 ### `python-go-aggregate-all-required`
 
