@@ -159,7 +159,7 @@ fi
 # rather than requested, and a run that got a different one is not a reproduction of the saved
 # column, whatever the answers turn out to be.
 if [ "$NAME" = DUCKDB ]; then
-  EXT_GOT="$("$WORK/venv/bin/python" - <<'PY' 2>/dev/null
+  if ! EXT_GOT="$("$WORK/venv/bin/python" - <<'PY' 2>"$WORK/duckdb-extension.err"
 import duckdb
 con = duckdb.connect()
 try:
@@ -169,7 +169,11 @@ except Exception:
 row = con.execute("SELECT extension_version FROM duckdb_extensions() WHERE extension_name='substrait'").fetchone()
 print(row[0] if row else "")
 PY
-)"
+)"; then
+    echo "FAILED: DuckDB substrait extension setup failed" >&2
+    tail -n 6 "$WORK/duckdb-extension.err" >&2
+    exit 1
+  fi
   echo "   substrait extension $EXT_GOT"
   if [ "$LATEST" != 1 ] && [ "$EXT_GOT" != "$DUCKDB_SUBSTRAIT_EXTENSION" ]; then
     echo "FAILED: the community extension is $EXT_GOT, versions.env records $DUCKDB_SUBSTRAIT_EXTENSION." >&2

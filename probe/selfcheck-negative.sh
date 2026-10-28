@@ -125,6 +125,9 @@ unsafe_script_data() {
 mutate "hostile JSON ending an HTML script element" "HTML script data escaping failed" \
   unsafe_script_data
 
+mutate "a failed DuckDB extension preflight treated as successful setup" "DuckDB extension preflight checks failed" \
+  replace probe/replay_column.sh 'if ! EXT_GOT=' 'if EXT_GOT='
+
 mutate "Go codec API selected as legacy" "Go probe API selection failed" \
   replace probe/go/prepare_api.sh 'adapter=api_codec.go' 'adapter=api_legacy.go'
 mutate "Go substraitproto API selected as legacy" "Go probe API selection failed" \
