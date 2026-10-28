@@ -1163,6 +1163,6 @@
 <rect x="766.0" y="1919.0" width="54.0" height="10.0" rx="1.5" fill="none" stroke="#dcdcd6" stroke-width="0.8"/>
 <text x="14.0" y="1952.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">972 cells: 514 matched, 53 divergences, 9 unresolved, 6 at a type-system boundary, 300 not accepted, 90 without an expectation.</text>
 <text x="14.0" y="1966.0" fill="#8a8b88" font-size="9.0" font-weight="normal" text-anchor="start" font-family="system-ui, -apple-system, Segoe UI, sans-serif">10 of these cases each pin a rule no other case pins; 4 rules are pinned by none.</text>
-<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-10-06, 2026-10-19 · java bc050d37 · python 0.37.0 · go c1c73027eea8 · validator 157c139 · Isthmus bc050d37 · DataFusion fbf77371a · DuckDB 1.5.6</text>
-<text x="14.0" y="1975.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">Spark 3.5.4 · Acero 26.0.0</text>
+<text x="14.0" y="1964.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">columns taken 2026-10-06, 2026-10-19, 2026-10-28 · java bc050d37 · python 0.37.0 · go e61f754a4973 · validator 157c139 · Isthmus bc050d37 · DataFusion fbf77371a</text>
+<text x="14.0" y="1975.0" fill="#8a8b88" font-size="8.0" font-weight="normal" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">DuckDB 1.5.6 · Spark 3.5.4 · Acero 26.0.0</text>
 </svg>

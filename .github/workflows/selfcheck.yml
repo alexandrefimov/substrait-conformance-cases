@@ -55,7 +55,7 @@ jobs:
           go-version: ${{ steps.go.outputs.version }}
       - id: java
         if: matrix.column == 'JAVA'
-        run: . probe/versions.env && echo "version=$JAVA_VERSION" >> "$GITHUB_OUTPUT"
+        run: . probe/versions.env && echo "version=$RELATIONS_JAVA_VERSION" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         if: matrix.column == 'JAVA'
         with:

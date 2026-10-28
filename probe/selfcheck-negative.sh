@@ -127,6 +127,8 @@ mutate "hostile JSON ending an HTML script element" "HTML script data escaping f
 
 mutate "Go codec API selected as legacy" "Go probe API selection failed" \
   replace probe/go/prepare_api.sh 'adapter=api_codec.go' 'adapter=api_legacy.go'
+mutate "Go substraitproto API selected as legacy" "Go probe API selection failed" \
+  replace probe/go/prepare_api.sh 'adapter=api_substraitproto.go' 'adapter=api_legacy.go'
 
 mutate "an action moved back to a mutable release tag" "not pinned to a full commit SHA" \
   replace .github/workflows/selfcheck.yml \
