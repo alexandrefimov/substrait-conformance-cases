@@ -93,14 +93,15 @@ is added only when the case exercises the behaviour that the referenced change m
 
 The v0.102.0 audit found
 [sixteen expectations relying on an unstated step](https://github.com/alexandrefimov/substrait-conformance-cases/issues/8).
-Later, [Substrait PR 1263](https://github.com/substrait-io/substrait/pull/1263) made two rules explicit:
-Cross preserves input-field nullability, and Expand's duplicate-index column is required.
-The existing `cross_preserves_nullability`, `expand_consistent_fields` and
-`expand_switching_nullability` expectations agree with those rules; no expected schema changes.
-This confirms their nullability without changing the corpus's v0.102.0 baseline or settling
+Later, [Substrait PR 1184](https://github.com/substrait-io/substrait/pull/1184) made join output
+nullability explicit. The thirteen existing logical and physical join expectations agree with
+those rules. [Substrait PR 1263](https://github.com/substrait-io/substrait/pull/1263) made two more
+rules explicit: Cross preserves input-field nullability, and Expand's duplicate-index column is
+required. The existing `cross_preserves_nullability`, `expand_consistent_fields` and
+`expand_switching_nullability` expectations agree with those rules too.
+All sixteen nullability expectations are confirmed by these later rules, without changing the
+corpus's v0.102.0 baseline or settling
 [Expand's index width](https://github.com/substrait-io/substrait/issues/714).
-The remaining thirteen join expectations still await explicit rules in
-[Substrait PR 1184](https://github.com/substrait-io/substrait/pull/1184).
 Independent review is still needed. One expectation that contradicted the spec has already been
 corrected. A wrong expectation can label a correct implementation as diverging.
 
