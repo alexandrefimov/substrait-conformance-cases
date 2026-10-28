@@ -1127,6 +1127,9 @@ python3 probe/test_spark_runtime.py \
 python3 probe/test_go_api.py \
   && ok "Go probe API selection preserves the resolved core revision" \
   || fail "Go probe API selection failed"
+python3 probe/test_replay_column.py \
+  && ok "DuckDB extension preflight stops before cases and preserves setup failures" \
+  || fail "DuckDB extension preflight checks failed"
 python3 probe/structural_cases.py --verify-fixtures \
   && ok "focused structural fixtures and their controls are complete" \
   || fail "focused structural fixtures are incomplete"
