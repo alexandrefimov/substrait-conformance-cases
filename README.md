@@ -25,7 +25,7 @@ schema comparisons establish neither row correctness nor general plan validity.
 
 ## Results
 
-The schema columns were taken 2026-10-06, 2026-10-19 against the versions in
+The schema columns were taken 2026-10-06, 2026-10-19, 2026-10-28 against the versions in
 [`probe/versions.env`](probe/versions.env). They answer the 98 cases that carry an expectation.
 Gluten is measured separately over the virtual-table variant and is outside the table below.
 

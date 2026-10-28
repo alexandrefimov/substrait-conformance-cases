@@ -10,6 +10,7 @@ import unittest
 ROOT = Path(__file__).resolve().parent
 MODULE = "github.com/substrait-io/substrait-go/v9"
 CODEC = "github.com/substrait-io/substrait-go/codec/v9"
+PROTO_CODEC = "github.com/substrait-io/substrait-go/encoding/substraitproto"
 PSEUDO_VERSION = "v9.0.0-alpha.1.0.20261016221056-c1c73027eea8"
 
 FAKE_GO = r"""#!/usr/bin/env python3
@@ -28,6 +29,8 @@ elif args[:3] == ["list", "-m", "-f"]:
         print(os.environ["GO_API_MODULE_DIR"])
     elif args[3] == "{{.Version}}":
         print(os.environ["GO_API_VERSION"])
+    elif args[3] == "{{.Origin.Hash}}":
+        print("c1c73027eea80000000000000000000000000000")
     else:
         sys.exit(2)
 elif args[:2] == ["mod", "edit"]:
@@ -40,7 +43,7 @@ else:
 
 
 class GoApiTest(unittest.TestCase):
-    def select(self, era, version=PSEUDO_VERSION, get_status=0):
+    def select(self, era, version=PSEUDO_VERSION, get_status=0, codec_module=None):
         with tempfile.TemporaryDirectory() as tmp:
             build = Path(tmp)
             module = build / "core"
@@ -64,8 +67,11 @@ class GoApiTest(unittest.TestCase):
             env = dict(os.environ, PATH=str(bindir) + os.pathsep + os.environ["PATH"],
                        GO_API_MODULE_DIR=str(module), GO_API_VERSION=version,
                        GO_API_LOG=str(log), GO_API_GET_STATUS=str(get_status))
+            command = ["bash", str(ROOT / "go" / "prepare_api.sh"), MODULE]
+            if codec_module is not None:
+                command.append(codec_module)
             result = subprocess.run(
-                ["bash", str(ROOT / "go" / "prepare_api.sh"), MODULE],
+                command,
                 cwd=build, env=env, capture_output=True, text=True)
             commands = [json.loads(line) for line in log.read_text().splitlines()]
             adapter = (build / "api.go").read_text() if (build / "api.go").exists() else None
@@ -94,12 +100,29 @@ class GoApiTest(unittest.TestCase):
                        PSEUDO_VERSION], commands)
         self.assertIn(["get", CODEC + "@c1c73027eea8"], commands)
 
-    def test_codec_release_uses_the_matching_version(self):
+    def test_codec_release_resolves_the_core_tag_to_its_commit(self):
         result, commands, adapter = self.select("codec", version="v9.0.0")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(adapter, (ROOT / "go" / "api_codec.go").read_text())
-        self.assertIn(["get", CODEC + "@v9.0.0"], commands)
+        self.assertIn(["list", "-m", "-f", "{{.Origin.Hash}}", MODULE + "@v9.0.0"], commands)
+        self.assertIn(["get", CODEC + "@c1c73027eea80000000000000000000000000000"], commands)
         self.assertIn(["mod", "edit", "-replace=" + MODULE + "=" + MODULE + "@v9.0.0"],
+                      commands)
+
+    def test_substraitproto_uses_the_same_commit_as_core(self):
+        result, commands, adapter = self.select("codec", codec_module=PROTO_CODEC)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(adapter, (ROOT / "go" / "api_substraitproto.go").read_text())
+        self.assertIn(["get", PROTO_CODEC + "@c1c73027eea8"], commands)
+        self.assertIn(["mod", "edit", "-replace=" + MODULE + "=" + MODULE + "@" +
+                       PSEUDO_VERSION], commands)
+
+    def test_substraitproto_release_resolves_core_tag_to_its_commit(self):
+        result, commands, adapter = self.select("codec", version="v9.0.0-alpha.2",
+                                               codec_module=PROTO_CODEC)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(adapter, (ROOT / "go" / "api_substraitproto.go").read_text())
+        self.assertIn(["get", PROTO_CODEC + "@c1c73027eea80000000000000000000000000000"],
                       commands)
 
     def test_codec_download_failure_stops_selection(self):
