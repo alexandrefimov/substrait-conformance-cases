@@ -60,6 +60,8 @@ A refused plan is a measured result. Harness failures exit non-zero with a `FAIL
 wrong checkout revision, missing environment, failed generation, source/artifact drift,
 incomplete or unnormalizable output, a participant answering nothing, or a skipped participant
 without `ALLOW_SKIPPED=1`. That flag permits an intentional partial run, not a complete sweep.
+A DuckDB extension that cannot be installed or loaded stops the replay before any cases run and
+reports the setup error.
 
 ## The participants and their versions
 
